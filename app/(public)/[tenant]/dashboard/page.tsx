@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Store, Package, ShoppingCart, DollarSign, Settings, LogOut } from 'lucide-react'
@@ -11,10 +11,7 @@ interface DashboardStats {
   revenue: number
 }
 
-export default function AdminDashboard({ params }: { params: Promise<{ tenant: string }> }) {
-  // Unwrap params Promise with React.use()
-  const { tenant } = use(params)
-
+export default function AdminDashboard({ params }: { params: { tenant: string } }) {
   const router = useRouter()
   const supabase = createClient()
   const [loading, setLoading] = useState(true)
@@ -31,20 +28,22 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenant: s
         // Verify user is authenticated
         const { data: { session } } = await supabase.auth.getSession()
         if (!session) {
-          router.push(`/${tenant}/login`)
+          router.push(`/${params.tenant}/login`)
           return
         }
 
         // Get tenant info
-        const { data: tenantData } = await supabase
+        const { data: tenant } = await supabase
           .from('tenants')
           .select('name, config')
-          .eq('slug', tenant)
+          .eq('slug', params.tenant)
           .single()
 
-        if (tenantData) {
-          const config = tenantData.config as { business_name?: string } | null
-          setTenantName(config?.business_name || tenantData.name)
+        if (tenant) {
+          const businessName = typeof tenant.config === 'object' && tenant.config !== null && 'business_name' in tenant.config
+            ? (tenant.config.business_name as string)
+            : tenant.name
+          setTenantName(businessName)
         }
 
         // Get stats
@@ -73,11 +72,11 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenant: s
     }
 
     loadDashboard()
-  }, [tenant, router, supabase])
+  }, [params.tenant, router, supabase])
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
-    router.push(`/${tenant}`)
+    router.push(`/${params.tenant}`)
   }
 
   if (loading) {
@@ -169,7 +168,7 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenant: s
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Acciones Rápidas</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <button
-              onClick={() => router.push(`/${tenant}/dashboard/products`)}
+              onClick={() => router.push(`/${params.tenant}/dashboard/products`)}
               className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors group"
             >
               <Package className="h-8 w-8 text-gray-400 group-hover:text-blue-600 mb-2" />
@@ -179,7 +178,7 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenant: s
             </button>
 
             <button
-              onClick={() => router.push(`/${tenant}/dashboard/orders`)}
+              onClick={() => router.push(`/${params.tenant}/dashboard/orders`)}
               className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors group"
             >
               <ShoppingCart className="h-8 w-8 text-gray-400 group-hover:text-green-600 mb-2" />
@@ -189,7 +188,7 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenant: s
             </button>
 
             <button
-              onClick={() => router.push(`/${tenant}/dashboard/settings`)}
+              onClick={() => router.push(`/${params.tenant}/dashboard/settings`)}
               className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors group"
             >
               <Settings className="h-8 w-8 text-gray-400 group-hover:text-purple-600 mb-2" />
@@ -199,7 +198,7 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenant: s
             </button>
 
             <button
-              onClick={() => router.push(`/${tenant}`)}
+              onClick={() => router.push(`/${params.tenant}`)}
               className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors group"
             >
               <Store className="h-8 w-8 text-gray-400 group-hover:text-orange-600 mb-2" />

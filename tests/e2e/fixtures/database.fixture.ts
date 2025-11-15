@@ -15,7 +15,7 @@
 
 import { test as base } from '@playwright/test'
 import { createClient } from '@supabase/supabase-js'
-import type { Database } from '@/types/supabase'
+import type { Database } from '../../../types/supabase'
 
 /**
  * Initialize Supabase Admin Client for database operations
