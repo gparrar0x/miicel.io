@@ -39,3 +39,28 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+test-output.log
+test-results.json
+junit.xml
+
+# documentation (local only)
+/docs/
+*_SUMMARY.md
+*_REPORT.md
+*_CHECKLIST.md
+QUICKSTART_*.md
+QUICK_WINS_*.md
+SKY-*.md
+
+# test assets
+/public/test-assets/
+
+# supabase local
+/supabase/.branches/
+/supabase/.temp/
+check_storage.sql
