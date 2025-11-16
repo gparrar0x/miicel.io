@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Store, Package, ShoppingCart, DollarSign, Settings, LogOut } from 'lucide-react'
+import { Package, ShoppingCart, DollarSign, Settings, Store, LogOut } from 'lucide-react'
 
 interface DashboardStats {
   totalProducts: number
@@ -11,7 +11,7 @@ interface DashboardStats {
   revenue: number
 }
 
-export default function AdminDashboard({ params }: { params: { tenant: string } }) {
+export default function AdminDashboard({ params }: { params: Promise<{ tenant: string }> }) {
   const router = useRouter()
   const supabase = createClient()
   const [loading, setLoading] = useState(true)
@@ -21,22 +21,23 @@ export default function AdminDashboard({ params }: { params: { tenant: string } 
     revenue: 0
   })
   const [tenantName, setTenantName] = useState('')
+  const [tenantSlug, setTenantSlug] = useState<string | null>(null)
+
+  // Unwrap params in useEffect
+  useEffect(() => {
+    params.then(({ tenant }) => setTenantSlug(tenant))
+  }, [params])
 
   useEffect(() => {
+    if (!tenantSlug) return
+
     const loadDashboard = async () => {
       try {
-        // Verify user is authenticated
-        const { data: { session } } = await supabase.auth.getSession()
-        if (!session) {
-          router.push(`/${params.tenant}/login`)
-          return
-        }
-
         // Get tenant info
         const { data: tenant } = await supabase
           .from('tenants')
           .select('name, config')
-          .eq('slug', params.tenant)
+          .eq('slug', tenantSlug)
           .single()
 
         if (tenant) {
@@ -72,11 +73,11 @@ export default function AdminDashboard({ params }: { params: { tenant: string } 
     }
 
     loadDashboard()
-  }, [params.tenant, router, supabase])
+  }, [tenantSlug, router, supabase])
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
-    router.push(`/${params.tenant}`)
+    router.push(`/${tenantSlug}`)
   }
 
   if (loading) {
@@ -168,8 +169,9 @@ export default function AdminDashboard({ params }: { params: { tenant: string } 
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Acciones Rápidas</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <button
-              onClick={() => router.push(`/${params.tenant}/dashboard/products`)}
+              onClick={() => tenantSlug && router.push(`/${tenantSlug}/dashboard/products`)}
               className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors group"
+              disabled={!tenantSlug}
             >
               <Package className="h-8 w-8 text-gray-400 group-hover:text-blue-600 mb-2" />
               <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600">
@@ -178,8 +180,9 @@ export default function AdminDashboard({ params }: { params: { tenant: string } 
             </button>
 
             <button
-              onClick={() => router.push(`/${params.tenant}/dashboard/orders`)}
+              onClick={() => tenantSlug && router.push(`/${tenantSlug}/dashboard/orders`)}
               className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors group"
+              disabled={!tenantSlug}
             >
               <ShoppingCart className="h-8 w-8 text-gray-400 group-hover:text-green-600 mb-2" />
               <span className="text-sm font-medium text-gray-700 group-hover:text-green-600">
@@ -188,8 +191,9 @@ export default function AdminDashboard({ params }: { params: { tenant: string } 
             </button>
 
             <button
-              onClick={() => router.push(`/${params.tenant}/dashboard/settings`)}
+              onClick={() => tenantSlug && router.push(`/${tenantSlug}/dashboard/settings`)}
               className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors group"
+              disabled={!tenantSlug}
             >
               <Settings className="h-8 w-8 text-gray-400 group-hover:text-purple-600 mb-2" />
               <span className="text-sm font-medium text-gray-700 group-hover:text-purple-600">
@@ -198,8 +202,9 @@ export default function AdminDashboard({ params }: { params: { tenant: string } 
             </button>
 
             <button
-              onClick={() => router.push(`/${params.tenant}`)}
+              onClick={() => tenantSlug && router.push(`/${tenantSlug}`)}
               className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-colors group"
+              disabled={!tenantSlug}
             >
               <Store className="h-8 w-8 text-gray-400 group-hover:text-orange-600 mb-2" />
               <span className="text-sm font-medium text-gray-700 group-hover:text-orange-600">

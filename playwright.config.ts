@@ -18,6 +18,9 @@ dotenv.config({ path: '.env.local' })
 export default defineConfig({
   testDir: './tests/e2e/specs',
 
+  // Global setup (seed test data once before all tests)
+  globalSetup: require.resolve('./tests/global-setup.ts'),
+
   // Maximum time per test (20 seconds)
   timeout: 20 * 1000,
 

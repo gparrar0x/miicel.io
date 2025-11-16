@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 type TenantData = {
-  id: string
+  id: number
   slug: string
   name: string
   config: any
@@ -103,7 +103,7 @@ export async function middleware(req: NextRequest) {
   }
 
   const requestHeaders = new Headers(req.headers)
-  requestHeaders.set('x-tenant-id', tenant.id)
+  requestHeaders.set('x-tenant-id', tenant.id.toString())
   requestHeaders.set('x-tenant-slug', tenant.slug)
 
   if (pathSegments.includes('dashboard')) {
@@ -118,7 +118,7 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  supabaseResponse.headers.set('x-tenant-id', tenant.id)
+  supabaseResponse.headers.set('x-tenant-id', tenant.id.toString())
   supabaseResponse.headers.set('x-tenant-slug', tenant.slug)
 
   return supabaseResponse
