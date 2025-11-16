@@ -44,61 +44,54 @@ export async function seedTestData() {
   console.log('🌱 Starting test data seed...')
 
   try {
-    // 0. Cleanup stale test data
-    console.log(`  Cleaning up stale test data...`)
-    try {
-      // Delete tenant first (cascade cleanup)
-      const { error: tenantDeleteError } = await supabase
-        .from('tenants')
-        .delete()
-        .eq('slug', TEST_TENANT.slug)
+    // Note: Skipping pre-seed cleanup. Seed is now idempotent (reuses existing users/tenant).
+    // This avoids hard delete failures that cause seed to crash on retry.
 
-      if (tenantDeleteError && !tenantDeleteError.message?.includes('no rows')) {
-        console.log(`  ⚠ Tenant cleanup: ${tenantDeleteError.message}`)
-      } else {
-        console.log(`  ✓ Stale tenant cleaned`)
-      }
-
-      // Delete stale auth users with hard delete
-      try {
-        const { data: allUsers, error: listError } = await supabase.auth.admin.listUsers({ perPage: 100 })
-        if (listError) {
-          console.log(`  ⚠ Unable to list users: ${listError.message}`)
-        } else if (allUsers?.users) {
-          for (const user of allUsers.users) {
-            if (user.email === TEST_USERS.owner.email || user.email === TEST_USERS.nonOwner.email) {
-              const { error: deleteError } = await supabase.auth.admin.deleteUser(user.id, { shouldSoftDelete: false })
-              if (deleteError) {
-                console.log(`  ⚠ Failed to delete ${user.email}: ${deleteError.message}`)
-              } else {
-                console.log(`  ✓ Deleted stale user: ${user.email}`)
-              }
-            }
-          }
-        }
-      } catch (userDeleteError) {
-        console.log(`  ⚠ User cleanup error: ${userDeleteError}`)
-      }
-    } catch (cleanupError) {
-      console.log(`  ⚠ Cleanup warning: ${cleanupError}`)
-    }
-
-    // 1. Create fresh test data
-    console.log(`  Creating owner user: ${TEST_USERS.owner.email}`)
+    // 1. Get or create owner user (idempotent)
+    console.log(`  Getting or creating owner user: ${TEST_USERS.owner.email}`)
     let tenant
     let owner
 
-    const { data: newOwner, error: ownerError } = await supabase.auth.admin.createUser({
-      email: TEST_USERS.owner.email,
-      password: TEST_USERS.owner.password,
-      email_confirm: true,
-    })
+    // Try to find existing owner user
+    const { data: allUsersData, error: listError } = await supabase.auth.admin.listUsers({ perPage: 100 })
+    const existingOwner = allUsersData?.users?.find(u => u.email === TEST_USERS.owner.email)
 
-    if (newOwner?.user) {
-      owner = newOwner.user
-      console.log(`  ✓ Owner user created: ${owner.id}`)
+    if (existingOwner) {
+      owner = existingOwner
+      console.log(`  ✓ Using existing owner user: ${owner.id}`)
     } else {
-      throw new Error(`Failed to create owner user: ${ownerError?.message}`)
+      // Create new owner user if not found
+      const { data: newOwner, error: ownerError } = await supabase.auth.admin.createUser({
+        email: TEST_USERS.owner.email,
+        password: TEST_USERS.owner.password,
+        email_confirm: true,
+      })
+
+      if (newOwner?.user) {
+        owner = newOwner.user
+        console.log(`  ✓ Owner user created: ${owner.id}`)
+      } else if (ownerError?.message?.includes('already been registered')) {
+        // User exists but wasn't found by listUsers (API pagination/permissions issue)
+        // Retry listUsers with pagination to find them
+        console.log(`  ⚠ User exists but not in initial list, searching...`)
+        let page = 1
+        let found = false
+        while (page <= 10 && !found) {
+          const { data: pageData } = await supabase.auth.admin.listUsers({ page, perPage: 1000 })
+          const user = pageData?.users?.find(u => u.email === TEST_USERS.owner.email)
+          if (user) {
+            owner = user
+            console.log(`  ✓ Found existing owner user: ${owner.id}`)
+            found = true
+          }
+          page++
+        }
+        if (!found) {
+          throw new Error(`Owner user exists but could not be retrieved. Manual cleanup required.`)
+        }
+      } else {
+        throw new Error(`Failed to create owner user: ${ownerError?.message}`)
+      }
     }
 
     // Validate owner has email before tenant creation
@@ -106,49 +99,94 @@ export async function seedTestData() {
       throw new Error(`Owner user has no email assigned`)
     }
 
-    // Create tenant
-    console.log(`  Creating tenant: ${TEST_TENANT.slug}`)
-    const { data: newTenant, error: tenantError } = await supabase
+    // Get or create tenant (idempotent)
+    console.log(`  Getting or creating tenant: ${TEST_TENANT.slug}`)
+    const { data: existingTenant, error: tenantFetchError } = await supabase
       .from('tenants')
-      .insert({
-        slug: TEST_TENANT.slug,
-        name: TEST_TENANT.name,
-        owner_id: owner.id,
-        owner_email: owner.email,
-        active: true,
-        config: {
-          colors: {
-            primary: '#3B82F6',
-            secondary: '#10B981',
-          },
-          business_name: TEST_TENANT.name,
-        },
-      })
-      .select()
+      .select('*')
+      .eq('slug', TEST_TENANT.slug)
       .single()
 
-    if (tenantError) {
-      throw new Error(`Failed to create tenant: ${tenantError.message}`)
+    if (existingTenant) {
+      tenant = existingTenant
+      console.log(`  ✓ Using existing tenant: ${tenant.id}`)
+    } else if (tenantFetchError?.code === 'PGRST116') {
+      // PGRST116 = no rows found, safe to create
+      const { data: newTenant, error: tenantError } = await supabase
+        .from('tenants')
+        .insert({
+          slug: TEST_TENANT.slug,
+          name: TEST_TENANT.name,
+          owner_id: owner.id,
+          owner_email: owner.email,
+          active: true,
+          config: {
+            colors: {
+              primary: '#3B82F6',
+              secondary: '#10B981',
+            },
+            business_name: TEST_TENANT.name,
+          },
+        })
+        .select()
+        .single()
+
+      if (tenantError) {
+        throw new Error(`Failed to create tenant: ${tenantError.message}`)
+      }
+
+      tenant = newTenant
+      console.log(`  ✓ Tenant created: ${tenant.id}`)
+    } else {
+      throw new Error(`Failed to fetch tenant: ${tenantFetchError?.message}`)
     }
 
-    tenant = newTenant
-    console.log(`  ✓ Tenant created: ${tenant.id}`)
+    // 2. Get or create non-owner user (idempotent)
+    console.log(`  Getting or creating non-owner user: ${TEST_USERS.nonOwner.email}`)
 
-    // 2. Create non-owner user
-    console.log(`  Creating non-owner user: ${TEST_USERS.nonOwner.email}`)
+    // Try to find existing non-owner user
+    const existingNonOwner = allUsersData?.users?.find(u => u.email === TEST_USERS.nonOwner.email)
 
-    const { data: newNonOwner, error: nonOwnerError } = await supabase.auth.admin.createUser({
-      email: TEST_USERS.nonOwner.email,
-      password: TEST_USERS.nonOwner.password,
-      email_confirm: true,
-    })
+    let nonOwner
+    if (existingNonOwner) {
+      nonOwner = existingNonOwner
+      console.log(`  ✓ Using existing non-owner user: ${nonOwner.id}`)
+    } else {
+      // Create new non-owner user if not found
+      const { data: newNonOwner, error: nonOwnerError } = await supabase.auth.admin.createUser({
+        email: TEST_USERS.nonOwner.email,
+        password: TEST_USERS.nonOwner.password,
+        email_confirm: true,
+      })
 
-    if (!newNonOwner?.user) {
-      throw new Error(`Failed to create non-owner user: ${nonOwnerError?.message}`)
+      if (newNonOwner?.user) {
+        nonOwner = newNonOwner.user
+        console.log(`  ✓ Non-owner user created: ${nonOwner.id}`)
+      } else if (nonOwnerError?.message?.includes('already been registered')) {
+        // User exists but wasn't found by listUsers
+        console.log(`  ⚠ Non-owner exists but not in list, searching...`)
+        let page = 1
+        let found = false
+        while (page <= 10 && !found) {
+          const { data: pageData } = await supabase.auth.admin.listUsers({ page, perPage: 1000 })
+          const user = pageData?.users?.find(u => u.email === TEST_USERS.nonOwner.email)
+          if (user) {
+            nonOwner = user
+            console.log(`  ✓ Found existing non-owner user: ${nonOwner.id}`)
+            found = true
+          }
+          page++
+        }
+        if (!found) {
+          throw new Error(`Non-owner user exists but could not be retrieved. Manual cleanup required.`)
+        }
+      } else {
+        throw new Error(`Failed to create non-owner user: ${nonOwnerError?.message}`)
+      }
+
+      nonOwner = newNonOwner.user
+      console.log(`  ✓ Non-owner user created: ${nonOwner.id}`)
     }
-
-    const nonOwner = newNonOwner.user
-    console.log(`  ✓ Non-owner user created: ${nonOwner.id}`)
 
     console.log('✅ Test data seed completed')
 

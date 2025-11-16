@@ -5,6 +5,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Common Changelog](https://common-changelog.org/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Admin Dashboard Layout (SKY-6)**: Complete responsive admin shell with sidebar navigation
+  - AdminSidebar component with mobile support (collapsible + hamburger menu)
+  - Dashboard layout at `/{tenant}/dashboard/layout.tsx` with auth guards
+  - Navigation links: Dashboard, Products, Orders, Settings
+  - Active route highlighting based on pathname
+  - Logout functionality with Supabase auth
+  - Tenant branding integration (logo + name from database)
+  - All components include `data-testid` attributes for E2E testing
+- **E2E Test Suite (SKY-6)**: Comprehensive Playwright test coverage for admin layout
+  - 10 E2E tests covering navigation, auth guards, and responsive behavior
+  - Page Object Model pattern (`tests/e2e/pages/admin-layout.page.ts`)
+  - Auth fixtures for owner/non-owner user login (`tests/e2e/fixtures/auth.fixture.ts`)
+  - Test data seed system with idempotent get-or-create logic
+  - Global setup/teardown for test environment management
+- **Documentation**: SENTINELA_TASKS.md with complete E2E testing strategy and implementation guide
+
+### Changed
+
+- **Dashboard Page**: Migrated params handling to Next.js 15+ async pattern with `React.use()`
+  - Fixed params Promise unwrapping in client component
+  - Updated all `params.tenant` references to use state-based `tenantSlug`
+
+### Fixed
+
+- **Test Data Seeding**: Enhanced seed-test-data.ts with robust error handling
+  - Added fallback search for users when `listUsers()` returns incomplete results
+  - Implemented pagination retry logic for finding existing test users
+  - Fixed "user already registered" error with graceful recovery
+
+### Technical
+
+- Coordinated tri-agent implementation (Kokoro + Pixel + Sentinela)
+- Backend auth middleware and guards validated (Kokoro)
+- Frontend responsive UI with accessibility features (Pixel)
+- E2E test infrastructure with POM and fixtures (Sentinela)
+- ~1500 LOC added across UI, tests, and fixtures
+
 ## [0.2.0] - 2025-11-15
 
 ### Added
