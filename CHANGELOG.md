@@ -9,6 +9,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Supabase Storage System**: Assets bucket for tenant branding
+  - Migration 025: Created `assets` public bucket with RLS policies
+  - 10MB file size limit, supports PNG/JPEG/WEBP/SVG
+  - Upload scripts for SuperHotDog and MangoBajito assets
+  - Public URLs: `{supabase_url}/storage/v1/object/public/assets/{tenant}/`
+
+- **SuperHotDog Real Products (Migration 026)**: 25 products from Google Sheets
+  - PANCHOS (3): Maldito Perro Super, Maldito Perro Veggie, Pancho Callejero
+  - COMBOS (2): Combo SúperHotDog, Combo Familiar
+  - BEBIDAS (13): Coca-Cola variants, Sprite, Fanta, Aquarius, aguas
+  - CERVEZA (7): Quilmes, Andes, Stella, Heineken, Corona variants
+  - Assets uploaded: logo-circle.png, logo-text.png, banner.png
+  - Tenant config updated with business info (phone +54 294 450-4520, location, hours, Instagram @superhotdog_bariloche)
+
+- **MangoBajito Real Products**: 13 Venezuelan food products from Google Sheets
+  - AREPAS (3): Reina Pepiada, Domino, Pelua
+  - CACHAPAS (2): Queso de Mano, Queso + Jamón
+  - CLÁSICOS (4): Patacón, Tequeños, Yuca Frita, Mandoca
+  - SANDWICH (4): Pernil, Pollo, Jamón Queso, Vegetariano
+  - Assets uploaded: logo-circle.png (circular tropical logo), logo-text.png (white text AI-generated via DALL-E 3), banner.png
+  - Tenant config updated with business info (phone +54 294 503-2187, location Bariloche, Instagram @mangobajito_bariloche)
+  - AI logo generation using OpenAI DALL-E 3 with transparent background
+
+### Changed
+
+- **Restaurant Template - Collapsible Categories**: Enhanced UX with accordion navigation
+  - Categories now expand/collapse with chevron indicators
+  - State management: all categories expanded by default
+  - CSS slideDown animation (0.3s ease-out)
+  - Added to `app/globals.css` with max-height transitions
+
+- **Restaurant Template - Enhanced Header**: Match original designs with banner backgrounds
+  - Header now displays: banner background + circular logo + text logo + subtitle + location
+  - RestaurantLayout props extended: `tenantBanner`, `tenantLogoText`, `tenantSubtitle`, `tenantLocation`
+  - Min height 200px with cover background sizing
+  - Dual logo support: circular (profile) + text (branding)
+
+- **Contextual Category Icons**: Food-specific emojis per restaurant type
+  - SuperHotDog: PANCHOS 🌭, COMBOS 🍔, BEBIDAS 🥤, CERVEZA 🍺
+  - MangoBajito: AREPAS 🫓, CACHAPAS 🥞, CLÁSICOS 🍴, SANDWICH 🥪
+  - Generic fallbacks for future categories (pizzas 🍕, ensaladas 🥗, postres 🍰, café ☕)
+  - Icon mapping function in `app/[tenantId]/page.tsx:135-156`
+
+### Added
+
 - **Restaurant Template System (SKY-42)**: Complete food-service template with mobile-first UX
   - **Design (Aurora)**:
     - Moodboard + 3 color palettes (Warm Appetite #E63946 red + #F4A261 orange selected)

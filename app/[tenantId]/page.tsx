@@ -131,11 +131,35 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
 
   // Restaurant template: use dedicated layout
   if (config.template === 'restaurant') {
-    const categoriesWithIcons = categories.map((cat, idx) => ({
+    // Icon mapping for categories
+    const getCategoryIcon = (category: string): string => {
+      const iconMap: Record<string, string> = {
+        // SuperHotDog
+        'PANCHOS': '🌭',
+        'COMBOS': '🍔',
+        'BEBIDAS': '🥤',
+        'CERVEZA': '🍺',
+        // MangoBajito
+        'AREPAS': '🫓',
+        'CACHAPAS': '🥞',
+        'CLÁSICOS': '🍴',
+        'SANDWICH': '🥪',
+        // Generic fallbacks
+        'HOT DOGS': '🌭',
+        'HAMBURGUESAS': '🍔',
+        'PIZZAS': '🍕',
+        'ENSALADAS': '🥗',
+        'POSTRES': '🍰',
+        'CAFE': '☕',
+      }
+      return iconMap[category.toUpperCase()] || '🍽️'
+    }
+
+    const categoriesWithIcons = categories.map((cat) => ({
       id: cat,
       slug: cat,
-      name: cat.charAt(0).toUpperCase() + cat.slice(1),
-      icon: ['🍔', '🍕', '🥗', '🍰', '🥤'][idx % 5] || '🍽️',
+      name: cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase(),
+      icon: getCategoryIcon(cat),
       productCount: products.filter(p => p.category === cat).length,
     }))
 
@@ -145,6 +169,10 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
           tenantSlug={tenantId}
           tenantName={config.businessName}
           tenantLogo={config.logoUrl}
+          tenantLogoText={config.logoTextUrl}
+          tenantBanner={config.bannerUrl}
+          tenantSubtitle={config.subtitle}
+          tenantLocation={config.location}
           products={products}
           categories={categoriesWithIcons}
           currency={config.currency}
