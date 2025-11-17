@@ -190,6 +190,8 @@ export type Database = {
           plan: string
           secure_config: Json | null
           slug: string
+          template: string
+          theme_overrides: Json
           updated_at: string | null
         }
         Insert: {
@@ -204,6 +206,8 @@ export type Database = {
           plan?: string
           secure_config?: Json | null
           slug: string
+          template?: string
+          theme_overrides?: Json
           updated_at?: string | null
         }
         Update: {
@@ -218,6 +222,8 @@ export type Database = {
           plan?: string
           secure_config?: Json | null
           slug?: string
+          template?: string
+          theme_overrides?: Json
           updated_at?: string | null
         }
         Relationships: []

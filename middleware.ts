@@ -47,8 +47,8 @@ export async function middleware(req: NextRequest) {
 
   const pathSegments = req.nextUrl.pathname.split('/').filter(Boolean)
 
-  // Skip tenant logic for API routes and signup
-  if (pathSegments[0] === 'api' || pathSegments[0] === 'signup' || !pathSegments[0]) {
+  // Skip tenant logic for API routes, signup, test pages, login page, dashboard (superadmin), and root
+  if (pathSegments[0] === 'api' || pathSegments[0] === 'signup' || pathSegments[0] === 'test-theme' || pathSegments[0] === 'login' || pathSegments[0] === 'dashboard' || !pathSegments[0]) {
     return supabaseResponse
   }
 
@@ -107,13 +107,18 @@ export async function middleware(req: NextRequest) {
   requestHeaders.set('x-tenant-slug', tenant.slug)
 
   if (pathSegments.includes('dashboard')) {
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { user }, error } = await supabase.auth.getUser()
 
-    if (!session) {
-      return NextResponse.redirect(new URL(`/${tenantSlug}/login`, req.url))
+    if (error || !user) {
+      return NextResponse.redirect(new URL('/login', req.url))
     }
 
-    if (session.user.id !== tenant.owner_id) {
+    // Check if user is superadmin
+    const isSuperAdmin = user.email &&
+      process.env.SUPER_ADMINS?.split(',').map(e => e.trim()).includes(user.email)
+
+    // If not superadmin, check if owner of this tenant
+    if (!isSuperAdmin && user.id !== tenant.owner_id) {
       return NextResponse.redirect(new URL(`/${tenantSlug}`, req.url))
     }
   }

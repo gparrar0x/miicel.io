@@ -1,8 +1,9 @@
 /**
+ * GET /api/products/[id] - Get Product Details (Public)
  * PATCH /api/products/[id] - Update Product
  * DELETE /api/products/[id] - Soft Delete Product
  *
- * Both endpoints require authentication and tenant ownership.
+ * GET is public (for storefront), PATCH/DELETE require authentication.
  * DELETE performs soft delete (sets active = false).
  *
  * Security:
@@ -14,6 +15,81 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { productUpdateSchema } from '@/lib/schemas/order'
+
+/**
+ * GET /api/products/[id] - Get product details
+ *
+ * Public endpoint for storefront pages to display product details.
+ * Returns product with full details including images, colors, stock.
+ *
+ * Cache: 2 minutes (products change less frequently than tenant config)
+ */
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const supabase = await createClient()
+    const { id } = await params
+    const productId = parseInt(id)
+
+    if (isNaN(productId)) {
+      return NextResponse.json(
+        { error: 'Invalid product ID.' },
+        { status: 400 }
+      )
+    }
+
+    // Query product with tenant info for currency
+    const { data: product, error } = await supabase
+      .from('products')
+      .select('*, tenants(slug)')
+      .eq('id', productId)
+      .eq('active', true)
+      .maybeSingle()
+
+    if (error) {
+      console.error('Error fetching product:', error)
+      return NextResponse.json(
+        { error: 'Failed to fetch product.' },
+        { status: 500 }
+      )
+    }
+
+    if (!product) {
+      return NextResponse.json(
+        { error: 'Product not found.' },
+        { status: 404 }
+      )
+    }
+
+    // Build response matching frontend Product interface
+    const response = {
+      id: product.id.toString(),
+      name: product.name,
+      description: product.description || '',
+      price: product.price,
+      currency: '$', // TODO: Make configurable per tenant
+      images: product.image_url ? [product.image_url] : [],
+      colors: [], // TODO: Add colors support when product variants are implemented
+      stock: product.stock || 0,
+      category: product.category || 'General',
+    }
+
+    return NextResponse.json(response, {
+      status: 200,
+      headers: {
+        'Cache-Control': 'public, max-age=120, stale-while-revalidate=300',
+      },
+    })
+  } catch (error) {
+    console.error('Unexpected error in GET /api/products/[id]:', error)
+    return NextResponse.json(
+      { error: 'Internal server error.' },
+      { status: 500 }
+    )
+  }
+}
 
 /**
  * PATCH /api/products/[id] - Update existing product

@@ -7,6 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Restaurant Template System (SKY-42)**: Complete food-service template with mobile-first UX
+  - **Design (Aurora)**:
+    - Moodboard + 3 color palettes (Warm Appetite #E63946 red + #F4A261 orange selected)
+    - 3 product card variants (Menu Item 16:9 default, Photo Hero 1:1, Compact List)
+    - Wireframes mobile/tablet/desktop with visual PNG mockups (DALL-E generated)
+    - Design system complete (tokens, spacing 8px grid, typography, components)
+    - Icon pack SVG (8 category icons + 7 badge types + 6 UI icons)
+    - Badge system: nuevo, promo, spicy-mild, spicy-hot, veggie, vegan, gluten-free, popular
+    - Documentation: SKY_42_DESIGN_SPECS.md, SKY_42_WIREFRAMES.md, SKY_42_COLOR_PALETTES.md
+  - **Frontend (Pixel)**:
+    - Template 'restaurant' added to TenantTemplate enum + TEMPLATE_DEFAULTS (gridCols: 2, imageAspect: 16:9, cardVariant: outlined)
+    - 10 new components (Atomic Design):
+      - Atoms: FoodBadge, CategoryIcon, QuickAddButton (with loading/added states)
+      - Molecules: ProductCardRestaurant (16:9 image + badges stack), CategoryTab, CartSummary
+      - Organisms: CategoryTabsNav (horizontal scroll + scroll spy), ProductGridRestaurant (responsive 1/2/3 cols), FloatingCartButton (Framer Motion animation)
+      - Layout: RestaurantLayout (header + sticky tabs + category sections + floating cart)
+    - Admin integration: TemplateSelector updated with 4th option "Restaurant 🍔"
+    - Responsive mobile-first: 1 col mobile → 2 tablet → 3 desktop (max-width 1280px)
+    - Navigation: Category tabs sticky with IntersectionObserver scroll spy, smooth scroll to sections
+    - Animations: Card hover lift, image zoom, floating cart slide-up, quick add button feedback (1s)
+    - Accessibility: WCAG AA focus indicators, keyboard navigation, min 16px fonts (iOS no-zoom), 44px tap targets
+    - CSS utilities: .scrollbar-hide, .pb-safe (iOS safe area), --color-primary-subtle
+    - All components include data-testid attributes (Sentinela contract)
+    - framer-motion installed for animations
+  - **Backend (Kokoro)**:
+    - Migration 020: Added `template` and `theme_overrides` to `tenants_public` view
+    - Migration 021: Added `products.metadata` JSONB with `badges` array schema + validation constraint
+    - Migration 022: Performance indexes on `products.category` (composite: tenant_id, category, active) + GIN index on metadata->'badges'
+    - Migration 023: Seeded MangoBajito (6 products: Hot Dog Clásico/Premium/Veggie, Combo Familiar, Papas, Coca-Cola) + SuperHotdog (4 products placeholder)
+    - Helper function `get_product_badges(product_id)` for extracting badge arrays
+    - API `/api/tenant/[slug]/config` validated returning `template` field
+    - API `/api/products` returns `metadata.badges` array for frontend display
+    - Performance benchmarks: Category grouping 1.1ms (<50ms target), badge filtering 0.1ms (<100ms target), view queries 0.7ms (<10ms target)
+    - Rollback script: 024_rollback_restaurant_template.sql
+    - RLS policies validated (no cross-tenant leaks)
+  - **Integration validated**: Local dev server tested at http://localhost:3000/mangobajito with template='restaurant', badges rendering correctly
+  - **Documentation**:
+    - SKY_42_AURORA_TASKS.md (design brief), SKY_42_PIXEL_TASKS.md (implementation guide), SKY_42_KOKORO_TASKS.md (backend specs)
+    - SKY_42_NOTES.md (project context), SKY_42_DESIGN_SPECS.md (handoff doc), SKY_42_KOKORO_DELIVERY.md (performance report)
+  - **Ready for**: E2E testing (Sentinela), A/B test MangoBajito (7 days), production rollout if +25% conversion
+
 ### Fixed
 
 - **Checkout Flow Critical Fixes (SKY-4)**: Resolved multiple blockers preventing MercadoPago integration

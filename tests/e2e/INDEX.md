@@ -46,28 +46,33 @@ Your complete guide to the E2E test suite. Start with what you need.
 ```
 tests/e2e/
 ├── locators/
-│   └── signup.locators.ts          # UI element selectors
+│   ├── signup.locators.ts          # UI element selectors
+│   └── theme.locators.ts           # Theme editor selectors (Issue #7)
 │       See REFERENCE.md → Locators Reference
 │
 ├── pages/
-│   └── signup.page.ts              # SignupPage & OnboardingPage
+│   ├── signup.page.ts              # SignupPage & OnboardingPage
+│   ├── theme-editor.page.ts        # Theme editor page (Issue #7)
+│   └── storefront.page.ts          # Storefront page (Issue #7)
 │       See REFERENCE.md → Page Object Methods
 │
 ├── fixtures/
 │   ├── database.fixture.ts         # DB cleanup
-│   │   See DATABASE_STRATEGY.md
-│   └── api.fixture.ts              # API helpers
+│   ├── api.fixture.ts              # API helpers
+│   └── auth.fixture.ts             # Auth helpers
 │       See REFERENCE.md → API Helpers
 │
 ├── helpers/
 │   ├── test-data.helper.ts         # Test data generation
-│   │   See REFERENCE.md → Test Data Helpers
 │   └── api.helper.ts               # API utilities
 │       See REFERENCE.md → API Helpers
 │
 ├── specs/
-│   └── tenant-creation.spec.ts     # 50+ test cases
-│       See README.md → Test Cases
+│   ├── tenant-creation.spec.ts     # 50+ test cases
+│   ├── template-switching.spec.ts  # Template editor (Issue #7)
+│   ├── theme-rendering.spec.ts     # Storefront rendering (Issue #7)
+│   └── template-visual.spec.ts     # Visual & responsive (Issue #7)
+│       See TEMPLATE_TESTS.md → Test Cases
 │
 └── Documentation
     ├── README.md                   # Complete guide
@@ -75,6 +80,7 @@ tests/e2e/
     ├── DATABASE_STRATEGY.md        # Cleanup strategy
     ├── REFERENCE.md                # Quick reference
     ├── CHECKLIST.md                # What was delivered
+    ├── TEMPLATE_TESTS.md           # Template system tests (Issue #7)
     └── INDEX.md                    # This file
 ```
 
@@ -167,15 +173,26 @@ See [README.md#Running Tests](./README.md#running-tests) for more.
 
 The test suite includes:
 
+### Core Tests (Tenant Creation)
 - **Happy Path** (4 tests) - Successful signup flow
 - **Validation** (14 tests) - Form field validation
 - **Error Handling** (2 tests) - Network/API errors
 - **Integration** (2 tests) - Complete flow
 - **Cleanup** (1+ tests) - Database verification
 
-**Total: 50+ test cases**
+**Subtotal: 50+ test cases**
 
-See [README.md#Test Coverage](./README.md#test-coverage) for details.
+### Template System (Issue #7)
+- **Template Switching** (24 tests) - Admin editor, auth, save/persist
+- **Theme Rendering** (16 tests) - Storefront, CSS vars, persistence
+- **Visual & Responsive** (17 tests) - Layout, mobile/tablet/desktop
+
+**Subtotal: 57 test cases**
+
+**Grand Total: 100+ test cases**
+
+See [README.md#Test Coverage](./README.md#test-coverage) for signup details.
+See [TEMPLATE_TESTS.md](./TEMPLATE_TESTS.md#overview) for template details.
 
 ## Documentation Statistics
 

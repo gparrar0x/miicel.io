@@ -91,6 +91,8 @@ export async function POST(request: Request) {
         owner_id: userId,
         plan: 'free',
         active: true,
+        template: 'gallery', // Default template
+        theme_overrides: {}, // Empty overrides (uses template defaults)
         config: {
           business_name: businessName,
           colors: {

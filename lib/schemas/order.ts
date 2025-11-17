@@ -178,6 +178,76 @@ export const onboardingSaveResponseSchema = z.object({
 export type OnboardingSaveResponse = z.infer<typeof onboardingSaveResponseSchema>
 
 // ============================================================================
+// TENANT CONFIG SCHEMAS (EXTENDED FOR THEMING)
+// ============================================================================
+
+/**
+ * Extended colors schema for full theme support
+ */
+export const configColorsExtendedSchema = z.object({
+  primary: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color'),
+  secondary: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color'),
+  accent: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color').optional(),
+  background: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color').optional(),
+  surface: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color').optional(),
+  textPrimary: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color').optional(),
+  textSecondary: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color').optional(),
+})
+
+/**
+ * Extended tenant config with theme fields
+ * Used for storing complete branding configuration in tenants.config JSONB
+ */
+export const tenantConfigExtendedSchema = z.object({
+  logo: z.string().url('Invalid logo URL').optional(),
+  logoText: z.string().url('Invalid logo text URL').optional(),
+  banner: z.string().url('Invalid banner URL').optional(),
+  colors: configColorsExtendedSchema,
+  business: z.object({
+    name: z.string().min(2, 'Business name required'),
+    subtitle: z.string().optional(),
+    location: z.string().optional(),
+  }),
+  hours: z.record(
+    z.string(),
+    z.object({
+      open: z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format (HH:MM)'),
+      close: z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format (HH:MM)'),
+    })
+  ).optional(),
+})
+
+export type TenantConfigExtended = z.infer<typeof tenantConfigExtendedSchema>
+
+/**
+ * Public API response DTO for tenant configuration
+ * Used by GET /api/tenant/[slug]/config
+ */
+export const tenantConfigResponseSchema = z.object({
+  id: z.string(),
+  businessName: z.string(),
+  subtitle: z.string().nullable(),
+  location: z.string().nullable(),
+  bannerUrl: z.string().nullable(),
+  logoUrl: z.string().nullable(),
+  logoTextUrl: z.string().nullable(),
+  colors: z.object({
+    primary: z.string(),
+    secondary: z.string(),
+    accent: z.string(),
+    background: z.string(),
+    surface: z.string(),
+    textPrimary: z.string(),
+    textSecondary: z.string(),
+  }),
+  hours: z.record(z.string(), z.object({ open: z.string(), close: z.string() })),
+  currency: z.string().default('USD'),
+  template: z.enum(['gallery', 'detail', 'minimal', 'restaurant']).default('gallery'),
+})
+
+export type TenantConfigResponse = z.infer<typeof tenantConfigResponseSchema>
+
+// ============================================================================
 // PRODUCT CRUD SCHEMAS
 // ============================================================================
 
