@@ -7,8 +7,141 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Checkout Flow Critical Fixes (SKY-4)**: Resolved multiple blockers preventing MercadoPago integration
+  - Database triggers: Fixed type mismatch (UUID → BIGINT) in `validate_stock_on_order()` and `decrement_stock_on_order()` triggers
+  - RLS policies: Added service role policies for customers table (INSERT, UPDATE, SELECT)
+  - CheckoutModal: Fixed payload structure to include `paymentMethod` and `tenantId` fields
+  - Checkout API: Changed from regular client to `createServiceRoleClient()` to bypass RLS
+  - MercadoPago token: Encrypted with AES-256-GCM and stored in `tenants.mp_access_token` column
+  - Environment: Added `NEXT_PUBLIC_BASE_URL` for production callback URLs
+  - Back URLs: Changed from `/checkout/success` to `/{tenant}?payment=success` for better UX
+  - Localhost support: Disabled `auto_return` for local development (MP rejects localhost URLs)
+  - Error handling: Enhanced error responses with `details` and `code` fields for debugging
+  - Migration: `fix_order_triggers_bigint_type.sql` to correct trigger casting
+  - Migration: `add_customers_rls_policies.sql` to enable service role access
+
 ### Added
 
+- **Tenant-level Currency (Currency Fix)**: Resolved MXN vs ARS hardcoded inconsistency
+  - Added `currency` field to `tenantConfigResponseSchema` with default 'USD'
+  - GET `/api/tenant/[slug]/config` now returns tenant currency from `config.currency`
+  - ProductGrid component uses tenant currency instead of hardcoded 'MXN'
+  - Product detail page uses tenant currency instead of hardcoded 'ARS'
+  - Migration `016_add_tenant_currency.sql`: Backfills existing tenants with 'USD' default
+  - All cart items now use consistent currency from tenant config
+
+- **MercadoPago Checkout E2E Tests (SKY-4)**: Comprehensive Playwright suite for payment flow
+  - T1: 17 checkout E2E test cases (`checkout-mercadopago.spec.ts`)
+    - Form validation (name, phone 10-digit, email, special chars)
+    - Happy path checkout with MP redirect mock
+    - API error handling (500, 400, timeout, network)
+    - Success/failure page rendering + retry flow
+    - Modal state management (open, close, data persistence)
+  - T2: 20 webhook API security tests (`webhook-mercadopago.spec.ts`)
+    - HMAC-SHA256 signature validation
+    - Attack vector coverage (replay, tampering, wrong secret, wrong algo)
+    - Webhook payload processing (complex nested data)
+    - Rate limiting + rapid fire requests
+    - Malformed payload + edge case handling
+  - Checkout Page Object (`checkout.page.ts`): Reusable interactions, 30+ methods
+  - All tests use `data-testid` locators from `checkout.locators.ts`
+  - Multi-browser: Chromium, Firefox, WebKit, Mobile Chrome, Safari (185 test runs)
+  - Mocks MercadoPago sandbox (no real API calls)
+  - Environment config: `MERCADOPAGO_WEBHOOK_SECRET` for signature validation
+
+- **Tenant List API (SKY-41)**: Public endpoint for landing page tenant directory
+  - GET `/api/tenants/list` - Returns all active tenants
+  - Response: `{slug, name, logo, status}[]`
+  - Logo extracted from `tenants.config.logo` JSONB field
+  - No auth required (public endpoint)
+  - Includes unit tests for response validation
+
+- **Checkout Flow (SKY-5)**: Complete checkout system with payment integration
+  - CheckoutModal component with React Hook Form + Zod validation
+  - Customer form: name, phone (10 digits WhatsApp format), email, notes (optional)
+  - Payment method selector: Cash on Delivery vs MercadoPago
+  - Inline validation errors with field-level feedback
+  - Loading states during API submission
+  - Success page at `/{tenant}/checkout/success` with order summary
+  - Failure page at `/{tenant}/checkout/failure` with retry functionality
+  - All interactive elements have `data-testid` attributes per TEST_ID_CONTRACT.md
+  - Mobile responsive design with Tailwind CSS
+- **Checkout API Routes (SKY-5)**: Backend integration for order processing
+  - POST `/api/checkout/create-preference` - Creates order + customer, generates MercadoPago checkout URL
+  - GET `/api/orders/[id]` - Fetches order details for success/failure pages
+  - Customer management: auto-create or update by email
+  - MercadoPago integration scaffolded (mock implementation ready for SDK)
+  - Zod validation for all request payloads
+  - Tenant-scoped order creation with RLS enforcement
+- **E2E Checkout Tests (SKY-5.4)**: Comprehensive Playwright test suite
+  - 8 test cases covering full checkout flow
+  - Form validation error scenarios
+  - Cash payment submission + redirect to success page
+  - MercadoPago payment flow with API mocking
+  - Success page order summary verification
+  - Failure page error handling + retry flow
+  - Loading state tests during submission
+  - API error handling with toast notifications
+  - Test file: `tests/e2e/specs/checkout-flow.spec.ts`
+
+### Added
+
+- **Multi-Tenant Template System (Epic #1)**: Complete visual customization system with 3 template variants
+  - Gallery template: large images, minimal text, hover zoom (fashion, visual products)
+  - Detail template: specs grid, expanded content (tech, spec-driven products)
+  - Minimal template: compact layout, clean whitespace (luxury, large catalogs)
+  - User guide: `/docs/templates/USER_GUIDE.md`
+  - Developer guide: `/docs/templates/DEV_GUIDE.md`
+- **E2E Template Tests (Issue #7)**: Playwright test suite for template system
+  - 9 happy path tests covering template switching, persistence, multi-tenant
+  - Page objects: ThemeEditorPage, StorefrontPage
+  - Centralized locators in `/tests/e2e/locators/theme.locators.ts`
+  - Visual regression baseline screenshots
+  - Test spec: `/tests/e2e/specs/template-switching-happy-path.spec.ts`
+  - Documentation: `/tests/e2e/TEMPLATE_TESTS_HAPPY_PATH.md`
+- **Admin Theme Editor (Issue #6)**: Complete admin UI for tenant theme customization
+  - Settings page at `/{tenant}/dashboard/settings/appearance` (OWNER role only)
+  - ThemeEditorClient component with real-time preview (300ms debounce)
+  - TemplateSelector component with radio cards for 3 templates
+  - ThemeFieldsEditor with inputs: grid columns (slider), image aspect (select), card variant (visual picker), spacing (radio), colors (hex pickers)
+  - ThemePreview component with sample products using resolved theme
+  - Save/Reset actions with API integration (PATCH /api/tenants/[slug]/theme)
+  - Toast notifications for success/error states (Sonner)
+  - Form validation with Zod + react-hook-form
+  - All inputs have data-testid attributes
+  - Auto-merge template defaults on template switch
+  - Responsive 2-column layout (editor + preview)
+- **ProductCard Variants + ProductGrid (Issue #4)**: Multi-template product display components
+  - GalleryCard component (large image, minimal text, hover zoom effect)
+  - DetailCard component (image + specs grid, expanded description, color swatches)
+  - MinimalCard component (small image, compact layout, product name only)
+  - ProductGrid component (responsive container, template-based card rendering)
+  - All components consume theme CSS vars (--grid-cols, --spacing-*, --color-*, --image-aspect)
+  - Loading skeleton states for all card variants
+  - data-testid attributes: product-card-{variant}, product-grid-{template}
+  - Next.js Image optimization with lazy loading
+  - Stock indicators (out of stock, low stock badges)
+  - TypeScript types integrated with Product interface from /types/commerce.ts
+  - Barrel export at /components/storefront/index.ts
+- **Theme Configuration API (Issue #5)**: REST endpoints for admin UI theme management
+  - GET `/api/tenants/[slug]/theme` - Read tenant template + overrides (any tenant member)
+  - PATCH `/api/tenants/[slug]/theme` - Update template/overrides (OWNER only)
+  - Zod validation schema in `/lib/schemas/theme.ts` (matches ThemeOverrides type)
+  - Role-based authorization (tenant_users membership check)
+  - Partial update support (merge existing overrides)
+  - DB trigger validation errors surfaced to API
+- **Tenant Template Configuration Schema (Issue #2)**: Multi-template theming system
+  - Database migration `015_add_tenant_template_theme.sql`
+  - Added `template` column (VARCHAR, enum: gallery | detail | minimal)
+  - Added `theme_overrides` column (JSONB with PL/pgSQL validation)
+  - Validation trigger for gridCols, imageAspect, cardVariant, spacing, colors
+  - TypeScript types in `/types/theme.ts` (TenantTemplate, ThemeOverrides, ResolvedTheme)
+  - `resolveTheme()` helper function for merging defaults + overrides
+  - 3 demo tenants with different templates (demo, superhotdog, minimal-demo)
+  - Indexes: `idx_tenants_template`, `idx_tenants_theme_overrides` (GIN)
+  - Integration guide: `/docs/PIXEL_THEME_INTEGRATION.md`
 - **Admin Dashboard Layout (SKY-6)**: Complete responsive admin shell with sidebar navigation
   - AdminSidebar component with mobile support (collapsible + hamburger menu)
   - Dashboard layout at `/{tenant}/dashboard/layout.tsx` with auth guards
