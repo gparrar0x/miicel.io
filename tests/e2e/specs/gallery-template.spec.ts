@@ -66,7 +66,7 @@ test.describe('SKY-43: Gallery Template E2E', () => {
 
     await test.step('Take screenshot of button for visual verification', async () => {
       await gallery.takeQuickViewButtonScreenshot(
-        'playwright-report/sky43-button-color.png',
+        'tests/reports/sky43-button-color.png',
         0
       )
     })

@@ -1,8 +1,8 @@
 import { defineConfig, devices } from '@playwright/test'
 import * as dotenv from 'dotenv'
 
-// Load environment variables from .env.local
-dotenv.config({ path: '.env.local' })
+// Load environment variables from .env
+dotenv.config({ path: '.env' })
 
 /**
  * Playwright Configuration for sw_commerce_saas
@@ -35,9 +35,9 @@ export default defineConfig({
 
   // Reporter configuration
   reporter: [
-    ['html', { outputFolder: 'playwright-report' }],
-    ['json', { outputFile: 'test-results.json' }],
-    ['junit', { outputFile: 'junit.xml' }],
+    ['html', { outputFolder: 'tests/reports' }],
+    ['json', { outputFile: 'tests/test-results.json' }],
+    ['junit', { outputFile: 'tests/junit.xml' }],
     ['list'],
   ],
 

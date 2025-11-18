@@ -100,7 +100,7 @@ tests/e2e/
 
 ### Environment Variables
 
-Required environment variables in `.env.local`:
+Required environment variables in `.env`:
 
 ```bash
 # Playwright Test Configuration
@@ -319,9 +319,10 @@ npx playwright test --debug
 After test failure, check:
 
 ```
-playwright-report/        # HTML report with videos/screenshots
-test-results.json         # JSON results for CI/CD
-junit.xml                 # JUnit format for CI/CD
+tests/reports/            # HTML report with videos/screenshots
+tests/test-results/       # Raw test artifacts (videos/screenshots)
+tests/test-results.json   # JSON results for CI/CD
+tests/junit.xml           # JUnit format for CI/CD
 ```
 
 ### View Test Report
@@ -431,8 +432,8 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: playwright-report
-          path: playwright-report/
+          name: reports
+          path: tests/reports/
 ```
 
 ## Performance Tips
@@ -538,4 +539,4 @@ For issues or questions about the E2E test suite:
 1. Check the test comments (tests are heavily documented)
 2. Review the page object methods and their JSDoc
 3. Check the Playwright documentation
-4. Review test results in `playwright-report/`
+4. Review test results in `tests/reports/`

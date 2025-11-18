@@ -98,7 +98,7 @@ npm run test:e2e:report
 → Backend `/api/webhooks/mercadopago` route not implemented yet
 
 **Signature validation fails:**
-→ Check `MERCADOPAGO_WEBHOOK_SECRET` in .env.local matches backend
+→ Check `MERCADOPAGO_WEBHOOK_SECRET` in .env matches backend
 
 **Port 3000 already in use:**
 ```bash

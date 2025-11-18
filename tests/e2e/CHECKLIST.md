@@ -34,7 +34,7 @@ Complete reference of everything that was delivered and next steps.
 ## Delivered Documentation
 
 ### User Guides
-- [x] `QUICKSTART_E2E.md` - 5-minute quick start guide
+- [x] `docs/guides/QUICKSTART_E2E.md` - 5-minute quick start guide
 - [x] `tests/e2e/README.md` - Complete usage guide (600+ lines)
 - [x] `tests/e2e/REFERENCE.md` - Quick reference for common tasks
 
@@ -312,7 +312,7 @@ Complete reference of everything that was delivered and next steps.
 | `tests/e2e/ARCHITECTURE.md` | ~500 | Design patterns |
 | `tests/e2e/DATABASE_STRATEGY.md` | ~400 | Cleanup strategy |
 | `tests/e2e/REFERENCE.md` | ~300 | Quick reference |
-| `QUICKSTART_E2E.md` | ~150 | 5-minute guide |
+| `docs/guides/QUICKSTART_E2E.md` | ~150 | 5-minute guide |
 | `E2E_TEST_SUMMARY.md` | ~400 | Implementation summary |
 | **Docs Total** | **~2,350** | **Documentation** |
 
@@ -339,7 +339,7 @@ npm run test:e2e:ui
 ```
 
 **All documentation is in:**
-- `QUICKSTART_E2E.md` - Start here
+- `docs/guides/QUICKSTART_E2E.md` - Start here
 - `tests/e2e/README.md` - Complete guide
 - `tests/e2e/REFERENCE.md` - Quick lookup
 - `tests/e2e/ARCHITECTURE.md` - Design patterns

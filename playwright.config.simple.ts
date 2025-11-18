@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 import * as dotenv from 'dotenv'
 
-dotenv.config({ path: '.env.local' })
+dotenv.config({ path: '.env' })
 
 /**
  * Playwright Configuration - Permissive Mode
@@ -16,9 +16,9 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : 4,
   reporter: [
-    ['html', { outputFolder: 'playwright-report' }],
-    ['json', { outputFile: 'test-results.json' }],
-    ['junit', { outputFile: 'junit.xml' }],
+    ['html', { outputFolder: 'tests/reports' }],
+    ['json', { outputFile: 'tests/test-results.json' }],
+    ['junit', { outputFile: 'tests/junit.xml' }],
     ['list'],
   ],
   use: {

@@ -1,36 +1,119 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SkyWalking Commerce SaaS
 
-## Getting Started
+Multi-tenant e-commerce platform with dynamic template system (Gallery, Restaurant) and Supabase backend.
 
-First, run the development server:
+## Quick Start
+
+### Prerequisites
+- Node.js 16+
+- Supabase account (or local instance)
+- Environment variables in `.env`
+
+### Setup
 
 ```bash
+# Install dependencies
+npm install
+
+# Copy environment template
+cp .env.e2e.example .env
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Environment Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Required variables (.env)
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+NEXT_PUBLIC_STRIPE_KEY=pk_test_...
+STRIPE_SECRET_KEY=sk_test_...
+```
+
+## Project Structure
+
+```
+├── app/                    # Next.js app router
+├── components/             # React components (shared, commerce, restaurant, gallery)
+├── db/                     # Database layer
+│   ├── scripts/            # DB management scripts
+│   └── supabase/           # Migrations and Supabase config
+├── docs/                   # Documentation
+│   ├── guides/             # User guides (QUICKSTART_E2E.md)
+│   ├── testing/            # Test documentation
+│   └── backlog/            # Project delivery docs
+├── lib/                    # Utilities (auth, Supabase clients, stores, schemas)
+├── public/                 # Static assets
+├── scripts/                # CLI utilities (check-products, create-superadmin, etc)
+├── tests/                  # E2E tests and test assets
+│   ├── e2e/                # Playwright specs
+│   ├── assets/             # Test resources
+│   └── reports/            # Test results
+├── types/                  # TypeScript types
+└── styles/                 # Global styles and design tokens
+```
+
+## Key Features
+
+- **Multi-Tenant**: Each tenant has isolated data, custom themes, and independent inventory
+- **Template System**: Gallery (QR-based) and Restaurant templates with swappable layouts
+- **Theme Editor**: Admin interface to customize colors, typography, and layout
+- **Product Management**: CRUD operations with images, variants, and metadata
+- **Orders**: Full order lifecycle with status tracking and webhooks (MercadoPago)
+- **E2E Tests**: 50+ Playwright tests with comprehensive coverage
+
+## Development
+
+```bash
+# Start dev server
+npm run dev
+
+# Run E2E tests
+npm run test:e2e
+
+# Run E2E tests (UI mode)
+npm run test:e2e:ui
+
+# Database
+npm run db:reset              # Clean database
+npm run db:seed               # Seed sample data
+
+# Code quality
+npm run lint
+npm run format
+```
+
+## Deployment
+
+See [`docs/DEPLOYMENT_QUICK_START.md`](docs/DEPLOYMENT_QUICK_START.md)
+
+Deploy to Vercel:
+```bash
+vercel --prod
+```
+
+## Documentation
+
+- [`docs/guides/QUICKSTART_E2E.md`](docs/guides/QUICKSTART_E2E.md) - E2E testing quick start
+- [`docs/ADMIN_THEME_EDITOR.md`](docs/ADMIN_THEME_EDITOR.md) - Theme editor documentation
+- [`tests/e2e/README.md`](tests/e2e/README.md) - E2E test suite guide
+- [`CHANGELOG.md`](CHANGELOG.md) - Version history
+
+## Tech Stack
+
+- **Frontend**: Next.js 16, React 19, TypeScript, TailwindCSS
+- **Backend**: Supabase (PostgreSQL), API routes
+- **Testing**: Playwright, TypeScript
+- **Payments**: MercadoPago webhooks
+- **Deployment**: Vercel, GitHub Actions
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Supabase Documentation](https://supabase.com/docs)
+- [Playwright Documentation](https://playwright.dev)

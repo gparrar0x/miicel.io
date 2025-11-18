@@ -279,7 +279,7 @@ export async function POST(
 
 ## 🎬 Video Evidence
 
-**Location:** `test-results/complete-signup-flow-.../video.webm`
+**Location:** `tests/test-results/complete-signup-flow-.../video.webm`
 
 El video muestra:
 - ✅ Todo el flujo hasta Step 5

@@ -146,7 +146,7 @@ This requires SUPABASE_SERVICE_ROLE_KEY to be set.
 
 ## Environment Variables
 
-**Required** (.env.local):
+**Required** (.env):
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
@@ -244,8 +244,8 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: playwright-report
-          path: playwright-report/
+          name: reports
+          path: tests/reports/
 ```
 
 ## Performance

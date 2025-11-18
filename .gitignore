@@ -41,26 +41,26 @@ yarn-error.log*
 next-env.d.ts
 
 # playwright
-/test-results/
-/playwright-report/
+/tests/test-results/
+/tests/reports/
+/tests/test-output.log
+/tests/test-results.json
+/tests/junit.xml
 /playwright/.cache/
-test-output.log
-test-results.json
-junit.xml
 
 # documentation (local only)
-/docs/
+/docs/backlog/
+/docs/leasons_learned/
 *_SUMMARY.md
 *_REPORT.md
 *_CHECKLIST.md
-QUICKSTART_*.md
 QUICK_WINS_*.md
 SKY-*.md
 
 # test assets
-/public/test-assets/
+/tests/assets/
 
 # supabase local
-/supabase/.branches/
-/supabase/.temp/
-check_storage.sql
+/db/supabase/.branches/
+/db/supabase/.temp/
+db/supabase/check_storage.sql

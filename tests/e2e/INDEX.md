@@ -4,7 +4,7 @@ Your complete guide to the E2E test suite. Start with what you need.
 
 ## Getting Started (5 minutes)
 
-1. **First Time?** → Read [`QUICKSTART_E2E.md`](../QUICKSTART_E2E.md)
+1. **First Time?** → Read [`QUICKSTART_E2E.md`](../../docs/guides/QUICKSTART_E2E.md)
    - Installation steps
    - Running your first test
    - Common commands
@@ -24,7 +24,7 @@ Your complete guide to the E2E test suite. Start with what you need.
 |----------|-----------|------|
 | [README.md](./README.md) | You need complete usage guide | 15 min |
 | [REFERENCE.md](./REFERENCE.md) | You need quick lookup reference | 5 min |
-| [QUICKSTART_E2E.md](../QUICKSTART_E2E.md) | You're just starting | 5 min |
+| [QUICKSTART_E2E.md](../../docs/guides/QUICKSTART_E2E.md) | You're just starting | 5 min |
 
 ### For Developers
 
@@ -89,7 +89,7 @@ tests/e2e/
 ### "I Want to..."
 
 #### ...Run Tests
-→ See [QUICKSTART_E2E.md](../QUICKSTART_E2E.md)
+→ See [QUICKSTART_E2E.md](../../docs/guides/QUICKSTART_E2E.md)
 ```bash
 npm run test:e2e:ui
 ```
@@ -205,7 +205,7 @@ See [TEMPLATE_TESTS.md](./TEMPLATE_TESTS.md#overview) for template details.
 ## Learning Path
 
 **Beginner (Just Getting Started)**
-1. Read [QUICKSTART_E2E.md](../QUICKSTART_E2E.md) (5 min)
+1. Read [QUICKSTART_E2E.md](../../docs/guides/QUICKSTART_E2E.md) (5 min)
 2. Run `npm run test:e2e:ui` (5 min)
 3. Click on a test to see it execute (5 min)
 

@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Project Structure Reorganization**: Consolidated related files for better maintainability
+  - **Database**: Created `/db/` directory with scripts and Supabase migrations
+    - Moved `supabase/` migrations to `db/supabase/migrations/`
+    - Moved database scripts (`clean-db.sh`, `reset-db.sql`, `clean-test-data.sql`) to `db/scripts/`
+  - **Testing**: Consolidated all test artifacts under `/tests/`
+    - Moved Playwright reports to `tests/reports/`
+    - Moved test output files to `tests/` (test-output.log, test-results.json, junit.xml)
+    - Moved test assets from `public/test-assets/` to `tests/assets/`
+  - **Documentation**: Reorganized docs with subdirectories
+    - New `docs/guides/` for user guides (QUICKSTART_E2E.md)
+    - New `docs/testing/` for test documentation
+  - **Environment**: Renamed `.env.local` to `.env` for consistency
+  - Updated 20+ file references across codebase and documentation
+
 ### Added
 
 - **SKY-43: Gallery Template Redesign**: Mobile-first QR gallery experience with Gallery White palette
@@ -295,9 +311,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Sign out functionality
 - **Database Management**: Multiple cleanup scripts:
   - `npm run db:reset` - Clean remote database keeping only tenant #1
-  - `scripts/clean-db.js` - Node.js cleanup script with Supabase client
-  - `scripts/clean-db.sh` - Bash alternative
-  - `scripts/clean-test-data.sql` - Pure SQL cleanup
+  - `db/scripts/clean-db.sh` - Bash cleanup script
+  - `db/scripts/clean-test-data.sql` - SQL cleanup statements
+  - `scripts/clean-db.js` - Node.js cleanup script with Supabase client (legacy)
 - **E2E Testing**: Playwright test infrastructure with:
   - Page Object Model pattern
   - Test fixtures for database cleanup
@@ -329,7 +345,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Technical
 
-- Added `dotenv` package for .env.local loading in Playwright
+- Added `dotenv` package for .env loading in Playwright
 - Configured `playwright.config.ts` to load environment variables
 - Enhanced middleware with activation detection and cache management
 - Created comprehensive E2E test suite with 50+ test cases

@@ -19,7 +19,7 @@ async function runMigration() {
   }
 
   // Read migration file
-  const migrationPath = path.join(__dirname, '../supabase/migrations/015_add_tenant_template_theme.sql');
+  const migrationPath = path.join(__dirname, '../db/supabase/migrations/015_add_tenant_template_theme.sql');
   let sql = fs.readFileSync(migrationPath, 'utf8');
 
   // Remove minimal-demo INSERT (use only 'sky' tenant)

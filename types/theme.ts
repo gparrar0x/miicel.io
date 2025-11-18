@@ -5,7 +5,7 @@
  * Used by Pixel's ThemeProvider to apply tenant-specific customization.
  *
  * Created: 2025-11-16 (Migration 015)
- * Related: /supabase/migrations/015_add_tenant_template_theme.sql
+ * Related: /db/supabase/migrations/015_add_tenant_template_theme.sql
  */
 
 /**

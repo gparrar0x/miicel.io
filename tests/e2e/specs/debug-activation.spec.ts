@@ -113,10 +113,10 @@ test.describe('Debug: Activation Flow', () => {
 
     // Take final screenshot
     await page.screenshot({
-      path: 'test-results/debug-activation-final-state.png',
+      path: 'tests/test-results/debug-activation-final-state.png',
       fullPage: true
     })
 
-    console.log('\n📸 Screenshot saved to test-results/debug-activation-final-state.png')
+    console.log('\n📸 Screenshot saved to tests/test-results/debug-activation-final-state.png')
   })
 })
