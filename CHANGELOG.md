@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **SKY-43: Gallery Template Redesign**: Mobile-first QR gallery experience with Gallery White palette
+  - **GalleryCard Component**: Art Gallery variant (1:1 images, 48x48px tap targets, Quick View button)
+  - **ProductGrid Component**: Responsive grid (1 col portrait, 2 cols landscape, 3 cols desktop)
+  - **QuickViewModal Component**: Full-screen mobile modal for product options
+  - **Badge System**: Type badges (Digital/Physical/Both) + Status badges (New/Limited/Featured)
+  - **Product Detail Page**: Gallery White redesign (ImageGallery, OptionsSelector, AddToCartSticky)
+  - **Design Tokens**: Gallery White palette (gold accent #B8860B), typography scale, spacing system
+  - **Performance**: <2s TTI mobile 3G, <80KB bundle target, WebP images with LQIP blur-up
+  - **Accessibility**: WCAG AA compliance, 48x48px tap targets, semantic HTML, keyboard navigation
+  - **GalleryGridWrapper**: Client component wrapper for server→client boundary (Next.js 13+ compatibility)
+  - Test suite: 13 E2E tests (11 passed) covering component functionality, visual consistency, navigation
+
 - **Supabase Storage System**: Assets bucket for tenant branding
   - Migration 025: Created `assets` public bucket with RLS policies
   - 10MB file size limit, supports PNG/JPEG/WEBP/SVG

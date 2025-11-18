@@ -1,0 +1,32 @@
+'use client'
+
+/**
+ * GalleryGridWrapper - Client Component Wrapper
+ * Handles event handlers for ProductGrid (server→client boundary)
+ */
+
+import { useRouter } from 'next/navigation'
+import { ProductGrid } from './ProductGrid'
+import { Product } from '@/types/commerce'
+
+interface GalleryGridWrapperProps {
+  products: Product[]
+  tenantId: string
+}
+
+export function GalleryGridWrapper({ products, tenantId }: GalleryGridWrapperProps) {
+  const router = useRouter()
+
+  return (
+    <ProductGrid
+      template="gallery"
+      products={products}
+      onProductClick={(product) => {
+        router.push(`/${tenantId}/product/${product.id}`)
+      }}
+      onQuickView={(productId) => {
+        router.push(`/${tenantId}/product/${productId}`)
+      }}
+    />
+  )
+}

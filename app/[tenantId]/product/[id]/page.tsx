@@ -16,6 +16,7 @@ import { ColorSelector } from '@/components/commerce/ColorSelector'
 import { QuantityControl } from '@/components/commerce/QuantityControl'
 import { AddToCartButton } from '@/components/commerce/AddToCartButton'
 import { ProductClient } from './ProductClient'
+import { ProductDetailWrapper } from '@/components/storefront/ProductDetailWrapper'
 import { tenantConfigResponseSchema } from '@/lib/schemas/order'
 import { createClient } from '@/lib/supabase/server'
 import type { Product, ProductColor } from '@/types/commerce'
@@ -92,6 +93,62 @@ export default async function ProductPage({ params }: PageProps) {
   // Set currency from tenant config
   product.currency = config.currency
 
+  // Gallery template: Use new ProductDetailWrapper (SKY-43)
+  if (config.template === 'gallery') {
+    // Transform product data for ProductDetailWrapper
+    const productDetail = {
+      id: product.id,
+      name: product.name,
+      artist: product.artist
+        ? {
+            id: product.artist,
+            name: product.artist,
+            slug: product.artist.toLowerCase().replace(/\s+/g, '-'),
+          }
+        : undefined,
+      price: product.price,
+      currency: product.currency,
+      priceType: 'fixed' as const, // MVP: fixed price, future: 'from' if options
+      description: product.description || '',
+      images: product.images.map((url, idx) => ({
+        id: `${product.id}-${idx}`,
+        url,
+        alt: product.name,
+        width: 800,
+        height: 800,
+      })),
+      options: [
+        // MVP: Single option (physical product)
+        {
+          id: `${product.id}-default`,
+          type: 'physical' as const,
+          title: 'Standard',
+          specs: ['In stock', `${product.stock} available`],
+          price: product.price,
+          currency: product.currency,
+          stock: product.stock,
+          sku: product.id,
+        },
+      ],
+    }
+
+    return (
+      <ThemeProvider config={config}>
+        <main
+          className="min-h-screen"
+          style={{ backgroundColor: 'var(--color-bg-secondary)' }}
+        >
+          <TenantHeader config={config} />
+          <ProductDetailWrapper
+            product={productDetail}
+            tenantId={tenantId}
+          />
+        </main>
+      </ThemeProvider>
+    )
+  }
+
+  // Legacy templates: Use existing ProductClient layout
   return (
     <ThemeProvider config={config}>
       <main className="min-h-screen" style={{ backgroundColor: 'var(--color-bg-base)' }}>

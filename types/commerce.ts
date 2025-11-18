@@ -37,6 +37,12 @@ export interface Product {
   colors: ProductColor[]
   stock: number
   category: string | null
+  artist?: string
+  type?: 'digital' | 'physical' | 'both'
+  optionsCount?: number
+  isNew?: boolean
+  isLimited?: boolean
+  isFeatured?: boolean
 }
 
 /**

@@ -69,6 +69,10 @@ export async function GET(
     const config = (tenant.config as any) || {}
 
     // Build response DTO with safe fallbacks matching Product Page design system
+    const validTemplates = ['gallery', 'detail', 'minimal', 'restaurant'] as const
+    const rawTemplate = (tenant as any).template
+    const template = validTemplates.includes(rawTemplate) ? rawTemplate : 'gallery'
+
     const response = {
       id: tenant.slug,
       businessName: config.business_name || config.business?.name || tenant.name,
@@ -88,7 +92,7 @@ export async function GET(
       },
       hours: config.hours || {},
       currency: config.currency || 'USD',
-      template: (tenant as any).template || 'gallery',
+      template,
     }
 
     return NextResponse.json(response, {

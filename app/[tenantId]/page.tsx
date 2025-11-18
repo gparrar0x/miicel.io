@@ -12,7 +12,8 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { TenantHeader } from '@/components/commerce/TenantHeader'
 import { ThemeProvider } from '@/components/commerce/ThemeProvider'
-import { ProductGrid } from '@/components/commerce/ProductGrid'
+import { ProductGrid as ProductGridLegacy } from '@/components/commerce/ProductGrid'
+import { GalleryGridWrapper } from '@/components/storefront/GalleryGridWrapper'
 import { CartBadge } from '@/components/commerce/CartBadge'
 import { RestaurantLayout } from '@/components/restaurant/layouts/RestaurantLayout'
 import { tenantConfigResponseSchema } from '@/lib/schemas/order'
@@ -75,9 +76,9 @@ async function getProducts(tenantId: string, category?: string, search?: string)
     return []
   }
 
-  // Map DB schema to Product type (keep both formats for compatibility)
+  // Map DB schema to Product type (support both legacy and SKY-43 components)
   return (data || []).map(p => ({
-    id: p.id, // Keep as number for commerce/ProductGrid
+    id: String(p.id), // Convert to string for SKY-43 ProductGrid, legacy supports both
     name: p.name,
     description: p.description,
     price: p.price,
@@ -86,8 +87,15 @@ async function getProducts(tenantId: string, category?: string, search?: string)
     colors: [],
     stock: p.stock || 0,
     category: p.category,
-    image_url: p.image_url, // For commerce/ProductGrid compatibility
-  } as any)) // Type cast for dual compatibility
+    image_url: p.image_url, // For legacy ProductGrid compatibility
+    // SKY-43 gallery fields (optional)
+    artist: undefined,
+    type: undefined,
+    optionsCount: undefined,
+    isNew: false,
+    isLimited: false,
+    isFeatured: false,
+  }))
 }
 
 async function getCategories(tenantId: string) {
@@ -171,8 +179,8 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
           tenantLogo={config.logoUrl}
           tenantLogoText={config.logoTextUrl}
           tenantBanner={config.bannerUrl}
-          tenantSubtitle={config.subtitle}
-          tenantLocation={config.location}
+          tenantSubtitle={config.subtitle || undefined}
+          tenantLocation={config.location || undefined}
           products={products}
           categories={categoriesWithIcons}
           currency={config.currency}
@@ -266,7 +274,11 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
           </div>
 
           {/* Products Grid */}
-          <ProductGrid products={products} tenantId={tenantId} currency={config.currency} />
+          {config.template === 'gallery' ? (
+            <GalleryGridWrapper products={products} tenantId={tenantId} />
+          ) : (
+            <ProductGridLegacy products={products} tenantId={tenantId} currency={config.currency} />
+          )}
         </div>
 
         {/* Floating Cart Button */}

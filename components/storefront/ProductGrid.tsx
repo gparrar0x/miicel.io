@@ -1,43 +1,42 @@
 /**
- * ProductGrid - Responsive grid container for product cards
+ * SKY-43: ProductGrid Component
+ * Responsive grid container for product cards (mobile-first)
  *
  * Usage:
  * ```tsx
  * import { ProductGrid } from '@/components/storefront/ProductGrid'
- * import { useTheme } from '@/components/theme/use-theme'
  *
  * function StorefrontPage() {
- *   const theme = useTheme()
  *   const products = [...] // from API
  *
  *   return (
  *     <ProductGrid
- *       template={theme.template}
+ *       template="gallery"
  *       products={products}
  *       loading={false}
  *       onProductClick={(product) => router.push(`/products/${product.id}`)}
+ *       onQuickView={(id) => setQuickViewId(id)}
  *     />
  *   )
  * }
  * ```
  *
  * Features:
- * - Accepts 'gallery' | 'detail' | 'minimal' template prop
- * - Renders appropriate card variant based on template
- * - Responsive columns from --grid-cols CSS var
+ * - Mobile portrait: 1 col (<640px)
+ * - Mobile landscape: 2 cols (640-900px)
+ * - Tablet/Desktop: 3 cols (>900px)
+ * - Gallery template: GalleryCard with Quick View support
  * - Loading skeleton state
  * - Empty state handling
- * - Uses useTheme() to access theme context
  *
- * Test ID: product-grid-{template}
- * Created: 2025-11-16 (Issue #4)
+ * Test ID: product-grid
+ * Created: 2025-01-17 (SKY-43 Phase 1)
  */
 
 'use client'
 
 import { Product } from '@/types/commerce'
 import { TenantTemplate } from '@/types/theme'
-import { useTheme } from '@/components/theme/use-theme'
 import { GalleryCard } from './GalleryCard'
 import { DetailCard } from './DetailCard'
 import { MinimalCard } from './MinimalCard'
@@ -47,36 +46,30 @@ interface ProductGridProps {
   products: Product[]
   loading?: boolean
   onProductClick?: (product: Product) => void
-}
-
-/**
- * Responsive grid columns based on template
- * Falls back to --grid-cols CSS var from ThemeProvider
- */
-const RESPONSIVE_COLS: Record<TenantTemplate, string> = {
-  gallery: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-  detail: 'grid-cols-1 lg:grid-cols-2',
-  minimal: 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4',
-  restaurant: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+  onQuickView?: (productId: string) => void
+  onWishlist?: (productId: string) => void
+  'data-testid'?: string
 }
 
 /**
  * ProductGrid - Renders product cards in responsive grid
+ * Mobile-first: 1 col portrait, 2 cols landscape, 3 cols desktop
  */
 export function ProductGrid({
   template,
   products,
   loading = false,
   onProductClick,
+  onQuickView,
+  onWishlist,
+  'data-testid': testId = 'product-grid',
 }: ProductGridProps) {
-  const theme = useTheme()
-
   // Determine which card component to render
   const CardComponent = {
     gallery: GalleryCard,
     detail: DetailCard,
     minimal: MinimalCard,
-    restaurant: GalleryCard, // TODO: Replace with RestaurantCard in Fase 3
+    restaurant: GalleryCard, // TODO: Replace with RestaurantCard
   }[template]
 
   // Loading state - show skeleton cards
@@ -85,11 +78,12 @@ export function ProductGrid({
 
     return (
       <div
-        data-testid={`product-grid-${template}`}
-        className={`grid gap-4 md:gap-6 ${RESPONSIVE_COLS[template]}`}
-        style={{
-          gap: 'var(--spacing-md)',
-        }}
+        data-testid={testId}
+        className="flex flex-col gap-[var(--card-gap-mobile)]
+                   sm:grid sm:grid-cols-2 sm:gap-[var(--card-gap-mobile)]
+                   md:grid-cols-3 md:gap-[var(--card-gap-tablet)]
+                   lg:gap-[var(--card-gap-desktop)]
+                   px-[var(--spacing-sm)] max-w-[1200px] mx-auto"
       >
         {Array.from({ length: skeletonCount }).map((_, i) => (
           <CardComponent
@@ -106,11 +100,8 @@ export function ProductGrid({
   if (products.length === 0) {
     return (
       <div
-        data-testid={`product-grid-${template}`}
+        data-testid={testId}
         className="flex flex-col items-center justify-center py-16 px-4"
-        style={{
-          padding: 'var(--spacing-xl)',
-        }}
       >
         <div className="text-center max-w-md">
           <svg
@@ -127,16 +118,10 @@ export function ProductGrid({
               d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
             />
           </svg>
-          <h3
-            className="mt-2 text-lg font-medium text-gray-900"
-            style={{ marginTop: 'var(--spacing-sm)' }}
-          >
+          <h3 className="mt-2 text-lg font-medium text-[var(--color-text-primary)]">
             No products found
           </h3>
-          <p
-            className="mt-1 text-sm text-gray-500"
-            style={{ marginTop: 'var(--spacing-xs)' }}
-          >
+          <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
             Check back later for new products.
           </p>
         </div>
@@ -144,22 +129,25 @@ export function ProductGrid({
     )
   }
 
-  // Product grid
+  // Product grid - Mobile-first responsive
   return (
     <div
-      data-testid={`product-grid-${template}`}
-      className={`grid ${RESPONSIVE_COLS[template]}`}
-      style={{
-        gap: 'var(--spacing-md)',
-        // Optionally use CSS var for columns (can override responsive classes)
-        // gridTemplateColumns: `repeat(var(--grid-cols, ${theme.gridCols}), minmax(0, 1fr))`,
-      }}
+      data-testid={testId}
+      className="flex flex-col gap-[var(--card-gap-mobile)]
+                 sm:grid sm:grid-cols-2 sm:gap-[var(--card-gap-mobile)]
+                 md:grid-cols-3 md:gap-[var(--card-gap-tablet)]
+                 lg:gap-[var(--card-gap-desktop)]
+                 px-[var(--spacing-sm)] max-w-[1200px] mx-auto"
     >
-      {products.map((product) => (
+      {products.map((product, index) => (
         <CardComponent
           key={product.id}
           product={product}
           onClick={() => onProductClick?.(product)}
+          onQuickView={template === 'gallery' ? onQuickView : undefined}
+          onWishlist={onWishlist}
+          // First 2 cards: eager load (above fold), rest lazy
+          loading={false}
         />
       ))}
     </div>
