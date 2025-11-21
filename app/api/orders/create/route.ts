@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     // Get tenant
     const { data: tenant, error: tenantError } = await supabase
       .from('tenants')
-      .select('id')
+      .select('id, template')
       .eq('slug', tenantSlug)
       .maybeSingle()
 
@@ -111,7 +111,10 @@ export async function POST(request: Request) {
       }
 
       const stock = product.stock ?? 0
-      if (stock < item.quantity) {
+      
+      // Restaurant template: Ignore stock levels (infinite supply)
+      // Other templates: Enforce stock limits
+      if (tenant.template !== 'restaurant' && stock < item.quantity) {
         return NextResponse.json(
           { error: `Insufficient stock for ${product.name}. Available: ${stock}` },
           { status: 400 }

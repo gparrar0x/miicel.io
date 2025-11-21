@@ -48,7 +48,13 @@ export async function middleware(req: NextRequest) {
   const pathSegments = req.nextUrl.pathname.split('/').filter(Boolean)
 
   // Skip tenant logic for API routes, signup, test pages, login page, dashboard (superadmin), and root
-  if (pathSegments[0] === 'api' || pathSegments[0] === 'signup' || pathSegments[0] === 'test-theme' || pathSegments[0] === 'login' || pathSegments[0] === 'dashboard' || !pathSegments[0]) {
+  if (pathSegments[0] === 'api' || 
+      pathSegments[0] === 'signup' || 
+      pathSegments[0] === 'test-theme' || 
+      pathSegments[0] === 'login' || 
+      pathSegments[0] === 'dashboard' || 
+      pathSegments[0] === 'tenants' ||
+      !pathSegments[0]) {
     return supabaseResponse
   }
 

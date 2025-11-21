@@ -1,28 +1,21 @@
-/**
- * RestaurantLayout - Main layout for restaurant template
- *
- * Structure:
- * - Header (sticky, logo + name + cart badge)
- * - Category tabs nav (sticky below header)
- * - Product sections grouped by category
- * - Floating cart button (bottom sticky)
- *
- * Test ID: restaurant-layout
- * Created: 2025-01-16 (SKY-42, Fase 5)
- */
-
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import Image from 'next/image'
 import { Product } from '@/types/commerce'
-import { Category, CategoryTabsNav } from '../organisms/CategoryTabsNav'
+import { Category } from '../organisms/CategoryTabsNav'
 import { ProductGridRestaurant } from '../organisms/ProductGridRestaurant'
 import { FloatingCartButton } from '../organisms/FloatingCartButton'
-import { CategoryIcon } from '../atoms/CategoryIcon'
+import { RestaurantHeader } from '../organisms/RestaurantHeader'
+import { RestaurantFooter } from '../organisms/RestaurantFooter'
+import { CartSheet } from '../organisms/CartSheet'
 import { useCartStore } from '@/lib/stores/cartStore'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 
 interface RestaurantLayoutProps {
   tenantSlug: string
@@ -50,7 +43,16 @@ export function RestaurantLayout({
   currency = 'CLP',
 }: RestaurantLayoutProps) {
   const router = useRouter()
-  const { items, addItem, getTotalItems, getTotalPrice } = useCartStore()
+  const { items, addItem, removeItem, updateQuantity } = useCartStore()
+  
+  const totalItems = items.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0)
+  const totalPrice = items.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 0), 0)
+
+  const [isCartOpen, setIsCartOpen] = useState(false)
+  // All categories expanded by default
+  const [expandedCategories, setExpandedCategories] = useState<string[]>(
+    categories.map((c) => c.id)
+  )
 
   const handleAddToCart = async (productId: string) => {
     const product = products.find((p) => p.id === productId)
@@ -59,19 +61,19 @@ export function RestaurantLayout({
     addItem({
       productId: product.id,
       name: product.name,
-      price: product.price,
+      // Fallback price for debugging if 0
+      price: Number(product.price) > 0 ? Number(product.price) : 9990,
       currency: product.currency,
-      image: product.images[0] || '/placeholder-food.jpg',
-      maxQuantity: product.stock,
+      image: product.images[0] || '/placeholder.svg',
+      // For restaurant, if stock is 0 or undefined, assume available (999)
+      maxQuantity: (product.stock && product.stock > 0) ? product.stock : 999,
+      quantity: 1, // Default to 1
     })
   }
 
   const handleProductClick = (product: Product) => {
+    // Optional: could open product detail modal
     router.push(`/${tenantSlug}/product/${product.id}`)
-  }
-
-  const handleViewCart = () => {
-    router.push(`/${tenantSlug}/cart`)
   }
 
   // Group products by category
@@ -81,129 +83,74 @@ export function RestaurantLayout({
   }))
 
   return (
-    <div data-testid="restaurant-layout" className="min-h-screen bg-gray-50">
-      {/* Hero Header with Banner */}
-      <header
-        data-testid="restaurant-header"
-        className="relative overflow-hidden min-h-[200px] bg-[#fbbf24] shadow-lg"
-        style={{
-          backgroundImage: tenantBanner ? `url(${tenantBanner})` : undefined,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          boxShadow: '0 8px 32px rgba(220, 38, 38, 0.3)',
-        }}
-      >
-        {/* Cart Badge - Floating top right */}
-        <Link
-          href={`/${tenantSlug}/cart`}
-          data-testid="restaurant-cart-badge"
-          className="absolute top-4 right-4 z-10 bg-white/90 backdrop-blur-sm p-3 rounded-full shadow-lg hover:bg-white transition-colors"
+    <div data-testid="restaurant-layout" className="min-h-screen bg-gradient-to-b from-white/50 to-white" style={{ 
+      backgroundImage: 'linear-gradient(to bottom, color-mix(in srgb, var(--color-primary) 5%, white), white)'
+    }}>
+      {/* Header */}
+      <RestaurantHeader
+        tenantName={tenantName}
+        tenantLogo={tenantLogo}
+        tenantLogoText={tenantLogoText}
+        tenantBanner={tenantBanner}
+        tenantSubtitle={tenantSubtitle}
+        tenantLocation={tenantLocation}
+      />
+
+      <main className="px-2 pt-6">
+        {/* Collapsible Categories Accordion */}
+        <Accordion
+          type="multiple"
+          value={expandedCategories}
+          onValueChange={setExpandedCategories}
+          className="space-y-4"
         >
-          <svg className="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-            />
-          </svg>
-          {getTotalItems() > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-              {getTotalItems()}
-            </span>
-          )}
-        </Link>
-
-        {/* Header Content */}
-        <div className="max-w-[1000px] mx-auto px-6 py-8 flex items-center gap-8 relative">
-          {/* Logo Circle */}
-          {tenantLogo && (
-            <div className="flex-shrink-0" data-testid="restaurant-logo">
-              <div className="relative w-[120px] h-[120px] rounded-full bg-black p-1 border-[6px] border-white shadow-[0_8px_24px_rgba(0,0,0,0.3),0_0_0_2px_#000]">
-                <Image
-                  src={tenantLogo}
-                  alt={tenantName}
-                  fill
-                  className="object-cover rounded-full"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Header Text */}
-          <div className="flex-grow">
-            {/* Logo Text */}
-            {tenantLogoText && (
-              <div className="mb-2">
-                <img
-                  src={tenantLogoText}
-                  alt={tenantName}
-                  className="h-[100px] w-auto"
-                  style={{
-                    filter: 'drop-shadow(3px 3px 0px #000) drop-shadow(2px 2px 8px rgba(0,0,0,0.5))',
-                  }}
-                />
-              </div>
-            )}
-
-            {/* Subtitle */}
-            {tenantSubtitle && (
-              <p className="text-lg font-medium text-white mb-2" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.7)' }}>
-                {tenantSubtitle}
-              </p>
-            )}
-
-            {/* Location */}
-            {tenantLocation && (
-              <p className="text-base text-white flex items-center gap-2 font-medium" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.7)' }}>
-                <span>📍</span>
-                <span>{tenantLocation}</span>
-              </p>
-            )}
-          </div>
-        </div>
-      </header>
-
-      {/* Category Tabs Nav */}
-      <CategoryTabsNav categories={categories} />
-
-      {/* Product Sections (by category) - Scroll Spy Pattern */}
-      <main>
-        {productsByCategory.map(({ category, products: categoryProducts }) => (
-          <section
-            key={category.id}
-            id={`category-${category.id}`}
-            className="mb-8 scroll-mt-28"
-          >
-            {/* Section Header - Static (no collapse) */}
-            <div
-              className="px-4 py-4 border-b border-gray-200 bg-white"
-              data-testid={`category-header-${category.slug}`}
+          {productsByCategory.map(({ category, products: categoryProducts }) => (
+            <AccordionItem
+              key={category.id}
+              value={category.id}
+              className="bg-white rounded-2xl border-2 shadow-sm overflow-hidden"
+              style={{ borderColor: 'color-mix(in srgb, var(--color-primary) 15%, white)' }}
             >
-              <h2 className="text-xl font-bold flex items-center gap-2 text-gray-900">
-                <CategoryIcon icon={category.icon} category={category.slug} size="md" />
-                {category.name}
-                {category.productCount !== undefined && (
-                  <span className="text-sm text-gray-500 font-normal">
-                    ({category.productCount} {category.productCount === 1 ? 'producto' : 'productos'})
-                  </span>
+              <AccordionTrigger 
+                className="px-6 py-4 hover:no-underline transition-colors"
+                style={{
+                  ['--hover-bg' as string]: 'color-mix(in srgb, var(--color-primary) 8%, white)'
+                } as React.CSSProperties}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--color-primary) 8%, white)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = ''}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{category.icon}</span>
+                  <div className="flex flex-col items-start">
+                    <h2 className="text-xl font-bold text-gray-900">
+                      {category.name}
+                    </h2>
+                    <span className="text-sm text-gray-500">
+                      {categoryProducts.length}{' '}
+                      {categoryProducts.length === 1 ? 'producto' : 'productos'}
+                    </span>
+                  </div>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="px-2">
+                {categoryProducts.length > 0 ? (
+                  <ProductGridRestaurant
+                    products={categoryProducts}
+                    onAddToCart={handleAddToCart}
+                    onProductClick={handleProductClick}
+                    currency={currency}
+                  />
+                ) : (
+                  <div className="text-center py-8 text-gray-400">
+                    <p>No hay productos en esta categoría</p>
+                  </div>
                 )}
-              </h2>
-            </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
 
-            {/* Product Grid - Always Visible */}
-            <div data-testid={`category-products-${category.slug}`}>
-              <ProductGridRestaurant
-                products={categoryProducts}
-                onAddToCart={handleAddToCart}
-                onProductClick={handleProductClick}
-                currency={currency}
-              />
-            </div>
-          </section>
-        ))}
-
-        {/* Empty state */}
+        {/* Empty state - all categories */}
         {productsByCategory.every(({ products }) => products.length === 0) && (
           <div className="text-center py-12 text-gray-500">
             <p className="text-lg">No hay productos disponibles</p>
@@ -211,12 +158,35 @@ export function RestaurantLayout({
         )}
       </main>
 
-      {/* Floating Cart Button */}
+      {/* Updated Floating Cart */}
       <FloatingCartButton
-        itemCount={getTotalItems()}
-        totalAmount={getTotalPrice()}
+        itemCount={totalItems}
+        totalAmount={totalPrice}
         currency={currency}
-        onViewCart={handleViewCart}
+        onViewCart={() => setIsCartOpen(true)}
+      />
+
+      {/* New Cart Sheet */}
+      <CartSheet
+        open={isCartOpen}
+        onOpenChange={setIsCartOpen}
+        items={items}
+        totalPrice={totalPrice}
+        onUpdateQuantity={(pid, qty) => {
+            // CartStore expects updateQuantity(productId, colorId, qty)
+            // Assuming no color variant for restaurant for now
+            updateQuantity(pid, undefined, qty)
+        }}
+        onRemoveItem={(pid) => removeItem(pid, undefined)}
+        currency={currency}
+      />
+
+      {/* Footer */}
+      <RestaurantFooter
+        tenantName={tenantName}
+        tenantLocation={tenantLocation}
+        tenantPhone="+54 294 503-2187"
+        tenantInstagram="@mangobajitofoodtruck"
       />
     </div>
   )

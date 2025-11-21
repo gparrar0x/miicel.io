@@ -1,24 +1,7 @@
-/**
- * FloatingCartButton - Sticky bottom cart CTA with animation
- *
- * States:
- * - Hidden: itemCount === 0
- * - Visible: itemCount > 0, slide-up animation
- *
- * Layout:
- * - Fixed bottom 0, full width
- * - Height 72px (safe area +16px iOS)
- * - Background primary color
- * - White text
- *
- * Test ID: floating-cart
- * Created: 2025-01-16 (SKY-42, Fase 4)
- */
-
 'use client'
 
-import { motion, AnimatePresence } from 'framer-motion'
-import { CartSummary } from '../molecules/CartSummary'
+import { ShoppingBag } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 interface FloatingCartButtonProps {
   itemCount: number
@@ -35,52 +18,45 @@ export function FloatingCartButton({
   onViewCart,
   className = '',
 }: FloatingCartButtonProps) {
+  if (itemCount === 0) return null
+
+  const formattedPrice = new Intl.NumberFormat('es-CL', {
+    style: 'currency',
+    currency,
+  }).format(totalAmount)
+
   return (
-    <AnimatePresence>
-      {itemCount > 0 && (
-        <motion.div
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          data-testid="floating-cart"
-          className={`
-            fixed bottom-0 left-0 right-0 z-50
-            ${className}
-          `}
+    <div className="fixed bottom-0 left-0 right-0 z-50 animate-in slide-in-from-bottom duration-500 pointer-events-none">
+      <div className="container mx-auto px-4 pb-4 pointer-events-auto">
+        <Button
+          onClick={onViewCart}
+          className="w-full text-white font-bold py-6 rounded-2xl shadow-2xl transition-all duration-300 hover:scale-[1.02]"
+          size="lg"
+          style={{
+            background: `linear-gradient(to right, var(--color-primary), color-mix(in srgb, var(--color-primary) 85%, black))`,
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 30px color-mix(in srgb, var(--color-primary) 20%, transparent)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = `linear-gradient(to right, color-mix(in srgb, var(--color-primary) 85%, black), color-mix(in srgb, var(--color-primary) 70%, black))`
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = `linear-gradient(to right, var(--color-primary), color-mix(in srgb, var(--color-primary) 85%, black))`
+          }}
         >
-          <div
-            className="p-4 pb-6 shadow-2xl"
-            style={{
-              backgroundColor: 'var(--color-primary, #E63946)',
-              paddingBottom: 'calc(1rem + env(safe-area-inset-bottom))',
-            }}
-          >
-            <div className="max-w-[1280px] mx-auto">
-              <div className="flex items-center justify-between mb-3 text-white">
-                <CartSummary itemCount={itemCount} total={totalAmount} currency={currency} />
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <ShoppingBag className="w-6 h-6" />
+                <span className="absolute -top-2 -right-2 bg-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center" style={{ color: 'var(--color-primary)' }}>
+                  {itemCount}
+                </span>
               </div>
-              <button
-                data-testid="floating-cart-cta"
-                onClick={onViewCart}
-                className="
-                  w-full bg-white text-gray-900 font-bold py-3 px-6 rounded-lg
-                  hover:bg-gray-100 active:scale-98 transition-all duration-200
-                  flex items-center justify-center gap-2
-                "
-                style={{
-                  color: 'var(--color-primary, #E63946)',
-                }}
-              >
-                <span>Ver Carrito</span>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+              <span className="text-lg">Ver Pedido</span>
             </div>
+            <span className="text-xl font-bold">{formattedPrice}</span>
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        </Button>
+      </div>
+    </div>
   )
 }

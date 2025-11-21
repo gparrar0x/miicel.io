@@ -62,9 +62,9 @@ export function ProductGridRestaurant({
   return (
     <div
       data-testid="product-grid-restaurant"
-      className={`px-4 py-6 ${className}`}
+      className={`py-1 ${className}`}
     >
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 xl:max-w-[1280px] xl:mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
         {products.map((product) => (
           <ProductCardRestaurant
             key={product.id}

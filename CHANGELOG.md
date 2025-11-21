@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Restaurant Template v0 Integration (SKY-42.5)**: Modern collapsible menu with dynamic tenant theming
+  - **Collapsible Categories**: Accordion-based navigation (Radix UI)
+    - All categories expanded by default
+    - Chevron rotation animation
+    - Product count per category
+    - Smooth expand/collapse transitions
+  - **Dynamic Theming**: Full CSS variables integration
+    - Uses `--color-primary` from tenant config (via ThemeProvider)
+    - `color-mix()` for automatic shade generation (lighter/darker variants)
+    - Applies to: header, footer, buttons, prices, borders, hover states
+    - Zero hardcoded colors - fully themeable per tenant
+  - **Enhanced Components**:
+    - `RestaurantHeader`: Tenant banner/logo/name/subtitle/location with dynamic gradients
+    - `RestaurantFooter`: Business hours (today highlighted) + contact (WhatsApp, Instagram, location)
+    - `ProductCardRestaurant`: Dynamic primary color for price and "Agregar" button
+    - `FloatingCartButton`: Gradient with primary color + dynamic shadow
+    - `CartSheet`: Primary color accents throughout (icons, prices, buttons, summary)
+  - **UI/UX Improvements**:
+    - Full-width accordion (removed container constraints)
+    - Compact spacing (reduced padding/gaps)
+    - No bottom white space (removed pb-32)
+    - Fixed placeholder images (404s eliminated)
+    - Smooth hover effects with color transitions
+  - **Cart Fixes**:
+    - Stock fallback to 999 for restaurants (no strict inventory tracking)
+    - Explicit quantity:1 on addItem
+    - Reactive totalItems/totalPrice calculations
+    - Fixed visibility of "Ver Pedido" button
+    - Price casting to Number() to prevent 0 display
+  - **Dependencies**: `@radix-ui/react-accordion` installed
+  - **Files Modified**: 7 components + RestaurantLayout
+  - **Ready for**: Multi-tenant restaurant deployment with custom brand colors
+
 ### Changed
 
 - **Project Structure Reorganization**: Consolidated related files for better maintainability

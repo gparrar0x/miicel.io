@@ -93,6 +93,11 @@ export default async function ProductPage({ params }: PageProps) {
   // Set currency from tenant config
   product.currency = config.currency
 
+  // Restaurant template: Ignore stock (assume infinite)
+  if (config.template === 'restaurant') {
+    product.stock = 999
+  }
+
   // Gallery template: Use new ProductDetailWrapper (SKY-43)
   if (config.template === 'gallery') {
     // Transform product data for ProductDetailWrapper
@@ -201,19 +206,21 @@ export default async function ProductPage({ params }: PageProps) {
                 )}
 
                 {/* Stock indicator */}
-                <div
-                  className="text-sm"
-                  style={{ color: 'var(--color-text-tertiary)' }}
-                  data-testid={`product-${product.id}-stock`}
-                >
-                  {product.stock > 0 ? (
-                    <span className="text-green-600">
-                      In stock ({product.stock} available)
-                    </span>
-                  ) : (
-                    <span className="text-red-600">Out of stock</span>
-                  )}
-                </div>
+                {config.template !== 'restaurant' && (
+                  <div
+                    className="text-sm"
+                    style={{ color: 'var(--color-text-tertiary)' }}
+                    data-testid={`product-${product.id}-stock`}
+                  >
+                    {product.stock > 0 ? (
+                      <span className="text-green-600">
+                        In stock ({product.stock} available)
+                      </span>
+                    ) : (
+                      <span className="text-red-600">Out of stock</span>
+                    )}
+                  </div>
+                )}
 
                 {/* Client-side interactive components */}
                 <ProductClient
