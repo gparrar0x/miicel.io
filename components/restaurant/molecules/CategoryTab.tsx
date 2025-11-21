@@ -30,6 +30,7 @@ export function CategoryTab({ id, slug, name, icon, isActive, onClick }: Categor
       onClick={onClick}
       className={`
         flex items-center gap-2 px-4 py-2 rounded-lg
+        min-h-[48px]
         border-b-3 transition-all duration-200 whitespace-nowrap
         ${isActive
           ? 'border-b-3 font-bold'

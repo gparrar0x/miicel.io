@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
+import { LogOut } from 'lucide-react'
 
 interface Tenant {
   slug: string
@@ -14,6 +16,8 @@ export default function TenantsPage() {
   const [tenants, setTenants] = useState<Tenant[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [user, setUser] = useState<any>(null)
+  const supabase = createClient()
 
   const fetchTenants = async () => {
     setLoading(true)
@@ -37,8 +41,19 @@ export default function TenantsPage() {
   }
 
   useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      setUser(session?.user || null)
+    }
+    checkUser()
     fetchTenants()
   }, [])
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    setUser(null)
+    window.location.reload()
+  }
 
   const getInitials = (name: string): string => {
     return name
@@ -52,8 +67,8 @@ export default function TenantsPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-[#F8F8F8] px-5 py-8 md:py-12">
-        <header className="max-w-[1200px] mx-auto mb-8">
-          <h1 className="text-[24px] md:text-[28px] font-bold text-[#1A1A1A] text-center">
+        <header className="max-w-[1200px] mx-auto mb-8 flex justify-between items-center relative">
+          <h1 className="text-[24px] md:text-[28px] font-bold text-[#1A1A1A] text-center flex-1">
             Tenant Directory
           </h1>
         </header>
@@ -81,10 +96,19 @@ export default function TenantsPage() {
   if (error) {
     return (
       <main className="min-h-screen bg-[#F8F8F8] px-5 py-8 md:py-12">
-        <header className="max-w-[1200px] mx-auto mb-8">
-          <h1 className="text-[24px] md:text-[28px] font-bold text-[#1A1A1A] text-center">
+        <header className="max-w-[1200px] mx-auto mb-8 flex justify-between items-center relative">
+          <h1 className="text-[24px] md:text-[28px] font-bold text-[#1A1A1A] text-center flex-1">
             Tenant Directory
           </h1>
+          {user && (
+            <button
+              onClick={handleLogout}
+              className="absolute right-0 flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </button>
+          )}
         </header>
 
         <div
@@ -113,10 +137,19 @@ export default function TenantsPage() {
   if (tenants.length === 0) {
     return (
       <main className="min-h-screen bg-[#F8F8F8] px-5 py-8 md:py-12">
-        <header className="max-w-[1200px] mx-auto mb-8">
-          <h1 className="text-[24px] md:text-[28px] font-bold text-[#1A1A1A] text-center">
+        <header className="max-w-[1200px] mx-auto mb-8 flex justify-between items-center relative">
+          <h1 className="text-[24px] md:text-[28px] font-bold text-[#1A1A1A] text-center flex-1">
             Tenant Directory
           </h1>
+          {user && (
+            <button
+              onClick={handleLogout}
+              className="absolute right-0 flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </button>
+          )}
         </header>
 
         <div
@@ -138,10 +171,19 @@ export default function TenantsPage() {
 
   return (
     <main className="min-h-screen bg-[#F8F8F8] px-5 py-8 md:py-12">
-      <header className="max-w-[1200px] mx-auto mb-8">
-        <h1 className="text-[24px] md:text-[28px] font-bold text-[#1A1A1A] text-center">
+      <header className="max-w-[1200px] mx-auto mb-8 flex justify-between items-center relative">
+        <h1 className="text-[24px] md:text-[28px] font-bold text-[#1A1A1A] text-center flex-1">
           Tenant Directory
         </h1>
+        {user && (
+          <button
+            onClick={handleLogout}
+            className="absolute right-0 flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+            Logout
+          </button>
+        )}
       </header>
 
       <div

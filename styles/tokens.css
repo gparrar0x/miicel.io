@@ -92,8 +92,8 @@
   --modal-image-height-mobile: 360px;
 
   /* Badge Colors - Type */
-  --badge-digital-bg: #EFF6FF;
-  --badge-digital-text: #1E40AF;
+  --badge-digital-bg: #DBEAFE;
+  --badge-digital-text: #1E3A8A;
   --badge-digital-border: #3B82F6;
 
   --badge-physical-bg: #FEF3C7;
@@ -116,6 +116,12 @@
   --badge-featured-bg: #FEF3C7;
   --badge-featured-text: #854D0E;
   --badge-featured-border: #EAB308;
+
+  /* ===== A/B TEST VARIANTS (NOT ACTIVE) ===== */
+  /* Gold Accent Variant B: Warmer, more luxurious */
+  --color-accent-warm: #C9962E;
+  --color-accent-warm-hover: #A67C24;
+  /* Usage: Replace --color-accent-primary with --color-accent-warm in A/B test */
 }
 
 /* ===== MODERN DARK PALETTE ===== */

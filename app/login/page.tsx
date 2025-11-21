@@ -68,7 +68,7 @@ function LoginForm() {
                 required
                 disabled={loading}
                 data-testid="login-email-input"
-                className="w-full px-3 py-2 border border-[#E5E5E5] rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6B35] disabled:opacity-50"
+                className="w-full px-3 py-2 border border-[#E5E5E5] rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6B35] disabled:opacity-50 text-[#1A1A1A]"
               />
             </div>
 
@@ -87,7 +87,7 @@ function LoginForm() {
                 required
                 disabled={loading}
                 data-testid="login-password-input"
-                className="w-full px-3 py-2 border border-[#E5E5E5] rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6B35] disabled:opacity-50"
+                className="w-full px-3 py-2 border border-[#E5E5E5] rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6B35] disabled:opacity-50 text-[#1A1A1A]"
               />
             </div>
 

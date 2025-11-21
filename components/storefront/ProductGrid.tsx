@@ -1,36 +1,9 @@
 /**
- * SKY-43: ProductGrid Component
- * Responsive grid container for product cards (mobile-first)
- *
- * Usage:
- * ```tsx
- * import { ProductGrid } from '@/components/storefront/ProductGrid'
- *
- * function StorefrontPage() {
- *   const products = [...] // from API
- *
- *   return (
- *     <ProductGrid
- *       template="gallery"
- *       products={products}
- *       loading={false}
- *       onProductClick={(product) => router.push(`/products/${product.id}`)}
- *       onQuickView={(id) => setQuickViewId(id)}
- *     />
- *   )
- * }
- * ```
- *
- * Features:
- * - Mobile portrait: 1 col (<640px)
- * - Mobile landscape: 2 cols (640-900px)
- * - Tablet/Desktop: 3 cols (>900px)
- * - Gallery template: GalleryCard with Quick View support
- * - Loading skeleton state
- * - Empty state handling
- *
- * Test ID: product-grid
- * Created: 2025-01-17 (SKY-43 Phase 1)
+ * SKY-43: ProductGrid Component (Neo-Brutalist Layout)
+ * 
+ * Layout: Asymmetric Grid
+ * - Desktop: 4 columns, items span 1 or 2 cols randomly
+ * - Mobile: 1 column
  */
 
 'use client'
@@ -51,10 +24,6 @@ interface ProductGridProps {
   'data-testid'?: string
 }
 
-/**
- * ProductGrid - Renders product cards in responsive grid
- * Mobile-first: 1 col portrait, 2 cols landscape, 3 cols desktop
- */
 export function ProductGrid({
   template,
   products,
@@ -69,87 +38,54 @@ export function ProductGrid({
     gallery: GalleryCard,
     detail: DetailCard,
     minimal: MinimalCard,
-    restaurant: GalleryCard, // TODO: Replace with RestaurantCard
+    restaurant: GalleryCard,
   }[template]
 
-  // Loading state - show skeleton cards
   if (loading) {
-    const skeletonCount = template === 'minimal' ? 8 : template === 'detail' ? 4 : 6
-
     return (
-      <div
-        data-testid={testId}
-        className="flex flex-col gap-[var(--card-gap-mobile)]
-                   sm:grid sm:grid-cols-2 sm:gap-[var(--card-gap-mobile)]
-                   md:grid-cols-3 md:gap-[var(--card-gap-tablet)]
-                   lg:gap-[var(--card-gap-desktop)]
-                   px-[var(--spacing-sm)] max-w-[1200px] mx-auto"
-      >
-        {Array.from({ length: skeletonCount }).map((_, i) => (
-          <CardComponent
-            key={`skeleton-${i}`}
-            product={{} as Product}
-            loading={true}
-          />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-[var(--container-width)] mx-auto px-4">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="aspect-[3/4] bg-gray-200 animate-pulse" />
         ))}
       </div>
     )
   }
 
-  // Empty state
   if (products.length === 0) {
     return (
-      <div
-        data-testid={testId}
-        className="flex flex-col items-center justify-center py-16 px-4"
-      >
-        <div className="text-center max-w-md">
-          <svg
-            className="mx-auto h-12 w-12 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-            />
-          </svg>
-          <h3 className="mt-2 text-lg font-medium text-[var(--color-text-primary)]">
-            No products found
-          </h3>
-          <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-            Check back later for new products.
-          </p>
-        </div>
+      <div className="flex flex-col items-center justify-center py-32 border-y border-black">
+        <h3 className="font-display text-3xl font-bold uppercase tracking-widest">No Artifacts Found</h3>
+        <p className="font-mono text-sm mt-2 text-gray-500">The collection is currently empty.</p>
       </div>
     )
   }
 
-  // Product grid - Mobile-first responsive
   return (
     <div
       data-testid={testId}
-      className="flex flex-col gap-[var(--card-gap-mobile)]
-                 sm:grid sm:grid-cols-2 sm:gap-[var(--card-gap-mobile)]
-                 md:grid-cols-3 md:gap-[var(--card-gap-tablet)]
-                 lg:gap-[var(--card-gap-desktop)]
-                 px-[var(--spacing-sm)] max-w-[1200px] mx-auto"
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 max-w-[var(--container-width)] mx-auto px-4 pb-20"
     >
-      {products.map((product, index) => (
-        <CardComponent
-          key={product.id}
-          product={product}
-          onClick={() => onProductClick?.(product)}
-          onQuickView={template === 'gallery' ? onQuickView : undefined}
-          onWishlist={onWishlist}
-          // First 2 cards: eager load (above fold), rest lazy
-          loading={false}
-        />
-      ))}
+      {products.map((product, index) => {
+        // Editorial Layout Logic:
+        // Every 5th item spans 2 columns (if not on mobile)
+        const isFeatured = index % 5 === 0 && index !== 0;
+
+        return (
+          <div
+            key={product.id}
+            className={`${isFeatured ? 'lg:col-span-2 lg:row-span-2' : 'col-span-1'}`}
+          >
+            <CardComponent
+              product={product}
+              onClick={() => onProductClick?.(product)}
+              onQuickView={template === 'gallery' ? onQuickView : undefined}
+              onWishlist={onWishlist}
+              loading={false}
+              index={index} // Pass index for staggered animation
+            />
+          </div>
+        )
+      })}
     </div>
   )
 }

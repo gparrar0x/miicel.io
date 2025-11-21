@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -12,7 +12,8 @@ import {
   LogOut,
   Menu,
   X,
-  Store
+  Store,
+  User
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -31,9 +32,24 @@ interface NavItem {
 
 export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [userEmail, setUserEmail] = useState<string>('')
+  const [userName, setUserName] = useState<string>('')
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+
+  useEffect(() => {
+    async function fetchUser() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setUserEmail(user.email || '')
+        // Extract name from email (before @) as fallback
+        const emailName = user.email?.split('@')[0] || 'User'
+        setUserName(user.user_metadata?.name || emailName)
+      }
+    }
+    fetchUser()
+  }, [])
 
   const navItems: NavItem[] = [
     {
@@ -161,8 +177,24 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
           })}
         </nav>
 
-        {/* Logout Button */}
+        {/* User Info & Logout */}
         <div className="border-t border-gray-200 p-4">
+          {/* User Info */}
+          <div className="flex items-center gap-3 px-4 py-3 mb-2">
+            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+              <User className="h-4 w-4 text-blue-600" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 truncate">
+                {userName}
+              </p>
+              <p className="text-xs text-gray-500 truncate">
+                {userEmail}
+              </p>
+            </div>
+          </div>
+
+          {/* Logout Button */}
           <button
             data-testid="btn-logout"
             onClick={handleSignOut}

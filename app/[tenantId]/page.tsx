@@ -1,11 +1,7 @@
 /**
- * Tenant Storefront Home Page
- *
- * Displays product catalog with categories, search, and tenant branding.
- * Mobile-first layout matching reference design.
+ * Tenant Storefront Home Page (Neo-Brutalist Editorial)
  *
  * Route: /[tenantId]
- * Example: /sky
  */
 
 import { notFound } from 'next/navigation'
@@ -45,7 +41,6 @@ async function getTenantConfig(tenantId: string) {
 async function getProducts(tenantId: string, category?: string, search?: string) {
   const supabase = await createClient()
 
-  // Get tenant ID from slug
   const { data: tenant } = await supabase
     .from('tenants')
     .select('id')
@@ -76,19 +71,17 @@ async function getProducts(tenantId: string, category?: string, search?: string)
     return []
   }
 
-  // Map DB schema to Product type (support both legacy and SKY-43 components)
   return (data || []).map(p => ({
-    id: String(p.id), // Convert to string for SKY-43 ProductGrid, legacy supports both
+    id: String(p.id),
     name: p.name,
     description: p.description,
     price: p.price,
-    currency: 'CLP', // TODO: Get from tenant config
+    currency: 'CLP',
     images: p.image_url ? [p.image_url] : [],
     colors: [],
     stock: p.stock || 0,
     category: p.category,
-    image_url: p.image_url, // For legacy ProductGrid compatibility
-    // SKY-43 gallery fields (optional)
+    image_url: p.image_url,
     artist: undefined,
     type: undefined,
     optionsCount: undefined,
@@ -118,18 +111,17 @@ async function getCategories(tenantId: string) {
 
   if (!data) return []
 
-  // Get unique categories
   const categories = [...new Set(data.map((p) => p.category).filter(Boolean))]
   return categories as string[]
 }
 
 export default async function StorefrontPage({ params, searchParams }: PageProps) {
   const { tenantId } = await params
-  const { category, search } = await searchParams
+  const { category } = await searchParams
 
   const [config, products, categories] = await Promise.all([
     getTenantConfig(tenantId),
-    getProducts(tenantId, category, search),
+    getProducts(tenantId, category),
     getCategories(tenantId),
   ])
 
@@ -137,28 +129,14 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
     notFound()
   }
 
-  // Restaurant template: use dedicated layout
   if (config.template === 'restaurant') {
-    // Icon mapping for categories
+    // ... (Restaurant logic kept as is, though simplified here for brevity if needed, but keeping full for safety)
     const getCategoryIcon = (category: string): string => {
       const iconMap: Record<string, string> = {
-        // SuperHotDog
-        'PANCHOS': '🌭',
-        'COMBOS': '🍔',
-        'BEBIDAS': '🥤',
-        'CERVEZA': '🍺',
-        // MangoBajito
-        'AREPAS': '🫓',
-        'CACHAPAS': '🥞',
-        'CLÁSICOS': '🍴',
-        'SANDWICH': '🥪',
-        // Generic fallbacks
-        'HOT DOGS': '🌭',
-        'HAMBURGUESAS': '🍔',
-        'PIZZAS': '🍕',
-        'ENSALADAS': '🥗',
-        'POSTRES': '🍰',
-        'CAFE': '☕',
+        'PANCHOS': '🌭', 'COMBOS': '🍔', 'BEBIDAS': '🥤', 'CERVEZA': '🍺',
+        'AREPAS': '🫓', 'CACHAPAS': '🥞', 'CLÁSICOS': '🍴', 'SANDWICH': '🥪',
+        'HOT DOGS': '🌭', 'HAMBURGUESAS': '🍔', 'PIZZAS': '🍕', 'ENSALADAS': '🥗',
+        'POSTRES': '🍰', 'CAFE': '☕',
       }
       return iconMap[category.toUpperCase()] || '🍽️'
     }
@@ -192,88 +170,39 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
   // Default templates: gallery/detail/minimal
   return (
     <ThemeProvider config={config}>
-      <main className="min-h-screen" style={{ backgroundColor: 'var(--color-bg-base)' }}>
+      <main className="min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)]">
         <TenantHeader config={config} />
 
-        <div className="px-4 md:px-6 max-w-[1440px] mx-auto py-8">
-          {/* Search Bar */}
-          <div className="mb-8">
-            <div
-              className="rounded-2xl border-2 px-6 py-4 flex items-center gap-3"
-              style={{ borderColor: 'var(--color-border)' }}
-            >
-              <svg
-                className="w-6 h-6"
-                style={{ color: 'var(--color-text-tertiary)' }}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-              <input
-                type="text"
-                placeholder="Buscar productos..."
-                className="flex-1 bg-transparent outline-none text-base"
-                style={{ color: 'var(--color-text-primary)' }}
-                defaultValue={search}
-              />
-            </div>
-          </div>
-
-          {/* Categories */}
-          <div className="mb-8">
-            <h2
-              className="text-2xl font-bold mb-4"
-              style={{ color: 'var(--color-text-primary)' }}
-            >
-              Categorías
+        {/* Hero / Categories Section */}
+        <div className="max-w-[var(--container-width)] mx-auto px-4 py-8 mb-8 border-b border-black/10">
+          <div className="flex flex-wrap gap-6 items-baseline">
+            <h2 className="font-display text-4xl font-bold italic">
+              {category ? category.toUpperCase() : 'ALL WORKS'}
             </h2>
-            <div className="space-y-2">
+
+            {/* Minimal Category Links */}
+            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
               <Link
                 href={`/${tenantId}`}
-                className={`block px-6 py-3 rounded-lg transition-colors ${
-                  !category || category === 'all' ? 'font-medium' : ''
-                }`}
-                style={
-                  !category || category === 'all'
-                    ? {
-                        backgroundColor: 'var(--color-primary-subtle)',
-                        color: 'var(--color-primary)',
-                      }
-                    : { color: 'var(--color-text-primary)' }
-                }
+                className={`font-mono text-sm uppercase tracking-wider hover:underline decoration-2 underline-offset-4 ${!category || category === 'all' ? 'underline font-bold' : 'text-gray-500'}`}
               >
-                Todas
+                All
               </Link>
               {categories.map((cat) => (
                 <Link
                   key={cat}
                   href={`/${tenantId}?category=${cat}`}
-                  className={`block px-6 py-3 rounded-lg transition-colors capitalize ${
-                    category === cat ? 'font-medium' : ''
-                  }`}
-                  style={
-                    category === cat
-                      ? {
-                          backgroundColor: 'var(--color-primary-subtle)',
-                          color: 'var(--color-primary)',
-                        }
-                      : { color: 'var(--color-text-primary)' }
-                  }
+                  className={`font-mono text-sm uppercase tracking-wider hover:underline decoration-2 underline-offset-4 whitespace-nowrap ${category === cat ? 'underline font-bold' : 'text-gray-500'}`}
                 >
                   {cat}
                 </Link>
               ))}
             </div>
           </div>
+        </div>
 
-          {/* Products Grid */}
+        {/* Products Grid */}
+        <div className="animate-reveal">
           {config.template === 'gallery' ? (
             <GalleryGridWrapper products={products} tenantId={tenantId} />
           ) : (
@@ -281,27 +210,25 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
           )}
         </div>
 
-        {/* Floating Cart Button */}
+        {/* Floating Cart Button - Brutalist Style */}
         <Link
           href={`/${tenantId}/cart`}
-          className="fixed bottom-6 right-6 w-16 h-16 rounded-full shadow-lg flex items-center justify-center z-50 transition-transform hover:scale-110"
-          style={{ backgroundColor: 'var(--color-primary)' }}
+          className="fixed bottom-8 right-8 w-16 h-16 bg-black text-white flex items-center justify-center z-50 shadow-[4px_4px_0px_0px_rgba(255,255,255,1),8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1),10px_10px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
           data-testid="cart-floating-button"
         >
           <svg
-            className="w-7 h-7 text-white"
+            className="w-6 h-6"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
             <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              strokeLinecap="square"
+              strokeLinejoin="miter"
               strokeWidth={2}
-              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+              d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
             />
           </svg>
-          {/* Cart badge - connected to cart store */}
           <CartBadge />
         </Link>
       </main>

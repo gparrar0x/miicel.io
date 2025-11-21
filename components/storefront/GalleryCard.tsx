@@ -1,37 +1,20 @@
 /**
- * SKY-43: GalleryCard Component (Art Gallery Variant)
- * Mobile-first product card for QR gallery experience
- *
- * Usage:
- * ```tsx
- * <GalleryCard
- *   product={product}
- *   onQuickView={(id) => setQuickViewId(id)}
- *   onWishlist={(id) => toggleWishlist(id)}
- * />
- * ```
- *
- * Features:
- * - Mobile portrait: 1 col, full width, 1:1 image
- * - 48x48px tap targets (WCAG AA)
- * - Type badges (Digital/Physical/Both)
- * - Status badges (New/Limited/Featured)
- * - Quick View button prominent
- * - Desktop hover: lift 4px, image zoom 1.03x
- * - Performance: lazy load, WebP, LQIP
- *
- * Test IDs: product-card-gallery, card-image, card-title, card-price,
- *           action-wishlist, action-quickview, badge-type-*, badge-status-*
- *
- * Created: 2025-01-17 (SKY-43 Phase 1)
+ * SKY-43: GalleryCard Component (Neo-Brutalist Editorial Variant)
+ * 
+ * Aesthetic: High-Fashion / Art Gallery / Brutalist
+ * - Full bleed images
+ * - Monospace technical details
+ * - Serif display typography
+ * - Magnetic hover effects
+ * - "VIEW" custom cursor interaction
  */
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Image from 'next/image'
 import { Product } from '@/types/commerce'
-import { Badge } from '@/components/ui/Badge'
+import { motion } from 'framer-motion'
 
 interface GalleryCardProps {
   product: Product
@@ -39,6 +22,7 @@ interface GalleryCardProps {
   onWishlist?: (productId: string) => void
   loading?: boolean
   'data-testid'?: string
+  index?: number // For staggered animation
 }
 
 export function GalleryCard({
@@ -47,26 +31,21 @@ export function GalleryCard({
   onWishlist,
   loading = false,
   'data-testid': testId = 'product-card-gallery',
+  index = 0,
 }: GalleryCardProps) {
-  const [isWishlisted, setIsWishlisted] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 })
+  const cardRef = useRef<HTMLDivElement>(null)
 
-  // Loading skeleton
+  // Loading skeleton - Brutalist blocks
   if (loading) {
     return (
-      <article
-        data-testid={testId}
-        className="flex flex-col overflow-hidden bg-[var(--color-bg-primary)] animate-pulse"
-      >
-        <div className="relative w-full aspect-square bg-gray-200" />
-        <div className="p-[var(--card-padding)] space-y-2">
-          <div className="h-5 bg-gray-200 rounded w-3/4" />
-          <div className="h-4 bg-gray-200 rounded w-1/2" />
-          <div className="flex gap-2 mt-2">
-            <div className="h-12 bg-gray-200 rounded w-12" />
-            <div className="flex-1 h-12 bg-gray-200 rounded" />
-          </div>
+      <div className="w-full aspect-[3/4] bg-gray-200 animate-pulse relative overflow-hidden">
+        <div className="absolute bottom-0 left-0 w-full p-4 border-t border-black/10">
+          <div className="h-4 bg-black/10 w-2/3 mb-2" />
+          <div className="h-3 bg-black/10 w-1/3" />
         </div>
-      </article>
+      </div>
     )
   }
 
@@ -76,145 +55,95 @@ export function GalleryCard({
     currency: product.currency,
   }).format(product.price)
 
-  const handleWishlistClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    setIsWishlisted(!isWishlisted)
-    onWishlist?.(product.id)
-  }
-
-  const handleQuickViewClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    onQuickView?.(product.id)
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!cardRef.current) return
+    const rect = cardRef.current.getBoundingClientRect()
+    setCursorPos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    })
   }
 
   return (
-    <article
+    <motion.article
+      ref={cardRef}
       data-testid={testId}
-      className="group flex flex-col overflow-hidden bg-[var(--color-bg-primary)] transition-all duration-300 ease-out
-                 hover:translate-y-[-4px] hover:shadow-[0_8px_24px_var(--color-shadow-soft)]"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: index * 0.1, ease: [0.19, 1, 0.22, 1] }}
+      className="group relative w-full aspect-[3/4] bg-[var(--color-paper)] overflow-hidden cursor-none select-none"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onMouseMove={handleMouseMove}
+      onClick={() => onQuickView?.(product.id)}
     >
-      {/* Image Container with Badges */}
-      <div className="relative w-full aspect-square overflow-hidden" data-testid="card-image">
+      {/* Image Layer */}
+      <div className="absolute inset-0 w-full h-full transition-transform duration-700 ease-out group-hover:scale-105">
         <Image
           src={primaryImage}
-          alt={`${product.name}${product.artist ? ` by ${product.artist}` : ''}`}
+          alt={product.name}
           fill
-          className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+          className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
           sizes="(max-width: 640px) 100vw, (max-width: 900px) 50vw, 33vw"
           loading="lazy"
-          quality={85}
         />
-
-        {/* Type Badge (top-left) */}
-        {product.type === 'digital' && (
-          <Badge variant="digital" position="top-left">
-            Digital
-          </Badge>
-        )}
-        {product.type === 'physical' && (
-          <Badge variant="physical" position="top-left">
-            Physical
-          </Badge>
-        )}
-        {product.type === 'both' && (
-          <Badge variant="both" position="top-left">
-            Both
-          </Badge>
-        )}
-
-        {/* Status Badge (top-right) - priority: Limited > New > Featured */}
-        {product.isLimited && (
-          <Badge variant="limited" position="top-right">
-            Limited
-          </Badge>
-        )}
-        {!product.isLimited && product.isNew && (
-          <Badge variant="new" position="top-right">
-            New
-          </Badge>
-        )}
-        {!product.isLimited && !product.isNew && product.isFeatured && (
-          <Badge variant="featured" position="top-right">
-            Featured
-          </Badge>
-        )}
+        {/* Noise Overlay */}
+        <div className="absolute inset-0 bg-noise opacity-20 mix-blend-overlay pointer-events-none" />
       </div>
 
-      {/* Info Section */}
-      <div className="p-[var(--card-padding)] flex flex-col gap-2">
-        {/* Title */}
-        <h3
-          data-testid="card-title"
-          className="text-[var(--font-size-h4)] font-[var(--font-weight-medium)]
-                     leading-[var(--line-height-normal)] text-[var(--color-text-primary)]
-                     line-clamp-2 overflow-hidden"
+      {/* Custom Cursor Follower */}
+      {isHovered && (
+        <motion.div
+          className="absolute z-20 pointer-events-none flex items-center justify-center bg-[var(--color-acid-green)] text-black font-mono text-xs font-bold px-3 py-1 border border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ 
+            opacity: 1, 
+            scale: 1,
+            x: cursorPos.x - 40, // Offset to center
+            y: cursorPos.y - 20
+          }}
+          transition={{ type: "spring", stiffness: 500, damping: 28, mass: 0.5 }}
         >
-          {product.name}
-        </h3>
+          VIEW
+        </motion.div>
+      )}
 
-        {/* Meta: Price + Options Count */}
-        <div
-          data-testid="card-meta"
-          className="flex items-center gap-2 text-[var(--font-size-small)]
-                     text-[var(--color-text-secondary)]"
-        >
-          <span
-            data-testid="card-price"
-            className="text-[var(--font-size-h4)] font-[var(--font-weight-bold)]
-                       text-[var(--color-accent-primary)]"
-          >
-            {formattedPrice}
+      {/* Info Overlay - Minimal & Technical */}
+      <div className="absolute inset-0 p-4 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20">
+        
+        {/* Top Tags */}
+        <div className="flex justify-between items-start">
+          <span className="bg-white/90 backdrop-blur text-black font-mono text-[10px] px-2 py-1 uppercase tracking-wider border border-black">
+            {product.category || 'ART'}
           </span>
-          {product.optionsCount && product.optionsCount > 1 && (
-            <>
-              <span>•</span>
-              <span>{product.optionsCount} formats</span>
-            </>
+          {product.stock <= 5 && (
+             <span className="bg-[var(--color-electric-blue)] text-white font-mono text-[10px] px-2 py-1 uppercase tracking-wider border border-black">
+               LTD QTY
+             </span>
           )}
         </div>
 
-        {/* Actions: Wishlist + Quick View */}
-        <div className="flex items-center gap-2 mt-2">
-          {/* Wishlist Button (48x48px tap target) */}
-          <button
-            data-testid="action-wishlist"
-            onClick={handleWishlistClick}
-            aria-label="Add to wishlist"
-            aria-pressed={isWishlisted}
-            className="min-w-[var(--tap-target-min)] min-h-[var(--tap-target-min)]
-                       flex items-center justify-center bg-transparent border-none
-                       cursor-pointer transition-transform duration-[var(--timing-fast)]
-                       active:scale-[0.98]"
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill={isWishlisted ? 'var(--color-accent-primary)' : 'none'}
-              stroke="var(--color-text-primary)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-            </svg>
-          </button>
-
-          {/* Quick View Button (48px height, flexible width) */}
-          <button
-            data-testid="action-quickview"
-            onClick={handleQuickViewClick}
-            className="flex-1 min-h-[var(--tap-target-min)] px-4
-                       bg-[var(--color-accent-primary)] text-[var(--color-bg-primary)]
-                       text-[var(--font-size-small)] font-[var(--font-weight-medium)]
-                       rounded transition-all duration-[var(--timing-normal)]
-                       active:scale-[0.98] hover:bg-[var(--color-accent-hover)]
-                       border-none cursor-pointer"
-          >
-            Quick View
-          </button>
+        {/* Bottom Info */}
+        <div className="bg-white/95 backdrop-blur border border-black p-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <h3 className="font-display font-bold text-lg leading-tight mb-1 text-black">
+            {product.name}
+          </h3>
+          <div className="flex justify-between items-end border-t border-black/10 pt-2 mt-2">
+            <span className="font-mono text-xs text-gray-500">
+              ID: {product.id.slice(0, 4)}
+            </span>
+            <span className="font-mono font-bold text-lg text-black">
+              {formattedPrice}
+            </span>
+          </div>
         </div>
       </div>
-    </article>
+
+      {/* Mobile Always Visible Title (if not hovered) */}
+      <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/80 to-transparent md:hidden">
+         <h3 className="text-white font-display text-lg">{product.name}</h3>
+         <p className="text-white/80 font-mono text-sm">{formattedPrice}</p>
+      </div>
+    </motion.article>
   )
 }

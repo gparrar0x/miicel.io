@@ -53,6 +53,7 @@ export function QuickAddButton({ productId, onClick, className = '', disabled = 
       disabled={loading || added || disabled}
       className={`
         px-4 py-2 rounded-lg font-medium text-sm
+        min-h-[48px]
         transition-all duration-200
         ${loading || disabled
           ? 'bg-gray-300 text-gray-500 cursor-not-allowed'

@@ -52,23 +52,6 @@ export function RestaurantLayout({
   const router = useRouter()
   const { items, addItem, getTotalItems, getTotalPrice } = useCartStore()
 
-  // Collapsible categories state - all expanded by default
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
-    new Set(categories.map(c => c.id))
-  )
-
-  const toggleCategory = (categoryId: string) => {
-    setExpandedCategories(prev => {
-      const next = new Set(prev)
-      if (next.has(categoryId)) {
-        next.delete(categoryId)
-      } else {
-        next.add(categoryId)
-      }
-      return next
-    })
-  }
-
   const handleAddToCart = async (productId: string) => {
     const product = products.find((p) => p.id === productId)
     if (!product) return
@@ -184,70 +167,41 @@ export function RestaurantLayout({
       {/* Category Tabs Nav */}
       <CategoryTabsNav categories={categories} />
 
-      {/* Product Sections (by category) */}
+      {/* Product Sections (by category) - Scroll Spy Pattern */}
       <main>
-        {productsByCategory.map(({ category, products: categoryProducts }) => {
-          const isExpanded = expandedCategories.has(category.id)
-
-          return (
-            <section
-              key={category.id}
-              id={`category-${category.id}`}
-              className="mb-2"
+        {productsByCategory.map(({ category, products: categoryProducts }) => (
+          <section
+            key={category.id}
+            id={`category-${category.id}`}
+            className="mb-8 scroll-mt-28"
+          >
+            {/* Section Header - Static (no collapse) */}
+            <div
+              className="px-4 py-4 border-b border-gray-200 bg-white"
+              data-testid={`category-header-${category.slug}`}
             >
-              {/* Section Header - Collapsible */}
-              <button
-                onClick={() => toggleCategory(category.id)}
-                className="w-full px-4 py-4 border-b border-gray-200 bg-white hover:bg-gray-50 transition-colors"
-                data-testid={`category-header-${category.slug}`}
-              >
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold flex items-center gap-2 text-gray-900">
-                    <CategoryIcon icon={category.icon} category={category.slug} size="md" />
-                    {category.name}
-                    {category.productCount !== undefined && (
-                      <span className="text-sm text-gray-500 font-normal">
-                        ({category.productCount} {category.productCount === 1 ? 'producto' : 'productos'})
-                      </span>
-                    )}
-                  </h2>
+              <h2 className="text-xl font-bold flex items-center gap-2 text-gray-900">
+                <CategoryIcon icon={category.icon} category={category.slug} size="md" />
+                {category.name}
+                {category.productCount !== undefined && (
+                  <span className="text-sm text-gray-500 font-normal">
+                    ({category.productCount} {category.productCount === 1 ? 'producto' : 'productos'})
+                  </span>
+                )}
+              </h2>
+            </div>
 
-                  {/* Collapse/Expand Icon */}
-                  <svg
-                    className={`w-6 h-6 text-gray-600 transition-transform duration-200 ${
-                      isExpanded ? 'rotate-180' : ''
-                    }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </div>
-              </button>
-
-              {/* Product Grid - Collapsible */}
-              {isExpanded && (
-                <div
-                  data-testid={`category-products-${category.slug}`}
-                  className="animate-slideDown"
-                >
-                  <ProductGridRestaurant
-                    products={categoryProducts}
-                    onAddToCart={handleAddToCart}
-                    onProductClick={handleProductClick}
-                    currency={currency}
-                  />
-                </div>
-              )}
-            </section>
-          )
-        })}
+            {/* Product Grid - Always Visible */}
+            <div data-testid={`category-products-${category.slug}`}>
+              <ProductGridRestaurant
+                products={categoryProducts}
+                onAddToCart={handleAddToCart}
+                onProductClick={handleProductClick}
+                currency={currency}
+              />
+            </div>
+          </section>
+        ))}
 
         {/* Empty state */}
         {productsByCategory.every(({ products }) => products.length === 0) && (

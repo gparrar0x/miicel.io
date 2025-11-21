@@ -25,6 +25,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **SKY-12: Settings Page UI**: Admin interface for tenant configuration management
+  - **Settings Page**: `/[tenantId]/dashboard/settings` with tabbed interface
+  - **General Tab**: Business name, logo upload with preview, primary/secondary color pickers
+  - **Payment Tab**: MercadoPago access token with show/hide toggle
+  - **Contact Tab**: WhatsApp number, email, business hours (7 days/week)
+  - **API Integration**: Full CRUD with `/api/settings` (GET/PATCH) + `/api/settings/upload-logo` (POST)
+  - **Logo Upload**: File picker, preview, auto-upload on save
+  - **Form State**: useState hooks per tab, fetch on mount, save per tab
+  - **UX**: Loading states, success/error toasts, disabled states
+  - **Data Testids**: E2E test coverage with `data-testid` attributes
+
+- **SKY-11: Settings API**: Backend endpoints for tenant configuration management
+  - **GET /api/settings**: Fetch complete tenant settings (public + private config, decrypted MP token)
+  - **PATCH /api/settings**: Update tenant config, secure_config, mp_access_token (auto-encrypted)
+  - **POST /api/settings/upload-logo**: Logo upload to Supabase Storage with auto config update
+  - **Security**: AES-256-GCM encryption for payment tokens, ownership verification, RLS policies
+  - **Encryption**: Reuses `lib/encryption.ts` (encryptToken/decryptToken)
+  - **Validation**: File type/size checks (10MB max, PNG/JPEG/WEBP/SVG only)
+  - **Storage**: Assets bucket integration with public URLs
+
+- **SKY-10: Orders Management Page**: Admin interface for viewing and managing customer orders
+  - **Orders Page**: `/[tenantId]/dashboard/orders` with server-side data fetching
+  - **OrdersTable Component**: Sortable table with filters (search, status, date range), status badges
+  - **OrderDetailModal Component**: Full order details with customer info, items breakdown, payment details
+  - **Status Update**: Inline status transitions (pending→paid→preparing→ready→delivered, cancel anytime)
+  - **Print Invoice**: Browser-based invoice generation with order details, customer info, itemized list
+  - **Integration**: Reuses existing API routes (`/api/orders/list`, `/api/orders/[id]/status`)
+  - **Data Testids**: Full E2E test coverage with `data-testid` attributes throughout
+  - **Mobile Responsive**: Filters collapse on mobile, table horizontal scroll, modal full-screen
+
 - **SKY-43: Gallery Template Redesign**: Mobile-first QR gallery experience with Gallery White palette
   - **GalleryCard Component**: Art Gallery variant (1:1 images, 48x48px tap targets, Quick View button)
   - **ProductGrid Component**: Responsive grid (1 col portrait, 2 cols landscape, 3 cols desktop)
