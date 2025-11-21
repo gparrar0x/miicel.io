@@ -109,7 +109,9 @@ export async function POST(request: Request) {
       )
     }
 
-    if (tenant.owner_id !== user.id) {
+    const isSuperadmin = user.email?.toLowerCase().trim() === 'gparrar@skywalking.dev'
+
+    if (!isSuperadmin && tenant.owner_id !== user.id) {
       return NextResponse.json(
         { error: 'Forbidden. You do not own this tenant.' },
         { status: 403 }

@@ -177,7 +177,9 @@ export async function PATCH(
 
     // Type assertion for nested relation
     const tenants = product.tenants as unknown as { owner_id: string }
-    if (tenants.owner_id !== user.id) {
+    const isSuperadmin = user.email?.toLowerCase().trim() === 'gparrar@skywalking.dev'
+
+    if (!isSuperadmin && tenants.owner_id !== user.id) {
       return NextResponse.json(
         { error: 'Forbidden. You do not own this product.' },
         { status: 403 }
@@ -278,7 +280,9 @@ export async function DELETE(
 
     // Type assertion for nested relation
     const tenants = product.tenants as unknown as { owner_id: string }
-    if (tenants.owner_id !== user.id) {
+    const isSuperadmin = user.email?.toLowerCase().trim() === 'gparrar@skywalking.dev'
+
+    if (!isSuperadmin && tenants.owner_id !== user.id) {
       return NextResponse.json(
         { error: 'Forbidden. You do not own this product.' },
         { status: 403 }
