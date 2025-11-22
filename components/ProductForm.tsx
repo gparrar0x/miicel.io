@@ -94,6 +94,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                         accept="image/*"
                                         onChange={handleImageChange}
+                                        data-testid="product-image-input"
                                     />
                                 </div>
                             </div>
@@ -106,6 +107,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                                     {...register("name")}
                                     className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
                                     placeholder="Product Name"
+                                    data-testid="product-name-input"
                                 />
                                 {errors.name && (
                                     <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
@@ -120,6 +122,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                                     {...register("category")}
                                     className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
                                     placeholder="e.g., Burgers"
+                                    data-testid="product-category-input"
                                 />
                                 {errors.category && (
                                     <p className="mt-1 text-sm text-red-600">
@@ -140,6 +143,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                                     rows={4}
                                     className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
                                     placeholder="Product description..."
+                                    data-testid="product-description-input"
                                 />
                             </div>
 
@@ -157,6 +161,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                                             {...register("price")}
                                             className="block w-full rounded-md border border-gray-300 pl-7 pr-3 py-2 focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
                                             placeholder="0.00"
+                                            data-testid="product-price-input"
                                         />
                                     </div>
                                     {errors.price && (
@@ -174,6 +179,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                                         type="number"
                                         {...register("display_order")}
                                         className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm"
+                                        data-testid="product-display-order-input"
                                     />
                                 </div>
                             </div>
@@ -184,6 +190,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                                     {...register("active")}
                                     id="active"
                                     className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
+                                    data-testid="product-active-checkbox"
                                 />
                                 <label htmlFor="active" className="text-sm font-medium text-gray-700">
                                     Active Product
@@ -197,6 +204,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                             type="button"
                             onClick={onCancel}
                             className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
+                            data-testid="product-form-cancel-btn"
                         >
                             Cancel
                         </button>
@@ -204,6 +212,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                             type="submit"
                             disabled={isLoading}
                             className="inline-flex items-center justify-center rounded-md border border-transparent bg-black px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            data-testid="product-form-submit-btn"
                         >
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {initialData ? "Save Changes" : "Create Product"}

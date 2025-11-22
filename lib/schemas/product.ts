@@ -6,7 +6,7 @@ export const productSchema = z.object({
   description: z.string().nullable().optional(),
   price: z.coerce.number().min(0, "Price must be positive"),
   category: z.string().min(1, "Category is required"),
-  image_url: z.string().url().nullable().optional().or(z.literal("")),
+  image_url: z.union([z.string().url(), z.literal(""), z.null()]).optional(),
   active: z.boolean().default(true),
   display_order: z.coerce.number().int().default(0),
   metadata: z.record(z.any()).optional(),

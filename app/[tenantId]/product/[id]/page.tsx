@@ -16,7 +16,7 @@ import { ColorSelector } from '@/components/commerce/ColorSelector'
 import { QuantityControl } from '@/components/commerce/QuantityControl'
 import { AddToCartButton } from '@/components/commerce/AddToCartButton'
 import { ProductClient } from './ProductClient'
-import { ProductDetailWrapper } from '@/components/storefront/ProductDetailWrapper'
+import { ArtworkDetail } from '@/components/gallery-v2/ArtworkDetail'
 import { tenantConfigResponseSchema } from '@/lib/schemas/order'
 import { createClient } from '@/lib/supabase/server'
 import type { Product, ProductColor } from '@/types/commerce'
@@ -98,56 +98,34 @@ export default async function ProductPage({ params }: PageProps) {
     product.stock = 999
   }
 
-  // Gallery template: Use new ProductDetailWrapper (SKY-43)
+  // Gallery template: Use new ArtworkDetail (v0 design)
   if (config.template === 'gallery') {
-    // Transform product data for ProductDetailWrapper
-    const productDetail = {
+    const artwork = {
       id: product.id,
-      name: product.name,
-      artist: product.artist
-        ? {
-            id: product.artist,
-            name: product.artist,
-            slug: product.artist.toLowerCase().replace(/\s+/g, '-'),
-          }
-        : undefined,
+      title: product.name,
+      artist: product.artist || 'Unknown Artist',
+      year: new Date().getFullYear(),
+      description: product.description || '',
+      technique: 'Mixed Media',
+      collection: product.category || 'All Works',
+      image: product.images[0] || '/placeholder.svg',
       price: product.price,
       currency: product.currency,
-      priceType: 'fixed' as const, // MVP: fixed price, future: 'from' if options
-      description: product.description || '',
-      images: product.images.map((url, idx) => ({
-        id: `${product.id}-${idx}`,
-        url,
-        alt: product.name,
-        width: 800,
-        height: 800,
-      })),
-      options: [
-        // MVP: Single option (physical product)
-        {
-          id: `${product.id}-default`,
-          type: 'physical' as const,
-          title: 'Standard',
-          specs: ['In stock', `${product.stock} available`],
-          price: product.price,
-          currency: product.currency,
-          stock: product.stock,
-          sku: product.id,
-        },
-      ],
+      sizes: [{
+        id: 'default',
+        dimensions: 'Standard',
+        price: product.price,
+        stock: product.stock,
+        label: 'Standard'
+      }],
+      isLimitedEdition: product.isLimited || false
     }
 
     return (
       <ThemeProvider config={config}>
-        <main
-          className="min-h-screen"
-          style={{ backgroundColor: 'var(--color-bg-secondary)' }}
-        >
+        <main className="min-h-screen bg-background text-foreground">
           <TenantHeader config={config} />
-          <ProductDetailWrapper
-            product={productDetail}
-            tenantId={tenantId}
-          />
+          <ArtworkDetail artwork={artwork} relatedArtworks={[]} tenantId={tenantId} />
         </main>
       </ThemeProvider>
     )

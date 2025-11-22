@@ -9,7 +9,7 @@ import Link from 'next/link'
 import { TenantHeader } from '@/components/commerce/TenantHeader'
 import { ThemeProvider } from '@/components/commerce/ThemeProvider'
 import { ProductGrid as ProductGridLegacy } from '@/components/commerce/ProductGrid'
-import { GalleryGridWrapper } from '@/components/storefront/GalleryGridWrapper'
+import { GalleryGrid } from '@/components/gallery-v2/GalleryGrid'
 import { CartBadge } from '@/components/commerce/CartBadge'
 import { RestaurantLayout } from '@/components/restaurant/layouts/RestaurantLayout'
 import { tenantConfigResponseSchema } from '@/lib/schemas/order'
@@ -167,7 +167,63 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
     )
   }
 
-  // Default templates: gallery/detail/minimal
+  if (config.template === 'gallery') {
+    // Transform products to Artwork format for new GalleryGrid
+    const artworks = products.map(p => ({
+      id: p.id,
+      title: p.name,
+      artist: p.artist || 'Unknown Artist',
+      year: new Date().getFullYear(), // Placeholder until DB update
+      description: p.description || '',
+      technique: 'Mixed Media', // Placeholder
+      collection: p.category || 'All Works',
+      image: p.images[0] || '/placeholder.svg',
+      price: p.price,
+      currency: config.currency,
+      sizes: [{
+        id: 'default',
+        dimensions: 'Standard',
+        price: p.price,
+        stock: p.stock,
+        label: 'Standard'
+      }],
+      isLimitedEdition: p.isLimited || false
+    }))
+
+    return (
+      <ThemeProvider config={config}>
+        <main className="min-h-screen bg-background text-foreground">
+          <TenantHeader config={config} />
+          <div className="container mx-auto px-4 py-8">
+             <GalleryGrid artworks={artworks} collections={categories} tenantId={tenantId} />
+          </div>
+          {/* Floating Cart Button - Brutalist Style (Keep for now) */}
+          <Link
+            href={`/${tenantId}/cart`}
+            className="fixed bottom-8 right-8 w-16 h-16 bg-black text-white flex items-center justify-center z-50 shadow-[4px_4px_0px_0px_rgba(255,255,255,1),8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1),10px_10px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
+            data-testid="cart-floating-button"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="square"
+                strokeLinejoin="miter"
+                strokeWidth={2}
+                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+              />
+            </svg>
+            <CartBadge />
+          </Link>
+        </main>
+      </ThemeProvider>
+    )
+  }
+
+  // Default templates: detail/minimal (Legacy)
   return (
     <ThemeProvider config={config}>
       <main className="min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)]">

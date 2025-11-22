@@ -135,13 +135,6 @@ export class AdminLayoutPage {
   }
 
   /**
-   * Check if sidebar is in viewport (visible on desktop)
-   */
-  async isSidebarInViewport(): Promise<boolean> {
-    return await this.sidebar.isInViewport()
-  }
-
-  /**
    * Get current URL pathname
    */
   getCurrentPath(): string {
@@ -167,7 +160,7 @@ export class AdminLayoutPage {
    * Wait for sidebar to be hidden with timeout
    */
   async waitForSidebarHidden(timeout = 5000) {
-    await expect(this.sidebar).not.toBeInViewport({ timeout })
+    await expect(this.sidebar).not.toBeVisible({ timeout })
   }
 
   /**
