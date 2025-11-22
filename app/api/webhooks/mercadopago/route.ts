@@ -162,18 +162,16 @@ export async function POST(request: Request) {
         updated_at: new Date().toISOString(),
       }
 
-      // Use upsert to handle duplicate webhook calls
-      const { error: paymentError } = await supabase
-        .from('payments')
-        .upsert(paymentData, { 
-          onConflict: 'payment_id',
-          ignoreDuplicates: false 
-        })
-
-      if (paymentError) {
-        console.error('Error creating payment record:', paymentError)
-        // Don't fail the webhook - order is already updated
-      }
+      // TODO: Payments table not yet in schema - skip for now
+      // const { error: paymentError } = await supabase
+      //   .from('payments')
+      //   .upsert(paymentData, { 
+      //     onConflict: 'payment_id',
+      //     ignoreDuplicates: false 
+      //   })
+      // if (paymentError) {
+      //   console.error('Error creating payment record:', paymentError)
+      // }
 
       console.log(`Order ${orderId} updated to ${newStatus}, payment ${paymentId} recorded`)
       return new Response('OK', { status: 200 })

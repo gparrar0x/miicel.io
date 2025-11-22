@@ -154,7 +154,7 @@ export function KitchenDisplayOrders({
                     <p className="text-gray-600">
                         {activeFilter === 'all'
                             ? t('noOrdersDesc')
-                            : t('noOrdersFilter', { filter: activeFilterConfig?.label.toLowerCase() })}
+                            : t('noOrdersFilter', { filter: activeFilterConfig?.label?.toLowerCase() || activeFilter })}
                     </p>
                 </div>
             )}

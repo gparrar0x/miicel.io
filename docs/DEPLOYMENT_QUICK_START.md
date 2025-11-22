@@ -1,17 +1,17 @@
-# SKY-4 Deployment Quick Start
-**Status:** READY FOR DEPLOYMENT
-**ETA:** 15 minutes after Vercel access
+# Deployment Quick Start
+
+> **⚠️ DEPRECATED:** This document is outdated.
+> 
+> **See:** [`VERCEL_DEPLOYMENT_GUIDE.md`](VERCEL_DEPLOYMENT_GUIDE.md) for current deployment instructions.
+> 
+> **Quick summary:** [`VERCEL_DEPLOYMENT_SUMMARY.md`](VERCEL_DEPLOYMENT_SUMMARY.md)
 
 ---
 
-## TL;DR
+## Legacy Content (SKY-4)
 
-All code complete. Build passes. Webhook implemented. Bundle safe.
-
-**Only needs:**
-1. Copy env vars to Vercel (5min)
-2. Deploy (5min)
-3. Register webhook in MP (5min)
+**Status:** SUPERSEDED BY SKY-15
+**Date:** 2025-11-16 → 2025-11-22
 
 ---
 

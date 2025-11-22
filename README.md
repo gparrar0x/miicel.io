@@ -90,7 +90,11 @@ npm run format
 
 ## Deployment
 
-See [`docs/DEPLOYMENT_QUICK_START.md`](docs/DEPLOYMENT_QUICK_START.md)
+**Production:** https://sw-commerce-vendio.vercel.app
+
+See deployment guides:
+- [`docs/VERCEL_DEPLOYMENT_GUIDE.md`](docs/VERCEL_DEPLOYMENT_GUIDE.md) - Complete setup instructions
+- [`docs/VERCEL_DEPLOYMENT_SUMMARY.md`](docs/VERCEL_DEPLOYMENT_SUMMARY.md) - Quick reference
 
 Deploy to Vercel:
 ```bash

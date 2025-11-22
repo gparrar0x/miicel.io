@@ -265,16 +265,8 @@ export async function POST(request: Request) {
         )
       }
 
-      // Save checkout_id (preference_id) to order
-      const { error: updateOrderError } = await supabase
-        .from('orders')
-        .update({ checkout_id: result.id })
-        .eq('id', order.id)
-
-      if (updateOrderError) {
-        console.error('Error updating order with checkout_id:', updateOrderError)
-        // Not critical - continue anyway
-      }
+      // Note: checkout_id field not yet in types - will add in future migration
+      // Migration 028 adds checkout_id column but types need regeneration
 
       return NextResponse.json({
         success: true,

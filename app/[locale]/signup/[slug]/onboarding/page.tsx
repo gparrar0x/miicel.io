@@ -348,41 +348,41 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Logo uploader */}
               <div className="max-w-md mx-auto w-full">
-                <label className="block">
-                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center hover:border-blue-500 transition-colors cursor-pointer">
-                    {data.logoUrl ? (
-                      <div className="space-y-4">
-                        <img
-                          src={data.logoUrl}
-                          alt="Logo preview"
-                          className="max-w-full h-48 mx-auto object-contain"
-                          data-testid="onboarding-logo-preview"
-                        />
-                        <p className="text-sm text-gray-600">Click para cambiar</p>
+              <label className="block">
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center hover:border-blue-500 transition-colors cursor-pointer">
+                  {data.logoUrl ? (
+                    <div className="space-y-4">
+                      <img
+                        src={data.logoUrl}
+                        alt="Logo preview"
+                        className="max-w-full h-48 mx-auto object-contain"
+                        data-testid="onboarding-logo-preview"
+                      />
+                      <p className="text-sm text-gray-600">Click para cambiar</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <Upload size={48} className="mx-auto text-gray-400" />
+                      <div>
+                        <p className="text-lg font-medium text-gray-900">Sube tu logo</p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          JPG o PNG, max 2MB
+                        </p>
                       </div>
-                    ) : (
-                      <div className="space-y-4">
-                        <Upload size={48} className="mx-auto text-gray-400" />
-                        <div>
-                          <p className="text-lg font-medium text-gray-900">Sube tu logo</p>
-                          <p className="text-sm text-gray-500 mt-1">
-                            JPG o PNG, max 2MB
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0]
-                      if (file) handleLogoUpload(file)
-                    }}
-                    className="hidden"
-                    data-testid="onboarding-logo-input"
-                  />
-                </label>
+                    </div>
+                  )}
+                </div>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) handleLogoUpload(file)
+                  }}
+                  className="hidden"
+                  data-testid="onboarding-logo-input"
+                />
+              </label>
               </div>
 
               {/* Banner uploader */}

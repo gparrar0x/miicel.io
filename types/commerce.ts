@@ -43,6 +43,7 @@ export interface Product {
   isNew?: boolean
   isLimited?: boolean
   isFeatured?: boolean
+  metadata?: any
 }
 
 /**

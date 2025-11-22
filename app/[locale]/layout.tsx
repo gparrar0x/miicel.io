@@ -3,6 +3,8 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '../../i18n/routing';
 import { Toaster } from 'sonner';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import "../globals.css";
 
 export default async function LocaleLayout({
@@ -29,6 +31,8 @@ export default async function LocaleLayout({
                 <NextIntlClientProvider messages={messages}>
                     {children}
                     <Toaster position="top-right" />
+                    <Analytics />
+                    <SpeedInsights />
                 </NextIntlClientProvider>
             </body>
         </html>

@@ -1,0 +1,10 @@
+# Exclude from Vercel build
+app_backup/
+artist-gallery-system/
+digital-menu-prototype/
+*.zip
+docs/backlog/
+docs/leasons_learned/
+tests/
+scripts/
+

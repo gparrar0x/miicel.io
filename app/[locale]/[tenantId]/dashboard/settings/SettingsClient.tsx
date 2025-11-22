@@ -378,43 +378,43 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
 
                                     {/* Logo & Banner */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        {/* Logo */}
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                {t('logo')}
-                                            </label>
-                                            {logoUrl && !logoFile && (
-                                                <div className="mb-4">
-                                                    <Image
-                                                        src={logoUrl}
-                                                        alt="Current logo"
-                                                        width={120}
-                                                        height={120}
-                                                        className="rounded-lg border"
-                                                    />
-                                                </div>
-                                            )}
-                                            {logoFile && (
-                                                <div className="mb-4">
-                                                    <p className="text-sm text-gray-600">
-                                                        {t('newFile')} {logoFile.name}
-                                                    </p>
-                                                </div>
-                                            )}
-                                            <label className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer">
-                                                <Upload className="h-4 w-4" />
-                                                {t('chooseLogo')}
-                                                <input
-                                                    type="file"
-                                                    accept="image/*"
-                                                    onChange={(e) => {
-                                                        const file = e.target.files?.[0]
-                                                        if (file) setLogoFile(file)
-                                                    }}
-                                                    className="hidden"
-                                                    data-testid="input-logo-file"
+                                    {/* Logo */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            {t('logo')}
+                                        </label>
+                                        {logoUrl && !logoFile && (
+                                            <div className="mb-4">
+                                                <Image
+                                                    src={logoUrl}
+                                                    alt="Current logo"
+                                                    width={120}
+                                                    height={120}
+                                                    className="rounded-lg border"
                                                 />
-                                            </label>
+                                            </div>
+                                        )}
+                                        {logoFile && (
+                                            <div className="mb-4">
+                                                <p className="text-sm text-gray-600">
+                                                    {t('newFile')} {logoFile.name}
+                                                </p>
+                                            </div>
+                                        )}
+                                        <label className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer">
+                                            <Upload className="h-4 w-4" />
+                                            {t('chooseLogo')}
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0]
+                                                    if (file) setLogoFile(file)
+                                                }}
+                                                className="hidden"
+                                                data-testid="input-logo-file"
+                                            />
+                                        </label>
                                         </div>
 
                                         {/* Banner */}

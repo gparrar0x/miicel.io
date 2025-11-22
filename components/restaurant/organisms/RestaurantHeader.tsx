@@ -59,14 +59,14 @@ export function RestaurantHeader({
       <div className="relative h-full container mx-auto px-4 flex flex-col justify-end pb-8">
         <div className="inline-flex flex-col gap-3 bg-black/55 backdrop-blur-sm rounded-2xl px-4 py-3 max-w-xl">
           <div className="flex items-end gap-4">
-            {tenantLogo && (
-              <img
-                src={tenantLogo}
-                alt={tenantName}
-                className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-white shadow-lg object-cover"
-              />
-            )}
-            <div className="flex-1">
+          {tenantLogo && (
+            <img
+              src={tenantLogo}
+              alt={tenantName}
+              className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-white shadow-lg object-cover"
+            />
+          )}
+          <div className="flex-1">
               <h1 className="text-4xl md:text-5xl font-bold text-white text-balance drop-shadow-md">
                 {tenantName}
               </h1>
