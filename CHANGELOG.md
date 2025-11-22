@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Gallery Template V2 Integration (v0 Design)**: Complete frontend implementation of the modern "Gallery" template
+  - **New Components**:
+    - `GalleryGrid`: Responsive artwork grid with collection filtering tabs
+    - `ArtworkDetail`: Immersive product detail view with size selection and "Add to Cart" animation
+    - `GalleryHeader`: Minimalist sticky header with cart drawer integration
+    - `CartSheet`: Slide-over cart with updated styling
+  - **UI Library**: Added `ScrollArea`, `Tabs`, and `ShadcnBadge` to `components/ui/`
+  - **Styling**:
+    - Unified Shadcn/OKLCH CSS variables in `globals.css`
+    - Forced monochrome light theme for all gallery template pages
+    - Updated typography and spacing to match "Art Gallery" aesthetic
+  - **Pages**: Integrated new components into `app/[locale]/[tenantId]/page.tsx` and `product/[id]/page.tsx`
+
 ### Security
 
 - **Security Audit & Performance Review (SKY-14)**: Production-ready security hardening
