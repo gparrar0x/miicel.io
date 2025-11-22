@@ -5,6 +5,7 @@ import { OrderResponse } from "@/lib/schemas/order"
 import { KitchenOrderCard } from "./KitchenOrderCard"
 import { RefreshCw, Bell, BellOff } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useTranslations } from "next-intl"
 
 interface KitchenDisplayOrdersProps {
     orders: OrderResponse[]
@@ -14,13 +15,6 @@ interface KitchenDisplayOrdersProps {
     onRefresh?: () => void
 }
 
-const quickFilters = [
-    { id: 'new', label: 'NEW', statuses: ['pending', 'paid'], emoji: '🔴', color: 'bg-red-500' },
-    { id: 'preparing', label: 'COOKING', statuses: ['preparing'], emoji: '🟣', color: 'bg-purple-500' },
-    { id: 'ready', label: 'READY', statuses: ['ready'], emoji: '🟢', color: 'bg-green-500' },
-    { id: 'all', label: 'ALL', statuses: [], emoji: '⚪', color: 'bg-gray-500' }
-]
-
 export function KitchenDisplayOrders({
     orders,
     onViewOrder,
@@ -28,9 +22,18 @@ export function KitchenDisplayOrders({
     onPrint,
     onRefresh
 }: KitchenDisplayOrdersProps) {
+    const t = useTranslations('Orders')
+
     const [activeFilter, setActiveFilter] = useState('new')
     const [soundEnabled, setSoundEnabled] = useState(false)
     const [lastOrderCount, setLastOrderCount] = useState(orders.length)
+
+    const quickFilters = [
+        { id: 'new', label: t('filters.new'), statuses: ['pending', 'paid'], emoji: '🔴', color: 'bg-red-500' },
+        { id: 'preparing', label: t('filters.cooking'), statuses: ['preparing'], emoji: '🟣', color: 'bg-purple-500' },
+        { id: 'ready', label: t('filters.ready'), statuses: ['ready'], emoji: '🟢', color: 'bg-green-500' },
+        { id: 'all', label: t('filters.all'), statuses: [], emoji: '⚪', color: 'bg-gray-500' }
+    ]
 
     // Auto-refresh every 30 seconds
     useEffect(() => {
@@ -84,7 +87,7 @@ export function KitchenDisplayOrders({
             {/* Sticky Filter Tabs */}
             <div className="sticky top-0 z-10 bg-gray-50 pt-4 pb-2 -mx-4 px-4">
                 <div className="flex items-center justify-between mb-3">
-                    <h2 className="text-xl font-bold text-gray-900">Kitchen Display</h2>
+                    <h2 className="text-xl font-bold text-gray-900">{t('kitchenDisplay')}</h2>
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => setSoundEnabled(!soundEnabled)}
@@ -147,11 +150,11 @@ export function KitchenDisplayOrders({
                     <div className="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center mb-4">
                         <span className="text-5xl">✨</span>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">No orders here!</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">{t('noOrdersTitle')}</h3>
                     <p className="text-gray-600">
                         {activeFilter === 'all'
-                            ? 'No orders yet. They will appear here when customers place orders.'
-                            : `No ${activeFilterConfig?.label.toLowerCase()} orders right now.`}
+                            ? t('noOrdersDesc')
+                            : t('noOrdersFilter', { filter: activeFilterConfig?.label.toLowerCase() })}
                     </p>
                 </div>
             )}

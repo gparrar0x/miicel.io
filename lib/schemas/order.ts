@@ -133,8 +133,20 @@ export const configColorsSchema = z.object({
  */
 export const tenantConfigSchema = z.object({
   logo: z.string().url('Invalid logo URL').optional(),
+  banner: z.string().url('Invalid banner URL').optional(),
   colors: configColorsSchema,
   business_name: z.string().min(2, 'Business name required'),
+  subtitle: z.string().optional(),
+  location: z.string().optional(),
+  hours: z
+    .record(
+      z.string(),
+      z.object({
+        open: z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format (HH:MM)'),
+        close: z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format (HH:MM)'),
+      })
+    )
+    .optional(),
 })
 
 export type TenantConfig = z.infer<typeof tenantConfigSchema>

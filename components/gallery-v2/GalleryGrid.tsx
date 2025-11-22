@@ -1,12 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { Artwork } from "./types"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { Badge } from "@/components/ui/shadcn-badge"
+import { Button } from "@/components/ui/button"
+import { useCartStore } from "@/lib/stores/cartStore"
+import { ShoppingBag } from "lucide-react"
 
 interface GalleryGridProps {
   artworks: Artwork[]
@@ -16,6 +19,13 @@ interface GalleryGridProps {
 
 export function GalleryGrid({ artworks, collections, tenantId }: GalleryGridProps) {
   const [activeCollection, setActiveCollection] = useState("All Works")
+  const { getTotalItems } = useCartStore()
+  
+  // Hydration fix: only render cart button after mount
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  
+  const totalItems = mounted ? getTotalItems() : 0
 
   const filteredArtworks =
     activeCollection === "All Works" ? artworks : artworks.filter((a) => a.collection === activeCollection)
@@ -103,6 +113,24 @@ export function GalleryGrid({ artworks, collections, tenantId }: GalleryGridProp
       {filteredArtworks.length === 0 && (
         <div className="text-center py-20">
           <p className="text-gray-400">No artworks found in this collection.</p>
+        </div>
+      )}
+
+      {/* Floating View Cart Button */}
+      {mounted && totalItems > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-sm border-t z-40 safe-area-bottom shadow-sm" style={{ borderColor: 'var(--color-border-subtle)' }}>
+          <div className="container mx-auto max-w-4xl">
+            <Link href={`/${tenantId}/cart`}>
+              <Button
+                size="lg"
+                className="w-full h-14 text-lg rounded-full text-white shadow-lg font-medium flex items-center justify-center gap-2"
+                style={{ backgroundColor: 'var(--color-accent-primary)' }}
+              >
+                <ShoppingBag className="h-5 w-5" />
+                Ir a Pagar ({totalItems})
+              </Button>
+            </Link>
+          </div>
         </div>
       )}
     </div>

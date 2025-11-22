@@ -121,6 +121,7 @@ export async function POST(request: Request) {
           newStatus = 'pending'
       }
 
+      // 6. Update order status
       const { error: updateError } = await supabase
         .from('orders')
         .update({
@@ -135,7 +136,46 @@ export async function POST(request: Request) {
         return new Response('Database error', { status: 500 })
       }
 
-      console.log(`Order ${orderId} updated to ${newStatus} (payment ${paymentId})`)
+      // 7. Create or update payment record
+      const paymentData = {
+        order_id: orderId,
+        payment_id: paymentId.toString(),
+        status: paymentInfo.status || 'unknown',
+        status_detail: paymentInfo.status_detail || null,
+        payment_type: paymentInfo.payment_type_id || null,
+        payment_method_id: paymentInfo.payment_method_id || null,
+        amount: paymentInfo.transaction_amount || 0,
+        currency: paymentInfo.currency_id || 'ARS',
+        payer_email: paymentInfo.payer?.email || null,
+        payer_name: paymentInfo.payer ? 
+          `${paymentInfo.payer.first_name || ''} ${paymentInfo.payer.last_name || ''}`.trim() || null 
+          : null,
+        metadata: {
+          merchant_order_id: paymentInfo.order?.id || null,
+          transaction_details: paymentInfo.transaction_details || null,
+          card_info: paymentInfo.card ? {
+            first_six_digits: paymentInfo.card.first_six_digits,
+            last_four_digits: paymentInfo.card.last_four_digits,
+          } : null,
+          payment_date: paymentInfo.date_approved || paymentInfo.date_created,
+        },
+        updated_at: new Date().toISOString(),
+      }
+
+      // Use upsert to handle duplicate webhook calls
+      const { error: paymentError } = await supabase
+        .from('payments')
+        .upsert(paymentData, { 
+          onConflict: 'payment_id',
+          ignoreDuplicates: false 
+        })
+
+      if (paymentError) {
+        console.error('Error creating payment record:', paymentError)
+        // Don't fail the webhook - order is already updated
+      }
+
+      console.log(`Order ${orderId} updated to ${newStatus}, payment ${paymentId} recorded`)
       return new Response('OK', { status: 200 })
     }
 

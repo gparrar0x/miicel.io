@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { OrderResponse } from "@/lib/schemas/order"
 import { Eye, Printer, Search } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 interface OrdersTableProps {
     orders: OrderResponse[]
@@ -20,16 +21,19 @@ const statusColors = {
     cancelled: "bg-red-50 text-red-700 ring-red-600/20"
 }
 
-const statusOptions = [
-    { value: 'pending', label: 'Pending' },
-    { value: 'paid', label: 'Paid' },
-    { value: 'preparing', label: 'Preparing' },
-    { value: 'ready', label: 'Ready' },
-    { value: 'delivered', label: 'Delivered' },
-    { value: 'cancelled', label: 'Cancelled' }
-]
-
 export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: OrdersTableProps) {
+    const t = useTranslations('Orders')
+    const tCommon = useTranslations('Common')
+
+    const statusOptions = [
+        { value: 'pending', label: t('statuses.pending') },
+        { value: 'paid', label: t('statuses.paid') },
+        { value: 'preparing', label: t('statuses.preparing') },
+        { value: 'ready', label: t('statuses.ready') },
+        { value: 'delivered', label: t('statuses.delivered') },
+        { value: 'cancelled', label: t('statuses.cancelled') }
+    ]
+
     const [searchTerm, setSearchTerm] = useState("")
     const [statusFilter, setStatusFilter] = useState<string>("ALL")
     const [dateFrom, setDateFrom] = useState("")
@@ -59,7 +63,7 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
                         <input
                             data-testid="orders-search-input"
-                            placeholder="Search by ID, customer..."
+                            placeholder={t('searchPlaceholder')}
                             className="pl-8 h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF6B35] text-[#1A1A1A]"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -71,7 +75,7 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                     >
-                        <option value="ALL">All Status</option>
+                        <option value="ALL">{t('allStatus')}</option>
                         {statusOptions.map(opt => (
                             <option key={opt.value} value={opt.value}>{opt.label}</option>
                         ))}
@@ -82,7 +86,7 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
                         className="h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF6B35] text-[#1A1A1A]"
                         value={dateFrom}
                         onChange={(e) => setDateFrom(e.target.value)}
-                        placeholder="From"
+                        placeholder={tCommon('from')}
                     />
                     <input
                         data-testid="orders-date-to"
@@ -90,14 +94,14 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
                         className="h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF6B35] text-[#1A1A1A]"
                         value={dateTo}
                         onChange={(e) => setDateTo(e.target.value)}
-                        placeholder="To"
+                        placeholder={tCommon('to')}
                     />
                 </div>
             </div>
 
             {/* Results count */}
             <div className="text-sm text-gray-600">
-                Showing {filteredOrders.length} of {orders.length} orders
+                {t('showing', { count: filteredOrders.length, total: orders.length })}
             </div>
 
             {/* Table */}
@@ -106,19 +110,19 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
                     <table className="w-full text-sm text-left" data-testid="orders-table">
                         <thead className="bg-gray-50 text-gray-700 font-medium border-b">
                             <tr>
-                                <th className="px-4 py-3">Order ID</th>
-                                <th className="px-4 py-3">Date</th>
-                                <th className="px-4 py-3">Customer</th>
-                                <th className="px-4 py-3 text-right">Total</th>
-                                <th className="px-4 py-3 text-center">Status</th>
-                                <th className="px-4 py-3 text-right">Actions</th>
+                                <th className="px-4 py-3">{t('orderId')}</th>
+                                <th className="px-4 py-3">{t('date')}</th>
+                                <th className="px-4 py-3">{t('customer')}</th>
+                                <th className="px-4 py-3 text-right">{t('total')}</th>
+                                <th className="px-4 py-3 text-center">{t('status')}</th>
+                                <th className="px-4 py-3 text-right">{tCommon('actions')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y">
                             {filteredOrders.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
-                                        No orders found.
+                                        {t('noOrders')}
                                     </td>
                                 </tr>
                             ) : (
@@ -153,7 +157,7 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
                                                     )}
                                                 </>
                                             ) : (
-                                                <span className="text-gray-400 text-sm">No customer</span>
+                                                <span className="text-gray-400 text-sm">{t('noCustomer')}</span>
                                             )}
                                         </td>
                                         <td className="px-4 py-3 text-right font-medium">
@@ -166,7 +170,7 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
                                                 }`}
                                                 data-testid={`order-status-badge-${order.id}`}
                                             >
-                                                {order.status.toUpperCase()}
+                                                {t(`statuses.${order.status}`)}
                                             </span>
                                         </td>
                                         <td className="px-4 py-3 text-right">
@@ -174,7 +178,7 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
                                                 <button
                                                     onClick={() => onViewOrder(order)}
                                                     className="p-2 hover:bg-gray-100 rounded-md text-gray-600 hover:text-blue-600 transition-colors"
-                                                    title="View Details"
+                                                    title={t('viewDetails')}
                                                     data-testid={`view-order-${order.id}`}
                                                 >
                                                     <Eye className="h-4 w-4" />
@@ -182,7 +186,7 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
                                                 <button
                                                     onClick={() => onPrint(order)}
                                                     className="p-2 hover:bg-gray-100 rounded-md text-gray-600 hover:text-green-600 transition-colors"
-                                                    title="Print Invoice"
+                                                    title={t('printInvoice')}
                                                     data-testid={`print-order-${order.id}`}
                                                 >
                                                     <Printer className="h-4 w-4" />

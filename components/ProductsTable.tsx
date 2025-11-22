@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Product } from "@/lib/schemas/product"
 import { Edit, Trash2, Plus, Search, Filter } from "lucide-react"
 import Image from "next/image"
+import { useTranslations } from "next-intl"
 
 interface ProductsTableProps {
     products: Product[]
@@ -13,6 +14,9 @@ interface ProductsTableProps {
 }
 
 export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTableProps) {
+    const t = useTranslations('Products')
+    const tCommon = useTranslations('Common')
+
     const [searchTerm, setSearchTerm] = useState("")
     const [categoryFilter, setCategoryFilter] = useState<string>("ALL")
     const [activeFilter, setActiveFilter] = useState<string>("ALL")
@@ -36,7 +40,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                     <div className="relative flex-1 sm:w-64">
                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
                         <input
-                            placeholder="Search products..."
+                            placeholder={t('table.search')}
                             className="pl-8 h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF6B35] text-[#1A1A1A]"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -47,7 +51,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                         value={categoryFilter}
                         onChange={(e) => setCategoryFilter(e.target.value)}
                     >
-                        <option value="ALL">All Categories</option>
+                        <option value="ALL">{t('table.allCategories')}</option>
                         {categories.map((cat) => (
                             <option key={cat} value={cat}>
                                 {cat}
@@ -59,9 +63,9 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                         value={activeFilter}
                         onChange={(e) => setActiveFilter(e.target.value)}
                     >
-                        <option value="ALL">All Status</option>
-                        <option value="ACTIVE">Active</option>
-                        <option value="INACTIVE">Inactive</option>
+                        <option value="ALL">{t('table.allStatus')}</option>
+                        <option value="ACTIVE">{t('active')}</option>
+                        <option value="INACTIVE">{t('inactive')}</option>
                     </select>
                 </div>
                 <button
@@ -69,7 +73,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                     className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-black text-white shadow hover:bg-black/90 h-9 px-4 py-2"
                 >
                     <Plus className="mr-2 h-4 w-4" />
-                    Add Product
+                    {t('addProduct')}
                 </button>
             </div>
 
@@ -78,19 +82,19 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                     <table className="w-full text-sm text-left">
                         <thead className="bg-gray-50 text-gray-700 font-medium border-b">
                             <tr>
-                                <th className="px-4 py-3 w-[80px]">Image</th>
-                                <th className="px-4 py-3">Name</th>
-                                <th className="px-4 py-3">Category</th>
-                                <th className="px-4 py-3">Price</th>
-                                <th className="px-4 py-3 text-center">Status</th>
-                                <th className="px-4 py-3 text-right">Actions</th>
+                                <th className="px-4 py-3 w-[80px]">{t('form.image')}</th>
+                                <th className="px-4 py-3">{t('name')}</th>
+                                <th className="px-4 py-3">{t('category')}</th>
+                                <th className="px-4 py-3">{t('price')}</th>
+                                <th className="px-4 py-3 text-center">{tCommon('active')}</th>
+                                <th className="px-4 py-3 text-right">{tCommon('actions')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y">
                             {filteredProducts.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
-                                        No products found.
+                                        {t('table.noProducts')}
                                     </td>
                                 </tr>
                             ) : (
@@ -107,7 +111,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                                                     />
                                                 ) : (
                                                     <div className="flex items-center justify-center h-full text-gray-400">
-                                                        <span className="text-xs">No img</span>
+                                                        <span className="text-xs">{t('table.noImg')}</span>
                                                     </div>
                                                 )}
                                             </div>
@@ -135,7 +139,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                                                     : "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20"
                                                     }`}
                                             >
-                                                {product.active ? "Active" : "Inactive"}
+                                                {product.active ? t('active') : t('inactive')}
                                             </span>
                                         </td>
                                         <td className="px-4 py-3 text-right">
@@ -143,14 +147,14 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                                                 <button
                                                     onClick={() => onEdit(product)}
                                                     className="p-2 hover:bg-gray-100 rounded-md text-gray-600 hover:text-blue-600 transition-colors"
-                                                    title="Edit"
+                                                    title={tCommon('edit')}
                                                 >
                                                     <Edit className="h-4 w-4" />
                                                 </button>
                                                 <button
                                                     onClick={() => onDelete(product)}
                                                     className="p-2 hover:bg-gray-100 rounded-md text-gray-600 hover:text-red-600 transition-colors"
-                                                    title="Delete"
+                                                    title={tCommon('delete')}
                                                 >
                                                     <Trash2 className="h-4 w-4" />
                                                 </button>

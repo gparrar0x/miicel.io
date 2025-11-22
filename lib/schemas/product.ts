@@ -9,7 +9,7 @@ export const productSchema = z.object({
   image_url: z.union([z.string().url(), z.literal(""), z.null()]).optional(),
   active: z.boolean().default(true),
   display_order: z.coerce.number().int().default(0),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
 })
 
 export type Product = z.infer<typeof productSchema>

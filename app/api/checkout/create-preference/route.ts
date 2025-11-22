@@ -36,22 +36,32 @@ const checkoutRequestSchema = z.object({
   total: z.number(),
   currency: z.string(),
   tenantId: z.string(),
+  returnUrl: z.string().optional(), // Client-provided base URL (e.g., window.location.origin)
 })
 
 export async function POST(request: Request) {
   try {
     // Step 1: Parse and validate request body
     const body = await request.json()
+    console.log('📦 Received checkout request:', {
+      tenantId: body.tenantId,
+      paymentMethod: body.paymentMethod,
+      hasReturnUrl: !!body.returnUrl,
+      returnUrl: body.returnUrl,
+      itemCount: body.items?.length
+    })
+    
     const validationResult = checkoutRequestSchema.safeParse(body)
 
     if (!validationResult.success) {
+      console.error('❌ Validation failed:', validationResult.error.issues)
       return NextResponse.json(
         { error: validationResult.error.issues[0].message },
         { status: 400 }
       )
     }
 
-    const { customer, paymentMethod, items, total, currency, tenantId } = validationResult.data
+    const { customer, paymentMethod, items, total, currency, tenantId, returnUrl } = validationResult.data
 
     // Use service role client (bypasses RLS)
     const supabase = createServiceRoleClient()
@@ -182,8 +192,17 @@ export async function POST(request: Request) {
       const preference = new Preference(client)
 
       // Create preference
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-      const isProduction = !baseUrl.includes('localhost')
+      // Use client-provided returnUrl if available (more reliable than env var)
+      const baseUrl = returnUrl || process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+      const isProduction = !baseUrl.includes('localhost') && !baseUrl.includes('127.0.0.1')
+      const locale = 'es' // Default locale for MP redirects
+      
+      console.log('💳 Creating MP preference:', { 
+        baseUrl, 
+        isProduction, 
+        hasReturnUrl: !!returnUrl,
+        source: returnUrl ? 'client' : 'env' 
+      })
 
       const preferenceData: any = {
         items: items.map((item, index) => ({
@@ -200,21 +219,62 @@ export async function POST(request: Request) {
           phone: { number: customer.phone },
         },
         back_urls: {
-          success: `${baseUrl}/${tenantId}?payment=success`,
-          failure: `${baseUrl}/${tenantId}?payment=failure`,
-          pending: `${baseUrl}/${tenantId}?payment=pending`,
+          success: `${baseUrl}/${locale}/${tenantId}/checkout/success`,
+          failure: `${baseUrl}/${locale}/${tenantId}/checkout/failure`,
+          pending: `${baseUrl}/${locale}/${tenantId}/checkout/pending`,
         },
         external_reference: order.id.toString(),
       }
 
-      // Only add auto_return in production (MP doesn't allow it with localhost)
+      // Only add auto_return and notification_url in production
+      // MP REJECTS auto_return with localhost URLs (even though back_urls work)
       if (isProduction) {
         preferenceData.auto_return = 'approved'
         preferenceData.notification_url = `${baseUrl}/api/webhooks/mercadopago`
+        console.log('✅ Production mode - auto_return enabled')
+      } else {
+        console.log('⚠️  Localhost detected:')
+        console.log('   - auto_return DISABLED (MP rejects it with localhost)')
+        console.log('   - back_urls enabled → "Volver al sitio" button will appear')
+        console.log('   - webhook DISABLED (needs public URL)')
       }
 
       console.log('Creating MP preference with data:', JSON.stringify(preferenceData, null, 2))
-      const result = await preference.create({ body: preferenceData as any })
+      
+      // Validate back_urls before sending to MP
+      if (!preferenceData.back_urls?.success) {
+        throw new Error('back_urls.success is required but missing')
+      }
+
+      let result
+      try {
+        result = await preference.create({ body: preferenceData as any })
+        console.log('✅ MP preference created:', result.id)
+      } catch (mpError: any) {
+        console.error('💥 MercadoPago SDK error:')
+        console.error('Full error object:', JSON.stringify(mpError, null, 2))
+        console.error('Error message:', mpError?.message || mpError?.error || String(mpError))
+        console.error('Error cause:', mpError?.cause)
+        console.error('API response:', mpError?.api_response)
+        
+        // Re-throw with better message
+        throw new Error(
+          `MercadoPago API error: ${mpError?.message || mpError?.error || 'Unknown error'}. ${
+            mpError?.cause?.message ? `Cause: ${mpError.cause.message}` : ''
+          }`
+        )
+      }
+
+      // Save checkout_id (preference_id) to order
+      const { error: updateOrderError } = await supabase
+        .from('orders')
+        .update({ checkout_id: result.id })
+        .eq('id', order.id)
+
+      if (updateOrderError) {
+        console.error('Error updating order with checkout_id:', updateOrderError)
+        // Not critical - continue anyway
+      }
 
       return NextResponse.json({
         success: true,
@@ -229,13 +289,33 @@ export async function POST(request: Request) {
         orderId: order.id,
       })
     }
-  } catch (error) {
-    console.error('Unexpected error in POST /api/checkout/create-preference:', error)
-    const errorMessage = error instanceof Error ? error.message : 'Internal server error'
+  } catch (error: any) {
+    console.error('💥 Unexpected error in POST /api/checkout/create-preference:')
+    console.error('Error type:', error?.constructor?.name)
+    console.error('Error is Error instance?:', error instanceof Error)
+    console.error('Error object keys:', error ? Object.keys(error) : 'null')
+    
+    // Handle both Error instances and plain objects
+    let errorMessage = 'Internal server error'
+    let errorDetails = null
+    
+    if (error instanceof Error) {
+      errorMessage = error.message
+      errorDetails = error.stack
+    } else if (typeof error === 'object' && error !== null) {
+      // Try to extract meaningful info from object
+      errorMessage = error.message || error.error || error.error_description || JSON.stringify(error)
+      errorDetails = JSON.stringify(error, null, 2)
+      console.error('Error as JSON:', errorDetails)
+    } else {
+      errorMessage = String(error)
+    }
+    
     return NextResponse.json(
       {
         error: 'Internal server error',
         details: errorMessage,
+        debug: process.env.NODE_ENV === 'development' ? errorDetails : undefined
       },
       { status: 500 }
     )

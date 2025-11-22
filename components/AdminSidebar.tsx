@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { Link, usePathname, useRouter } from '@/i18n/routing'
 import { createClient } from '@/lib/supabase/client'
+import { useTranslations } from 'next-intl'
 import {
   LayoutDashboard,
   Package,
@@ -37,6 +37,7 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+  const t = useTranslations('Sidebar')
 
   useEffect(() => {
     async function fetchUser() {
@@ -44,34 +45,34 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
       if (user) {
         setUserEmail(user.email || '')
         // Extract name from email (before @) as fallback
-        const emailName = user.email?.split('@')[0] || 'User'
+        const emailName = user.email?.split('@')[0] || t('user')
         setUserName(user.user_metadata?.name || emailName)
       }
     }
     fetchUser()
-  }, [])
+  }, [t])
 
   const navItems: NavItem[] = [
     {
-      name: 'Dashboard',
+      name: t('dashboard'),
       href: `/${tenant}/dashboard`,
       icon: LayoutDashboard,
       testId: 'nav-dashboard'
     },
     {
-      name: 'Products',
+      name: t('products'),
       href: `/${tenant}/dashboard/products`,
       icon: Package,
       testId: 'nav-products'
     },
     {
-      name: 'Orders',
+      name: t('orders'),
       href: `/${tenant}/dashboard/orders`,
       icon: ShoppingCart,
       testId: 'nav-orders'
     },
     {
-      name: 'Settings',
+      name: t('settings'),
       href: `/${tenant}/dashboard/settings`,
       icon: Settings,
       testId: 'nav-settings'
@@ -94,11 +95,11 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
             {tenantLogo ? (
-              <img src={tenantLogo} alt={tenantName || 'Store'} className="h-8 w-8 rounded" />
+              <img src={tenantLogo} alt={tenantName || t('adminPanel')} className="h-8 w-8 rounded" />
             ) : (
               <Store className="h-8 w-8 text-blue-600" />
             )}
-            <span className="font-semibold text-gray-900">{tenantName || 'Admin Panel'}</span>
+            <span className="font-semibold text-gray-900">{tenantName || t('adminPanel')}</span>
           </div>
           <button
             data-testid="btn-toggle-sidebar"
@@ -135,7 +136,7 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
         {/* Sidebar Header */}
         <div className="h-16 flex items-center gap-3 px-6 border-b border-gray-200 mt-14 lg:mt-0">
           {tenantLogo ? (
-            <img src={tenantLogo} alt={tenantName || 'Store'} className="h-10 w-10 rounded" />
+            <img src={tenantLogo} alt={tenantName || t('adminPanel')} className="h-10 w-10 rounded" />
           ) : (
             <div className="h-10 w-10 rounded bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center">
               <Store className="h-6 w-6 text-white" />
@@ -143,7 +144,7 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
           )}
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-gray-900 truncate">
-              {tenantName || 'Admin Panel'}
+              {tenantName || t('adminPanel')}
             </p>
             <p className="text-xs text-gray-500 truncate">/{tenant}</p>
           </div>
@@ -175,6 +176,19 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
               </Link>
             )
           })}
+
+          {/* View Store Link */}
+          <div className="pt-4 mt-4 border-t border-gray-200">
+            <Link
+              href={`/${tenant}`}
+              data-testid="nav-view-store"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-sm font-medium text-gray-700 hover:bg-orange-50 hover:text-orange-700"
+            >
+              <Store className="h-5 w-5 text-gray-400" />
+              <span>{t('viewStore')}</span>
+            </Link>
+          </div>
         </nav>
 
         {/* User Info & Logout */}
@@ -201,7 +215,7 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
             className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sm font-medium text-gray-700 hover:bg-red-50 hover:text-red-700 transition-colors"
           >
             <LogOut className="h-5 w-5 text-gray-400" />
-            <span>Logout</span>
+            <span>{t('logout')}</span>
           </button>
         </div>
       </aside>

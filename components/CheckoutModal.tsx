@@ -62,6 +62,7 @@ export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () =>
         body: JSON.stringify({
           tenantId: tenantId,
           paymentMethod: 'mercadopago',
+          returnUrl: typeof window !== 'undefined' ? window.location.origin : undefined, // Send actual browser URL
           customer: {
             name: data.name,
             phone: data.phone,

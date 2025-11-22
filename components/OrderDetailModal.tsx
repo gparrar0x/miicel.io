@@ -3,6 +3,7 @@
 import { OrderResponse } from "@/lib/schemas/order"
 import { X, Printer, Package } from "lucide-react"
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 
 interface OrderDetailModalProps {
     order: OrderResponse
@@ -30,6 +31,8 @@ const statusTransitions: Record<string, string[]> = {
 }
 
 export function OrderDetailModal({ order, onClose, onStatusUpdate, onPrint }: OrderDetailModalProps) {
+    const t = useTranslations('Orders')
+    const tCommon = useTranslations('Common')
     const [isUpdating, setIsUpdating] = useState(false)
 
     const handleStatusChange = async (newStatus: string) => {
@@ -49,7 +52,7 @@ export function OrderDetailModal({ order, onClose, onStatusUpdate, onPrint }: Or
                 {/* Header */}
                 <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-900">Order #{order.id}</h2>
+                        <h2 className="text-2xl font-bold text-gray-900">{t('details.title', { id: order.id })}</h2>
                         <p className="text-sm text-gray-500 mt-1">
                             {new Date(order.created_at).toLocaleString()}
                         </p>
@@ -68,7 +71,7 @@ export function OrderDetailModal({ order, onClose, onStatusUpdate, onPrint }: Or
                     {/* Status */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Status
+                            {t('details.status')}
                         </label>
                         <div className="flex items-center gap-3">
                             <span
@@ -77,7 +80,7 @@ export function OrderDetailModal({ order, onClose, onStatusUpdate, onPrint }: Or
                                 }`}
                                 data-testid="order-status"
                             >
-                                {order.status.toUpperCase()}
+                                {t(`statuses.${order.status}`)}
                             </span>
                             {availableTransitions.length > 0 && (
                                 <div className="flex items-center gap-2">
@@ -90,7 +93,7 @@ export function OrderDetailModal({ order, onClose, onStatusUpdate, onPrint }: Or
                                             className="px-3 py-1 text-sm rounded-md border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                             data-testid={`status-transition-${status}`}
                                         >
-                                            {status.charAt(0).toUpperCase() + status.slice(1)}
+                                            {t(`statuses.${status}`)}
                                         </button>
                                     ))}
                                 </div>
@@ -101,7 +104,7 @@ export function OrderDetailModal({ order, onClose, onStatusUpdate, onPrint }: Or
                     {/* Customer Info */}
                     {order.customer && (
                         <div>
-                            <h3 className="text-sm font-medium text-gray-700 mb-2">Customer</h3>
+                            <h3 className="text-sm font-medium text-gray-700 mb-2">{t('details.customer')}</h3>
                             <div className="bg-gray-50 rounded-md p-4 space-y-1">
                                 <p className="font-medium text-gray-900">{order.customer.name}</p>
                                 {order.customer.email && (
@@ -116,15 +119,15 @@ export function OrderDetailModal({ order, onClose, onStatusUpdate, onPrint }: Or
 
                     {/* Payment Info */}
                     <div>
-                        <h3 className="text-sm font-medium text-gray-700 mb-2">Payment</h3>
+                        <h3 className="text-sm font-medium text-gray-700 mb-2">{t('details.payment')}</h3>
                         <div className="bg-gray-50 rounded-md p-4 space-y-1">
                             <p className="text-sm">
-                                <span className="font-medium">Method:</span>{' '}
-                                {order.payment_method || 'Not specified'}
+                                <span className="font-medium">{t('details.method')}</span>{' '}
+                                {order.payment_method || t('details.notSpecified')}
                             </p>
                             {order.payment_id && (
                                 <p className="text-sm">
-                                    <span className="font-medium">Payment ID:</span> {order.payment_id}
+                                    <span className="font-medium">{t('details.paymentId')}</span> {order.payment_id}
                                 </p>
                             )}
                         </div>
@@ -134,16 +137,16 @@ export function OrderDetailModal({ order, onClose, onStatusUpdate, onPrint }: Or
                     <div>
                         <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                             <Package className="h-4 w-4" />
-                            Items ({order.items.length})
+                            {t('details.items', { count: order.items.length })}
                         </h3>
                         <div className="border rounded-md overflow-hidden">
                             <table className="w-full text-sm">
                                 <thead className="bg-gray-50 border-b">
                                     <tr>
-                                        <th className="px-4 py-2 text-left font-medium text-gray-700">Product</th>
-                                        <th className="px-4 py-2 text-center font-medium text-gray-700">Qty</th>
-                                        <th className="px-4 py-2 text-right font-medium text-gray-700">Price</th>
-                                        <th className="px-4 py-2 text-right font-medium text-gray-700">Total</th>
+                                        <th className="px-4 py-2 text-left font-medium text-gray-700">{t('details.product')}</th>
+                                        <th className="px-4 py-2 text-center font-medium text-gray-700">{t('details.qty')}</th>
+                                        <th className="px-4 py-2 text-right font-medium text-gray-700">{t('details.price')}</th>
+                                        <th className="px-4 py-2 text-right font-medium text-gray-700">{t('total')}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y">
@@ -167,7 +170,7 @@ export function OrderDetailModal({ order, onClose, onStatusUpdate, onPrint }: Or
                     {/* Total */}
                     <div className="border-t pt-4">
                         <div className="flex justify-between items-center">
-                            <span className="text-lg font-semibold text-gray-900">Total</span>
+                            <span className="text-lg font-semibold text-gray-900">{t('total')}</span>
                             <span className="text-2xl font-bold text-gray-900" data-testid="order-total">
                                 ${order.total.toFixed(2)}
                             </span>
@@ -177,7 +180,7 @@ export function OrderDetailModal({ order, onClose, onStatusUpdate, onPrint }: Or
                     {/* Notes */}
                     {order.notes && (
                         <div>
-                            <h3 className="text-sm font-medium text-gray-700 mb-2">Notes</h3>
+                            <h3 className="text-sm font-medium text-gray-700 mb-2">{t('notes')}</h3>
                             <div className="bg-gray-50 rounded-md p-4">
                                 <p className="text-sm text-gray-700">{order.notes}</p>
                             </div>
@@ -191,7 +194,7 @@ export function OrderDetailModal({ order, onClose, onStatusUpdate, onPrint }: Or
                         onClick={onClose}
                         className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
                     >
-                        Close
+                        {tCommon('close')}
                     </button>
                     <button
                         onClick={() => onPrint(order)}
@@ -199,7 +202,7 @@ export function OrderDetailModal({ order, onClose, onStatusUpdate, onPrint }: Or
                         data-testid="print-invoice-button"
                     >
                         <Printer className="h-4 w-4" />
-                        Print Invoice
+                        {t('printInvoice')}
                     </button>
                 </div>
             </div>

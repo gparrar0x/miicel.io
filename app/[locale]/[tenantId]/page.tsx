@@ -16,6 +16,7 @@ import { RestaurantLayout } from '@/components/restaurant/layouts/RestaurantLayo
 import { tenantConfigResponseSchema, type TenantConfigResponse } from '@/lib/schemas/order'
 import { createClient } from '@/lib/supabase/server'
 import { GalleryGridWrapper } from '@/components/storefront/GalleryGridWrapper'
+import { DashboardAccessButton } from '@/components/DashboardAccessButton'
 
 interface PageProps {
   params: Promise<{ tenantId: string }>
@@ -207,10 +208,12 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
           tenantBanner={config.bannerUrl}
           tenantSubtitle={config.subtitle || undefined}
           tenantLocation={config.location || undefined}
+          hours={config.hours}
           products={products}
           categories={categoriesWithIcons}
           currency={config.currency}
         />
+        <DashboardAccessButton tenantId={tenantId} />
       </ThemeProvider>
     )
   }
@@ -272,6 +275,7 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
              <GalleryGrid artworks={artworks} collections={categories} tenantId={tenantId} />
           </div>
         </main>
+        <DashboardAccessButton tenantId={tenantId} />
       </ThemeProvider>
     )
   }
@@ -340,6 +344,8 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
           </svg>
           <CartBadge />
         </Link>
+
+        <DashboardAccessButton tenantId={tenantId} />
       </main>
     </ThemeProvider>
   )

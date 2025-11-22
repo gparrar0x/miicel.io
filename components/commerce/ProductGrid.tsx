@@ -10,17 +10,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useCartStore } from '@/lib/stores/cartStore'
-import type { CartItem } from '@/types/commerce'
-
-interface Product {
-  id: number
-  name: string
-  description: string | null
-  price: number
-  category: string | null
-  image_url: string | null
-  stock: number | null
-}
+import type { CartItem, Product } from '@/types/commerce'
 
 interface ProductGridProps {
   products: Product[]
@@ -43,7 +33,7 @@ export function ProductGrid({ products, tenantId, currency }: ProductGridProps) 
       name: product.name,
       price: product.price,
       currency,
-      image: product.image_url || '',
+      image: product.images[0] || '',
       maxQuantity: product.stock || 999,
     }
 
@@ -72,9 +62,9 @@ export function ProductGrid({ products, tenantId, currency }: ProductGridProps) 
         >
           <Link href={`/${tenantId}/product/${product.id}`}>
             <div className="relative aspect-square">
-              {product.image_url ? (
+              {product.images[0] ? (
                 <Image
-                  src={product.image_url}
+                  src={product.images[0]}
                   alt={product.name}
                   fill
                   className="object-cover"

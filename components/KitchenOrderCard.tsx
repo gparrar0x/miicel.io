@@ -140,9 +140,9 @@ export function KitchenOrderCard({ order, onViewOrder, onNextStatus, onPrint }: 
                             <span className="text-base font-semibold text-gray-900">
                                 {item.name}
                             </span>
-                            {item.options && (
+                            {(item as any).options && (
                                 <p className="ml-8 text-sm text-gray-600">
-                                    {JSON.stringify(item.options)}
+                                    {JSON.stringify((item as any).options)}
                                 </p>
                             )}
                         </div>

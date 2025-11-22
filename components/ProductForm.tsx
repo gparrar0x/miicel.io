@@ -6,6 +6,7 @@ import { Product, productSchema } from "@/lib/schemas/product"
 import { X, Upload, Loader2 } from "lucide-react"
 import { useState } from "react"
 import Image from "next/image"
+import { useTranslations } from "next-intl"
 
 interface ProductFormProps {
     initialData?: Product
@@ -15,6 +16,9 @@ interface ProductFormProps {
 }
 
 export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: ProductFormProps) {
+    const t = useTranslations('Products.form')
+    const tCommon = useTranslations('Common')
+
     const [imagePreview, setImagePreview] = useState<string | null>(
         initialData?.image_url || null
     )
@@ -25,8 +29,8 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
         handleSubmit,
         reset,
         formState: { errors },
-    } = useForm<Product>({
-        resolver: zodResolver(productSchema) as any,
+    } = useForm({
+        resolver: zodResolver(productSchema),
         defaultValues: initialData || {
             active: true,
             display_order: 0,
@@ -55,7 +59,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
             <div className="w-full max-w-2xl rounded-lg bg-white shadow-xl max-h-[90vh] overflow-y-auto">
                 <div className="flex items-center justify-between border-b px-6 py-4">
                     <h2 className="text-lg font-semibold">
-                        {initialData ? "Edit Product" : "New Product"}
+                        {initialData ? t('edit') : t('new')}
                     </h2>
                     <button
                         onClick={onCancel}
@@ -71,7 +75,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                         <div className="space-y-6">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Product Image
+                                    {t('image')}
                                 </label>
                                 <div className="relative flex flex-col items-center justify-center w-full h-48 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 transition-colors overflow-hidden">
                                     {imagePreview ? (
@@ -85,7 +89,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                             <Upload className="w-8 h-8 mb-3 text-gray-400" />
                                             <p className="mb-2 text-sm text-gray-500">
-                                                <span className="font-semibold">Click to upload</span>
+                                                <span className="font-semibold">{t('upload')}</span>
                                             </p>
                                         </div>
                                     )}
@@ -101,12 +105,12 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">
-                                    Name
+                                    {tCommon('name')}
                                 </label>
                                 <input
                                     {...register("name")}
                                     className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
-                                    placeholder="Product Name"
+                                    placeholder={t('namePlaceholder')}
                                     data-testid="product-name-input"
                                 />
                                 {errors.name && (
@@ -116,12 +120,12 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">
-                                    Category
+                                    {t('categoryPlaceholder')}
                                 </label>
                                 <input
                                     {...register("category")}
                                     className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
-                                    placeholder="e.g., Burgers"
+                                    placeholder={t('categoryPlaceholder')}
                                     data-testid="product-category-input"
                                 />
                                 {errors.category && (
@@ -136,13 +140,13 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                         <div className="space-y-6">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">
-                                    Description
+                                    {t('description')}
                                 </label>
                                 <textarea
                                     {...register("description")}
                                     rows={4}
                                     className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
-                                    placeholder="Product description..."
+                                    placeholder={t('descPlaceholder')}
                                     data-testid="product-description-input"
                                 />
                             </div>
@@ -150,7 +154,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">
-                                        Price
+                                        {tCommon('price')}
                                     </label>
                                     <div className="relative mt-1 rounded-md shadow-sm">
                                         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -173,7 +177,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">
-                                        Display Order
+                                        {t('displayOrder')}
                                     </label>
                                     <input
                                         type="number"
@@ -193,7 +197,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                                     data-testid="product-active-checkbox"
                                 />
                                 <label htmlFor="active" className="text-sm font-medium text-gray-700">
-                                    Active Product
+                                    {t('activeLabel')}
                                 </label>
                             </div>
                         </div>
@@ -206,7 +210,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                             className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
                             data-testid="product-form-cancel-btn"
                         >
-                            Cancel
+                            {tCommon('cancel')}
                         </button>
                         <button
                             type="submit"
@@ -215,7 +219,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                             data-testid="product-form-submit-btn"
                         >
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {initialData ? "Save Changes" : "Create Product"}
+                            {initialData ? t('save') : t('create')}
                         </button>
                     </div>
                 </form>

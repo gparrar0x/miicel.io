@@ -68,6 +68,11 @@ export interface CartItem {
   image: string
   color?: ProductColor
   maxQuantity: number
+  size?: {
+    id: string
+    label: string
+    dimensions: string
+  }
 }
 
 /**

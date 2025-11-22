@@ -7,6 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Tenant Hero Branding (Settings + Onboarding)**: Unified configuration for storefront hero card (logo, name, hero text, location, hours)
+  - **Storefront hero**: Restaurant header now shows `[LOGO] Nombre`, hero tagline, `📍 Ubicación` y `🕒 Horario de hoy` usando `config.subtitle`, `config.location` y `config.hours`
+  - **Settings → General / Contacto y Horarios**: Nuevos campos para frase principal y ubicación, horas por día guardadas en `tenants.config`
+  - **Onboarding Steps 1–2**: Permite definir logo, banner, colores, frase hero, ubicación y un horario base que se replica a los 7 días
+
+- **Bidirectional Store ↔ Dashboard Navigation**: Quick access between admin and storefront views
+  - **Dashboard → Store**: Added "View Store" link in sidebar (below main navigation)
+  - **Store → Dashboard**: Added `DashboardAccessButton` floating button on all storefront templates
+    - Only visible to superadmins and tenant owners (auth check via `/api/auth/check-superadmin`)
+    - Positioned below cart button with matching brutalist design
+    - Works across all templates (gallery, restaurant, default)
+  - Files: `components/AdminSidebar.tsx`, `components/DashboardAccessButton.tsx`, `lib/auth/permissions.ts`, `app/api/auth/check-superadmin/route.ts`
+
+- **MercadoPago Payment Tracking**: Complete payment transaction tracking system
+  - **Database schema:**
+    - Added `checkout_id` field to `orders` table to store MercadoPago preference_id
+    - Created `payments` table with comprehensive payment data:
+      - `id`: Internal PK (auto-increment, not exposed externally)
+      - `order_id`: Foreign key to orders
+      - `payment_id`: MercadoPago payment ID (unique, external reference)
+      - `status`, `status_detail`: Payment status tracking
+      - `payment_type`, `payment_method_id`: Payment method information
+      - `amount`, `currency`: Transaction amount details
+      - `payer_email`, `payer_name`: Payer information
+      - `metadata`: Additional MP data (merchant_order_id, transaction_details, card_info)
+    - RLS policies for tenant access control
+  - **Data model rationale:**
+    - `orders.payment_id` maintained for fast queries without JOINs (dashboard, list views)
+    - `payments` table provides complete audit trail with full transaction metadata
+    - Relationship: `orders.payment_id = payments.payment_id` (both reference MP payment ID)
+    - Lifecycle: `orders.checkout_id` (created on checkout) → `orders.payment_id` (set on payment completion)
+  - **Checkout flow improvements:**
+    - Updated back_urls to redirect to proper checkout pages with locale (`/es/{tenantId}/checkout/success`, `/checkout/failure`, `/checkout/pending`)
+    - **Fixed:** Added missing locale segment to MP redirect URLs (was `/{tenantId}/...`, now `/es/{tenantId}/...`)
+    - **Fixed:** MP redirect now works in localhost using `window.location.origin` strategy (inspired by mangobajito)
+      - Client sends actual browser URL (`returnUrl`) instead of server reading env var
+      - Handles `127.0.0.1` vs `localhost` mismatches automatically
+      - `auto_return='approved'` now enabled in all environments (MP decides if it works)
+      - "Volver al sitio" button appears reliably even in localhost
+    - Create-preference endpoint now saves `checkout_id` to order
+    - Success page captures and displays MP query params (payment_id, status, payment_type)
+  - **Webhook enhancements:**
+    - Webhook now creates/updates payment record in `payments` table
+    - Upserts payment data to handle duplicate webhook calls
+    - Stores comprehensive payment details including payer info, card details, transaction data
+  - Migration: `028_add_checkout_and_payments_table.sql`
+  - Files modified: `app/api/checkout/create-preference/route.ts`, `app/api/webhooks/mercadopago/route.ts`, `app/[locale]/[tenantId]/checkout/success/page.tsx`
+
+- **Tenant Banner Upload (Settings + Onboarding)**: Allow owners to upload and update storefront hero banner
+  - **Settings → General**: New banner picker with preview; uploads to Supabase `assets` bucket via `POST /api/settings/upload-banner`
+  - **Onboarding Step 1**: Extended to optionally upload banner alongside logo; persisted as `config.banner` and used by restaurant header
+
 ### Fixed
 
 - **Checkout Flow Deduplication**: Unified order creation to prevent duplicate orders

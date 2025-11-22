@@ -25,6 +25,7 @@ interface RestaurantLayoutProps {
   tenantBanner?: string | null
   tenantSubtitle?: string
   tenantLocation?: string
+   hours?: Record<string, { open: string; close: string }>
   products: Product[]
   categories: Category[]
   currency?: string
@@ -38,6 +39,7 @@ export function RestaurantLayout({
   tenantBanner,
   tenantSubtitle,
   tenantLocation,
+  hours,
   products,
   categories,
   currency = 'CLP',
@@ -94,6 +96,7 @@ export function RestaurantLayout({
         tenantBanner={tenantBanner}
         tenantSubtitle={tenantSubtitle}
         tenantLocation={tenantLocation}
+        hours={hours}
       />
 
       <main className="px-2 pt-6">
