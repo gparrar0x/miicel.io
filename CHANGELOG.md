@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Login Page as Main Landing**: Converted main page (`/[locale]/page.tsx`) to login page
+  - **Header**: Simple header with logo placeholder (circular "M" badge) and "Miceliio" branding
+  - **Login Form**: Centered login form with email/password fields, error handling, and loading states
+  - **Integration**: Reuses existing `/api/auth/login` endpoint for authentication
+  - **UX**: Responsive design, accessibility features (data-testid attributes), consistent styling with existing design system
+  - **Redirect**: After successful login, redirects to returnUrl query param or root path
+  - File: `app/[locale]/page.tsx`
+
 - **Vercel Deployment Infrastructure (SKY-15)**: Complete production deployment configuration
   - **Build config**: `vercel.json` with optimized settings (iad1 region, cache headers, Next.js 16 framework)
   - **Health endpoint**: `/api/health` for uptime monitoring (edge runtime, returns status + timestamp)

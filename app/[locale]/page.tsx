@@ -1,252 +1,149 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { Link } from '@/i18n/routing'
-import { createClient } from '@/lib/supabase/client'
-import { LogOut } from 'lucide-react'
+import { useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-interface Tenant {
-  slug: string
-  name: string
-  logo: string | null
-  status: string
-}
+function LoginForm() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-export default function TenantsPage() {
-  const [tenants, setTenants] = useState<Tenant[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
-  const [user, setUser] = useState<any>(null)
-  const supabase = createClient()
-
-  const fetchTenants = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
     setLoading(true)
-    setError(false)
 
     try {
-      const res = await fetch('/api/tenants/list')
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
 
       if (!res.ok) {
-        throw new Error('Failed to fetch tenants')
+        const data = await res.json()
+        setError(data.error || 'Login failed')
+        setLoading(false)
+        return
       }
 
+      // Login successful
       const data = await res.json()
-      setTenants(data)
-    } catch (err) {
-      console.error('Error fetching tenants:', err)
-      setError(true)
-    } finally {
+      console.log('Login successful:', data)
+
+      // Redirect to return URL or root (tenant list)
+      const returnUrl = searchParams.get('returnUrl') || '/'
+      window.location.href = returnUrl
+    } catch (err: any) {
+      console.error('Login error:', err)
+      setError(err.message || 'An error occurred. Please try again.')
       setLoading(false)
     }
   }
 
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user || null)
-    }
-    checkUser()
-    fetchTenants()
-  }, [])
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
-    setUser(null)
-    window.location.reload()
-  }
-
-  const getInitials = (name: string): string => {
-    return name
-      .split(' ')
-      .slice(0, 2)
-      .map((word) => word[0])
-      .join('')
-      .toUpperCase()
-  }
-
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-[#F8F8F8] px-5 py-8 md:py-12">
-        <header className="max-w-[1200px] mx-auto mb-8 flex justify-between items-center relative">
-          <h1 className="text-[24px] md:text-[28px] font-bold text-[#1A1A1A] text-center flex-1">
-            Tenant Directory
-          </h1>
-        </header>
-
-        <div
-          className="max-w-[1200px] mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4"
-          data-testid="tenant-list-loading"
-        >
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div
-              key={i}
-              className="bg-white border border-[#E5E5E5] rounded-xl p-4 animate-pulse"
-            >
-              <div className="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-3"></div>
-              <div className="h-5 bg-gray-200 rounded mb-4"></div>
-              <div className="h-10 bg-gray-200 rounded mb-2"></div>
-              <div className="h-10 bg-gray-200 rounded"></div>
-            </div>
-          ))}
-        </div>
-      </main>
-    )
-  }
-
-  if (error) {
-    return (
-      <main className="min-h-screen bg-[#F8F8F8] px-5 py-8 md:py-12">
-        <header className="max-w-[1200px] mx-auto mb-8 flex justify-between items-center relative">
-          <h1 className="text-[24px] md:text-[28px] font-bold text-[#1A1A1A] text-center flex-1">
-            Tenant Directory
-          </h1>
-          {user && (
-            <button
-              onClick={handleLogout}
-              className="absolute right-0 flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-              Logout
-            </button>
-          )}
-        </header>
-
-        <div
-          className="max-w-[400px] mx-auto text-center py-16"
-          data-testid="tenant-list-error"
-          role="alert"
-        >
-          <div className="text-[64px] mb-4">⚠️</div>
-          <h2 className="text-[24px] md:text-[28px] font-bold text-[#1A1A1A] mb-2">
-            Failed to Load Tenants
-          </h2>
-          <p className="text-[14px] md:text-[16px] text-[#666666] mb-6">
-            Please try again
-          </p>
-          <button
-            onClick={fetchTenants}
-            className="w-[200px] h-12 bg-[#FF6B35] text-white text-[14px] md:text-[16px] font-semibold rounded-lg hover:bg-[#E5602F] active:scale-[0.98] transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6B35] focus-visible:ring-offset-2"
-          >
-            Retry
-          </button>
-        </div>
-      </main>
-    )
-  }
-
-  if (tenants.length === 0) {
-    return (
-      <main className="min-h-screen bg-[#F8F8F8] px-5 py-8 md:py-12">
-        <header className="max-w-[1200px] mx-auto mb-8 flex justify-between items-center relative">
-          <h1 className="text-[24px] md:text-[28px] font-bold text-[#1A1A1A] text-center flex-1">
-            Tenant Directory
-          </h1>
-          {user && (
-            <button
-              onClick={handleLogout}
-              className="absolute right-0 flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-              Logout
-            </button>
-          )}
-        </header>
-
-        <div
-          className="max-w-[400px] mx-auto text-center py-16"
-          data-testid="tenant-list-empty"
-          aria-live="polite"
-        >
-          <div className="text-[64px] mb-4">🏪</div>
-          <h2 className="text-[24px] md:text-[28px] font-bold text-[#1A1A1A] mb-2">
-            No Tenants Available
-          </h2>
-          <p className="text-[14px] md:text-[16px] text-[#666666]">
-            Check back soon or contact support to add your store.
-          </p>
-        </div>
-      </main>
-    )
-  }
-
   return (
-    <main className="min-h-screen bg-[#F8F8F8] px-5 py-8 md:py-12">
-      <header className="max-w-[1200px] mx-auto mb-8 flex justify-between items-center relative">
-        <h1 className="text-[24px] md:text-[28px] font-bold text-[#1A1A1A] text-center flex-1">
-          Tenant Directory
-        </h1>
-        {user && (
-          <button
-            onClick={handleLogout}
-            className="absolute right-0 flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-            Logout
-          </button>
-        )}
+    <main className="min-h-screen bg-[#F8F8F8] flex flex-col">
+      {/* Header */}
+      <header className="w-full px-6 py-4 border-b border-[#E5E5E5] bg-white" data-testid="login-header">
+        <div className="max-w-[1200px] mx-auto flex items-center gap-3">
+          {/* Logo placeholder - puedes reemplazar con una imagen si tienes logo */}
+          <div className="w-10 h-10 rounded-full bg-[#FF6B35] flex items-center justify-center text-white font-bold text-lg">
+            M
+          </div>
+          <h1 className="text-xl md:text-2xl font-bold text-[#1A1A1A]">
+            Miceliio
+          </h1>
+        </div>
       </header>
 
-      <div
-        className="max-w-[1200px] mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4"
-        data-testid="tenant-list-container"
-      >
-        {tenants.map((tenant) => (
-          <article
-            key={tenant.slug}
-            className="bg-white border border-[#E5E5E5] rounded-xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)] transition-all duration-150"
-            data-testid={`tenant-card-${tenant.slug}`}
-          >
-            {/* Logo */}
-            <div className="flex justify-center mb-3">
-              {tenant.logo ? (
-                <img
-                  src={tenant.logo}
-                  alt={`${tenant.name} logo`}
-                  className="w-20 h-20 rounded-full object-cover border-2 border-[#E5E5E5]"
-                  data-testid={`tenant-logo-${tenant.slug}`}
-                />
-              ) : (
-                <div
-                  className="w-20 h-20 rounded-full bg-[#E5E5E5] flex items-center justify-center text-[24px] font-bold text-[#666666]"
-                  data-testid={`tenant-logo-${tenant.slug}`}
-                  aria-label={`${tenant.name} logo placeholder`}
-                >
-                  {getInitials(tenant.name)}
-                </div>
-              )}
-            </div>
-
-            {/* Tenant Name */}
-            <h2
-              className="text-[18px] md:text-[20px] font-semibold text-[#1A1A1A] text-center mb-4 overflow-hidden text-ellipsis whitespace-nowrap"
-              data-testid={`tenant-name-${tenant.slug}`}
-            >
-              {tenant.name}
+      {/* Login Form */}
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md">
+          <div className="bg-white rounded-lg shadow-md p-8" data-testid="login-form">
+            <h2 className="text-2xl font-bold text-[#1A1A1A] mb-6 text-center">
+              Sign In
             </h2>
 
-            {/* CTAs */}
-            <div className="space-y-2">
-              {/* Store Link */}
-              <Link
-                href={`/${tenant.slug}/`}
-                className="block w-full h-10 bg-[#FF6B35] text-white text-[14px] md:text-[16px] font-semibold rounded-lg flex items-center justify-center hover:bg-[#E5602F] active:scale-[0.98] transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6B35] focus-visible:ring-offset-2"
-                data-testid={`tenant-store-link-${tenant.slug}`}
-              >
-                Visit Store
-              </Link>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-[#1A1A1A] mb-1"
+                >
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={loading}
+                  data-testid="login-email-input"
+                  className="w-full px-3 py-2 border border-[#E5E5E5] rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6B35] disabled:opacity-50 text-[#1A1A1A]"
+                />
+              </div>
 
-              {/* Dashboard Link */}
-              <Link
-                href={`/${tenant.slug}/dashboard`}
-                className="block w-full h-10 bg-transparent text-[#2C3E50] text-[14px] md:text-[16px] font-semibold border-2 border-[#2C3E50] rounded-lg flex items-center justify-center hover:bg-[#2C3E50] hover:text-white active:scale-[0.98] transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2C3E50] focus-visible:ring-offset-2"
-                data-testid={`tenant-dashboard-link-${tenant.slug}`}
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-[#1A1A1A] mb-1"
+                >
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                  data-testid="login-password-input"
+                  className="w-full px-3 py-2 border border-[#E5E5E5] rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6B35] disabled:opacity-50 text-[#1A1A1A]"
+                />
+              </div>
+
+              {error && (
+                <div
+                  data-testid="login-error-message"
+                  className="p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm"
+                  role="alert"
+                >
+                  {error}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                data-testid="login-submit-button"
+                className="w-full py-2 px-4 bg-[#FF6B35] text-white font-medium rounded-md hover:bg-[#E55A2B] focus:outline-none focus:ring-2 focus:ring-[#FF6B35] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                Dashboard
-              </Link>
-            </div>
-          </article>
-        ))}
+                {loading ? (
+                  <span data-testid="login-loading-state">Signing in...</span>
+                ) : (
+                  'Sign In'
+                )}
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
     </main>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-[#F8F8F8]">
+        <div className="text-[#1A1A1A]">Loading...</div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 }
