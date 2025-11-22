@@ -55,38 +55,7 @@ export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () =>
     setErrorMessage(null)
 
     try {
-      // Step 1: Create order
-      const orderResponse = await fetch('/api/orders/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          tenantSlug: tenantId,
-          customer: {
-            name: data.name,
-            phone: data.phone,
-            email: data.email,
-          },
-          items: items.map(item => ({
-            productId: Number(item.productId),
-            quantity: Number(item.quantity),
-          })),
-          paymentMethod: 'mercadopago',
-          notes: data.notes || '',
-        }),
-      })
-
-      if (!orderResponse.ok) {
-        const error = await orderResponse.json()
-        console.error('Order creation failed:', error)
-        const errorMsg = error.details
-          ? `${error.error}: ${error.details} ${error.code ? `(${error.code})` : ''}`
-          : error.error || 'Failed to create order'
-        throw new Error(errorMsg)
-      }
-
-      const { orderId, total } = await orderResponse.json()
-
-      // Step 2: Create MP preference and redirect
+      // Create order and MP preference in one call
       const checkoutResponse = await fetch('/api/checkout/create-preference', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -106,9 +75,10 @@ export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () =>
             quantity: Number(item.quantity),
             currency: item.currency,
             image: item.image,
+            sizeId: item.size?.id, // Include size for stock validation
           })),
-          total,
-          currency: items[0].currency,
+          total: totalPrice,
+          currency: currency,
         }),
       })
 

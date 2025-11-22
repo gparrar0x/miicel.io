@@ -27,6 +27,7 @@ const checkoutRequestSchema = z.object({
     quantity: z.number(),
     currency: z.string(),
     image: z.string().optional(),
+    sizeId: z.string().optional(), // Add sizeId support for size variants
     color: z.object({
       id: z.number(),
       name: z.string(),
@@ -135,6 +136,7 @@ export async function POST(request: Request) {
           currency: item.currency,
           image: item.image,
           color: item.color,
+          size_id: item.sizeId || null, // Include size_id for stock validation/decrement
         })),
         total,
         status: paymentMethod === 'cash' ? 'pending' : 'pending',

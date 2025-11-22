@@ -222,27 +222,28 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
       // Check if product has custom sizes in metadata
       const metadataSizes = (p as any).metadata?.sizes
 
-      // Default sizes for gallery template (artmonkeys)
+      // Default sizes for gallery template (disabled if no metadata.sizes)
+      // Products without metadata.sizes configured will have all sizes disabled (stock: 0)
       const defaultSizes = [
         {
           id: 'small',
           dimensions: '30 × 40 cm',
           price: p.price,
-          stock: p.stock,
+          stock: 0, // Disabled - requires explicit metadata.sizes configuration
           label: 'Small'
         },
         {
           id: 'medium',
           dimensions: '50 × 70 cm',
           price: Math.round(p.price * 1.5),
-          stock: p.stock,
+          stock: 0, // Disabled - requires explicit metadata.sizes configuration
           label: 'Medium'
         },
         {
           id: 'large',
           dimensions: '100 × 140 cm',
           price: Math.round(p.price * 2.5),
-          stock: p.stock,
+          stock: 0, // Disabled - requires explicit metadata.sizes configuration
           label: 'Large'
         }
       ]

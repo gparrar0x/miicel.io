@@ -19,22 +19,35 @@ interface ArtworkDetailProps {
 
 export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDetailProps) {
   const [selectedSizeId, setSelectedSizeId] = useState<string | null>(null)
-  const { addItem } = useCartStore()
+  const { addItem, items } = useCartStore()
   const [isAdded, setIsAdded] = useState(false)
 
   const selectedSize = artwork.sizes.find((s) => s.id === selectedSizeId)
+  
+  // Check if this specific product (artwork.id) is in cart
+  const isProductInCart = items.some((item) => item.productId === artwork.id)
 
   const handleAddToCart = () => {
-    if (selectedSize && selectedSizeId) {
+    if (selectedSize && selectedSizeId && !isProductInCart) {
+      // Validate stock before adding to cart
+      if (selectedSize.stock === 0) {
+        return // Don't add if out of stock
+      }
+      
       addItem({
         productId: artwork.id,
-        name: `${artwork.title} - ${selectedSize.label}`,
+        name: artwork.title,
         price: selectedSize.price,
         currency: artwork.currency,
         quantity: 1,
         image: artwork.image,
-        maxQuantity: selectedSize.stock ?? 999,
-        color: undefined
+        maxQuantity: 1, // Solo 1 pieza por producto
+        color: undefined,
+        size: {
+          id: selectedSizeId,
+          label: selectedSize.label,
+          dimensions: selectedSize.dimensions
+        }
       })
       setIsAdded(true)
       setTimeout(() => setIsAdded(false), 2000)
@@ -80,13 +93,19 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
         <div className="mb-24 md:mb-12">
           <h3 className="text-xl font-medium mb-6">Select Size</h3>
           <div className="grid grid-cols-1 gap-4">
-            {artwork.sizes.map((size) => (
+            {artwork.sizes.map((size) => {
+              const isOutOfStock = size.stock === 0
+              const isDisabled = isOutOfStock
+              
+              return (
               <button
                 key={size.id}
-                onClick={() => setSelectedSizeId(size.id)}
+                  onClick={() => !isDisabled && setSelectedSizeId(size.id)}
+                  disabled={isDisabled}
                 className={cn(
                   "relative flex items-center justify-between p-6 rounded-xl border transition-all duration-200 text-left min-h-[100px] bg-white group",
-                  selectedSizeId === size.id
+                    isDisabled && "opacity-50 cursor-not-allowed bg-gray-50",
+                    !isDisabled && selectedSizeId === size.id
                     ? "border-black ring-1 ring-black shadow-md z-10"
                     : "border-gray-200 hover:border-gray-400 hover:shadow-sm",
                 )}
@@ -99,15 +118,23 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
                   <span className="font-bold text-2xl text-black">
                     {new Intl.NumberFormat('en-US', { style: 'currency', currency: artwork.currency }).format(size.price)}
                   </span>
-                  {size.stock !== null && <span className="text-sm text-amber-600 font-medium">{size.stock} left</span>}
+                    {size.stock !== null && (
+                      <span className={cn(
+                        "text-sm font-medium",
+                        isOutOfStock ? "text-red-600" : "text-amber-600"
+                      )}>
+                        {isOutOfStock ? "Sin stock" : `${size.stock} left`}
+                      </span>
+                    )}
                 </div>
-                {selectedSizeId === size.id && (
+                  {!isDisabled && selectedSizeId === size.id && (
                   <div className="absolute top-0 right-0 -mt-2 -mr-2 bg-black text-white rounded-full p-1.5 shadow-sm">
                     <Check className="h-4 w-4" />
                   </div>
                 )}
               </button>
-            ))}
+              )
+            })}
           </div>
         </div>
 
@@ -141,55 +168,72 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
       </div>
 
       {/* Sticky Bottom Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-xl border-t border-gray-200 z-40 safe-area-bottom shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-sm border-t z-40 safe-area-bottom shadow-sm" style={{ borderColor: 'var(--color-border-subtle)' }}>
         <div className="container mx-auto max-w-4xl flex items-center justify-end gap-4">
           <div className="hidden md:block flex-1">
             {selectedSize ? (
               <div className="flex flex-col">
-                <span className="font-medium text-black">{artwork.title}</span>
-                <span className="text-sm text-gray-500">
+                <span className="font-medium" style={{ color: 'var(--color-text-primary)' }}>{artwork.title}</span>
+                <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
                   {selectedSize.dimensions} — {new Intl.NumberFormat('en-US', { style: 'currency', currency: artwork.currency }).format(selectedSize.price)}
                 </span>
               </div>
             ) : (
-              <span className="text-gray-400">Select a size to purchase</span>
+              <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                {isProductInCart ? 'Completa tu compra' : 'Selecciona un tamaño'}
+              </span>
             )}
           </div>
-          <Button
-            size="lg"
-            className={cn(
-              "w-full md:w-auto md:min-w-[200px] h-14 text-lg rounded-full shadow-lg transition-all font-medium",
-              isAdded 
-                ? "bg-green-600 hover:bg-green-700 text-white" 
-                : "bg-gray-500 hover:bg-gray-600 text-white disabled:bg-gray-200 disabled:text-gray-400",
-            )}
-            disabled={!selectedSizeId}
-            onClick={handleAddToCart}
-          >
-            <AnimatePresence mode="wait">
-              {isAdded ? (
-                <motion.div
-                  key="added"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="flex items-center gap-2"
-                >
-                  <Check className="h-5 w-5" />
-                  Added to Cart
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="add"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                >
-                  {selectedSize ? "Select Size" : "Select Size"}
-                </motion.div>
+          {isProductInCart ? (
+            <Link href={`/${tenantId}/cart`} className="w-full md:w-auto">
+              <Button
+                size="lg"
+                className="w-full md:min-w-[200px] h-14 text-lg rounded-full shadow-lg transition-all font-medium text-white"
+                style={{ backgroundColor: 'var(--color-accent-primary)' }}
+              >
+                Ir a Pagar
+              </Button>
+            </Link>
+          ) : (
+            <Button
+              size="lg"
+              className={cn(
+                "w-full md:w-auto md:min-w-[200px] h-14 text-lg rounded-full shadow-lg transition-all font-medium",
+                isAdded 
+                  ? "text-white" 
+                  : "text-white disabled:opacity-50 disabled:cursor-not-allowed",
               )}
-            </AnimatePresence>
-          </Button>
+              style={{
+                backgroundColor: isAdded ? 'var(--color-success)' : selectedSizeId && selectedSize?.stock !== 0 ? 'var(--color-accent-primary)' : 'var(--color-border-subtle)',
+              }}
+              disabled={!selectedSizeId || selectedSize?.stock === 0}
+              onClick={handleAddToCart}
+            >
+              <AnimatePresence mode="wait">
+                {isAdded ? (
+                  <motion.div
+                    key="added"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="flex items-center gap-2"
+                  >
+                    <Check className="h-5 w-5" />
+                    Agregado al Carrito
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="add"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                  >
+                    {selectedSize ? "Agregar al Carrito" : "Selecciona un Tamaño"}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </Button>
+          )}
         </div>
       </div>
     </div>

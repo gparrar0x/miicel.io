@@ -21,6 +21,7 @@ const orderRequestSchema = z.object({
     z.object({
       productId: z.number(),
       quantity: z.number().min(1),
+      sizeId: z.string().optional(), // For products with size variants
     })
   ).min(1),
   paymentMethod: z.literal('mercadopago'), // Solo digital por ahora
@@ -65,7 +66,7 @@ export async function POST(request: Request) {
     const productIds = items.map(item => item.productId)
     const { data: products, error: productsError } = await supabase
       .from('products')
-      .select('id, tenant_id, stock, price, active, name')
+      .select('id, tenant_id, stock, price, active, name, metadata')
       .in('id', productIds)
 
     if (productsError || !products) {
@@ -90,6 +91,7 @@ export async function POST(request: Request) {
       name: string
       quantity: number
       unit_price: number
+      size_id: string | null
     }> = []
     let total = 0
 
@@ -110,13 +112,31 @@ export async function POST(request: Request) {
         )
       }
 
-      const stock = product.stock ?? 0
+      // Validate stock based on size (if applicable) or general stock
+      let availableStock = product.stock ?? 0
+      let stockLabel = product.name
+      
+      // If product has size variants and sizeId is provided, validate size-specific stock
+      const metadata = product.metadata as { sizes?: Array<{ id: string; label: string; stock: number }> } | null
+      if (item.sizeId && metadata?.sizes) {
+        const selectedSize = metadata.sizes.find((s: any) => s.id === item.sizeId)
+        
+        if (!selectedSize) {
+          return NextResponse.json(
+            { error: `Invalid size for ${product.name}` },
+            { status: 400 }
+          )
+        }
+        
+        availableStock = selectedSize.stock ?? 0
+        stockLabel = `${product.name} (${selectedSize.label})`
+      }
       
       // Restaurant template: Ignore stock levels (infinite supply)
       // Other templates: Enforce stock limits
-      if (tenant.template !== 'restaurant' && stock < item.quantity) {
+      if (tenant.template !== 'restaurant' && availableStock < item.quantity) {
         return NextResponse.json(
-          { error: `Insufficient stock for ${product.name}. Available: ${stock}` },
+          { error: `Insufficient stock for ${stockLabel}. Available: ${availableStock}` },
           { status: 400 }
         )
       }
@@ -126,6 +146,7 @@ export async function POST(request: Request) {
         name: product.name,
         quantity: item.quantity,
         unit_price: product.price,
+        size_id: item.sizeId || null, // Include size for stock validation/decrement
       })
 
       total += product.price * item.quantity

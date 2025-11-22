@@ -56,7 +56,7 @@ async function getProduct(id: string): Promise<Product | null> {
 
   const { data, error } = await supabase
     .from('products')
-    .select('id, name, description, price, stock, category, image_url')
+    .select('id, name, description, price, stock, category, image_url, metadata')
     .eq('id', parseInt(id, 10))
     .single()
 
@@ -77,6 +77,7 @@ async function getProduct(id: string): Promise<Product | null> {
     colors: mockColors, // MVP: static colors
     stock: data.stock ?? 0,
     category: data.category,
+    metadata: data.metadata,
   }
 }
 
@@ -101,6 +102,18 @@ export default async function ProductPage({ params }: PageProps) {
 
   // Gallery template: Use new ArtworkDetail (v0 design)
   if (config.template === 'gallery') {
+    // Parse sizes from metadata or use default (disabled)
+    const metadataSizes = product.metadata?.sizes || []
+    const sizes = metadataSizes.length > 0 
+      ? metadataSizes 
+      : [{
+          id: 'default',
+          dimensions: 'Standard',
+          price: product.price,
+          stock: 0, // Disabled - requires explicit metadata.sizes configuration
+          label: 'Standard'
+        }]
+
     const artwork = {
       id: product.id,
       title: product.name,
@@ -112,13 +125,7 @@ export default async function ProductPage({ params }: PageProps) {
       image: product.images[0] || '/placeholder.svg',
       price: product.price,
       currency: product.currency,
-      sizes: [{
-        id: 'default',
-        dimensions: 'Standard',
-        price: product.price,
-        stock: product.stock,
-        label: 'Standard'
-      }],
+      sizes,
       isLimitedEdition: product.isLimited || false
     }
 

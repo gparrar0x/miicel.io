@@ -7,7 +7,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Checkout Flow Deduplication**: Unified order creation to prevent duplicate orders
+  - Removed duplicate call to `/api/orders/create` from CheckoutModal
+  - Now uses single endpoint `/api/checkout/create-preference` that creates order + MP preference
+  - Added `sizeId` support to checkout preference schema
+  - Prevents: Creating 2 separate orders (one with size_id, one without)
+  - Fixes: "Checkout preference creation failed: {}" error
+
+- **Stock Decrement Timing**: Stock now only decrements when payment is confirmed, not on order creation
+  - Migration `fix_stock_decrement_only_on_paid`: Changed trigger from AFTER INSERT to AFTER UPDATE
+  - Stock only decrements when order status changes from any status → 'paid'
+  - Prevents stock loss from abandoned carts or unpaid orders
+  - Webhook `/api/webhooks/mercadopago` updates status to 'paid' when payment approved
+  - Flow: Create order (pending) → Pay → Webhook confirms → Status = 'paid' → Stock decrements
+  - Previous behavior: Stock decremented immediately on order creation (incorrect)
+
+- **Database Stock Triggers for Size Variants**: Updated stock validation and decrement triggers
+  - Migration `update_stock_triggers_for_sizes`: Triggers now support `metadata.sizes[]` stock
+  - `validate_stock_on_order()`: Validates size-specific stock when `size_id` provided in order items
+  - `decrement_stock_on_order()`: Decrements size-specific stock in `metadata.sizes[]`
+  - Falls back to general `products.stock` when no `size_id` provided
+  - Respects restaurant template (skips stock validation/decrement)
+  - Order items now include `size_id` field for proper stock tracking
+  - Fixes: "Insufficient stock for product: Toro (P0001)" error when ordering products with size variants
+
+- **Supabase Types Update**: Regenerated TypeScript types to include `metadata` column in products table
+  - Fixed missing `metadata: Json | null` field in `products.Row` type
+  - Resolves order creation failures when validating size-specific stock
+  - Types now match database schema after migration 021
+
 ### Added
+
+- **Stock Validation for Product Size Selection**: Complete size-based stock management
+  - **Frontend validation:**
+    - Size selector buttons automatically disable when out of stock
+    - "Add to Cart" button validates stock before allowing addition
+    - Visual feedback: disabled state with opacity and "Sin stock" label
+    - Prevents cart additions for unavailable sizes
+    - Products without `metadata.sizes` in DB have all sizes disabled (stock: 0)
+    - Forces explicit size configuration per product in metadata
+    - Applied to: `ArtworkDetail` component and page loaders (`page.tsx`, `product/[id]/page.tsx`)
+  - **Backend validation:**
+    - Order creation endpoint now validates size-specific stock from `metadata.sizes[]`
+    - CheckoutModal sends `sizeId` to order endpoint for proper validation
+    - Returns detailed error messages: "Insufficient stock for Product (Size). Available: X"
+    - Falls back to general `product.stock` if no size selected
+    - Applied to: `/api/orders/create/route.ts`, `CheckoutModal.tsx`
 
 - **Gallery Template V2 Integration (v0 Design)**: Complete frontend implementation of the modern "Gallery" template
   - **New Components**:

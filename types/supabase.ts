@@ -126,8 +126,10 @@ export type Database = {
           category: string | null
           created_at: string | null
           description: string | null
+          display_order: number | null
           id: number
           image_url: string | null
+          metadata: Json | null
           name: string
           price: number
           stock: number | null
@@ -139,8 +141,10 @@ export type Database = {
           category?: string | null
           created_at?: string | null
           description?: string | null
+          display_order?: number | null
           id?: number
           image_url?: string | null
+          metadata?: Json | null
           name: string
           price: number
           stock?: number | null
@@ -152,8 +156,10 @@ export type Database = {
           category?: string | null
           created_at?: string | null
           description?: string | null
+          display_order?: number | null
           id?: number
           image_url?: string | null
+          metadata?: Json | null
           name?: string
           price?: number
           stock?: number | null
@@ -264,6 +270,8 @@ export type Database = {
           name: string | null
           plan: string | null
           slug: string | null
+          template: string | null
+          theme_overrides: Json | null
         }
         Insert: {
           active?: boolean | null
@@ -273,6 +281,8 @@ export type Database = {
           name?: string | null
           plan?: string | null
           slug?: string | null
+          template?: string | null
+          theme_overrides?: Json | null
         }
         Update: {
           active?: boolean | null
@@ -282,6 +292,8 @@ export type Database = {
           name?: string | null
           plan?: string | null
           slug?: string | null
+          template?: string | null
+          theme_overrides?: Json | null
         }
         Relationships: []
       }
@@ -313,6 +325,7 @@ export type Database = {
       }
     }
     Functions: {
+      get_product_badges: { Args: { product_id: number }; Returns: string[] }
       get_public_tenant_by_slug: {
         Args: { tenant_slug: string }
         Returns: {
@@ -325,6 +338,7 @@ export type Database = {
           slug: string
         }[]
       }
+      is_superadmin: { Args: Record<string, never>; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
