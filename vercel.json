@@ -19,6 +19,7 @@
       "main": true,
       "staging": true
     }
-  }
+  },
+  "public": true
 }
 
