@@ -82,6 +82,7 @@ async function getProduct(id: string): Promise<Product | null> {
 }
 
 export default async function ProductPage({ params }: PageProps) {
+  // Force rebuild: Fix 404 on production
   const { tenantId, id } = await params
   const [config, product] = await Promise.all([
     getTenantConfig(tenantId),
@@ -104,15 +105,15 @@ export default async function ProductPage({ params }: PageProps) {
   if (config.template === 'gallery') {
     // Parse sizes from metadata or use default (disabled)
     const metadataSizes = product.metadata?.sizes || []
-    const sizes = metadataSizes.length > 0 
-      ? metadataSizes 
+    const sizes = metadataSizes.length > 0
+      ? metadataSizes
       : [{
-          id: 'default',
-          dimensions: 'Standard',
-          price: product.price,
-          stock: 0, // Disabled - requires explicit metadata.sizes configuration
-          label: 'Standard'
-        }]
+        id: 'default',
+        dimensions: 'Standard',
+        price: product.price,
+        stock: 0, // Disabled - requires explicit metadata.sizes configuration
+        label: 'Standard'
+      }]
 
     const artwork = {
       id: product.id,
