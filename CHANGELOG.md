@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Docusaurus Documentation Site**: Complete documentation system with structured navigation and search
+  - **Installation**: Docusaurus 3.9.2 installed in `/website` subfolder with TypeScript classic template
+  - **Configuration**: Customized `docusaurus.config.ts` with Vendio branding, navbar, and footer
+  - **Documentation structure**: Organized docs into logical categories:
+    - `getting-started/`: Quick start, deployment guide, environment variables
+    - `guides/`: Admin theme editor, product management, user flows, quick wins
+    - `architecture/`: Overview, database schema, templates, product roadmap
+    - `api/`: Orders API reference
+  - **Sidebar navigation**: Custom sidebar with hierarchical structure for easy navigation
+  - **Landing page**: Custom homepage with hero section, feature cards, and quick links
+  - **Scripts**: Added `docs:dev`, `docs:build`, and `docs:serve` commands to root `package.json`
+  - **Migration**: Migrated 15+ existing documentation files with proper frontmatter
+  - **Build**: Production build successful, all MDX compilation errors resolved
+  - **Integration**: Updated README with documentation links and development commands
+  - Files: `website/`, `package.json`, `README.md`
+
 - **Login Page as Main Landing**: Converted main page (`/[locale]/page.tsx`) to login page
   - **Header**: Simple header with logo placeholder (circular "M" badge) and "Miceliio" branding
   - **Login Form**: Centered login form with email/password fields, error handling, and loading states

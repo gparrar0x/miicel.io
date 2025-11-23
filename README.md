@@ -1,6 +1,7 @@
-# SkyWalking Commerce SaaS
+# Miicel.io
 
-Multi-tenant e-commerce platform with dynamic template system (Gallery, Restaurant) and Supabase backend.
+This is the **Miicel.io** project (formerly Commerce SaaS), a multi-tenant e-commerce platform built with Next.js 15, Supabase, and Tailwind CSS.
+
 
 ## Quick Start
 
@@ -43,10 +44,13 @@ STRIPE_SECRET_KEY=sk_test_...
 ├── db/                     # Database layer
 │   ├── scripts/            # DB management scripts
 │   └── supabase/           # Migrations and Supabase config
-├── docs/                   # Documentation
+├── docs/                   # Legacy documentation (being migrated)
 │   ├── guides/             # User guides (QUICKSTART_E2E.md)
 │   ├── testing/            # Test documentation
 │   └── backlog/            # Project delivery docs
+├── website/                # Docusaurus documentation site
+│   ├── docs/               # Migrated documentation
+│   └── src/                # Docusaurus source files
 ├── lib/                    # Utilities (auth, Supabase clients, stores, schemas)
 ├── public/                 # Static assets
 ├── scripts/                # CLI utilities (check-products, create-superadmin, etc)
@@ -103,10 +107,27 @@ vercel --prod
 
 ## Documentation
 
+**📚 Full Documentation:** Visit the [Docusaurus documentation site](./website) or run `npm run docs:dev` to view locally.
+
+**Quick Links:**
+- [Getting Started Guide](./website/docs/getting-started/quick-start.md) - Setup in 5 minutes
+- [Deployment Guide](./website/docs/getting-started/deployment.md) - Deploy to Vercel
+- [Architecture Overview](./website/docs/architecture/overview.md) - System design and architecture
+- [API Reference](./website/docs/api/orders.md) - Orders API documentation
+- [User Flows](./website/docs/guides/user-flows.md) - User journey documentation
+
+**Legacy Docs (in `/docs` folder):**
 - [`docs/guides/QUICKSTART_E2E.md`](docs/guides/QUICKSTART_E2E.md) - E2E testing quick start
 - [`docs/ADMIN_THEME_EDITOR.md`](docs/ADMIN_THEME_EDITOR.md) - Theme editor documentation
 - [`tests/e2e/README.md`](tests/e2e/README.md) - E2E test suite guide
 - [`CHANGELOG.md`](CHANGELOG.md) - Version history
+
+**Documentation Development:**
+```bash
+npm run docs:dev    # Start Docusaurus dev server (port 3001)
+npm run docs:build  # Build documentation for production
+npm run docs:serve  # Serve built documentation locally
+```
 
 ## Tech Stack
 

@@ -1,5 +1,5 @@
 {
-  "name": "sw_commerce_saas",
+  "name": "miicel.io",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,7 +13,10 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
-    "test:e2e:report": "playwright show-report"
+    "test:e2e:report": "playwright show-report",
+    "docs:dev": "cd website && npm run start",
+    "docs:build": "cd website && npm run build",
+    "docs:serve": "cd website && npm run serve"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
