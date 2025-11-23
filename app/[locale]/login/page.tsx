@@ -35,7 +35,8 @@ function LoginForm() {
       console.log('Login successful:', data)
 
       // Redirect to return URL or root (tenant list)
-      const returnUrl = searchParams.get('returnUrl') || '/'
+      // Redirect to return URL or root (tenant list)
+      const returnUrl = searchParams.get('returnUrl') || data.redirectTo || '/'
       window.location.href = returnUrl
     } catch (err: any) {
       console.error('Login error:', err)

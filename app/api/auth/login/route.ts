@@ -16,35 +16,58 @@ export async function POST(request: Request) {
     const cookieStore = await cookies()
 
     const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+          set(name: string, value: string, options: any) {
+            cookieStore.set({ name, value, ...options })
+          },
+          remove(name: string, options: any) {
+            cookieStore.set({ name, value: '', ...options })
+          },
         },
-        set(name: string, value: string, options: any) {
-          cookieStore.set({ name, value, ...options })
-        },
-        remove(name: string, options: any) {
-          cookieStore.set({ name, value: '', ...options })
-        },
-      },
-    }
-  )
+      }
+    )
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  })
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 401 })
     }
 
+    // Determine redirect URL
+    let redirectTo = '/' // Default to root (tenant list) for superadmins
+
+    // Check if superadmin
+    const { data: isSuperAdmin } = await supabase.rpc('is_superadmin')
+
+    if (!isSuperAdmin) {
+      // If not superadmin, find their tenant
+      const { data: tenant } = await supabase
+        .from('tenants')
+        .select('slug')
+        .eq('owner_id', data.user.id)
+        .single()
+
+      if (tenant) {
+        // Redirect to their store dashboard
+        // Note: We assume 'es' locale for now, frontend should handle locale if needed
+        // or we could pass it from the request
+        redirectTo = `/es/${tenant.slug}/dashboard`
+      }
+    }
+
     return NextResponse.json({
       user: data.user,
       session: data.session,
+      redirectTo,
     })
   } catch (err: any) {
     console.error('Login error:', err)

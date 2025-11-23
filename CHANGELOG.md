@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Smart Login Redirect**: Enhanced login flow with role-based redirects
+  - **Superadmin redirect**: Superadmins redirect to root (tenant list) after login
+  - **Tenant owner redirect**: Tenant owners redirect to their store dashboard (`/es/{tenantSlug}/dashboard`)
+  - **API enhancement**: Login endpoint (`/api/auth/login`) now returns `redirectTo` field based on user role
+  - **Role detection**: Uses `is_superadmin()` RPC function to determine user type
+  - **Tenant lookup**: Non-superadmins have their tenant slug fetched from database
+  - **Frontend integration**: Login pages use `redirectTo` from API response as fallback
+  - Files: `app/api/auth/login/route.ts`, `app/[locale]/login/page.tsx`, `app/[locale]/page.tsx`
+
+- **Branding Update**: Rebranded from "Miceliio" to "Miicel.io"
+  - **Page title**: Updated metadata title to "Miicel.io" with description "Red de comercios descentralizada"
+  - **Login header**: Changed branding text from "Miceliio" to "Miicel.io"
+  - **Seed data**: Updated demo tenant name from "Demo Store - Vendio" to "Demo Store - Miicel"
+  - **Metadata**: Added page metadata to locale layout for SEO
+  - Files: `app/[locale]/layout.tsx`, `app/[locale]/page.tsx`, `db/supabase/migrations/013_seed_tenant_theme_config.sql`
+
+- **Build Configuration**: Excluded website directory from TypeScript compilation
+  - Added `website` to `tsconfig.json` exclude list to prevent build errors
+  - File: `tsconfig.json`
+
 - **Docusaurus Documentation Site**: Complete documentation system with structured navigation and search
   - **Installation**: Docusaurus 3.9.2 installed in `/website` subfolder with TypeScript classic template
   - **Configuration**: Customized `docusaurus.config.ts` with Vendio branding, navbar, and footer
