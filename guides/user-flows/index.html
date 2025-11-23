@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="docs-wrapper plugin-docs plugin-id-default docs-version-current docs-doc-page docs-doc-id-guides/user-flows" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.9.2">
+<title data-rh="true">User Flows | Vendio Documentation</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://gparrar0x.github.io/sw_commerce_saas/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://gparrar0x.github.io/sw_commerce_saas/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://gparrar0x.github.io/sw_commerce_saas/guides/user-flows"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="User Flows | Vendio Documentation"><meta data-rh="true" name="description" content="Audience: Product, UX, engineering, sales"><meta data-rh="true" property="og:description" content="Audience: Product, UX, engineering, sales"><link data-rh="true" rel="icon" href="/sw_commerce_saas/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://gparrar0x.github.io/sw_commerce_saas/guides/user-flows"><link data-rh="true" rel="alternate" href="https://gparrar0x.github.io/sw_commerce_saas/guides/user-flows" hreflang="en"><link data-rh="true" rel="alternate" href="https://gparrar0x.github.io/sw_commerce_saas/guides/user-flows" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"User Flows","item":"https://gparrar0x.github.io/sw_commerce_saas/guides/user-flows"}]}</script><link rel="stylesheet" href="/sw_commerce_saas/assets/css/styles.4dc2e6cd.css">
+<script src="/sw_commerce_saas/assets/js/runtime~main.4161998e.js" defer="defer"></script>
+<script src="/sw_commerce_saas/assets/js/main.a52ecee4.js" defer="defer"></script>
+</head>
+<body class="navigation-with-keyboard">
+<svg style="display: none;"><defs>
+<symbol id="theme-svg-external-link" viewBox="0 0 24 24"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></symbol>
+</defs></svg>
+<script>!function(){var t=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();document.documentElement.setAttribute("data-theme",t||(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")),document.documentElement.setAttribute("data-theme-choice",t||"system")}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><link rel="preload" as="image" href="/sw_commerce_saas/img/logo.svg"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="theme-layout-navbar navbar navbar--fixed-top"><div class="navbar__inner"><div class="theme-layout-navbar-left navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/sw_commerce_saas/"><div class="navbar__logo"><img src="/sw_commerce_saas/img/logo.svg" alt="Vendio Logo" class="themedComponent_mlkZ themedComponent--light_NVdE"><img src="/sw_commerce_saas/img/logo.svg" alt="Vendio Logo" class="themedComponent_mlkZ themedComponent--dark_xIcU"></div><b class="navbar__title text--truncate">Vendio Docs</b></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/sw_commerce_saas/getting-started/quick-start">Documentation</a></div><div class="theme-layout-navbar-right navbar__items navbar__items--right"><a href="https://sw-commerce-vendio.vercel.app" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">Live App<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><a href="https://github.com/skywalking/sw_commerce_vendio" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="system mode" aria-label="Switch between dark and light mode (currently system mode)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP systemToggleIcon_QzmC"><path fill="currentColor" d="m12 21c4.971 0 9-4.029 9-9s-4.029-9-9-9-9 4.029-9 9 4.029 9 9 9zm4.95-13.95c1.313 1.313 2.05 3.093 2.05 4.95s-0.738 3.637-2.05 4.95c-1.313 1.313-3.093 2.05-4.95 2.05v-14c1.857 0 3.637 0.737 4.95 2.05z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="theme-layout-main main-wrapper mainWrapper_z2l0"><div class="docsWrapper_hBAB"><button aria-label="Scroll back to top" class="clean-btn theme-back-to-top-button backToTopButton_sjWU" type="button"></button><div class="docRoot_UBD9"><aside class="theme-doc-sidebar-container docSidebarContainer_YfHR"><div class="sidebarViewport_aRkj"><div class="sidebar_njMd"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/sw_commerce_saas/getting-started/quick-start"><span title="Getting Started" class="categoryLinkLabel_W154">Getting Started</span></a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret menu__link--active" role="button" aria-expanded="true" href="/sw_commerce_saas/guides/admin-theme-editor"><span title="Guides" class="categoryLinkLabel_W154">Guides</span></a></div><ul class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/sw_commerce_saas/guides/admin-theme-editor"><span title="Admin Theme Editor" class="linkLabel_WmDU">Admin Theme Editor</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/sw_commerce_saas/guides/product-management"><span title="Product Management" class="linkLabel_WmDU">Product Management</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" tabindex="0" href="/sw_commerce_saas/guides/user-flows"><span title="User Flows" class="linkLabel_WmDU">User Flows</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/sw_commerce_saas/guides/quick-wins"><span title="Quick Wins" class="linkLabel_WmDU">Quick Wins</span></a></li></ul></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/sw_commerce_saas/architecture/overview"><span title="Architecture" class="categoryLinkLabel_W154">Architecture</span></a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" href="/sw_commerce_saas/api/orders"><span title="API Reference" class="categoryLinkLabel_W154">API Reference</span></a></div></li></ul></nav></div></div></aside><main class="docMainContainer_TBSr"><div class="container padding-top--md padding-bottom--lg"><div class="row"><div class="col docItemCol_VOVn"><div class="docItemContainer_Djhp"><article><nav class="theme-doc-breadcrumbs breadcrumbsContainer_Z_bl" aria-label="Breadcrumbs"><ul class="breadcrumbs"><li class="breadcrumbs__item"><a aria-label="Home page" class="breadcrumbs__link" href="/sw_commerce_saas/"><svg viewBox="0 0 24 24" class="breadcrumbHomeIcon_YNFT"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z" fill="currentColor"></path></svg></a></li><li class="breadcrumbs__item"><span class="breadcrumbs__link">Guides</span></li><li class="breadcrumbs__item breadcrumbs__item--active"><span class="breadcrumbs__link">User Flows</span></li></ul></nav><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_ITEo"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><div class="theme-doc-markdown markdown"><header><h1>VENDIO - User Flows</h1></header>
+<p><strong>Audience:</strong> Product, UX, engineering, sales<br>
+<strong>Version:</strong> 0.1 (draft)<br>
+<strong>Updated:</strong> 2025-11-22</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="roles">Roles<a href="#roles" class="hash-link" aria-label="Direct link to Roles" title="Direct link to Roles" translate="no">​</a></h2>
+<ul>
+<li class=""><strong>Usuario Administrador (Tenant Owner):</strong> Persona que configura la tienda, sube productos, ve pedidos y ajusta precios.</li>
+<li class=""><strong>Usuario Comprador (Cliente final):</strong> Persona que entra al sitio / menú online y realiza el pedido / compra.</li>
+</ul>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="flujos--usuario-administrador">Flujos – Usuario Administrador<a href="#flujos--usuario-administrador" class="hash-link" aria-label="Direct link to Flujos – Usuario Administrador" title="Direct link to Flujos – Usuario Administrador" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="alta-de-cuenta-y-creación-de-tenant">Alta de cuenta y creación de tenant<a href="#alta-de-cuenta-y-creación-de-tenant" class="hash-link" aria-label="Direct link to Alta de cuenta y creación de tenant" title="Direct link to Alta de cuenta y creación de tenant" translate="no">​</a></h3>
+<ol>
+<li class="">Admin llega a la landing de VENDIO y hace clic en <strong>Crear cuenta</strong>.</li>
+<li class="">Completa formulario de registro (email, contraseña, datos básicos).</li>
+<li class="">El sistema crea un <strong>tenant</strong> con un <code>slug</code> único basado en el nombre del negocio.</li>
+<li class="">Admin es redirigido al <strong>onboarding inicial</strong> del tenant.</li>
+</ol>
+<p>Resultado: existe un tenant activo con dueño autenticado listo para configurar.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="onboarding-inicial-del-negocio">Onboarding inicial del negocio<a href="#onboarding-inicial-del-negocio" class="hash-link" aria-label="Direct link to Onboarding inicial del negocio" title="Direct link to Onboarding inicial del negocio" translate="no">​</a></h3>
+<ol>
+<li class="">Desde el onboarding, el Admin:<!-- -->
+<ul>
+<li class="">Carga <strong>logo</strong> (archivo JPG/PNG, validación de tamaño).</li>
+<li class="">Carga <strong>banner/portada</strong> opcional.</li>
+<li class="">Ingresa <strong>nombre del negocio</strong>, <strong>subtítulo</strong>, <strong>ubicación</strong> y <strong>teléfono</strong>.</li>
+</ul>
+</li>
+<li class="">El sistema sube las imágenes a Storage y persiste la configuración básica en Supabase.</li>
+<li class="">Al finalizar, se habilita la tienda pública en <code>/{locale}/{tenantSlug}</code>.</li>
+</ol>
+<p>Resultado: storefront público con branding mínimo operativo.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="configuración-de-plantilla-y-tema-appearance">Configuración de plantilla y tema (Appearance)<a href="#configuración-de-plantilla-y-tema-appearance" class="hash-link" aria-label="Direct link to Configuración de plantilla y tema (Appearance)" title="Direct link to Configuración de plantilla y tema (Appearance)" translate="no">​</a></h3>
+<ol>
+<li class="">Admin accede a <code>/{tenantId}/dashboard/settings/appearance</code>.</li>
+<li class="">El sistema valida que el usuario es OWNER del tenant.</li>
+<li class="">En la vista de Theme Editor:<!-- -->
+<ul>
+<li class="">Elige <strong>plantilla</strong>: Gallery, Detail, Minimal o Restaurant.</li>
+<li class="">Ajusta <strong>grid columns</strong>, <strong>image aspect ratio</strong>, <strong>card variant</strong>, <strong>spacing</strong> y <strong>colores de marca</strong>.</li>
+</ul>
+</li>
+<li class="">Observa cambios en el <strong>preview en vivo</strong> (300ms debounce).</li>
+<li class="">Hace clic en <strong>Save Changes</strong> para persistir.</li>
+</ol>
+<p>Resultado: el storefront público refleja inmediatamente la plantilla y tema seleccionados.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="gestión-de-catálogo-categorías-y-productos">Gestión de catálogo (categorías y productos)<a href="#gestión-de-catálogo-categorías-y-productos" class="hash-link" aria-label="Direct link to Gestión de catálogo (categorías y productos)" title="Direct link to Gestión de catálogo (categorías y productos)" translate="no">​</a></h3>
+<ol>
+<li class="">Desde el dashboard, Admin entra a la sección de <strong>Productos</strong>.</li>
+<li class="">Crea o edita <strong>categorías</strong> (por ejemplo: Entradas, Panchos, Bebidas).</li>
+<li class="">Para cada producto:<!-- -->
+<ul>
+<li class="">Define <strong>nombre</strong>, <strong>descripción</strong>, <strong>precio</strong>, <strong>categoría</strong>, <strong>stock</strong>.</li>
+<li class="">Sube una <strong>imagen principal</strong> (<code>image_url</code>) respetando las dimensiones recomendadas.</li>
+</ul>
+</li>
+<li class="">Guarda los cambios; los productos quedan asociados al tenant y visibles en el storefront.</li>
+</ol>
+<p>Resultado: el menú / catálogo público muestra las nuevas categorías y productos ordenados por categoría.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="revisión-y-gestión-de-pedidos">Revisión y gestión de pedidos<a href="#revisión-y-gestión-de-pedidos" class="hash-link" aria-label="Direct link to Revisión y gestión de pedidos" title="Direct link to Revisión y gestión de pedidos" translate="no">​</a></h3>
+<ol>
+<li class="">Admin abre el dashboard y navega a la sección <strong>Orders</strong> / <strong>Pedidos</strong>.</li>
+<li class="">Ve listado de pedidos con:<!-- -->
+<ul>
+<li class="">Estado (pending, paid, completed, cancelled).</li>
+<li class="">Monto total y forma de pago.</li>
+<li class="">Detalle de ítems.</li>
+</ul>
+</li>
+<li class="">Puede:<!-- -->
+<ul>
+<li class="">Cambiar el <strong>estado</strong> (ej. de pending → in preparation → completed).</li>
+<li class="">Ver detalles para preparación en cocina.</li>
+</ul>
+</li>
+</ol>
+<p>Resultado: el negocio puede operar el flujo de pedidos end‑to‑end desde VENDIO.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="flujos--usuario-comprador">Flujos – Usuario Comprador<a href="#flujos--usuario-comprador" class="hash-link" aria-label="Direct link to Flujos – Usuario Comprador" title="Direct link to Flujos – Usuario Comprador" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="descubrimiento-y-acceso-a-la-tienda">Descubrimiento y acceso a la tienda<a href="#descubrimiento-y-acceso-a-la-tienda" class="hash-link" aria-label="Direct link to Descubrimiento y acceso a la tienda" title="Direct link to Descubrimiento y acceso a la tienda" translate="no">​</a></h3>
+<ol>
+<li class="">Cliente recibe un <strong>link</strong>, <strong>QR</strong> o encuentra el negocio en Google / redes.</li>
+<li class="">Abre la URL pública <code>https://{host}/{locale}/{tenantSlug}</code> desde su móvil.</li>
+<li class="">Ve la <strong>cabecera</strong> con logo, banner, nombre del negocio, subtítulo y ubicación.</li>
+</ol>
+<p>Resultado: el cliente entiende inmediatamente qué vende el negocio y dónde está.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="exploración-del-catálogo--menú">Exploración del catálogo / menú<a href="#exploración-del-catálogo--menú" class="hash-link" aria-label="Direct link to Exploración del catálogo / menú" title="Direct link to Exploración del catálogo / menú" translate="no">​</a></h3>
+<ol>
+<li class="">Cliente hace scroll en la home del tenant.</li>
+<li class="">Según la plantilla:<!-- -->
+<ul>
+<li class=""><strong>Restaurant template:</strong> ve acordeón de categorías y cards de producto con foto grande, nombre, descripción y precio.</li>
+<li class=""><strong>Gallery / Detail / Minimal:</strong> ve grids adaptados (más visual, más detalle, o más compacto).</li>
+</ul>
+</li>
+<li class="">Puede cambiar de categoría, o usar filtros/búsqueda donde estén disponibles.</li>
+</ol>
+<p>Resultado: el cliente puede navegar fácilmente por el menú hasta encontrar lo que quiere.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="selección-de-productos-y-carrito">Selección de productos y carrito<a href="#selección-de-productos-y-carrito" class="hash-link" aria-label="Direct link to Selección de productos y carrito" title="Direct link to Selección de productos y carrito" translate="no">​</a></h3>
+<ol>
+<li class="">En cada card de producto, el cliente:<!-- -->
+<ul>
+<li class="">Revisa imagen, descripción corta y precio.</li>
+<li class="">Hace clic en <strong>Agregar</strong> o equivalente.</li>
+</ul>
+</li>
+<li class="">El sistema:<!-- -->
+<ul>
+<li class="">Añade el ítem al carrito (con cantidad inicial 1).</li>
+<li class="">Actualiza contador de items y total en el botón flotante / icono de carrito.</li>
+</ul>
+</li>
+<li class="">Cliente puede:<!-- -->
+<ul>
+<li class="">Abrir el <strong>cart drawer / sheet</strong> para revisar su pedido.</li>
+<li class="">Ajustar <strong>cantidades</strong> o <strong>eliminar</strong> productos.</li>
+</ul>
+</li>
+</ol>
+<p>Resultado: el cliente construye su pedido de forma visual y reversible.</p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="checkout-y-pago">Checkout y pago<a href="#checkout-y-pago" class="hash-link" aria-label="Direct link to Checkout y pago" title="Direct link to Checkout y pago" translate="no">​</a></h3>
+<ol>
+<li class="">Desde el carrito, el cliente hace clic en <strong>Ir a pagar</strong> / <strong>Confirmar pedido</strong>.</li>
+<li class="">Es redirigido al flujo de <strong>checkout</strong>, donde:<!-- -->
+<ul>
+<li class="">Confirma datos de contacto / entrega (según configuración del tenant).</li>
+<li class="">Revisa el resumen de items y total.</li>
+</ul>
+</li>
+<li class="">El sistema crea la <strong>preferencia de pago</strong> (Mercado Pago) y redirige al gateway o muestra el widget correspondiente.</li>
+<li class="">Cliente completa el pago (tarjeta u otros medios soportados).</li>
+<li class="">Al finalizar, el sistema:<!-- -->
+<ul>
+<li class="">Actualiza el estado del pedido.</li>
+<li class="">Redirige a página de <strong>success</strong>, <strong>failure</strong> o <strong>pending</strong> según resultado.</li>
+</ul>
+</li>
+</ol>
+<p>Resultado: el cliente tiene confirmación clara de su pedido y estado de pago.</p>
+<hr>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="cobertura-de-flujos-por-rol">Cobertura de flujos por rol<a href="#cobertura-de-flujos-por-rol" class="hash-link" aria-label="Direct link to Cobertura de flujos por rol" title="Direct link to Cobertura de flujos por rol" translate="no">​</a></h2>
+<ul>
+<li class="">
+<p><strong>Usuario Administrador</strong></p>
+<ul>
+<li class="">Alta de cuenta y tenant</li>
+<li class="">Onboarding de negocio</li>
+<li class="">Configuración de plantilla y tema</li>
+<li class="">Gestión de catálogo (categorías y productos)</li>
+<li class="">Actualización rápida de precios y stock</li>
+<li class="">Revisión y gestión de pedidos</li>
+<li class="">Acceso rápido al dashboard desde la tienda</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Usuario Comprador</strong></p>
+<ul>
+<li class="">Descubrimiento y acceso a la tienda</li>
+<li class="">Exploración del catálogo / menú</li>
+<li class="">Selección de productos y carrito</li>
+<li class="">Checkout y pago</li>
+<li class="">Post‑compra y estado del pedido</li>
+</ul>
+</li>
+</ul></div></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/sw_commerce_saas/guides/product-management"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Product Management</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/sw_commerce_saas/guides/quick-wins"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Quick Wins</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#roles" class="table-of-contents__link toc-highlight">Roles</a></li><li><a href="#flujos--usuario-administrador" class="table-of-contents__link toc-highlight">Flujos – Usuario Administrador</a><ul><li><a href="#alta-de-cuenta-y-creación-de-tenant" class="table-of-contents__link toc-highlight">Alta de cuenta y creación de tenant</a></li><li><a href="#onboarding-inicial-del-negocio" class="table-of-contents__link toc-highlight">Onboarding inicial del negocio</a></li><li><a href="#configuración-de-plantilla-y-tema-appearance" class="table-of-contents__link toc-highlight">Configuración de plantilla y tema (Appearance)</a></li><li><a href="#gestión-de-catálogo-categorías-y-productos" class="table-of-contents__link toc-highlight">Gestión de catálogo (categorías y productos)</a></li><li><a href="#revisión-y-gestión-de-pedidos" class="table-of-contents__link toc-highlight">Revisión y gestión de pedidos</a></li></ul></li><li><a href="#flujos--usuario-comprador" class="table-of-contents__link toc-highlight">Flujos – Usuario Comprador</a><ul><li><a href="#descubrimiento-y-acceso-a-la-tienda" class="table-of-contents__link toc-highlight">Descubrimiento y acceso a la tienda</a></li><li><a href="#exploración-del-catálogo--menú" class="table-of-contents__link toc-highlight">Exploración del catálogo / menú</a></li><li><a href="#selección-de-productos-y-carrito" class="table-of-contents__link toc-highlight">Selección de productos y carrito</a></li><li><a href="#checkout-y-pago" class="table-of-contents__link toc-highlight">Checkout y pago</a></li></ul></li><li><a href="#cobertura-de-flujos-por-rol" class="table-of-contents__link toc-highlight">Cobertura de flujos por rol</a></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Documentation</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/sw_commerce_saas/getting-started/quick-start">Getting Started</a></li><li class="footer__item"><a class="footer__link-item" href="/sw_commerce_saas/getting-started/deployment">Deployment Guide</a></li><li class="footer__item"><a class="footer__link-item" href="/sw_commerce_saas/api/orders">API Reference</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Resources</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://sw-commerce-vendio.vercel.app" target="_blank" rel="noopener noreferrer" class="footer__link-item">Live Application<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://github.com/skywalking/sw_commerce_vendio" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub Repository<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a class="footer__link-item" href="/sw_commerce_saas/architecture/roadmap">Roadmap</a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2025 Skywalking.dev. Built with Docusaurus.</div></div></div></footer></div>
+</body>
+</html>
