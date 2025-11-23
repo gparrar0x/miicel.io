@@ -35,7 +35,8 @@ function LoginForm() {
       console.log('Login successful:', data)
 
       // Redirect to return URL or root (tenant list)
-      const returnUrl = searchParams.get('returnUrl') || '/'
+      // Redirect to return URL or root (tenant list)
+      const returnUrl = searchParams.get('returnUrl') || data.redirectTo || '/'
       window.location.href = returnUrl
     } catch (err: any) {
       console.error('Login error:', err)
@@ -54,7 +55,7 @@ function LoginForm() {
             M
           </div>
           <h1 className="text-xl md:text-2xl font-bold text-[#1A1A1A]">
-            Miceliio
+            Miicel.io
           </h1>
         </div>
       </header>
