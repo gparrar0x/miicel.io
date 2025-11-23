@@ -33,18 +33,53 @@ const mockColors: ProductColor[] = [
   { id: 'gray', name: 'Gris', hex: '#6b7280' },
 ]
 
-async function getTenantConfig(tenant: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+async function getTenantConfig(tenantSlug: string) {
+  const supabase = await createClient()
 
   try {
-    const res = await fetch(`${baseUrl}/api/tenant/${tenant}/config`, {
-      cache: 'no-store',
-    })
+    const { data: tenant, error } = await supabase
+      .from('tenants')
+      .select('id, slug, name, config, template, active')
+      .eq('slug', tenantSlug)
+      .eq('active', true)
+      .maybeSingle()
 
-    if (!res.ok) return null
+    if (error || !tenant) {
+      console.error('Tenant not found or error:', error)
+      return null
+    }
 
-    const data = await res.json()
-    return tenantConfigResponseSchema.parse(data)
+    // Parse config JSONB
+    const config = (tenant.config as any) || {}
+
+    // Build response DTO (replicated from API route)
+    const validTemplates = ['gallery', 'detail', 'minimal', 'restaurant'] as const
+    const rawTemplate = (tenant as any).template
+    const template = validTemplates.includes(rawTemplate) ? rawTemplate : 'gallery'
+
+    const tenantConfig = {
+      id: tenant.slug,
+      businessName: config.business_name || config.business?.name || tenant.name,
+      subtitle: config.subtitle || config.business?.subtitle || null,
+      location: config.location || config.business?.location || null,
+      bannerUrl: config.banner_url || config.banner || null,
+      logoUrl: config.logo_url || config.logo || null,
+      logoTextUrl: config.logo_text_url || config.logoText || null,
+      colors: {
+        primary: config.colors?.primary || '#3B82F6',
+        secondary: config.colors?.secondary || '#10B981',
+        accent: config.colors?.accent || config.colors?.primary || '#3B82F6',
+        background: config.colors?.background || '#FFFFFF',
+        surface: config.colors?.surface || '#F8F8F8',
+        textPrimary: config.colors?.textPrimary || config.colors?.text_primary || '#000000',
+        textSecondary: config.colors?.textSecondary || config.colors?.text_secondary || '#999999',
+      },
+      hours: config.hours || {},
+      currency: config.currency || 'USD',
+      template,
+    }
+
+    return tenantConfigResponseSchema.parse(tenantConfig)
   } catch (error) {
     console.error('Failed to load tenant config:', error)
     return null
