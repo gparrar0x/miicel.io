@@ -25,7 +25,7 @@ interface RestaurantLayoutProps {
   tenantBanner?: string | null
   tenantSubtitle?: string
   tenantLocation?: string
-   hours?: Record<string, { open: string; close: string }>
+  hours?: Record<string, { open: string; close: string }>
   products: Product[]
   categories: Category[]
   currency?: string
@@ -46,7 +46,7 @@ export function RestaurantLayout({
 }: RestaurantLayoutProps) {
   const router = useRouter()
   const { items, addItem, removeItem, updateQuantity } = useCartStore()
-  
+
   const totalItems = items.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0)
   const totalPrice = items.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 0), 0)
 
@@ -75,7 +75,7 @@ export function RestaurantLayout({
 
   const handleProductClick = (product: Product) => {
     // Optional: could open product detail modal
-    router.push(`/${tenantSlug}/product/${product.id}`)
+    router.push(`/${tenantSlug}/p/${product.id}`)
   }
 
   // Group products by category
@@ -85,7 +85,7 @@ export function RestaurantLayout({
   }))
 
   return (
-    <div data-testid="restaurant-layout" className="min-h-screen bg-gradient-to-b from-white/50 to-white" style={{ 
+    <div data-testid="restaurant-layout" className="min-h-screen bg-gradient-to-b from-white/50 to-white" style={{
       backgroundImage: 'linear-gradient(to bottom, color-mix(in srgb, var(--color-primary) 5%, white), white)'
     }}>
       {/* Header */}
@@ -114,7 +114,7 @@ export function RestaurantLayout({
               className="bg-white rounded-2xl border-2 shadow-sm overflow-hidden"
               style={{ borderColor: 'color-mix(in srgb, var(--color-primary) 15%, white)' }}
             >
-              <AccordionTrigger 
+              <AccordionTrigger
                 className="px-6 py-4 hover:no-underline transition-colors"
                 style={{
                   ['--hover-bg' as string]: 'color-mix(in srgb, var(--color-primary) 8%, white)'
@@ -176,9 +176,9 @@ export function RestaurantLayout({
         items={items}
         totalPrice={totalPrice}
         onUpdateQuantity={(pid, qty) => {
-            // CartStore expects updateQuantity(productId, colorId, qty)
-            // Assuming no color variant for restaurant for now
-            updateQuantity(pid, undefined, qty)
+          // CartStore expects updateQuantity(productId, colorId, qty)
+          // Assuming no color variant for restaurant for now
+          updateQuantity(pid, undefined, qty)
         }}
         onRemoveItem={(pid) => removeItem(pid, undefined)}
         currency={currency}

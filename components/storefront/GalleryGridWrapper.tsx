@@ -22,10 +22,10 @@ export function GalleryGridWrapper({ products, tenantId }: GalleryGridWrapperPro
       template="gallery"
       products={products}
       onProductClick={(product) => {
-        router.push(`/${tenantId}/product/${product.id}`)
+        router.push(`/${tenantId}/p/${product.id}`)
       }}
       onQuickView={(productId) => {
-        router.push(`/${tenantId}/product/${productId}`)
+        router.push(`/${tenantId}/p/${productId}`)
       }}
     />
   )

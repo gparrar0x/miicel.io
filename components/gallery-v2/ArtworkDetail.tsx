@@ -23,7 +23,7 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
   const [isAdded, setIsAdded] = useState(false)
 
   const selectedSize = artwork.sizes.find((s) => s.id === selectedSizeId)
-  
+
   // Check if this specific product (artwork.id) is in cart
   const isProductInCart = items.some((item) => item.productId === artwork.id)
 
@@ -33,7 +33,7 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
       if (selectedSize.stock === 0) {
         return // Don't add if out of stock
       }
-      
+
       addItem({
         productId: artwork.id,
         name: artwork.title,
@@ -96,28 +96,28 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
             {artwork.sizes.map((size) => {
               const isOutOfStock = size.stock === 0
               const isDisabled = isOutOfStock
-              
+
               return (
-              <button
-                key={size.id}
+                <button
+                  key={size.id}
                   onClick={() => !isDisabled && setSelectedSizeId(size.id)}
                   disabled={isDisabled}
-                className={cn(
-                  "relative flex items-center justify-between p-6 rounded-xl border transition-all duration-200 text-left min-h-[100px] bg-white group",
+                  className={cn(
+                    "relative flex items-center justify-between p-6 rounded-xl border transition-all duration-200 text-left min-h-[100px] bg-white group",
                     isDisabled && "opacity-50 cursor-not-allowed bg-gray-50",
                     !isDisabled && selectedSizeId === size.id
-                    ? "border-black ring-1 ring-black shadow-md z-10"
-                    : "border-gray-200 hover:border-gray-400 hover:shadow-sm",
-                )}
-              >
-                <div className="flex flex-col gap-1">
-                  <span className="font-medium text-xl text-black">{size.dimensions}</span>
-                  <span className="text-base text-gray-500">{size.label}</span>
-                </div>
-                <div className="flex flex-col items-end gap-1">
-                  <span className="font-bold text-2xl text-black">
-                    {new Intl.NumberFormat('en-US', { style: 'currency', currency: artwork.currency }).format(size.price)}
-                  </span>
+                      ? "border-black ring-1 ring-black shadow-md z-10"
+                      : "border-gray-200 hover:border-gray-400 hover:shadow-sm",
+                  )}
+                >
+                  <div className="flex flex-col gap-1">
+                    <span className="font-medium text-xl text-black">{size.dimensions}</span>
+                    <span className="text-base text-gray-500">{size.label}</span>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="font-bold text-2xl text-black">
+                      {new Intl.NumberFormat('en-US', { style: 'currency', currency: artwork.currency }).format(size.price)}
+                    </span>
                     {size.stock !== null && (
                       <span className={cn(
                         "text-sm font-medium",
@@ -126,13 +126,13 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
                         {isOutOfStock ? "Sin stock" : `${size.stock} left`}
                       </span>
                     )}
-                </div>
-                  {!isDisabled && selectedSizeId === size.id && (
-                  <div className="absolute top-0 right-0 -mt-2 -mr-2 bg-black text-white rounded-full p-1.5 shadow-sm">
-                    <Check className="h-4 w-4" />
                   </div>
-                )}
-              </button>
+                  {!isDisabled && selectedSizeId === size.id && (
+                    <div className="absolute top-0 right-0 -mt-2 -mr-2 bg-black text-white rounded-full p-1.5 shadow-sm">
+                      <Check className="h-4 w-4" />
+                    </div>
+                  )}
+                </button>
               )
             })}
           </div>
@@ -149,7 +149,7 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {relatedArtworks.map((related) => (
-                <Link key={related.id} href={`/${tenantId}/product/${related.id}`} className="group">
+                <Link key={related.id} href={`/${tenantId}/p/${related.id}`} className="group">
                   <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100 mb-2">
                     <Image
                       src={related.image || "/placeholder.svg"}
@@ -199,8 +199,8 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
               size="lg"
               className={cn(
                 "w-full md:w-auto md:min-w-[200px] h-14 text-lg rounded-full shadow-lg transition-all font-medium",
-                isAdded 
-                  ? "text-white" 
+                isAdded
+                  ? "text-white"
                   : "text-white disabled:opacity-50 disabled:cursor-not-allowed",
               )}
               style={{

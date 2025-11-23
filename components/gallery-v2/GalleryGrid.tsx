@@ -20,11 +20,11 @@ interface GalleryGridProps {
 export function GalleryGrid({ artworks, collections, tenantId }: GalleryGridProps) {
   const [activeCollection, setActiveCollection] = useState("All Works")
   const { getTotalItems } = useCartStore()
-  
+
   // Hydration fix: only render cart button after mount
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
-  
+
   const totalItems = mounted ? getTotalItems() : 0
 
   const filteredArtworks =
@@ -75,7 +75,7 @@ export function GalleryGrid({ artworks, collections, tenantId }: GalleryGridProp
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.3 }}
             >
-              <Link href={`/${tenantId}/product/${artwork.id}`} className="group block space-y-4">
+              <Link href={`/${tenantId}/p/${artwork.id}`} className="group block space-y-4">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-gray-100">
                   <Image
                     src={artwork.image || "/placeholder.svg"}

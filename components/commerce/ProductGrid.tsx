@@ -60,7 +60,7 @@ export function ProductGrid({ products, tenantId, currency }: ProductGridProps) 
           style={{ backgroundColor: 'var(--color-bg-elevated)' }}
           data-testid={`product-card-${product.id}`}
         >
-          <Link href={`/${tenantId}/product/${product.id}`}>
+          <Link href={`/${tenantId}/p/${product.id}`}>
             <div className="relative aspect-square">
               {product.images[0] ? (
                 <Image

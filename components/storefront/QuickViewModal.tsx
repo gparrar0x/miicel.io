@@ -282,7 +282,7 @@ export function QuickViewModal({
 
           {/* View Full Details Link */}
           <a
-            href={`/product/${product.id}`}
+            href={`/p/${product.id}`}
             data-testid="modal-detail-link"
             className="block mt-6 text-center text-[var(--font-size-small)]
                        text-[var(--color-accent-primary)] underline
