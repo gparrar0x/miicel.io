@@ -4,8 +4,8 @@
  * Server component that fetches tenant config + product data.
  * Layout: Image carousel | Product details (desktop), stacked (mobile)
  *
- * Route: /shop/[tenant]/product/[id]
- * Example: /shop/sky/product/1
+ * Route: /[locale]/[tenantId]/product/[id]
+ * Example: /en/artmonkeys/product/19
  */
 
 import { notFound } from 'next/navigation'
