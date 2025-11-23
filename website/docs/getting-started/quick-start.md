@@ -94,7 +94,7 @@ npm run format
 
 ## Next Steps
 
-- Read the [Deployment Guide](/docs/getting-started/deployment) to deploy to production
-- Check out the [Architecture Overview](/docs/architecture/overview) to understand the system
-- Explore [User Guides](/docs/guides/admin-theme-editor) for specific features
+- Read the [Deployment Guide](/getting-started/deployment) to deploy to production
+- Check out the [Architecture Overview](/architecture/overview) to understand the system
+- Explore [User Guides](/guides/admin-theme-editor) for specific features
 

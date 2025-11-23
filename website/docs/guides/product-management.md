@@ -162,5 +162,5 @@ Size variants are supported for:
 
 ## API Reference
 
-See [API Documentation](/docs/api/orders) for programmatic product management.
+See [API Documentation](/api/orders) for programmatic product management.
 

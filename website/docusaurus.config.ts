@@ -15,17 +15,17 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://sw-commerce-vendio.vercel.app',
+  url: 'https://gparrar0x.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/docs/',
+  baseUrl: '/sw_commerce_saas/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'skywalking', // Usually your GitHub org/user name.
-  projectName: 'sw_commerce_vendio', // Usually your repo name.
+  organizationName: 'gparrar0x', // Usually your GitHub org/user name.
+  projectName: 'sw_commerce_saas', // Usually your repo name.
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
