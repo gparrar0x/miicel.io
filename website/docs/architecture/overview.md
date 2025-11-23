@@ -45,6 +45,8 @@ Non‑goals:
 - **Templates & theming:** Multiple templates (gallery, detail, minimal, restaurant) with color and branding overrides.
 - **Multi‑tenant by design:** Each business is a `tenant` with its own slug, config, and data.
 
+Each pillar is backed by concrete features that already exist in this repo.
+
 ---
 
 ## Key Features
@@ -60,6 +62,16 @@ Non‑goals:
 - Products stored per tenant in Supabase (`products` table).
 - Fields: name, description, price, category, stock, `image_url`, metadata.
 - Mapped to frontend `Product` type and rendered via template‑specific grids.
+
+### Restaurant Template
+
+- Layout: `RestaurantLayout` with header, category accordion, product grid, floating cart, and footer.
+- Visual focus on **large product photos** and **mobile‑first ordering**.
+- Recommended image sizes:
+  - **Banner (`tenantBanner`)**: 1920×1080 px, 16:9, landscape, high‑quality.
+  - **Product images (`image_url`)**: 1200×900 px, 4:3, landscape.
+  - **Logo round (`tenantLogo`)**: ≥ 400×400 px, square.
+  - **Logo text (`tenantLogoText`)**: ~800×250 px, horizontal, ideally PNG with transparent background.
 
 ### Dashboard & Appearance Settings
 
@@ -94,4 +106,20 @@ Outcome: customer can browse the menu, add to cart, and place an order with onli
 4. Adds items to cart with 1 tap and confirms order.
 
 Outcome: frictionless ordering flow optimized for mobile, without needing native apps.
+
+---
+
+## Product Boundaries (v0)
+
+Included in current scope:
+
+- 1 storefront per tenant with one active template at a time.
+- Basic cart, orders, and Mercado Pago payments.
+- Manual product management via dashboard.
+
+Not (yet) included:
+
+- Multi‑location inventory.
+- Complex reservation systems.
+- Deep marketing automation (ads, email, CRM).
 

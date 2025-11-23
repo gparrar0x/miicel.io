@@ -1,31 +1,26 @@
 ---
-sidebar_position: 1
-title: Document
----
-
----
 sidebar_position: 3
 title: User Flows
 ---
 
-## VENDIO - User Flows
+# VENDIO - User Flows
 
 **Audience:** Product, UX, engineering, sales  
 **Version:** 0.1 (draft)  
-**Updated:** 2025-11-22  
+**Updated:** 2025-11-22
 
 ---
 
-## 1. Roles
+## Roles
 
 - **Usuario Administrador (Tenant Owner):** Persona que configura la tienda, sube productos, ve pedidos y ajusta precios.
 - **Usuario Comprador (Cliente final):** Persona que entra al sitio / menú online y realiza el pedido / compra.
 
 ---
 
-## 2. Flujos – Usuario Administrador
+## Flujos – Usuario Administrador
 
-### 2.1 Alta de cuenta y creación de tenant
+### Alta de cuenta y creación de tenant
 
 1. Admin llega a la landing de VENDIO y hace clic en **Crear cuenta**.
 2. Completa formulario de registro (email, contraseña, datos básicos).
@@ -36,7 +31,7 @@ Resultado: existe un tenant activo con dueño autenticado listo para configurar.
 
 ---
 
-### 2.2 Onboarding inicial del negocio
+### Onboarding inicial del negocio
 
 1. Desde el onboarding, el Admin:
    - Carga **logo** (archivo JPG/PNG, validación de tamaño).
@@ -49,7 +44,7 @@ Resultado: storefront público con branding mínimo operativo.
 
 ---
 
-### 2.3 Configuración de plantilla y tema (Appearance)
+### Configuración de plantilla y tema (Appearance)
 
 1. Admin accede a `/{tenantId}/dashboard/settings/appearance`.
 2. El sistema valida que el usuario es OWNER del tenant.
@@ -63,7 +58,7 @@ Resultado: el storefront público refleja inmediatamente la plantilla y tema sel
 
 ---
 
-### 2.4 Gestión de catálogo (categorías y productos)
+### Gestión de catálogo (categorías y productos)
 
 1. Desde el dashboard, Admin entra a la sección de **Productos**.
 2. Crea o edita **categorías** (por ejemplo: Entradas, Panchos, Bebidas).
@@ -76,20 +71,7 @@ Resultado: el menú / catálogo público muestra las nuevas categorías y produc
 
 ---
 
-### 2.5 Actualización rápida de precios y stock
-
-1. Admin accede al listado de productos en dashboard.
-2. Localiza el producto a modificar (por búsqueda o filtro por categoría).
-3. Edita:
-   - **Precio** (para cambiar promociones, inflación, etc.).
-   - **Stock** (para marcar producto como agotado o volver a disponible).
-4. Guarda; los cambios se reflejan inmediatamente en la tienda (Precio y disponibilidad).
-
-Resultado: los clientes ven precios actualizados y no pueden pedir productos sin stock.
-
----
-
-### 2.6 Revisión y gestión de pedidos
+### Revisión y gestión de pedidos
 
 1. Admin abre el dashboard y navega a la sección **Orders** / **Pedidos**.
 2. Ve listado de pedidos con:
@@ -99,25 +81,14 @@ Resultado: los clientes ven precios actualizados y no pueden pedir productos sin
 3. Puede:
    - Cambiar el **estado** (ej. de pending → in preparation → completed).
    - Ver detalles para preparación en cocina.
-4. En integraciones futuras, estos cambios disparan notificaciones (WhatsApp, email).
 
 Resultado: el negocio puede operar el flujo de pedidos end‑to‑end desde VENDIO.
 
 ---
 
-### 2.7 Acceso rápido al dashboard desde la tienda
+## Flujos – Usuario Comprador
 
-1. Admin abre su propia tienda pública `/{locale}/{tenantSlug}`.
-2. Estando autenticado, ve el botón flotante o acceso rápido al **Dashboard**.
-3. Hace clic y es redirigido al panel administrativo de su tenant.
-
-Resultado: el dueño puede saltar del sitio público al dashboard sin recordar URLs largas.
-
----
-
-## 3. Flujos – Usuario Comprador
-
-### 3.1 Descubrimiento y acceso a la tienda
+### Descubrimiento y acceso a la tienda
 
 1. Cliente recibe un **link**, **QR** o encuentra el negocio en Google / redes.
 2. Abre la URL pública `https://{host}/{locale}/{tenantSlug}` desde su móvil.
@@ -127,7 +98,7 @@ Resultado: el cliente entiende inmediatamente qué vende el negocio y dónde est
 
 ---
 
-### 3.2 Exploración del catálogo / menú
+### Exploración del catálogo / menú
 
 1. Cliente hace scroll en la home del tenant.
 2. Según la plantilla:
@@ -139,7 +110,7 @@ Resultado: el cliente puede navegar fácilmente por el menú hasta encontrar lo 
 
 ---
 
-### 3.3 Selección de productos y carrito
+### Selección de productos y carrito
 
 1. En cada card de producto, el cliente:
    - Revisa imagen, descripción corta y precio.
@@ -155,7 +126,7 @@ Resultado: el cliente construye su pedido de forma visual y reversible.
 
 ---
 
-### 3.4 Checkout y pago
+### Checkout y pago
 
 1. Desde el carrito, el cliente hace clic en **Ir a pagar** / **Confirmar pedido**.
 2. Es redirigido al flujo de **checkout**, donde:
@@ -171,19 +142,7 @@ Resultado: el cliente tiene confirmación clara de su pedido y estado de pago.
 
 ---
 
-### 3.5 Post‑compra (estado y comunicación)
-
-1. Tras el pago exitoso, el cliente ve pantalla de **confirmación** con resumen del pedido.
-2. Puede recibir:
-   - Notificación en pantalla (toast / mensaje).
-   - En futuras integraciones, mensajes de WhatsApp / email con detalles.
-3. El negocio prepara el pedido y, según las integraciones, el cliente podría recibir cambios de estado (en preparación, listo, en camino).
-
-Resultado: el cliente entiende qué pasó con su pedido y cuándo esperar la entrega / retiro.
-
----
-
-## 4. Cobertura de flujos por rol
+## Cobertura de flujos por rol
 
 - **Usuario Administrador**
   - Alta de cuenta y tenant
@@ -200,5 +159,4 @@ Resultado: el cliente entiende qué pasó con su pedido y cuándo esperar la ent
   - Selección de productos y carrito
   - Checkout y pago
   - Post‑compra y estado del pedido
-
 

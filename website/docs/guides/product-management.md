@@ -1,183 +1,166 @@
 ---
-sidebar_position: 1
-title: Document
----
-
----
 sidebar_position: 2
 title: Product Management
 ---
 
-# ProductCard Variants + ProductGrid Implementation
+# Product Management
 
-**Issue:** #4  
-**Owner:** Pixel  
-**Status:** Complete  
-**Date:** 2025-11-16
+Complete guide to managing products, categories, and inventory in Vendio.
 
 ---
 
-## Summary
+## Product Cards
 
-Implemented 3 ProductCard variants and responsive ProductGrid component for multi-tenant storefront templates.
+Vendio supports three product card variants optimized for different use cases:
 
----
-
-## Components Created
-
-### 1. GalleryCard (`/components/storefront/GalleryCard.tsx`)
+### Gallery Card
 - **Purpose:** Large image display with minimal text
 - **Features:**
   - Hover zoom animation (scale-110)
   - Text overlay with gradient fade
   - Stock indicators (out of stock, low stock)
   - Lazy image loading
-- **Test ID:** `product-card-gallery`
 - **Best for:** Visual-first products (fashion, art, photography)
 
-### 2. DetailCard (`/components/storefront/DetailCard.tsx`)
+### Detail Card
 - **Purpose:** Image + detailed specifications grid
 - **Features:**
   - Expanded product description (3-line clamp)
   - Specs grid: category, stock status, colors
   - Color swatches display (max 5 visible)
   - Hover elevation effect
-- **Test ID:** `product-card-detail`
 - **Best for:** Technical products (electronics, furniture)
 
-### 3. MinimalCard (`/components/storefront/MinimalCard.tsx`)
+### Minimal Card
 - **Purpose:** Compact layout for high-density grids
 - **Features:**
   - Small image + name + price only
   - Compact color dots (max 3 visible)
   - Minimal stock badges
   - Subtle hover opacity
-- **Test ID:** `product-card-minimal`
 - **Best for:** Catalog browsing, large inventories
 
-### 4. ProductGrid (`/components/storefront/ProductGrid.tsx`)
-- **Purpose:** Responsive container for product cards
-- **Features:**
-  - Template-based card rendering (gallery | detail | minimal)
-  - Responsive columns via Tailwind classes
-  - CSS var integration (--grid-cols, --spacing-*)
-  - Loading skeleton state
-  - Empty state with icon + message
-- **Test ID:** `product-grid-{template}`
+---
+
+## Product Grid
+
+The `ProductGrid` component provides responsive layout:
+
+- **Responsive columns:** 1-6 columns based on screen size
+- **Gap spacing:** Configurable spacing (compact, normal, relaxed)
+- **Template-aware:** Automatically selects card variant based on tenant template
+- **Lazy loading:** Images load as user scrolls
 
 ---
 
-## Theme Integration
+## Creating Products
 
-All components consume CSS variables from ThemeProvider:
+### Via Dashboard
 
-```css
---grid-cols          /* Grid column count */
---image-aspect       /* Product image ratio (W:H) */
---spacing-xs/sm/md/lg/xl  /* Spacing scale */
---color-primary      /* Brand primary color */
---color-accent       /* Brand accent color */
-```
+1. Navigate to `/{tenantId}/dashboard/products`
+2. Click "Add Product"
+3. Fill in required fields:
+   - Name
+   - Description
+   - Price
+   - Category
+   - Stock quantity
+   - Image (upload or URL)
 
----
+### Recommended Image Sizes
 
-## Usage Example
-
-```tsx
-import { ProductGrid } from '@/components/storefront'
-import { useTheme } from '@/components/theme/use-theme'
-
-function StorefrontPage({ products }: { products: Product[] }) {
-  const theme = useTheme()
-
-  return (
-    <ProductGrid
-      template={theme.template}
-      products={products}
-      loading={false}
-      onProductClick={(product) => router.push(`/products/${product.id}`)}
-    />
-  )
-}
-```
+- **Product images:** 1200×900 px, 4:3 aspect ratio
+- **Banner images:** 1920×1080 px, 16:9 aspect ratio
+- **Logo:** ≥ 400×400 px, square
 
 ---
 
-## TypeScript Types
+## Categories
 
-All components use the `Product` interface from `/types/commerce.ts`:
+### Creating Categories
 
-```typescript
-interface Product {
-  id: string
-  name: string
-  description: string | null
-  price: number
-  currency: string
-  images: string[]
-  colors: ProductColor[]
-  stock: number
-  category: string | null
-}
-```
+1. Navigate to `/{tenantId}/dashboard/categories`
+2. Click "Add Category"
+3. Enter category name and optional description
+4. Set display order (for sorting)
+
+### Category Organization
+
+- Categories are tenant-specific
+- Products can belong to one category
+- Categories appear in navigation accordion (Restaurant template)
+- Categories can be filtered/searched
 
 ---
 
-## Testing
+## Stock Management
 
-### data-testid Attributes
+### Stock Levels
 
-- `product-card-gallery` - GalleryCard component
-- `product-card-detail` - DetailCard component
-- `product-card-minimal` - MinimalCard component
-- `product-grid-{template}` - ProductGrid container (template = gallery | detail | minimal)
+- **In Stock:** Product available for purchase
+- **Low Stock:** Stock below threshold (configurable)
+- **Out of Stock:** Stock = 0, product hidden or marked unavailable
 
-### States Covered
+### Updating Stock
 
-1. **Default State:** Normal rendering with product data
-2. **Loading State:** Skeleton UI with pulse animation
-3. **Empty State:** ProductGrid shows "No products found" message
+1. Navigate to product list
+2. Click product to edit
+3. Update stock quantity
+4. Save changes
 
----
-
-## Responsive Breakpoints
-
-### GalleryCard
-- Mobile: 1 column
-- Tablet: 2 columns
-- Desktop: 3 columns
-
-### DetailCard
-- Mobile: 1 column
-- Desktop: 2 columns
-
-### MinimalCard
-- Mobile: 2 columns
-- Tablet: 3 columns
-- Desktop: 4 columns
+Stock updates are reflected immediately in the storefront.
 
 ---
 
-## Next Steps
+## Bulk Operations
 
-1. **Storybook Stories:** Create visual QA stories (3 variants × 3 states)
-2. **E2E Tests:** Sentinela to write Playwright tests using data-testid attributes
-3. **Screenshots:** Capture template variants for documentation
-4. **Admin UI:** Integrate with theme selector (Issue #4 - blocked by Kokoro API)
+### Bulk Price Update
 
----
+1. Select multiple products
+2. Click "Bulk Actions"
+3. Choose "Update Prices"
+4. Enter percentage or fixed amount
+5. Apply to selected products
 
-## Files Created
+### Bulk Stock Update
 
-```
-/components/storefront/
-├── GalleryCard.tsx      (3.3 KB)
-├── DetailCard.tsx       (5.4 KB)
-├── MinimalCard.tsx      (3.7 KB)
-├── ProductGrid.tsx      (4.5 KB)
-└── index.ts             (barrel export)
-```
+1. Select multiple products
+2. Click "Bulk Actions"
+3. Choose "Update Stock"
+4. Enter new stock quantity
+5. Apply to selected products
 
 ---
 
-**Handoff:** Components ready for integration. Sentinela can begin E2E test creation.
+## Product Variants
+
+### Color Variants
+
+Products can have multiple color options:
+- Each color variant can have its own image
+- Stock tracked per variant
+- Color swatches displayed on product cards
+
+### Size Variants
+
+Size variants are supported for:
+- Clothing (S, M, L, XL)
+- Food portions (Small, Medium, Large)
+- Custom sizes per tenant
+
+---
+
+## Best Practices
+
+1. **Use high-quality images:** Clear, well-lit product photos convert better
+2. **Write clear descriptions:** Include key features and benefits
+3. **Keep stock updated:** Prevents overselling and customer frustration
+4. **Organize with categories:** Makes browsing easier for customers
+5. **Set competitive prices:** Research market rates before pricing
+
+---
+
+## API Reference
+
+See [API Documentation](/docs/api/orders) for programmatic product management.
+

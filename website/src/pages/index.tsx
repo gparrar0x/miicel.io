@@ -69,6 +69,38 @@ function HomepageFeatures() {
             </div>
           </div>
         </div>
+        <div className="row margin-top--lg">
+          <div className="col col--4">
+            <div className="text--center padding-horiz--md">
+              <h3>Testing</h3>
+              <p>
+                50+ Playwright E2E tests with comprehensive coverage. 
+                Test your changes with confidence.
+              </p>
+              <Link to="/docs/guides/quick-wins">Learn more →</Link>
+            </div>
+          </div>
+          <div className="col col--4">
+            <div className="text--center padding-horiz--md">
+              <h3>Deployment</h3>
+              <p>
+                Deploy to Vercel in minutes. Complete setup guide with environment variables, 
+                webhooks, and monitoring.
+              </p>
+              <Link to="/docs/getting-started/deployment">Learn more →</Link>
+            </div>
+          </div>
+          <div className="col col--4">
+            <div className="text--center padding-horiz--md">
+              <h3>API Reference</h3>
+              <p>
+                Complete API documentation for orders, products, and tenant management. 
+                Integrate with your existing systems.
+              </p>
+              <Link to="/docs/api/orders">Learn more →</Link>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -83,6 +115,35 @@ export default function Home(): ReactNode {
       <HomepageHeader />
       <main>
         <HomepageFeatures />
+        <section className="margin-top--xl">
+          <div className="container">
+            <div className="row">
+              <div className="col col--offset-2 col--8">
+                <div className="card">
+                  <div className="card__header">
+                    <h2>Quick Links</h2>
+                  </div>
+                  <div className="card__body">
+                    <ul>
+                      <li>
+                        <Link to="/docs/getting-started/quick-start">Quick Start Guide</Link> - Get up and running in 5 minutes
+                      </li>
+                      <li>
+                        <Link to="/docs/getting-started/deployment">Deployment Guide</Link> - Deploy to production on Vercel
+                      </li>
+                      <li>
+                        <Link to="/docs/guides/user-flows">User Flows</Link> - Understand how users interact with Vendio
+                      </li>
+                      <li>
+                        <Link to="/docs/architecture/roadmap">Product Roadmap</Link> - See what's coming next
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
     </Layout>
   );

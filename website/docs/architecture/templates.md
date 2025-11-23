@@ -22,6 +22,11 @@ Vendio supports multiple storefront templates optimized for different business t
 - Stock indicators
 - Lazy image loading
 
+**Layout:**
+- Responsive grid (1-6 columns)
+- Focus on product imagery
+- Minimal text overlay
+
 ---
 
 ### Detail Template
@@ -33,6 +38,11 @@ Vendio supports multiple storefront templates optimized for different business t
 - Specs grid: category, stock status, colors
 - Color swatches display (max 5 visible)
 - Hover elevation effect
+
+**Layout:**
+- Wide layout with rich information
+- Detailed product specifications
+- Multiple images per product
 
 ---
 
@@ -46,6 +56,11 @@ Vendio supports multiple storefront templates optimized for different business t
 - Minimal stock badges
 - Subtle hover opacity
 
+**Layout:**
+- Compact grid for high density
+- Many products visible at once
+- Fast scanning
+
 ---
 
 ### Restaurant Template
@@ -58,6 +73,13 @@ Vendio supports multiple storefront templates optimized for different business t
 - Mobile-first ordering
 - Floating cart
 - Hero header with logo + banner
+
+**Layout:**
+- Header with logo, banner, subtitle
+- Category accordion (collapsible)
+- Product grid with large images
+- Floating cart button
+- Footer with contact info
 
 **Recommended Image Sizes:**
 - **Banner:** 1920×1080 px, 16:9, landscape
@@ -79,6 +101,25 @@ Templates are selected per tenant via the Theme Editor:
 
 ---
 
+## Template Configuration
+
+Each template has default settings:
+
+```typescript
+interface TemplateDefaults {
+  gridCols: number;        // 1-6 columns
+  imageAspect: string;     // "1:1" | "4:3" | "16:9"
+  cardVariant: string;     // "flat" | "elevated" | "outlined"
+  spacing: string;         // "compact" | "normal" | "relaxed"
+  colors: {
+    primary: string;       // Hex color
+    accent: string;        // Hex color
+  };
+}
+```
+
+---
+
 ## Customization
 
 All templates support theme customization:
@@ -90,6 +131,19 @@ All templates support theme customization:
 - **Colors:** Primary and accent brand colors
 
 Changes are applied in real-time via the Theme Editor preview.
+
+---
+
+## Implementation
+
+Templates are implemented as React components:
+
+- `/components/storefront/GalleryCard.tsx`
+- `/components/storefront/DetailCard.tsx`
+- `/components/storefront/MinimalCard.tsx`
+- `/components/storefront/RestaurantLayout.tsx`
+
+The `ProductGrid` component automatically selects the appropriate card variant based on the tenant's template configuration.
 
 ---
 

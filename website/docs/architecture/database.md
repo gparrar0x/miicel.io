@@ -1,9 +1,4 @@
 ---
-sidebar_position: 1
-title: Document
----
-
----
 sidebar_position: 2
 title: Database Schema
 ---
@@ -14,9 +9,12 @@ title: Database Schema
 
 The payment system uses a pragmatic denormalized design that balances query performance with data integrity.
 
+---
+
 ## Tables
 
 ### `orders`
+
 ```sql
 orders (
   id BIGINT PRIMARY KEY,
@@ -24,11 +22,17 @@ orders (
   payment_id TEXT,       -- MercadoPago payment_id (set when paid)
   status TEXT,           -- Order status: pending → paid → preparing → delivered
   payment_method TEXT,   -- mercadopago | cash | transfer
-  ...
+  tenant_id BIGINT,      -- FK to tenants
+  customer_id BIGINT,    -- FK to customers
+  total NUMERIC,
+  items JSONB,           -- Denormalized product data
+  created_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ
 )
 ```
 
 ### `payments`
+
 ```sql
 payments (
   id BIGINT PRIMARY KEY,           -- Internal auto-increment PK (not exposed)
@@ -48,6 +52,8 @@ payments (
 )
 ```
 
+---
+
 ## Design Rationale
 
 ### Why both `orders.payment_id` AND `payments` table?
@@ -59,146 +65,90 @@ payments (
    - Benefit: No JOIN needed for common queries
    - Example: `SELECT * FROM orders WHERE tenant_id = 1` includes payment_id
 
-2. **payments table**: Complete audit trail
-   - Purpose: Full transaction metadata, compliance, reporting
-   - Benefit: Detailed payment history, refunds tracking, analytics
-   - Example: Query all failed payments, calculate fees, export for accounting
+2. **payments table**: Full payment details when needed
+   - Used in: Payment reconciliation, webhook processing, audit logs
+   - Benefit: Complete payment history and metadata
+   - Example: `SELECT * FROM payments WHERE payment_id = 'MP-123'`
 
-**Relationship:**
+### Denormalization Trade-offs
+
+**Pros:**
+- Faster dashboard queries (no JOINs)
+- Simpler code for common cases
+- Better performance at scale
+
+**Cons:**
+- Data duplication (payment_id stored twice)
+- Need to keep both in sync
+- More complex updates
+
+**Decision:** Acceptable trade-off for read-heavy workload (dashboard views >> payment updates)
+
+---
+
+## Relationships
+
 ```
-orders.payment_id = payments.payment_id
-       ↓                     ↓
-   "12345"    ←─────→    "12345"
-                         (+ full metadata)
+tenants (1) ──< (many) orders
+customers (1) ──< (many) orders
+orders (1) ──< (1) payments
 ```
 
-### Why both `checkout_id` AND `payment_id` in orders?
+---
 
-Different lifecycle stages:
+## Indexes
 
-```
-1. User clicks "Pay"
-   → orders.checkout_id = "pref-abc123" (MP preference_id)
-   → orders.status = "pending"
-
-2. User completes payment
-   → MP webhook arrives
-   → orders.payment_id = "pay-xyz789" (MP payment_id)
-   → orders.status = "paid"
-   → payments record created with full data
-```
-
-### Field Naming Convention
-
-| Field | Meaning | Exposed to Clients? |
-|-------|---------|-------------------|
-| `payments.id` | Internal DB primary key | ❌ No (implementation detail) |
-| `payments.payment_id` | MercadoPago payment ID | ✅ Yes (external reference) |
-| `payments.order_id` | Reference to order | ✅ Yes (for lookups) |
-
-## Query Examples
-
-### Fast dashboard query (no JOIN needed)
 ```sql
--- Get orders with payment references
-SELECT id, total, status, payment_method, payment_id
-FROM orders
-WHERE tenant_id = 1
-ORDER BY created_at DESC
-LIMIT 50;
+-- Fast tenant order lookups
+CREATE INDEX idx_orders_tenant_id ON orders(tenant_id);
+CREATE INDEX idx_orders_status ON orders(status);
+CREATE INDEX idx_orders_created_at ON orders(created_at DESC);
+
+-- Payment lookups
+CREATE INDEX idx_payments_order_id ON payments(order_id);
+CREATE INDEX idx_payments_payment_id ON payments(payment_id);
 ```
 
-### Detailed payment audit
+---
+
+## Row Level Security (RLS)
+
+All tables use RLS policies to ensure tenant isolation:
+
 ```sql
--- Get full payment details
-SELECT 
-  o.id as order_id,
-  o.total,
-  p.payment_id,
-  p.status,
-  p.status_detail,
-  p.amount,
-  p.payer_email,
-  p.metadata
-FROM orders o
-LEFT JOIN payments p ON o.payment_id = p.payment_id
-WHERE o.tenant_id = 1;
+-- Orders: tenants can only see their own orders
+CREATE POLICY orders_tenant_isolation ON orders
+  FOR ALL
+  USING (tenant_id = current_setting('app.current_tenant_id')::bigint);
+
+-- Payments: accessible via order relationship
+CREATE POLICY payments_via_order ON payments
+  FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM orders
+      WHERE orders.id = payments.order_id
+      AND orders.tenant_id = current_setting('app.current_tenant_id')::bigint
+    )
+  );
 ```
 
-### Payment analytics
-```sql
--- Calculate successful payment rate
-SELECT 
-  COUNT(*) FILTER (WHERE status = 'approved') as successful,
-  COUNT(*) FILTER (WHERE status = 'rejected') as failed,
-  SUM(amount) FILTER (WHERE status = 'approved') as total_revenue
-FROM payments
-WHERE created_at >= '2025-01-01';
-```
+---
 
-## Data Flow
+## Migration Strategy
 
-```
-┌─────────────────────────────────────────────────────────┐
-│ 1. CHECKOUT                                             │
-│    POST /api/checkout/create-preference                 │
-│    → Create order (status: pending)                     │
-│    → Create MP preference                               │
-│    → Save orders.checkout_id = preference_id            │
-└─────────────────────────────────────────────────────────┘
-                        ↓
-┌─────────────────────────────────────────────────────────┐
-│ 2. USER PAYS                                            │
-│    → MercadoPago payment flow                           │
-│    → MP sends webhook to /api/webhooks/mercadopago      │
-└─────────────────────────────────────────────────────────┘
-                        ↓
-┌─────────────────────────────────────────────────────────┐
-│ 3. WEBHOOK PROCESSING                                   │
-│    → Fetch payment details from MP API                  │
-│    → Update orders.status = 'paid'                      │
-│    → Update orders.payment_id = MP payment_id           │
-│    → INSERT INTO payments (full transaction data)       │
-└─────────────────────────────────────────────────────────┘
-                        ↓
-┌─────────────────────────────────────────────────────────┐
-│ 4. ORDER COMPLETION                                     │
-│    → Stock decremented (trigger fires on status=paid)   │
-│    → Email sent to customer                             │
-│    → Dashboard shows payment_id                         │
-└─────────────────────────────────────────────────────────┘
-```
+When updating payment data:
 
-## Trade-offs
+1. Update `payments` table (source of truth)
+2. Update `orders.payment_id` (denormalized copy)
+3. Use database triggers or application logic to keep in sync
 
-### ✅ Benefits of Current Design
+---
 
-1. **Performance**: Dashboard queries don't need JOINs
-2. **Backward compatible**: Existing code using `orders.payment_id` works
-3. **Audit trail**: Full payment data preserved in `payments` table
-4. **Flexibility**: Can query payments independently of orders
+## Best Practices
 
-### ⚠️ Considerations
-
-1. **Denormalization**: `orders.payment_id` duplicates `payments.payment_id`
-   - Mitigation: Webhook atomically updates both in same transaction
-   - Risk: Low (payment_id is immutable once set)
-
-2. **Naming confusion**: `payments.id` vs `payments.payment_id`
-   - Mitigation: Clear documentation (this file)
-   - Convention: Never expose `payments.id` to clients
-
-## Migration Notes
-
-- Migration: `028_add_checkout_and_payments_table.sql`
-- Date: 2025-01-22
-- Breaking changes: None (additive only)
-- Rollback: Not recommended (would lose payment metadata)
-
-## Future Considerations
-
-If refunds/chargebacks are implemented:
-- Add `payments.original_payment_id` for refund tracking
-- Add `payments.refund_amount` field
-- Status transitions: `approved → refunded`
+1. **Always query by tenant_id** to ensure isolation
+2. **Use transactions** when updating both tables
+3. **Validate payment_id** exists in payments table before updating orders
+4. **Log all payment updates** for audit trail
 

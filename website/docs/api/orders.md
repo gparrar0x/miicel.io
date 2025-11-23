@@ -42,6 +42,43 @@ curl -X GET "http://localhost:3000/api/orders/list?tenant_id=1&status=pending" \
   -H "Content-Type: application/json"
 ```
 
+#### Example Response
+
+```json
+{
+  "orders": [
+    {
+      "id": 1,
+      "tenant_id": 1,
+      "customer": {
+        "id": 1,
+        "name": "Juan Pérez",
+        "email": "juan@example.com",
+        "phone": "+5491123456789"
+      },
+      "items": [
+        {
+          "product_id": 1,
+          "name": "Product Name",
+          "quantity": 2,
+          "unit_price": 1500
+        }
+      ],
+      "total": 3000,
+      "status": "pending",
+      "payment_method": null,
+      "payment_id": null,
+      "notes": null,
+      "created_at": "2025-01-12T12:00:00.000Z",
+      "updated_at": "2025-01-12T12:00:00.000Z"
+    }
+  ],
+  "total_count": 1,
+  "page": 1,
+  "per_page": 50
+}
+```
+
 ---
 
 ### PATCH /api/orders/[id]/status
@@ -69,11 +106,37 @@ Update order status.
 - `completed` - Order delivered/completed
 - `cancelled` - Order cancelled
 
+#### Example Request
+
+```bash
+curl -X PATCH "http://localhost:3000/api/orders/1/status" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"status": "paid"}'
+```
+
+#### Example Response
+
+```json
+{
+  "id": 1,
+  "status": "paid",
+  "updated_at": "2025-01-12T12:30:00.000Z"
+}
+```
+
 ---
 
 ## Authentication
 
 All endpoints require authentication via Bearer token.
+
+### Getting Authentication Token
+
+1. Log in to your application
+2. Open browser DevTools → Application → Cookies
+3. Copy the `sb-access-token` value
+4. Use as: `Authorization: Bearer YOUR_TOKEN`
 
 ---
 
@@ -96,6 +159,43 @@ All endpoints require authentication via Bearer token.
   "message": "User does not have access to this tenant"
 }
 ```
+
+### 404 Not Found
+
+```json
+{
+  "error": "Not Found",
+  "message": "Order not found"
+}
+```
+
+### 400 Bad Request
+
+```json
+{
+  "error": "Bad Request",
+  "message": "Invalid status value",
+  "details": {
+    "status": "Status must be one of: pending, paid, preparing, completed, cancelled"
+  }
+}
+```
+
+---
+
+## Rate Limiting
+
+- **Rate Limit:** 100 requests per minute per tenant
+- **Headers:** Rate limit info included in response headers:
+  - `X-RateLimit-Limit`: Maximum requests allowed
+  - `X-RateLimit-Remaining`: Remaining requests
+  - `X-RateLimit-Reset`: Time when limit resets
+
+---
+
+## Testing
+
+For comprehensive testing instructions, see the original testing documentation in the `/docs/testing/` folder of the repository.
 
 ---
 

@@ -37,6 +37,18 @@ Todos los Quick Wins de accesibilidad y UX han sido implementados exitosamente.
 **Cambio:** Agregados aria-label y aria-labelledby donde faltaban  
 **Impacto:** Mejor accesibilidad para screen readers
 
+### 4. Focus Management
+
+**Files:** Modal and Drawer components  
+**Cambio:** Implementado focus trap y focus restoration  
+**Impacto:** Navegación por teclado mejorada, focus no se pierde fuera del modal
+
+### 5. Loading States
+
+**Files:** Product cards, buttons  
+**Cambio:** Agregados estados de loading con spinners  
+**Impacto:** Mejor feedback visual durante operaciones asíncronas
+
 ---
 
 ## Impacto Total
@@ -46,4 +58,14 @@ Todos los Quick Wins de accesibilidad y UX han sido implementados exitosamente.
 - ✅ Navegación por teclado funcional
 - ✅ Feedback visual mejorado
 - ✅ Tiempo total: ~2 horas
+
+---
+
+## Próximos Quick Wins Sugeridos
+
+1. Skeleton loaders para productos
+2. Error boundaries con mensajes amigables
+3. Optimistic updates en carrito
+4. Toast notifications mejoradas
+5. Lazy loading de imágenes
 

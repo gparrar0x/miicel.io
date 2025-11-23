@@ -63,6 +63,13 @@ NEXT_PUBLIC_BASE_URL=https://vendio.vercel.app
 MERCADOPAGO_WEBHOOK_SECRET=<ADD_AFTER_WEBHOOK_SETUP>
 ```
 
+**Preview-only variables:**
+
+```bash
+NEXT_PUBLIC_BASE_URL=<AUTO_GENERATED_PREVIEW_URL>
+# Use MercadoPago sandbox credentials for preview
+```
+
 ### 1.3 Deploy (2min)
 
 1. Click "Deploy" button
@@ -70,11 +77,59 @@ MERCADOPAGO_WEBHOOK_SECRET=<ADD_AFTER_WEBHOOK_SETUP>
 3. Verify deployment success
 4. Note production URL: `https://sw-commerce-vendio.vercel.app`
 
+**Expected build output:**
+```
+✓ Compiled successfully in 4.5s
+✓ Generating static pages (22/22)
+✓ Finalizing page optimization
+```
+
 ---
 
-## Part 2: MercadoPago Webhook (10min)
+## Part 2: Domain & SSL (Optional, 10min)
 
-### 2.1 Register Webhook in MercadoPago
+### 2.1 Custom Domain Setup
+
+If using custom domain (e.g., `vendio.skywalking.dev`):
+
+1. Vercel Dashboard → Domains → Add Domain
+2. Enter domain name
+3. Choose DNS configuration:
+
+**Option A: Vercel DNS (recommended)**
+- Transfer nameservers to Vercel
+- Automatic SSL provisioning
+
+**Option B: External DNS**
+Add these records:
+```
+Type: A
+Name: vendio (or @)
+Value: 76.76.21.21
+
+Type: AAAA  
+Name: vendio (or @)
+Value: 2606:4700:4700::1111
+```
+
+4. Wait for DNS propagation (5-30min)
+5. Verify SSL certificate active (auto-provisioned)
+
+### 2.2 Update Environment Variables
+
+After domain active:
+```bash
+# Update this variable
+NEXT_PUBLIC_BASE_URL=https://vendio.skywalking.dev
+```
+
+Redeploy to apply changes.
+
+---
+
+## Part 3: MercadoPago Webhook (10min)
+
+### 3.1 Register Webhook in MercadoPago
 
 1. Go to https://mercadopago.com/developers/panel/app
 2. Select your application
@@ -88,7 +143,7 @@ MERCADOPAGO_WEBHOOK_SECRET=<ADD_AFTER_WEBHOOK_SETUP>
    ```
 6. Save and copy the webhook secret
 
-### 2.2 Add Webhook Secret to Vercel
+### 3.2 Add Webhook Secret to Vercel
 
 1. Vercel Dashboard → Settings → Environment Variables
 2. Add new variable:
@@ -98,6 +153,42 @@ MERCADOPAGO_WEBHOOK_SECRET=<ADD_AFTER_WEBHOOK_SETUP>
    Environment: Production
    ```
 3. Save (triggers automatic redeploy)
+
+### 3.3 Verify Webhook
+
+Test webhook delivery:
+1. Create test order in production
+2. Complete MercadoPago payment
+3. Check Vercel logs:
+   ```bash
+   vercel logs --prod | grep mercadopago
+   ```
+4. Look for: `POST /api/webhooks/mercadopago - 200 OK`
+5. Verify order status updated to 'paid' in Supabase
+
+---
+
+## Deployment Checklist
+
+**Pre-deployment:**
+- [ ] Build passes locally (`npm run build`)
+- [ ] All environment variables ready
+- [ ] Supabase migrations applied
+- [ ] MercadoPago credentials obtained
+
+**Initial deployment:**
+- [ ] GitHub repo connected to Vercel
+- [ ] Environment variables configured
+- [ ] Production deployment successful
+- [ ] SSL certificate active
+
+**Post-deployment:**
+- [ ] Custom domain configured (if applicable)
+- [ ] MercadoPago webhook registered
+- [ ] Webhook secret added to Vercel
+- [ ] Test order completed successfully
+- [ ] Analytics tracking verified
+- [ ] Health endpoint responding
 
 ---
 
@@ -110,12 +201,19 @@ vercel --prod
 # View production logs
 vercel logs --prod
 
+# View preview logs
+vercel logs
+
 # Rollback deployment
 vercel rollback
+
+# List deployments
+vercel ls
 ```
 
 ---
 
 **Last Updated:** 2025-11-22  
-**Status:** ✅ Ready for deployment
+**Status:** ✅ Ready for deployment  
+**Build Validated:** ✅ Local + staging tested
 
