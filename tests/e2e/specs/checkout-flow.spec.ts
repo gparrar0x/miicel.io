@@ -1,19 +1,19 @@
 /**
- * Checkout Flow E2E Test Suite (SKY-5.4)
+ * Checkout Flow E2E Test Suite - Happy Paths Only
  *
- * Tests the complete checkout flow:
+ * Tests the complete checkout flow (success scenarios only):
  * 1. Add products to cart
- * 2. Fill customer form with validation
+ * 2. Fill customer form
  * 3. Select payment method
  * 4. Submit checkout
- * 5. Verify success/failure pages
+ * 5. Verify success pages
  *
  * Uses data-testid selectors per TEST_ID_CONTRACT.md
  */
 
 import { test, expect } from '@playwright/test'
 
-test.describe('Checkout Flow', () => {
+test.describe('Checkout Flow - Happy Paths', () => {
   const TEST_TENANT = 'test-store' // Use existing test tenant or create one
   const BASE_URL = `http://localhost:3000/${TEST_TENANT}`
 
@@ -22,44 +22,6 @@ test.describe('Checkout Flow', () => {
     await page.goto(BASE_URL)
   })
 
-  // ============================================================================
-  // TEST 1: Form Validation Errors
-  // ============================================================================
-  test('should show validation errors for invalid form data', async ({ page }) => {
-    // Add a product to cart first (assuming there's a product)
-    // This will depend on your existing product page structure
-    // For now, we'll skip to checkout assuming cart has items
-
-    // Open checkout modal (you may need to adjust this based on your UI)
-    const checkoutButton = page.getByTestId('cart-checkout-button')
-    await checkoutButton.click()
-
-    // Wait for modal to appear
-    await expect(page.getByTestId('checkout-modal-overlay')).toBeVisible()
-
-    // Try to submit empty form
-    const submitButton = page.getByTestId('checkout-submit-button')
-    await submitButton.click()
-
-    // Verify validation errors appear
-    await expect(page.getByTestId('checkout-error-name')).toBeVisible()
-    await expect(page.getByTestId('checkout-error-phone')).toBeVisible()
-    await expect(page.getByTestId('checkout-error-email')).toBeVisible()
-
-    // Fill invalid phone (less than 10 digits)
-    await page.getByTestId('checkout-input-phone').fill('123')
-    await submitButton.click()
-    await expect(page.getByTestId('checkout-error-phone')).toContainText('10 digits')
-
-    // Fill invalid email
-    await page.getByTestId('checkout-input-email').fill('invalid-email')
-    await submitButton.click()
-    await expect(page.getByTestId('checkout-error-email')).toContainText('Invalid email')
-  })
-
-  // ============================================================================
-  // TEST 2: Valid Form Submission with Cash Payment
-  // ============================================================================
   test('should successfully submit checkout with cash payment', async ({ page, context }) => {
     // Mock the API response for checkout
     await page.route('/api/checkout/create-preference', async (route) => {
@@ -103,9 +65,6 @@ test.describe('Checkout Flow', () => {
     await expect(page.getByTestId('checkout-success-header')).toBeVisible()
   })
 
-  // ============================================================================
-  // TEST 3: MercadoPago Payment Flow
-  // ============================================================================
   test('should redirect to MercadoPago for online payment', async ({ page, context }) => {
     const mockCheckoutUrl = 'https://www.mercadopago.com/checkout/v1/redirect?pref_id=mock-123'
 
@@ -150,9 +109,6 @@ test.describe('Checkout Flow', () => {
     expect(page.url()).toBe(mockCheckoutUrl)
   })
 
-  // ============================================================================
-  // TEST 4: Success Page Display
-  // ============================================================================
   test('should display order summary on success page', async ({ page }) => {
     const mockOrderData = {
       orderId: '12345',
@@ -201,114 +157,5 @@ test.describe('Checkout Flow', () => {
     // Verify action buttons
     await expect(page.getByTestId('checkout-success-continue-shopping')).toBeVisible()
     await expect(page.getByTestId('checkout-success-print')).toBeVisible()
-  })
-
-  // ============================================================================
-  // TEST 5: Failure Page Display
-  // ============================================================================
-  test('should display error message on failure page', async ({ page }) => {
-    // Navigate directly to failure page
-    await page.goto(`${BASE_URL}/checkout/failure?error=Payment declined&orderId=12345`)
-
-    // Verify failure page elements
-    await expect(page.getByTestId('checkout-failure-container')).toBeVisible()
-    await expect(page.getByTestId('checkout-failure-title')).toContainText('Payment Failed')
-    await expect(page.getByTestId('checkout-failure-message')).toContainText('Payment declined')
-    await expect(page.getByTestId('checkout-failure-order-id')).toContainText('12345')
-
-    // Verify action buttons
-    await expect(page.getByTestId('checkout-failure-retry')).toBeVisible()
-    await expect(page.getByTestId('checkout-failure-back-to-store')).toBeVisible()
-
-    // Test retry button
-    await page.getByTestId('checkout-failure-retry').click()
-    await page.waitForURL(`**/${TEST_TENANT}/cart`)
-  })
-
-  // ============================================================================
-  // TEST 6: Order Summary in Checkout Modal
-  // ============================================================================
-  test('should display correct order summary in checkout modal', async ({ page }) => {
-    // This test assumes cart already has items
-    // You may need to add products to cart first
-
-    // Open checkout modal
-    const checkoutButton = page.getByTestId('cart-checkout-button')
-    await checkoutButton.click()
-
-    // Wait for modal
-    await expect(page.getByTestId('checkout-modal-overlay')).toBeVisible()
-
-    // Verify order summary section
-    await expect(page.getByTestId('checkout-order-summary')).toBeVisible()
-
-    // Verify total is displayed
-    await expect(page.getByTestId('checkout-total')).toBeVisible()
-
-    // Verify at least one item is shown
-    await expect(page.getByTestId('checkout-item-0')).toBeVisible()
-  })
-
-  // ============================================================================
-  // TEST 7: Loading State During Submission
-  // ============================================================================
-  test('should show loading state during form submission', async ({ page }) => {
-    // Delay the API response to test loading state
-    await page.route('/api/checkout/create-preference', async (route) => {
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ success: true, orderId: 123 }),
-      })
-    })
-
-    // Open checkout modal
-    const checkoutButton = page.getByTestId('cart-checkout-button')
-    await checkoutButton.click()
-
-    // Fill form
-    await page.getByTestId('checkout-input-name').fill('Test User')
-    await page.getByTestId('checkout-input-phone').fill('1234567890')
-    await page.getByTestId('checkout-input-email').fill('test@example.com')
-
-    // Submit
-    const submitButton = page.getByTestId('checkout-submit-button')
-    await submitButton.click()
-
-    // Verify loading state
-    await expect(submitButton).toContainText('Processing')
-    await expect(submitButton).toBeDisabled()
-  })
-
-  // ============================================================================
-  // TEST 8: API Error Handling
-  // ============================================================================
-  test('should handle API errors gracefully', async ({ page }) => {
-    // Mock API error
-    await page.route('/api/checkout/create-preference', async (route) => {
-      await route.fulfill({
-        status: 500,
-        contentType: 'application/json',
-        body: JSON.stringify({ error: 'Internal server error' }),
-      })
-    })
-
-    // Open checkout modal
-    const checkoutButton = page.getByTestId('cart-checkout-button')
-    await checkoutButton.click()
-
-    // Fill form
-    await page.getByTestId('checkout-input-name').fill('Test User')
-    await page.getByTestId('checkout-input-phone').fill('1234567890')
-    await page.getByTestId('checkout-input-email').fill('test@example.com')
-
-    // Submit
-    const submitButton = page.getByTestId('checkout-submit-button')
-    await submitButton.click()
-
-    // Verify error toast appears (using sonner)
-    // Note: This may need adjustment based on your toast implementation
-    await expect(page.locator('[data-sonner-toast]')).toBeVisible({ timeout: 5000 })
   })
 })

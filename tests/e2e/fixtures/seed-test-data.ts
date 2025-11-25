@@ -72,22 +72,20 @@ export async function seedTestData() {
         console.log(`  ✓ Owner user created: ${owner.id}`)
       } else if (ownerError?.message?.includes('already been registered')) {
         // User exists but wasn't found by listUsers (API pagination/permissions issue)
-        // Retry listUsers with pagination to find them
-        console.log(`  ⚠ User exists but not in initial list, searching...`)
-        let page = 1
-        let found = false
-        while (page <= 10 && !found) {
-          const { data: pageData } = await supabase.auth.admin.listUsers({ page, perPage: 1000 })
-          const user = pageData?.users?.find(u => u.email === TEST_USERS.owner.email)
-          if (user) {
-            owner = user
-            console.log(`  ✓ Found existing owner user: ${owner.id}`)
-            found = true
-          }
-          page++
-        }
-        if (!found) {
-          throw new Error(`Owner user exists but could not be retrieved. Manual cleanup required.`)
+        // Try to sign in to get the user object
+        console.log(`  ⚠ User exists but not in initial list, trying sign-in...`)
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email: TEST_USERS.owner.email,
+          password: TEST_USERS.owner.password,
+        })
+
+        if (signInData?.user) {
+          owner = signInData.user
+          console.log(`  ✓ Retrieved owner user via sign-in: ${owner.id}`)
+          // Sign out to clean up session
+          await supabase.auth.signOut()
+        } else {
+          throw new Error(`Owner user exists but could not be retrieved. Error: ${signInError?.message || 'Unknown'}. Manual cleanup required: delete user ${TEST_USERS.owner.email} from Supabase auth.`)
         }
       } else {
         throw new Error(`Failed to create owner user: ${ownerError?.message}`)
@@ -164,28 +162,24 @@ export async function seedTestData() {
         console.log(`  ✓ Non-owner user created: ${nonOwner.id}`)
       } else if (nonOwnerError?.message?.includes('already been registered')) {
         // User exists but wasn't found by listUsers
-        console.log(`  ⚠ Non-owner exists but not in list, searching...`)
-        let page = 1
-        let found = false
-        while (page <= 10 && !found) {
-          const { data: pageData } = await supabase.auth.admin.listUsers({ page, perPage: 1000 })
-          const user = pageData?.users?.find(u => u.email === TEST_USERS.nonOwner.email)
-          if (user) {
-            nonOwner = user
-            console.log(`  ✓ Found existing non-owner user: ${nonOwner.id}`)
-            found = true
-          }
-          page++
-        }
-        if (!found) {
-          throw new Error(`Non-owner user exists but could not be retrieved. Manual cleanup required.`)
+        // Try to sign in to get the user object
+        console.log(`  ⚠ Non-owner exists but not in list, trying sign-in...`)
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email: TEST_USERS.nonOwner.email,
+          password: TEST_USERS.nonOwner.password,
+        })
+
+        if (signInData?.user) {
+          nonOwner = signInData.user
+          console.log(`  ✓ Retrieved non-owner user via sign-in: ${nonOwner.id}`)
+          // Sign out to clean up session
+          await supabase.auth.signOut()
+        } else {
+          throw new Error(`Non-owner user exists but could not be retrieved. Error: ${signInError?.message || 'Unknown'}. Manual cleanup required: delete user ${TEST_USERS.nonOwner.email} from Supabase auth.`)
         }
       } else {
         throw new Error(`Failed to create non-owner user: ${nonOwnerError?.message}`)
       }
-
-      nonOwner = newNonOwner.user
-      console.log(`  ✓ Non-owner user created: ${nonOwner.id}`)
     }
 
     console.log('✅ Test data seed completed')
