@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Superadmin Tenant List Dashboard**: Complete tenant management interface for superadmins
+  - Auto-detects user role on root page (`/`) after login
+  - Superadmins see tenant list grid with all active tenants
+  - Tenant owners redirect to their dashboard (`/es/{slug}/dashboard`)
+  - Non-authenticated users see login form
+  - Tenant cards display: logo (or initial), name, slug
+  - Dual action buttons per tenant: "Dashboard" (admin panel) + "Tienda" (storefront)
+  - Sign Out button in header
+  - Responsive grid: 1 col mobile → 2 cols tablet → 3 cols desktop
+  - Uses `/api/tenants/list` endpoint for tenant data
+  - Client-side auth detection with `@supabase/ssr` browser client
+  - File: `app/[locale]/page.tsx`
+
 ### Changed
 
 - **Next.js 16 Migration**: Migrated from `middleware.ts` to `proxy.ts` following Next.js 16 deprecation

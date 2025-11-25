@@ -1,7 +1,160 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState, Suspense, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { createBrowserClient } from '@supabase/ssr'
+import Link from 'next/link'
+
+interface Tenant {
+  slug: string
+  name: string
+  logo: string | null
+  status: string
+}
+
+function RootPage() {
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false)
+  const [tenants, setTenants] = useState<Tenant[]>([])
+
+  useEffect(() => {
+    checkAuthAndFetchTenants()
+  }, [])
+
+  async function checkAuthAndFetchTenants() {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (user) {
+      // Check if superadmin
+      const { data: isSuperAdminResult } = await supabase.rpc('is_superadmin')
+
+      if (isSuperAdminResult) {
+        setIsSuperAdmin(true)
+        // Fetch tenants list
+        const response = await fetch('/api/tenants/list')
+        if (response.ok) {
+          const tenantsData = await response.json()
+          setTenants(tenantsData)
+        }
+      } else {
+        // Not superadmin, redirect to their tenant dashboard
+        const { data: tenant } = await supabase
+          .from('tenants')
+          .select('slug')
+          .eq('owner_id', user.id)
+          .single()
+
+        if (tenant) {
+          router.push(`/es/${tenant.slug}/dashboard`)
+          return
+        }
+      }
+    }
+
+    setIsLoading(false)
+  }
+
+  async function handleLogout() {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+    await supabase.auth.signOut()
+    setIsSuperAdmin(false)
+    setTenants([])
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F8F8F8]">
+        <div className="text-[#1A1A1A]">Loading...</div>
+      </div>
+    )
+  }
+
+  if (isSuperAdmin) {
+    return (
+      <main className="min-h-screen bg-[#F8F8F8]">
+        <header className="w-full px-6 py-4 border-b border-[#E5E5E5] bg-white">
+          <div className="max-w-[1200px] mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#FF6B35] flex items-center justify-center text-white font-bold text-lg">
+                M
+              </div>
+              <h1 className="text-xl md:text-2xl font-bold text-[#1A1A1A]">
+                Miicel.io - Admin
+              </h1>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 text-sm font-medium text-[#1A1A1A] hover:text-[#FF6B35] transition-colors"
+            >
+              Sign Out
+            </button>
+          </div>
+        </header>
+
+        <div className="max-w-[1200px] mx-auto px-6 py-12">
+          <h2 className="text-3xl font-bold text-[#1A1A1A] mb-8">Active Tenants</h2>
+
+          {tenants.length === 0 ? (
+            <p className="text-[#666] text-center py-12">No active tenants found.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {tenants.map((tenant) => (
+                <div
+                  key={tenant.slug}
+                  className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
+                >
+                  <div className="flex items-center gap-4 mb-4">
+                    {tenant.logo ? (
+                      <img
+                        src={tenant.logo}
+                        alt={tenant.name}
+                        className="w-16 h-16 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-[#E5E5E5] flex items-center justify-center text-[#666] font-bold text-xl">
+                        {tenant.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-[#1A1A1A]">{tenant.name}</h3>
+                      <p className="text-sm text-[#666]">/{tenant.slug}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Link
+                      href={`/es/${tenant.slug}/dashboard`}
+                      className="flex-1 px-4 py-2 text-sm font-medium text-[#1A1A1A] bg-[#F8F8F8] rounded-md hover:bg-[#E5E5E5] transition-colors text-center"
+                    >
+                      Dashboard
+                    </Link>
+                    <Link
+                      href={`/es/${tenant.slug}`}
+                      className="flex-1 px-4 py-2 text-sm font-medium text-white bg-[#FF6B35] rounded-md hover:bg-[#E55A2B] transition-colors text-center"
+                    >
+                      Tienda
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
+    )
+  }
+
+  return <LoginForm />
+}
 
 function LoginForm() {
   const router = useRouter()
@@ -137,14 +290,14 @@ function LoginForm() {
   )
 }
 
-export default function LoginPage() {
+export default function HomePage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center bg-[#F8F8F8]">
         <div className="text-[#1A1A1A]">Loading...</div>
       </div>
     }>
-      <LoginForm />
+      <RootPage />
     </Suspense>
   )
 }
