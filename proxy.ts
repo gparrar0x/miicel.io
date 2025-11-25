@@ -20,10 +20,10 @@ const CACHE_TTL = 60000
 
 const intlMiddleware = createMiddleware(routing)
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const pathname = req.nextUrl.pathname
 
-  // Skip middleware for static tenant assets so they are served directly from Next.js public folder
+  // Skip proxy logic for static tenant assets so they are served directly from Next.js public folder
   if (pathname.startsWith('/tenants/')) {
     return NextResponse.next()
   }

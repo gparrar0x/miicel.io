@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Next.js 16 Migration**: Migrated from `middleware.ts` to `proxy.ts` following Next.js 16 deprecation
+  - Renamed file: `middleware.ts` → `proxy.ts`
+  - Renamed exported function: `middleware()` → `proxy()`
+  - Runtime changed from Edge to Node.js (more compatible with Supabase SSR)
+  - Added `turbopack.root` config to `next.config.ts` to resolve workspace root inference
+  - Eliminates deprecation warning: "The 'middleware' file convention is deprecated"
+  - Files: `proxy.ts`, `next.config.ts`
+  - Reference: [Next.js Proxy Migration Guide](https://nextjs.org/docs/messages/middleware-to-proxy)
+
+### Fixed
+
+- **Environment Variables**: Synchronized Supabase API keys between `.env` and `.env.local`
+  - Updated `NEXT_PUBLIC_SUPABASE_ANON_KEY` to latest key (iat:1762744938)
+  - Replaced placeholder `SUPABASE_SERVICE_ROLE_KEY` with actual service role key
+  - Added missing `ENCRYPTION_KEY` to `.env.local`
+  - Resolves "Invalid API key" error on localhost:3000
+  - Files: `.env.local`
+
 ### Fixed
 
 - **Restaurant Template - MercadoPago Redirect**: Fixed checkout button showing alert instead of redirecting
