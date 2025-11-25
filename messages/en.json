@@ -23,8 +23,8 @@
         "welcomeTitle": "Welcome to your store!",
         "welcomeDesc": "Your store is active and ready to receive orders.",
         "activeProducts": "Active Products",
-        "completedOrders": "Completed Orders",
-        "totalRevenue": "Total Revenue",
+        "completedOrders": "Orders This Month",
+        "totalRevenue": "Revenue This Month",
         "quickActions": "Quick Actions",
         "settings": "Settings",
         "viewStore": "View Store"

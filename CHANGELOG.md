@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Dashboard Metrics - Tenant Isolation & Monthly Scope**: Fixed dashboard showing aggregated data from all tenants instead of current tenant
+  - **Root cause**: Queries missing `tenant_id` filter and using non-existent order status
+  - **Product count**: Added `.eq('tenant_id', tenantData.id)` filter (was showing all active products)
+  - **Order status**: Changed from `'completed'` (non-existent) to `.in('status', ['paid', 'preparing', 'ready', 'delivered'])`
+    - Valid order statuses: `pending`, `paid`, `preparing`, `ready`, `delivered`, `cancelled`
+    - Dashboard now counts orders with revenue (excludes pending/cancelled)
+  - **Monthly filter**: Added `firstDayOfMonth` filter to show only current month orders/revenue
+    - Orders: `.gte('created_at', firstDayOfMonth)`
+    - Revenue: Calculated only from current month orders
+  - **Translations updated**: Changed labels to reflect monthly scope
+    - ES: "Pedidos Completados" → "Pedidos del Mes", "Ingresos Totales" → "Ingresos del Mes"
+    - EN: "Completed Orders" → "Orders This Month", "Total Revenue" → "Revenue This Month"
+  - **Impact**: Dashboard now shows accurate per-tenant, current-month metrics instead of system-wide all-time data
+  - Files: `app/[locale]/[tenantId]/dashboard/page.tsx`, `messages/es.json`, `messages/en.json`
+
 ### Added
 
 - **Superadmin Tenant List Dashboard**: Complete tenant management interface for superadmins

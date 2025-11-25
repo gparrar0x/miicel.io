@@ -23,8 +23,8 @@
         "welcomeTitle": "¡Bienvenido a tu tienda!",
         "welcomeDesc": "Tu tienda está activada y lista para recibir pedidos.",
         "activeProducts": "Productos Activos",
-        "completedOrders": "Pedidos Completados",
-        "totalRevenue": "Ingresos Totales",
+        "completedOrders": "Pedidos del Mes",
+        "totalRevenue": "Ingresos del Mes",
         "quickActions": "Acciones Rápidas",
         "settings": "Configuración",
         "viewStore": "Ver Tienda"

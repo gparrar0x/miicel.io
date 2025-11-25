@@ -38,24 +38,34 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenantId:
 
         const { data: tenantData } = await supabase
           .from('tenants')
-          .select('name, config')
+          .select('id, name, config')
           .eq('slug', tenantId)
           .single()
 
-        if (tenantData) {
-          const config = tenantData.config as { business_name?: string } | null
-          setTenantName(config?.business_name || tenantData.name)
+        if (!tenantData) {
+          console.error('Tenant not found')
+          return
         }
+
+        const config = tenantData.config as { business_name?: string } | null
+        setTenantName(config?.business_name || tenantData.name)
 
         const { count: productCount } = await supabase
           .from('products')
           .select('*', { count: 'exact', head: true })
           .eq('active', true)
+          .eq('tenant_id', tenantData.id)
+
+        // Get first day of current month
+        const now = new Date()
+        const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
 
         const { data: orders } = await supabase
           .from('orders')
-          .select('total')
-          .eq('status', 'completed')
+          .select('total, created_at')
+          .in('status', ['paid', 'preparing', 'ready', 'delivered'])
+          .eq('tenant_id', tenantData.id)
+          .gte('created_at', firstDayOfMonth)
 
         const revenue = orders?.reduce((sum, order) => sum + order.total, 0) || 0
 
