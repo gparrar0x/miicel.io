@@ -5,7 +5,7 @@ title: Quick Start
 
 # Quick Start
 
-Get started with Vendio in 5 minutes.
+Get started with Miicel.io in 5 minutes.
 
 ## Prerequisites
 

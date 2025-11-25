@@ -14,7 +14,7 @@ This document provides comprehensive testing instructions for the Orders Managem
 
 1. **Start Development Server:**
    ```bash
-   cd /Users/gpublica/workspace/skywalking/projects/sw_commerce_saas
+   cd /Users/gpublica/workspace/skywalking/projects/miicel.io
    npm run dev
    ```
 

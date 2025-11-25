@@ -5,13 +5,13 @@ title: Product Management
 
 # Product Management
 
-Complete guide to managing products, categories, and inventory in Vendio.
+Complete guide to managing products, categories, and inventory in Miicel.io.
 
 ---
 
 ## Product Cards
 
-Vendio supports three product card variants optimized for different use cases:
+Miicel.io supports three product card variants optimized for different use cases:
 
 ### Gallery Card
 - **Purpose:** Large image display with minimal text

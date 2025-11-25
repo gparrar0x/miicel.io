@@ -277,8 +277,8 @@ jobs:
 - [Playwright Documentation](https://playwright.dev)
 - [Page Object Model Pattern](https://playwright.dev/docs/pom)
 - [Best Practices](https://playwright.dev/docs/best-practices)
-- AdminSidebar Component: `/Users/gpublica/workspace/skywalking/projects/sw_commerce_saas/components/AdminSidebar.tsx`
-- Dashboard Layout: `/Users/gpublica/workspace/skywalking/projects/sw_commerce_saas/app/(public)/[tenant]/dashboard/layout.tsx`
+- AdminSidebar Component: `/Users/gpublica/workspace/skywalking/projects/miicel.io/components/AdminSidebar.tsx`
+- Dashboard Layout: `/Users/gpublica/workspace/skywalking/projects/miicel.io/app/(public)/[tenant]/dashboard/layout.tsx`
 
 ## Support
 

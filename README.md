@@ -94,7 +94,7 @@ npm run format
 
 ## Deployment
 
-**Production:** https://sw-commerce-vendio.vercel.app
+**Production:** https://miicel.io
 
 See deployment guides:
 - [`docs/VERCEL_DEPLOYMENT_GUIDE.md`](docs/VERCEL_DEPLOYMENT_GUIDE.md) - Complete setup instructions

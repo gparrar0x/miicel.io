@@ -3,7 +3,7 @@ sidebar_position: 3
 title: User Flows
 ---
 
-# VENDIO - User Flows
+# Miicel.io - User Flows
 
 **Audience:** Product, UX, engineering, sales  
 **Version:** 0.1 (draft)  
@@ -22,7 +22,7 @@ title: User Flows
 
 ### Alta de cuenta y creación de tenant
 
-1. Admin llega a la landing de VENDIO y hace clic en **Crear cuenta**.
+1. Admin llega a la landing de Miicel.io y hace clic en **Crear cuenta**.
 2. Completa formulario de registro (email, contraseña, datos básicos).
 3. El sistema crea un **tenant** con un `slug` único basado en el nombre del negocio.
 4. Admin es redirigido al **onboarding inicial** del tenant.
@@ -82,7 +82,7 @@ Resultado: el menú / catálogo público muestra las nuevas categorías y produc
    - Cambiar el **estado** (ej. de pending → in preparation → completed).
    - Ver detalles para preparación en cocina.
 
-Resultado: el negocio puede operar el flujo de pedidos end‑to‑end desde VENDIO.
+Resultado: el negocio puede operar el flujo de pedidos end‑to‑end desde Miicel.io.
 
 ---
 

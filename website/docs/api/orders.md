@@ -11,7 +11,7 @@ Complete reference for the Orders Management API endpoints.
 
 ## Overview
 
-The Orders API provides endpoints for listing and managing orders in the Vendio platform.
+The Orders API provides endpoints for listing and managing orders in the Miicel.io platform.
 
 **Base URL:** `/api/orders`
 

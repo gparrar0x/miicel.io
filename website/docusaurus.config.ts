@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'Vendio Documentation',
+  title: 'Miicel.io Documentation',
   tagline: 'Multi-tenant E-commerce Platform',
   favicon: 'img/favicon.ico',
 
@@ -58,9 +58,9 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'Vendio Docs',
+      title: 'Miicel.io Docs',
       logo: {
-        alt: 'Vendio Logo',
+        alt: 'Miicel.io Logo',
         src: 'img/logo.svg',
       },
       items: [
@@ -71,12 +71,12 @@ const config: Config = {
           label: 'Documentation',
         },
         {
-          href: 'https://sw-commerce-vendio.vercel.app',
+          href: 'https://miicel.io',
           label: 'Live App',
           position: 'right',
         },
         {
-          href: 'https://github.com/skywalking/sw_commerce_vendio',
+          href: 'https://github.com/skywalking/miicel.io',
           label: 'GitHub',
           position: 'right',
         },

@@ -3,7 +3,7 @@ sidebar_position: 1
 title: Architecture Overview
 ---
 
-# VENDIO - Product Overview
+# Miicel.io - Product Overview
 
 **Audience:** Founders, sales, onboarding  
 **Version:** 0.1 (draft)  
@@ -11,15 +11,15 @@ title: Architecture Overview
 
 ---
 
-## What is VENDIO?
+## What is Miicel.io?
 
-VENDIO is a SaaS platform that gives small restaurants, food trucks, and independent cooks a **high-converting digital storefront + simple backoffice** in minutes, without agencies or custom development.
+Miicel.io is a SaaS platform that gives small restaurants, food trucks, and independent cooks a **high-converting digital storefront + simple backoffice** in minutes, without agencies or custom development.
 
 - **Storefront:** Ready‑made templates optimized for selling (gallery, detail, minimal, restaurant).
 - **Backoffice:** Simple dashboard to manage products, prices, availability, and orders.
 - **Infra:** Hosted, secure, responsive, works on mobile first.
 
-VENDIO is opinionated: instead of 1000 options, it ships with **sane defaults** that already follow UX best practices for food and retail.
+Miicel.io is opinionated: instead of 1000 options, it ships with **sane defaults** that already follow UX best practices for food and retail.
 
 ---
 

@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Branding Migration: Vendio → Miicel.io**: Complete rebranding across entire codebase and documentation
+  - **Service name**: Changed from "sw_commerce_saas"/"sw_commerce_vendio"/"Vendio" to "Miicel.io"
+  - **Production URL**: Updated from `vendio.vercel.app` → `miicel.io`
+  - **Documentation**: Rebranded all user-facing docs (README, deployment guides, API docs)
+  - **Configuration**: Updated service name in health endpoint, Playwright config, Docusaurus site
+  - **Website**: Updated Docusaurus title, navbar, and all documentation references
+  - **Deployment guides**: Updated all URLs, domain examples, and deployment instructions
+  - **Product docs**: Updated product overview, roadmap, and vision documents
+  - **Environment files**: Updated `.env` comments and Vercel production URL
+  - **Backlog**: Updated all ticket documentation and implementation notes
+  - **Impact**: Consistent "Miicel.io" branding across 24+ files including docs, tests, and configs
+  - Files: `CHANGELOG.md`, `README.md`, `app/api/health/route.ts`, `playwright.config.ts`, `website/docusaurus.config.ts`, `docs/**/*.md`, `website/docs/**/*.md`, `tests/**/*.md`, `.env`, and more
+
 ### Fixed
 
 - **Dashboard Metrics - Tenant Isolation & Monthly Scope**: Fixed dashboard showing aggregated data from all tenants instead of current tenant
@@ -85,7 +100,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Branding Update**: Rebranded from "Miceliio" to "Miicel.io"
   - **Page title**: Updated metadata title to "Miicel.io" with description "Red de comercios descentralizada"
   - **Login header**: Changed branding text from "Miceliio" to "Miicel.io"
-  - **Seed data**: Updated demo tenant name from "Demo Store - Vendio" to "Demo Store - Miicel"
+  - **Seed data**: Updated demo tenant name from "Demo Store" to "Demo Store - Miicel"
   - **Metadata**: Added page metadata to locale layout for SEO
   - Files: `app/[locale]/layout.tsx`, `app/[locale]/page.tsx`, `db/supabase/migrations/013_seed_tenant_theme_config.sql`
 
@@ -95,7 +110,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Docusaurus Documentation Site**: Complete documentation system with structured navigation and search
   - **Installation**: Docusaurus 3.9.2 installed in `/website` subfolder with TypeScript classic template
-  - **Configuration**: Customized `docusaurus.config.ts` with Vendio branding, navbar, and footer
+  - **Configuration**: Customized `docusaurus.config.ts` with Miicel.io branding, navbar, and footer
   - **Documentation structure**: Organized docs into logical categories:
     - `getting-started/`: Quick start, deployment guide, environment variables
     - `guides/`: Admin theme editor, product management, user flows, quick wins

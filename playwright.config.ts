@@ -5,7 +5,7 @@ import * as dotenv from 'dotenv'
 dotenv.config({ path: '.env' })
 
 /**
- * Playwright Configuration for sw_commerce_saas
+ * Playwright Configuration for miicelio
  *
  * Configures browser automation for E2E testing with:
  * - Multiple browser engines (Chromium, Firefox, WebKit)

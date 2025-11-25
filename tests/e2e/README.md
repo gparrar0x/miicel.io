@@ -1,4 +1,4 @@
-# E2E Testing - sw_commerce_saas
+# E2E Testing - miicelio
 
 Complete end-to-end test suite for tenant creation flow using Playwright.
 

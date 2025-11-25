@@ -5,7 +5,7 @@ title: Template System
 
 # Template System
 
-Vendio supports multiple storefront templates optimized for different business types.
+Miicel.io supports multiple storefront templates optimized for different business types.
 
 ---
 

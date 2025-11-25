@@ -439,7 +439,7 @@ npx playwright test --update-snapshots
 ## File Structure Reference
 
 ```
-/Users/gpublica/workspace/skywalking/projects/sw_commerce_saas/
+/Users/gpublica/workspace/skywalking/projects/miicel.io/
 ├── types/
 │   └── theme.ts                          # Core types + resolveTheme()
 ├── lib/
