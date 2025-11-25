@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft, CreditCard } from 'lucide-react'
+import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft, CreditCard, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -15,6 +15,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { CartItem } from '@/types/commerce'
+import { useParams } from 'next/navigation'
+import { toast } from 'sonner'
 
 interface CartSheetProps {
   open: boolean
@@ -45,6 +47,9 @@ export function CartSheet({
     fullName: '',
     email: '',
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const params = useParams()
+  const tenantId = params?.tenantId as string
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0)
 
@@ -83,15 +88,67 @@ export function CartSheet({
     setCheckoutStep('cart')
   }
 
-  const handleProceedToPayment = () => {
-    if (validateForm()) {
-      console.log('[v0] Proceeding to payment with data:', {
-        items,
-        customer: formData,
-        total: totalPrice,
+  const handleProceedToPayment = async () => {
+    if (!validateForm()) return
+
+    setIsSubmitting(true)
+
+    try {
+      // Create order and MP preference
+      const checkoutResponse = await fetch('/api/checkout/create-preference', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tenantId: tenantId,
+          paymentMethod: 'mercadopago',
+          returnUrl: typeof window !== 'undefined' ? window.location.origin : undefined,
+          customer: {
+            name: formData.fullName,
+            phone: '0000000000', // Restaurant template doesn't collect phone
+            email: formData.email,
+            notes: formData.notes,
+          },
+          items: items.map(item => ({
+            productId: Number(item.productId),
+            name: item.name,
+            price: Number(item.price),
+            quantity: Number(item.quantity),
+            currency: item.currency,
+            image: item.image,
+          })),
+          total: totalPrice,
+          currency: currency,
+        }),
       })
-      alert('Redirigiendo a la página de pago...')
-      // Here you would integrate with Stripe or another payment provider
+
+      if (!checkoutResponse.ok) {
+        const error = await checkoutResponse.json()
+        console.error('Checkout preference creation failed:', error)
+        const errorMsg = error.details
+          ? `${error.error}: ${error.details}`
+          : error.error || 'Error al crear la preferencia de pago'
+        throw new Error(errorMsg)
+      }
+
+      const { initPoint } = await checkoutResponse.json()
+
+      // Redirect to MercadoPago directly
+      window.location.href = initPoint
+    } catch (error) {
+      console.error('Checkout error:', error)
+
+      let message = 'Ocurrió un error inesperado'
+
+      if (error instanceof Error) {
+        if (error.message.includes('MercadoPago') || error.message.includes('not configured')) {
+          message = 'Proveedor de pagos no disponible. Por favor contacta con el negocio.'
+        } else {
+          message = error.message
+        }
+      }
+
+      toast.error(message)
+      setIsSubmitting(false)
     }
   }
 
@@ -105,10 +162,20 @@ export function CartSheet({
   return (
     <Sheet open={open} onOpenChange={handleSheetChange}>
       <SheetContent side="right" className="w-full sm:max-w-lg bg-white">
+        {/* Loading Overlay */}
+        {isSubmitting && (
+          <div className="absolute inset-0 bg-white/90 flex items-center justify-center z-50 rounded-lg">
+            <div className="flex flex-col items-center gap-3">
+              <Loader2 className="h-10 w-10 animate-spin" style={{ color: 'var(--color-primary)' }} />
+              <p className="text-sm text-gray-600 font-medium">Redirigiendo a MercadoPago...</p>
+            </div>
+          </div>
+        )}
+
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2 text-2xl text-gray-900">
             {checkoutStep === 'checkout' && (
-              <Button variant="ghost" size="icon" className="mr-2" onClick={handleBackToCart}>
+              <Button variant="ghost" size="icon" className="mr-2" onClick={handleBackToCart} disabled={isSubmitting}>
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             )}
@@ -246,6 +313,7 @@ export function CartSheet({
                     if (errors.fullName) setErrors({ ...errors, fullName: '' })
                   }}
                   className={errors.fullName ? 'border-red-500' : ''}
+                  disabled={isSubmitting}
                 />
                 {errors.fullName && <p className="text-sm text-red-500">{errors.fullName}</p>}
               </div>
@@ -264,6 +332,7 @@ export function CartSheet({
                     if (errors.email) setErrors({ ...errors, email: '' })
                   }}
                   className={errors.email ? 'border-red-500' : ''}
+                  disabled={isSubmitting}
                 />
                 {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
               </div>
@@ -279,6 +348,7 @@ export function CartSheet({
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   rows={4}
                   className="resize-none"
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -313,15 +383,29 @@ export function CartSheet({
                   background: `linear-gradient(to right, var(--color-primary), color-mix(in srgb, var(--color-primary) 85%, black))`
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = `linear-gradient(to right, color-mix(in srgb, var(--color-primary) 85%, black), color-mix(in srgb, var(--color-primary) 70%, black))`
+                  if (!isSubmitting) {
+                    e.currentTarget.style.background = `linear-gradient(to right, color-mix(in srgb, var(--color-primary) 85%, black), color-mix(in srgb, var(--color-primary) 70%, black))`
+                  }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = `linear-gradient(to right, var(--color-primary), color-mix(in srgb, var(--color-primary) 85%, black))`
+                  if (!isSubmitting) {
+                    e.currentTarget.style.background = `linear-gradient(to right, var(--color-primary), color-mix(in srgb, var(--color-primary) 85%, black))`
+                  }
                 }}
                 onClick={handleProceedToPayment}
+                disabled={isSubmitting}
               >
-                <CreditCard className="w-5 h-5 mr-2" />
-                Ir a Pagar
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Procesando...
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="w-5 h-5 mr-2" />
+                    Ir a Pagar
+                  </>
+                )}
               </Button>
             </div>
           </>

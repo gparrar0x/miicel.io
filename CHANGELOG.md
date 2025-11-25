@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Restaurant Template - MercadoPago Redirect**: Fixed checkout button showing alert instead of redirecting
+  - Removed `alert('Redirigiendo a la página de pago...')` placeholder
+  - Integrated with `/api/checkout/create-preference` endpoint
+  - Direct redirect to MercadoPago without user notification
+  - Added loading overlay during payment processing
+  - Button shows "Procesando..." state with spinner
+  - Form fields disabled during submission
+  - Toast error notifications on failure
+  - File: `components/restaurant/organisms/CartSheet.tsx`
+
 ### Added
 
 - **Smart Login Redirect**: Enhanced login flow with role-based redirects
