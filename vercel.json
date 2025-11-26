@@ -17,9 +17,11 @@
   "git": {
     "deploymentEnabled": {
       "main": true,
-      "staging": true
+      "staging": true,
+      "gh-pages": false
     }
   },
+  "ignoreCommand": "bash -c 'git diff --quiet HEAD^ HEAD -- . \":(exclude)website\" \":(exclude).github/workflows/deploy-docs.yml\"'",
   "public": true
 }
 
