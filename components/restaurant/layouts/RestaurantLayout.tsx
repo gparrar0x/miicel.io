@@ -125,10 +125,10 @@ export function RestaurantLayout({
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{category.icon}</span>
                   <div className="flex flex-col items-start">
-                    <h2 className="text-xl font-bold text-gray-900">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                       {category.name}
                     </h2>
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
                       {categoryProducts.length}{' '}
                       {categoryProducts.length === 1 ? 'producto' : 'productos'}
                     </span>
@@ -144,7 +144,7 @@ export function RestaurantLayout({
                     currency={currency}
                   />
                 ) : (
-                  <div className="text-center py-8 text-gray-400">
+                  <div className="text-center py-8 text-gray-400 dark:text-gray-500">
                     <p>No hay productos en esta categoría</p>
                   </div>
                 )}
@@ -155,7 +155,7 @@ export function RestaurantLayout({
 
         {/* Empty state - all categories */}
         {productsByCategory.every(({ products }) => products.length === 0) && (
-          <div className="text-center py-12 text-gray-500">
+          <div className="text-center py-12 text-gray-500 dark:text-gray-400">
             <p className="text-lg">No hay productos disponibles</p>
           </div>
         )}

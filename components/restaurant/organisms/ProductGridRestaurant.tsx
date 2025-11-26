@@ -52,7 +52,7 @@ export function ProductGridRestaurant({
     return (
       <div
         data-testid="product-grid-restaurant-empty"
-        className="text-center py-12 text-gray-500"
+        className="text-center py-12 text-gray-500 dark:text-gray-400"
       >
         No hay productos en esta categoría
       </div>

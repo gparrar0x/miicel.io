@@ -36,7 +36,7 @@ export function CartSummary({ itemCount, total, currency = 'CLP', className = ''
           {itemCount} {itemCount === 1 ? 'producto' : 'productos'}
         </span>
       </div>
-      <span className="text-gray-400">|</span>
+      <span className="text-gray-400 dark:text-gray-600">|</span>
       <div className="flex flex-col">
         <span className="text-xs opacity-80">Total</span>
         <span className="font-bold text-lg" data-testid="cart-total">

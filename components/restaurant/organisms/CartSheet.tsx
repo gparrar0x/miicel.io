@@ -167,13 +167,13 @@ export function CartSheet({
           <div className="absolute inset-0 bg-white/90 flex items-center justify-center z-50 rounded-lg">
             <div className="flex flex-col items-center gap-3">
               <Loader2 className="h-10 w-10 animate-spin" style={{ color: 'var(--color-primary)' }} />
-              <p className="text-sm text-gray-600 font-medium">Redirigiendo a MercadoPago...</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">Redirigiendo a MercadoPago...</p>
             </div>
           </div>
         )}
 
         <SheetHeader>
-          <SheetTitle className="flex items-center gap-2 text-2xl text-gray-900">
+          <SheetTitle className="flex items-center gap-2 text-2xl text-gray-900 dark:text-white">
             {checkoutStep === 'checkout' && (
               <Button variant="ghost" size="icon" className="mr-2" onClick={handleBackToCart} disabled={isSubmitting}>
                 <ArrowLeft className="w-5 h-5" />
@@ -194,19 +194,19 @@ export function CartSheet({
             <div className="mt-8 flex flex-col gap-4 h-[calc(100vh-250px)] overflow-y-auto px-6">
               {items.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center gap-4">
-                  <ShoppingBag className="w-16 h-16 text-gray-300" />
-                  <p className="text-gray-500 text-lg">Tu carrito está vacío</p>
-                  <p className="text-gray-400 text-sm">Agrega productos del menú para comenzar</p>
+                  <ShoppingBag className="w-16 h-16 text-gray-300 dark:text-gray-700" />
+                  <p className="text-gray-500 dark:text-gray-400 text-lg">Tu carrito está vacío</p>
+                  <p className="text-gray-400 dark:text-gray-500 text-sm">Agrega productos del menú para comenzar</p>
                 </div>
               ) : (
                 items.map((item) => (
-                  <div key={item.productId} className="flex gap-4 p-4 bg-gray-50 rounded-xl">
+                  <div key={item.productId} className="flex gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 mb-1">{item.name}</h3>
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{item.name}</h3>
                       <p className="font-bold" style={{ color: 'var(--color-primary)' }}>{formatPrice(item.price * item.quantity)}</p>
                     </div>
                       <div className="flex flex-col items-end gap-2">
-                      <div className="flex items-center gap-2 bg-white rounded-lg border border-gray-200">
+                      <div className="flex items-center gap-2 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                         <Button
                           variant="ghost"
                           size="icon"
@@ -232,7 +232,7 @@ export function CartSheet({
                         >
                           <Minus className="w-4 h-4" />
                         </Button>
-                        <span className="w-8 text-center font-semibold">{item.quantity}</span>
+                        <span className="w-8 text-center font-semibold text-gray-900 dark:text-white">{item.quantity}</span>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -266,15 +266,15 @@ export function CartSheet({
             </div>
 
             {items.length > 0 && (
-              <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-gray-200">
+              <div className="absolute bottom-0 left-0 right-0 p-6 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
                 <div className="space-y-4">
                   <div className="flex justify-between items-center text-lg">
-                    <span className="font-semibold text-gray-700">Subtotal</span>
-                    <span className="font-bold text-gray-900">{formatPrice(totalPrice)}</span>
+                    <span className="font-semibold text-gray-700 dark:text-gray-300">Subtotal</span>
+                    <span className="font-bold text-gray-900 dark:text-white">{formatPrice(totalPrice)}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between items-center text-xl">
-                    <span className="font-bold text-gray-900">Total</span>
+                    <span className="font-bold text-gray-900 dark:text-white">Total</span>
                     <span className="font-bold" style={{ color: 'var(--color-primary)' }}>{formatPrice(totalPrice)}</span>
                   </div>
                   <Button
@@ -301,7 +301,7 @@ export function CartSheet({
           <>
             <div className="mt-8 flex flex-col gap-6 h-[calc(100vh-250px)] overflow-y-auto px-6">
               <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-base font-semibold">
+                <Label htmlFor="fullName" className="text-base font-semibold text-gray-900 dark:text-white">
                   Nombre Completo <span className="text-red-500">*</span>
                 </Label>
                 <Input
@@ -319,7 +319,7 @@ export function CartSheet({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-base font-semibold">
+                <Label htmlFor="email" className="text-base font-semibold text-gray-900 dark:text-white">
                   Email <span className="text-red-500">*</span>
                 </Label>
                 <Input
@@ -338,8 +338,8 @@ export function CartSheet({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="notes" className="text-base font-semibold">
-                  Observaciones <span className="text-gray-400 text-sm">(opcional)</span>
+                <Label htmlFor="notes" className="text-base font-semibold text-gray-900 dark:text-white">
+                  Observaciones <span className="text-gray-400 dark:text-gray-600 text-sm">(opcional)</span>
                 </Label>
                 <Textarea
                   id="notes"
@@ -352,30 +352,30 @@ export function CartSheet({
                 />
               </div>
 
-              <div className="rounded-xl p-4" style={{ 
+              <div className="rounded-xl p-4" style={{
                 background: 'color-mix(in srgb, var(--color-primary) 8%, white)',
                 border: '1px solid color-mix(in srgb, var(--color-primary) 20%, white)'
-              }}>
-                <h3 className="font-semibold text-gray-900 mb-3">Resumen del Pedido</h3>
+              }} className="dark:bg-gray-800 dark:border-gray-700">
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Resumen del Pedido</h3>
                 <div className="space-y-2">
                   {items.map((item) => (
                     <div key={item.productId} className="flex justify-between text-sm">
-                      <span className="text-gray-600">
+                      <span className="text-gray-600 dark:text-gray-400">
                         {item.quantity}x {item.name}
                       </span>
-                      <span className="font-semibold text-gray-900">{formatPrice(item.price * item.quantity)}</span>
+                      <span className="font-semibold text-gray-900 dark:text-white">{formatPrice(item.price * item.quantity)}</span>
                     </div>
                   ))}
                   <Separator className="my-2" />
                   <div className="flex justify-between font-bold text-lg">
-                    <span>Total</span>
+                    <span className="dark:text-white">Total</span>
                     <span style={{ color: 'var(--color-primary)' }}>{formatPrice(totalPrice)}</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-gray-200">
+            <div className="absolute bottom-0 left-0 right-0 p-6 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
               <Button
                 className="w-full text-white font-bold py-6 rounded-xl"
                 size="lg"

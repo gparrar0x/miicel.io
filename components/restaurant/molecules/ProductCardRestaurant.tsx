@@ -83,11 +83,11 @@ export function ProductCardRestaurant({
       </div>
 
       <div className="p-5">
-        <h3 className="text-xl font-bold text-gray-900 mb-2 text-balance">
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 text-balance">
           {product.name}
         </h3>
         {product.description && (
-          <p className="text-sm text-gray-600 mb-4 line-clamp-2 text-pretty">
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 text-pretty">
             {product.description}
           </p>
         )}
