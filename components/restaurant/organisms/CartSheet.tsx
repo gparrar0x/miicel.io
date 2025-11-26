@@ -352,10 +352,10 @@ export function CartSheet({
                 />
               </div>
 
-              <div className="rounded-xl p-4" style={{
+              <div className="rounded-xl p-4 dark:bg-gray-800 dark:border-gray-700" style={{
                 background: 'color-mix(in srgb, var(--color-primary) 8%, white)',
                 border: '1px solid color-mix(in srgb, var(--color-primary) 20%, white)'
-              }} className="dark:bg-gray-800 dark:border-gray-700">
+              }}>
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Resumen del Pedido</h3>
                 <div className="space-y-2">
                   {items.map((item) => (
