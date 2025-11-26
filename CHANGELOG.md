@@ -10,14 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **Restaurant Template Dark Mode Support (MII-14)**: Fixed text contrast issues in restaurant template when OS dark mode is enabled
-  - **Root cause**: Hardcoded Tailwind gray colors without dark mode variants
-  - **ProductCardRestaurant**: Added `dark:text-white` to product titles, `dark:text-gray-300` to descriptions
-  - **CartSheet**: Added dark mode support for 23 elements (cart items, forms, labels, inputs, backgrounds, borders)
-  - **RestaurantLayout**: Added dark mode to category headings, product counts, empty states
-  - **ProductGridRestaurant**: Added dark mode to empty state text
-  - **CartSummary**: Added dark mode to separator divider
-  - **Impact**: All restaurant components now readable in both light and OS dark mode
-  - Files: `components/restaurant/molecules/ProductCardRestaurant.tsx`, `components/restaurant/organisms/CartSheet.tsx`, `components/restaurant/layouts/RestaurantLayout.tsx`, `components/restaurant/organisms/ProductGridRestaurant.tsx`, `components/restaurant/molecules/CartSummary.tsx`
+  - **Root cause**: Tailwind `dark:*` classes require either `class` strategy + `<html class="dark">` or `media` strategy to detect OS preference
+  - **Solution**:
+    1. Added `dark:*` variant classes to all restaurant components (titles, descriptions, backgrounds, borders)
+    2. Created `tailwind.config.ts` with `darkMode: 'media'` to auto-detect OS dark mode
+  - **Components fixed**: ProductCardRestaurant, CartSheet (23 elements), RestaurantLayout, ProductGridRestaurant, CartSummary
+  - **Impact**: All restaurant components now readable in both light and OS dark mode with proper contrast
+  - Files: `tailwind.config.ts` (new), `components/restaurant/**/*.tsx` (5 files, 31 dark mode classes)
 
 ### Changed
 
