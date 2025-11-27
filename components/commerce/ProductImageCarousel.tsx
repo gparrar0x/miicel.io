@@ -55,10 +55,13 @@ export function ProductImageCarousel({
       <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden">
         <Image
           src={images[currentIndex]}
-          alt={`${productName} - Image ${currentIndex + 1}`}
+          alt={`${productName} - vista ${currentIndex + 1} de ${images.length}`}
           fill
           className="object-cover"
           priority={currentIndex === 0}
+          loading={currentIndex === 0 ? undefined : 'lazy'}
+          quality={85}
+          sizes="(max-width: 768px) 100vw, 50vw"
           data-testid={`product-${productId}-image-${currentIndex}`}
         />
 

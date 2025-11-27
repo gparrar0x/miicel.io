@@ -81,11 +81,12 @@ export function GalleryCard({
       <div className="absolute inset-0 w-full h-full transition-transform duration-700 ease-out group-hover:scale-105">
         <Image
           src={primaryImage}
-          alt={product.name}
+          alt={`${product.name} - ${product.category || 'producto'}`}
           fill
           className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
           sizes="(max-width: 640px) 100vw, (max-width: 900px) 50vw, 33vw"
           loading="lazy"
+          quality={85}
         />
         {/* Noise Overlay */}
         <div className="absolute inset-0 bg-noise opacity-20 mix-blend-overlay pointer-events-none" />

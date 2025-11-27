@@ -19,6 +19,7 @@ import { AddToCartButton } from '@/components/commerce/AddToCartButton'
 import { ProductClient } from './ProductClient'
 import { ArtworkDetail } from '@/components/gallery-v2/ArtworkDetail'
 import { GalleryHeader } from '@/components/gallery-v2/GalleryHeader'
+import { ProductStructuredData } from '@/components/seo/StructuredData'
 import { tenantConfigResponseSchema } from '@/lib/schemas/order'
 import { createClient } from '@/lib/supabase/server'
 import type { Product, ProductColor } from '@/types/commerce'
@@ -172,7 +173,7 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: PageProps) {
   // Force rebuild: Fix 404 on production
-  const { tenantId, id } = await params
+  const { tenantId, id, locale } = await params
   const [config, product] = await Promise.all([
     getTenantConfig(tenantId),
     getProduct(id),
@@ -221,6 +222,11 @@ export default async function ProductPage({ params }: PageProps) {
 
     return (
       <ThemeProvider config={config}>
+        <ProductStructuredData
+          product={product}
+          tenant={{ slug: tenantId, businessName: config.businessName }}
+          locale={locale}
+        />
         <main className="min-h-screen bg-white text-black">
           <GalleryHeader config={config} tenantId={tenantId} />
           <ArtworkDetail artwork={artwork} relatedArtworks={[]} tenantId={tenantId} />
@@ -232,6 +238,11 @@ export default async function ProductPage({ params }: PageProps) {
   // Legacy templates: Use existing ProductClient layout
   return (
     <ThemeProvider config={config}>
+      <ProductStructuredData
+        product={product}
+        tenant={{ slug: tenantId, businessName: config.businessName }}
+        locale={locale}
+      />
       <main className="min-h-screen" style={{ backgroundColor: 'var(--color-bg-base)' }}>
         <TenantHeader config={config} />
 

@@ -112,7 +112,7 @@ export function ImageGallery({
         >
           <Image
             src={currentImage.url}
-            alt={altText}
+            alt={`${altText} - vista ${currentIndex + 1} de ${images.length}`}
             width={800}
             height={800}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 60vw"
@@ -152,7 +152,7 @@ export function ImageGallery({
             >
               <Image
                 src={img.url}
-                alt=""
+                alt={`${productName} miniatura ${idx + 1}`}
                 width={80}
                 height={80}
                 quality={75}
@@ -174,7 +174,7 @@ export function ImageGallery({
           <div className="modal-content">
             <Image
               src={currentImage.url}
-              alt={altText}
+              alt={`${altText} - zoom`}
               fill
               style={{ objectFit: 'contain' }}
               quality={90}

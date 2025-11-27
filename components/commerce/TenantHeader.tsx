@@ -28,9 +28,11 @@ export function TenantHeader({ config }: TenantHeaderProps) {
             <div className="relative w-10 h-10 overflow-hidden rounded-full border border-black/20">
               <Image
                 src={logoUrl}
-                alt={businessName}
+                alt={`${businessName} logo`}
                 fill
                 className="object-cover"
+                sizes="40px"
+                loading="lazy"
               />
             </div>
           )}
