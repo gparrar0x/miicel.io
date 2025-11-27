@@ -9,6 +9,7 @@
  */
 
 import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 import { TenantHeader } from '@/components/commerce/TenantHeader'
 import { ThemeProvider } from '@/components/commerce/ThemeProvider'
 import { ProductImageCarousel } from '@/components/commerce/ProductImageCarousel'
@@ -23,7 +24,7 @@ import { createClient } from '@/lib/supabase/server'
 import type { Product, ProductColor } from '@/types/commerce'
 
 interface PageProps {
-  params: Promise<{ tenantId: string; id: string }>
+  params: Promise<{ locale: string; tenantId: string; id: string }>
 }
 
 // Mock colors until product_variants table is built
@@ -113,6 +114,59 @@ async function getProduct(id: string): Promise<Product | null> {
     stock: data.stock ?? 0,
     category: data.category,
     metadata: data.metadata,
+  }
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; tenantId: string; id: string }>
+}): Promise<Metadata> {
+  const { locale, tenantId, id } = await params
+
+  const [config, product] = await Promise.all([
+    getTenantConfig(tenantId),
+    getProduct(id),
+  ])
+
+  if (!config || !product) {
+    return {}
+  }
+
+  const baseUrl = `https://miicel.io/${locale}/${tenantId}/p/${id}`
+  const price = `${config.currency} ${product.price.toFixed(2)}`
+
+  const description = product.description
+    ? `${product.description}. Compra a ${price} en ${config.businessName}.`
+    : `${product.name}. Disponible a ${price} en ${config.businessName}.`
+
+  return {
+    title: `${product.name} | ${config.businessName}`,
+    description,
+    metadataBase: new URL('https://miicel.io'),
+    openGraph: {
+      title: product.name,
+      description: `${product.name} - ${price}`,
+      type: 'website',
+      url: baseUrl,
+      images: product.images[0]
+        ? [
+            {
+              url: product.images[0],
+              width: 600,
+              height: 600,
+              alt: product.name,
+            },
+          ]
+        : [],
+    },
+    alternates: {
+      canonical: baseUrl,
+      languages: {
+        'es-ES': `https://miicel.io/es/${tenantId}/p/${id}`,
+        'en-US': `https://miicel.io/en/${tenantId}/p/${id}`,
+      },
+    },
   }
 }
 

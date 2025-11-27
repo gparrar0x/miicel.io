@@ -6,6 +6,7 @@
 
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { TenantHeader } from '@/components/commerce/TenantHeader'
 import { ThemeProvider } from '@/components/commerce/ThemeProvider'
 import { ProductGrid as ProductGridLegacy } from '@/components/commerce/ProductGrid'
@@ -19,7 +20,7 @@ import { GalleryGridWrapper } from '@/components/storefront/GalleryGridWrapper'
 import { DashboardAccessButton } from '@/components/DashboardAccessButton'
 
 interface PageProps {
-  params: Promise<{ tenantId: string }>
+  params: Promise<{ locale: string; tenantId: string }>
   searchParams: Promise<{ category?: string; search?: string }>
 }
 
@@ -156,6 +157,52 @@ async function getCategories(tenantId: string) {
 
   const categories = [...new Set(data.map((p) => p.category).filter(Boolean))]
   return categories as string[]
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; tenantId: string }>
+}): Promise<Metadata> {
+  const { locale, tenantId } = await params
+  const config = await getTenantConfig(tenantId)
+
+  if (!config) {
+    return {
+      title: 'Tienda | Miicel.io',
+      description: 'Descubre nuestra tienda online en Miicel.io',
+    }
+  }
+
+  const baseUrl = `https://miicel.io/${locale}/${tenantId}`
+
+  const description = config.subtitle
+    ? `${config.businessName}. ${config.subtitle}. Ordena online ahora.`
+    : `Tienda online de ${config.businessName}. Descubre nuestros productos en Miicel.io.`
+
+  return {
+    title: `${config.businessName} - Tienda Online | Miicel.io`,
+    description,
+    metadataBase: new URL('https://miicel.io'),
+    openGraph: {
+      title: config.businessName,
+      description: config.subtitle || 'Tienda online en Miicel.io',
+      type: 'website',
+      url: baseUrl,
+      images: config.logoUrl
+        ? [{ url: config.logoUrl, width: 200, height: 200 }]
+        : config.bannerUrl
+        ? [{ url: config.bannerUrl, width: 1200, height: 630 }]
+        : [],
+    },
+    alternates: {
+      canonical: baseUrl,
+      languages: {
+        'es-ES': `https://miicel.io/es/${tenantId}`,
+        'en-US': `https://miicel.io/en/${tenantId}`,
+      },
+    },
+  }
 }
 
 export default async function StorefrontPage({ params, searchParams }: PageProps) {

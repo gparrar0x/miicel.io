@@ -23,8 +23,8 @@ const intlMiddleware = createMiddleware(routing)
 export async function proxy(req: NextRequest) {
   const pathname = req.nextUrl.pathname
 
-  // Skip proxy logic for static tenant assets so they are served directly from Next.js public folder
-  if (pathname.startsWith('/tenants/')) {
+  // Skip proxy logic for SEO files and static assets
+  if (pathname === '/robots.txt' || pathname === '/sitemap.xml' || pathname.startsWith('/tenants/')) {
     return NextResponse.next()
   }
 
@@ -192,6 +192,6 @@ export async function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)',
   ],
 }

@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Block auth-gated routes
+Disallow: /*/*/dashboard
+Disallow: /*/*/checkout
+Disallow: /*/login
+Disallow: /*/signup
+Disallow: /api/
+Disallow: /test-theme
+
+Crawl-delay: 1
+
+Sitemap: https://miicel.io/sitemap.xml
