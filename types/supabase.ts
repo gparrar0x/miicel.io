@@ -7,8 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "13.0.5"
   }
@@ -19,25 +17,40 @@ export type Database = {
           created_at: string | null
           email: string | null
           id: number
+          last_order_at: string | null
+          loyalty_points: number | null
           name: string
           phone: string | null
           tenant_id: number | null
+          total_orders: number | null
+          total_spent: number | null
+          updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           email?: string | null
           id?: number
+          last_order_at?: string | null
+          loyalty_points?: number | null
           name: string
           phone?: string | null
           tenant_id?: number | null
+          total_orders?: number | null
+          total_spent?: number | null
+          updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           email?: string | null
           id?: number
+          last_order_at?: string | null
+          loyalty_points?: number | null
           name?: string
           phone?: string | null
           tenant_id?: number | null
+          total_orders?: number | null
+          total_spent?: number | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -58,6 +71,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          checkout_id: string | null
           created_at: string | null
           customer_id: number | null
           id: number
@@ -71,6 +85,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          checkout_id?: string | null
           created_at?: string | null
           customer_id?: number | null
           id?: number
@@ -84,6 +99,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          checkout_id?: string | null
           created_at?: string | null
           customer_id?: number | null
           id?: number
@@ -116,6 +132,65 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string | null
+          currency: string
+          id: number
+          metadata: Json | null
+          order_id: number
+          payer_email: string | null
+          payer_name: string | null
+          payment_id: string
+          payment_method_id: string | null
+          payment_type: string | null
+          status: string
+          status_detail: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          currency?: string
+          id?: number
+          metadata?: Json | null
+          order_id: number
+          payer_email?: string | null
+          payer_name?: string | null
+          payment_id: string
+          payment_method_id?: string | null
+          payment_type?: string | null
+          status: string
+          status_detail?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          currency?: string
+          id?: number
+          metadata?: Json | null
+          order_id?: number
+          payer_email?: string | null
+          payer_name?: string | null
+          payment_id?: string
+          payment_method_id?: string | null
+          payment_type?: string | null
+          status?: string
+          status_detail?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
             referencedColumns: ["id"]
           },
         ]
@@ -234,6 +309,63 @@ export type Database = {
         }
         Relationships: []
       }
+      users: {
+        Row: {
+          auth_user_id: string | null
+          created_at: string | null
+          email: string
+          id: number
+          is_active: boolean | null
+          last_login_at: string | null
+          name: string
+          permissions: Json | null
+          role: string
+          tenant_id: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          auth_user_id?: string | null
+          created_at?: string | null
+          email: string
+          id?: number
+          is_active?: boolean | null
+          last_login_at?: string | null
+          name: string
+          permissions?: Json | null
+          role: string
+          tenant_id?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          auth_user_id?: string | null
+          created_at?: string | null
+          email?: string
+          id?: number
+          is_active?: boolean | null
+          last_login_at?: string | null
+          name?: string
+          permissions?: Json | null
+          role?: string
+          tenant_id?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "users_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "users_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       daily_sales: {
@@ -338,19 +470,14 @@ export type Database = {
           slug: string
         }[]
       }
-      is_superadmin: { Args: Record<string, never>; Returns: boolean }
+      is_superadmin: { Args: Record<PropertyKey, never>; Returns: boolean }
     }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
+    Enums: {}
+    CompositeTypes: {}
   }
 }
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
-
 type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
