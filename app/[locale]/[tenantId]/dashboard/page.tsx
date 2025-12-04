@@ -103,62 +103,70 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenantId:
   return (
     <>
       <AdminSidebar tenant={tenantId} tenantName={tenantName} />
-      <div className="lg:pl-64 min-h-screen bg-gray-50">
+      <div className="lg:pl-64 min-h-screen bg-[#FAFAFA]">
         <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 mt-16 lg:mt-0">
-        <div className="bg-gallery-black rounded-none shadow-brutal p-8 mb-8 text-white">
-          <h2 className="text-3xl font-bold font-display mb-2">{t('welcomeTitle')}</h2>
-          <p className="text-gray-200">
-            {t('welcomeDesc')}
-          </p>
+        {/* Header Hero - Brutalist Style */}
+        <div className="bg-gallery-black border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-8 mb-8 relative overflow-hidden">
+          <div className="absolute inset-0 bg-noise opacity-10 pointer-events-none"></div>
+          <div className="relative z-10">
+            <h2 className="text-4xl font-bold font-display mb-2 text-white">{t('welcomeTitle')}</h2>
+            <p className="text-gray-300 text-lg">
+              {t('welcomeDesc')}
+            </p>
+          </div>
+          {/* Accent stripe */}
+          <div className="absolute bottom-0 left-0 w-full h-2 bg-gallery-gold"></div>
         </div>
 
+        {/* Stats Cards - High Contrast */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-none shadow-brutal p-6">
+          <div className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all duration-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{t('activeProducts')}</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">{stats.totalProducts}</p>
+                <p className="text-xs font-mono uppercase tracking-wider text-gray-500 mb-1">{t('activeProducts')}</p>
+                <p className="text-4xl font-bold text-gallery-black mt-2">{stats.totalProducts}</p>
               </div>
-              <div className="bg-gallery-gold/10 rounded-full p-3">
-                <Package className="h-6 w-6 text-gallery-gold" />
+              <div className="bg-gallery-gold border-2 border-black p-3">
+                <Package className="h-7 w-7 text-black" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-none shadow-brutal p-6">
+          <div className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all duration-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{t('completedOrders')}</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">{stats.totalOrders}</p>
+                <p className="text-xs font-mono uppercase tracking-wider text-gray-500 mb-1">{t('completedOrders')}</p>
+                <p className="text-4xl font-bold text-gallery-black mt-2">{stats.totalOrders}</p>
               </div>
-              <div className="bg-gallery-gold/10 rounded-full p-3">
-                <ShoppingCart className="h-6 w-6 text-gallery-gold" />
+              <div className="bg-gallery-gold border-2 border-black p-3">
+                <ShoppingCart className="h-7 w-7 text-black" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-none shadow-brutal p-6">
+          <div className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all duration-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">{t('totalRevenue')}</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">${stats.revenue.toFixed(2)}</p>
+                <p className="text-xs font-mono uppercase tracking-wider text-gray-500 mb-1">{t('totalRevenue')}</p>
+                <p className="text-4xl font-bold text-gallery-black mt-2">${stats.revenue.toFixed(2)}</p>
               </div>
-              <div className="bg-gallery-gold/10 rounded-full p-3">
-                <DollarSign className="h-6 w-6 text-gallery-gold" />
+              <div className="bg-gallery-gold border-2 border-black p-3">
+                <DollarSign className="h-7 w-7 text-black" />
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-none shadow-brutal p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('quickActions')}</h3>
+        {/* Quick Actions - Brutalist Grid */}
+        <div className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-8">
+          <h3 className="text-2xl font-bold font-display text-gallery-black mb-6 pb-3 border-b-4 border-gallery-gold">{t('quickActions')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <button
               onClick={() => router.push(`/${tenantId}/dashboard/settings/appearance`)}
-              className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-none hover:border-gallery-gold hover:bg-gallery-gold/5 transition-colors group"
+              className="flex flex-col items-center justify-center p-8 border-4 border-black bg-white hover:bg-gallery-gold hover:-translate-y-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 group"
             >
-              <Settings className="h-8 w-8 text-gray-400 group-hover:text-gallery-gold mb-2" />
-              <span className="text-sm font-medium text-gray-700 group-hover:text-gallery-gold">
+              <Settings className="h-10 w-10 text-gallery-black mb-3" />
+              <span className="text-sm font-bold font-mono uppercase tracking-wide text-gallery-black">
                 {t('settings')}
               </span>
             </button>
