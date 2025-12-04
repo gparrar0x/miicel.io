@@ -181,7 +181,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                                     </label>
                                     <input
                                         type="number"
-                                        {...register("stock_quantity")}
+                                        {...register("stock")}
                                         className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
                                         placeholder="0"
                                         data-testid="product-form-stock"

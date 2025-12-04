@@ -9,6 +9,7 @@ export const productSchema = z.object({
   image_url: z.union([z.string().url(), z.literal(""), z.null()]).optional(),
   active: z.boolean().default(true),
   display_order: z.coerce.number().int().default(0),
+  stock: z.coerce.number().int().min(0, "Stock must be non-negative").nullable().optional(),
   metadata: z.record(z.string(), z.any()).optional(),
 })
 
