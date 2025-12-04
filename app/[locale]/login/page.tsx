@@ -53,32 +53,29 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-alabaster bg-noise px-4 py-12">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-clean-light px-4 py-12">
       {/* Logo Header */}
-      <div className="mb-10 text-center">
-        <div className="inline-block bg-gold border-2 border-charcoal p-5 shadow-elegant-lg mb-4 rounded-sm transition-all duration-300 hover:shadow-elegant-hover hover:-translate-y-0.5">
-          <span className="text-4xl font-semibold text-white font-display">M</span>
+      <div className="mb-12 text-center">
+        <div className="inline-block bg-clean-black w-16 h-16 rounded-clean-lg mb-6 flex items-center justify-center shadow-clean-md">
+          <span className="text-3xl font-bold text-white">M</span>
         </div>
-        <h1 className="text-3xl font-semibold text-charcoal font-display tracking-tight">Miicel.io</h1>
-        <p className="text-sm text-slate mt-2 font-medium">Platform Access</p>
+        <h1 className="text-2xl font-bold text-clean-black mb-1">Miicel.io</h1>
+        <p className="text-sm text-clean-gray">Platform Access</p>
       </div>
 
       <div className="w-full max-w-md">
-        <div className="bg-white border-2 border-gray-200 shadow-elegant-lg p-8 rounded-sm relative overflow-hidden transition-all duration-300 hover:shadow-elegant-hover hover:border-gold/30" data-testid="login-form">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold via-gold-light to-gold"></div>
-          <div className="relative z-10">
-            <h2 className="text-3xl font-semibold text-charcoal font-display mb-2 text-center tracking-tight">
-              Sign In
-            </h2>
-            <p className="text-sm text-slate-blue text-center mb-8">Enter your credentials to continue</p>
+        <div className="bg-white shadow-clean-lg p-10 rounded-clean-lg" data-testid="login-form">
+          <h2 className="text-2xl font-bold text-clean-black mb-8">
+            Sign In
+          </h2>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-charcoal mb-2 tracking-wide"
+                  className="block text-sm font-medium text-clean-black mb-2"
                 >
-                  Email Address
+                  Email
                 </label>
                 <input
                   id="email"
@@ -88,7 +85,7 @@ function LoginForm() {
                   required
                   disabled={loading}
                   data-testid="login-email-input"
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-sm focus:outline-none focus:border-gold focus:shadow-gold-glow disabled:opacity-50 disabled:bg-stone text-charcoal font-medium transition-all duration-200 hover:border-gray-400"
+                  className="w-full px-4 py-3 border border-clean-border rounded-lg focus:outline-none focus:ring-2 focus:ring-clean-black focus:border-transparent disabled:opacity-50 disabled:bg-gray-50 text-clean-black transition-all duration-200"
                   placeholder="you@example.com"
                 />
               </div>
@@ -96,7 +93,7 @@ function LoginForm() {
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-charcoal mb-2 tracking-wide"
+                  className="block text-sm font-medium text-clean-black mb-2"
                 >
                   Password
                 </label>
@@ -108,7 +105,7 @@ function LoginForm() {
                   required
                   disabled={loading}
                   data-testid="login-password-input"
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-sm focus:outline-none focus:border-gold focus:shadow-gold-glow disabled:opacity-50 disabled:bg-stone text-charcoal font-medium transition-all duration-200 hover:border-gray-400"
+                  className="w-full px-4 py-3 border border-clean-border rounded-lg focus:outline-none focus:ring-2 focus:ring-clean-black focus:border-transparent disabled:opacity-50 disabled:bg-gray-50 text-clean-black transition-all duration-200"
                   placeholder="••••••••"
                 />
               </div>
@@ -116,7 +113,7 @@ function LoginForm() {
               {error && (
                 <div
                   data-testid="login-error-message"
-                  className="p-4 bg-coral/10 border-2 border-coral rounded-sm text-coral text-sm font-medium"
+                  className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm"
                   role="alert"
                 >
                   {error}
@@ -127,7 +124,7 @@ function LoginForm() {
                 type="submit"
                 disabled={loading}
                 data-testid="login-submit-button"
-                className="w-full py-3.5 px-6 bg-gold border-2 border-gold-dark rounded-sm text-white font-semibold text-sm tracking-wide hover:bg-gold-light hover:border-gold hover:-translate-y-0.5 focus:outline-none focus:shadow-gold-glow shadow-elegant hover:shadow-elegant-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 transition-all duration-200"
+                className="w-full py-3 px-6 bg-clean-black rounded-lg text-white font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-clean-black shadow-clean-md hover:shadow-clean-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
                 {loading ? (
                   <span data-testid="login-loading-state">Signing in...</span>
@@ -136,12 +133,11 @@ function LoginForm() {
                 )}
               </button>
             </form>
-          </div>
         </div>
       </div>
 
       {/* Footer Note */}
-      <p className="mt-8 text-xs text-slate uppercase tracking-wider font-medium">
+      <p className="mt-8 text-xs text-clean-gray">
         Platform Access Only
       </p>
     </div>
@@ -151,8 +147,8 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-alabaster">
-        <div className="text-charcoal font-medium">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-clean-light">
+        <div className="text-clean-black">Loading...</div>
       </div>
     }>
       <LoginForm />

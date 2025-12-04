@@ -91,26 +91,26 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
   return (
     <>
       {/* Mobile Header with Hamburger */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b-2 border-gray-200 shadow-elegant">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-2">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-clean-border">
+        <div className="flex items-center justify-between px-4 py-4">
+          <div className="flex items-center gap-3">
             {tenantLogo ? (
-              <img src={tenantLogo} alt={tenantName || t('adminPanel')} className="h-8 w-8 rounded-sm object-cover border border-stone" />
+              <img src={tenantLogo} alt={tenantName || t('adminPanel')} className="h-8 w-8 rounded-lg object-cover" />
             ) : (
-              <Store className="h-8 w-8 text-gold" />
+              <Store className="h-6 w-6 text-clean-black" />
             )}
-            <span className="font-semibold text-charcoal">{tenantName || t('adminPanel')}</span>
+            <span className="font-semibold text-clean-black">{tenantName || t('adminPanel')}</span>
           </div>
           <button
             data-testid="btn-toggle-sidebar"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-2 rounded-sm hover:bg-stone transition-colors duration-200"
+            className="p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200"
             aria-label="Toggle menu"
           >
             {isMobileMenuOpen ? (
-              <X className="h-6 w-6 text-slate" />
+              <X className="h-6 w-6 text-clean-gray" />
             ) : (
-              <Menu className="h-6 w-6 text-slate" />
+              <Menu className="h-6 w-6 text-clean-gray" />
             )}
           </button>
         </div>
@@ -128,25 +128,25 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
       <aside
         data-testid="admin-sidebar"
         className={cn(
-          "fixed top-0 left-0 z-40 h-screen w-64 bg-white border-r-2 border-gray-200 shadow-elegant transition-transform duration-300",
+          "fixed top-0 left-0 z-40 h-screen w-64 bg-white border-r border-clean-border transition-transform duration-300",
           "lg:translate-x-0",
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
         {/* Sidebar Header */}
-        <div className="h-16 flex items-center gap-3 px-6 border-b-2 border-gray-200 mt-14 lg:mt-0">
+        <div className="h-16 flex items-center gap-3 px-5 border-b border-clean-border mt-14 lg:mt-0">
           {tenantLogo ? (
-            <img src={tenantLogo} alt={tenantName || t('adminPanel')} className="h-10 w-10 rounded-sm object-cover border-2 border-stone" />
+            <img src={tenantLogo} alt={tenantName || t('adminPanel')} className="h-10 w-10 rounded-lg object-cover" />
           ) : (
-            <div className="h-10 w-10 rounded-sm bg-gold border-2 border-gold-dark flex items-center justify-center shadow-elegant">
-              <Store className="h-6 w-6 text-white" />
+            <div className="h-10 w-10 rounded-lg bg-clean-black flex items-center justify-center">
+              <Store className="h-5 w-5 text-white" />
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-charcoal truncate">
+            <p className="text-sm font-semibold text-clean-black truncate">
               {tenantName || t('adminPanel')}
             </p>
-            <p className="text-xs text-slate-blue truncate">/{tenant}</p>
+            <p className="text-xs text-clean-gray truncate">/{tenant}</p>
           </div>
         </div>
 
@@ -164,45 +164,45 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
                 data-testid={item.testId}
                 onClick={closeMobileMenu}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-sm transition-all duration-200",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
                   "text-sm font-medium",
                   isActive
-                    ? "bg-gold/10 text-charcoal border-l-2 border-gold shadow-elegant"
-                    : "text-slate hover:bg-stone hover:text-charcoal"
+                    ? "bg-gray-100 text-clean-black"
+                    : "text-clean-gray hover:bg-gray-50 hover:text-clean-black"
                 )}
               >
-                <Icon className={cn("h-5 w-5", isActive ? "text-gold" : "text-slate-blue")} />
+                <Icon className={cn("h-5 w-5", isActive ? "text-clean-black" : "text-clean-gray")} />
                 <span>{item.name}</span>
               </Link>
             )
           })}
 
           {/* View Store Link */}
-          <div className="pt-4 mt-4 border-t-2 border-gray-200">
+          <div className="pt-4 mt-4 border-t border-clean-border">
             <Link
               href={`/${tenant}`}
               data-testid="nav-view-store"
               onClick={closeMobileMenu}
-              className="flex items-center gap-3 px-4 py-3 rounded-sm transition-all duration-200 text-sm font-medium text-slate hover:bg-gold/10 hover:text-gold"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium text-clean-gray hover:bg-gray-50 hover:text-clean-black"
             >
-              <Store className="h-5 w-5 text-slate-blue" />
+              <Store className="h-5 w-5 text-clean-gray" />
               <span>{t('viewStore')}</span>
             </Link>
           </div>
         </nav>
 
         {/* User Info & Logout */}
-        <div className="border-t-2 border-gray-200 p-4">
+        <div className="border-t border-clean-border p-4">
           {/* User Info */}
-          <div className="flex items-center gap-3 px-4 py-3 mb-2">
-            <div className="h-9 w-9 rounded-sm bg-gold/20 border-2 border-gold/30 flex items-center justify-center flex-shrink-0">
-              <User className="h-4 w-4 text-gold" />
+          <div className="flex items-center gap-3 px-3 py-2 mb-2">
+            <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+              <User className="h-4 w-4 text-clean-gray" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-charcoal truncate">
+              <p className="text-sm font-medium text-clean-black truncate">
                 {userName}
               </p>
-              <p className="text-xs text-slate-blue truncate">
+              <p className="text-xs text-clean-gray truncate">
                 {userEmail}
               </p>
             </div>
@@ -212,9 +212,9 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
           <button
             data-testid="btn-logout"
             onClick={handleSignOut}
-            className="flex items-center gap-3 w-full px-4 py-3 rounded-sm text-sm font-medium text-slate hover:bg-coral/10 hover:text-coral transition-all duration-200"
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-clean-gray hover:bg-red-50 hover:text-red-600 transition-all duration-200"
           >
-            <LogOut className="h-5 w-5 text-slate-blue" />
+            <LogOut className="h-5 w-5" />
             <span>{t('logout')}</span>
           </button>
         </div>

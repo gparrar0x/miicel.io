@@ -10,7 +10,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Refined Gallery Palette
+        // Clean Modern Palette (Kreosis-inspired)
+        'clean-black': '#000000',
+        'clean-gray': '#6B7280',
+        'clean-light': '#F9FAFB',
+        'clean-white': '#FFFFFF',
+        'clean-border': '#E5E7EB',
+        'clean-accent': '#111827',
+        // Keep legacy for compatibility
         noir: '#0F0F0F',
         charcoal: '#1A1A1A',
         slate: '#2D2D2D',
@@ -20,12 +27,8 @@ const config: Config = {
         'gold-light': '#D4AF37',
         'gold-dark': '#8B6508',
         emerald: '#2D5F4F',
-        'emerald-light': '#4A8B6F',
         coral: '#D97760',
-        'coral-light': '#E89080',
         'slate-blue': '#4A5F7F',
-        'slate-blue-light': '#6B84A8',
-        // Legacy gallery colors
         gallery: {
           black: '#1A1A1A',
           white: '#FFFFFF',
@@ -34,14 +37,23 @@ const config: Config = {
         }
       },
       boxShadow: {
-        // Medium impact shadows - not brutal, not minimal
+        // Clean, modern shadows (Kreosis style)
+        'clean': '0 1px 3px rgba(0, 0, 0, 0.05)',
+        'clean-md': '0 4px 12px rgba(0, 0, 0, 0.08)',
+        'clean-lg': '0 10px 25px rgba(0, 0, 0, 0.1)',
+        'clean-hover': '0 8px 20px rgba(0, 0, 0, 0.12)',
+        // Keep elegant for reference
         'elegant': '0 2px 8px rgba(15, 15, 15, 0.12), 0 1px 2px rgba(15, 15, 15, 0.08)',
         'elegant-lg': '0 4px 16px rgba(15, 15, 15, 0.16), 0 2px 4px rgba(15, 15, 15, 0.08)',
         'elegant-hover': '0 8px 24px rgba(15, 15, 15, 0.20), 0 4px 8px rgba(15, 15, 15, 0.12)',
         'gold-glow': '0 0 0 3px rgba(184, 134, 11, 0.15)',
-        // Keep brutal for reference
         brutal: '4px 4px 0px rgba(0,0,0,1)',
         'brutal-hover': '8px 8px 0px rgba(0,0,0,1)',
+      },
+      borderRadius: {
+        'clean': '12px',
+        'clean-lg': '16px',
+        'clean-xl': '20px',
       },
       fontFamily: {
         display: ['Cinzel', 'serif'],

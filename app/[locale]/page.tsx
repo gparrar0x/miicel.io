@@ -72,70 +72,70 @@ function RootPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-alabaster">
-        <div className="text-charcoal font-medium">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-clean-light">
+        <div className="text-clean-black">Loading...</div>
       </div>
     )
   }
 
   if (isSuperAdmin) {
     return (
-      <main className="min-h-screen bg-alabaster bg-noise" data-testid="landing-page">
-        <header className="w-full px-6 py-4 border-b-2 border-gray-200 bg-white shadow-elegant" data-testid="landing-header">
-          <div className="max-w-[1200px] mx-auto flex items-center justify-between">
+      <main className="min-h-screen bg-clean-light" data-testid="landing-page">
+        <header className="w-full px-6 py-5 border-b border-clean-border bg-white" data-testid="landing-header">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gold border-2 border-gold-dark rounded-sm flex items-center justify-center text-white font-semibold text-xl shadow-elegant">
+              <div className="w-10 h-10 bg-clean-black rounded-lg flex items-center justify-center text-white font-bold text-lg">
                 M
               </div>
-              <h1 className="text-2xl md:text-3xl font-semibold text-charcoal font-display tracking-tight">
+              <h1 className="text-xl font-bold text-clean-black">
                 Miicel.io
               </h1>
             </div>
             <button
               onClick={handleLogout}
               data-testid="button-sign-out"
-              className="px-5 py-2.5 border-2 border-gray-300 rounded-sm text-sm font-medium text-charcoal hover:bg-stone hover:border-gold/50 transition-all duration-200 focus:outline-none focus:shadow-gold-glow"
+              className="px-4 py-2 border border-clean-border rounded-lg text-sm font-medium text-clean-black hover:bg-gray-50 transition-all duration-200"
             >
               Sign Out
             </button>
           </div>
         </header>
 
-        <div className="max-w-[1200px] mx-auto px-6 py-12">
-          <div className="mb-8">
-            <h2 className="text-4xl font-semibold text-charcoal font-display mb-2 tracking-tight inline-block">
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <div className="mb-10">
+            <h2 className="text-3xl font-bold text-clean-black mb-2">
               Active Tenants
             </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-gold to-gold-light rounded-full"></div>
+            <p className="text-clean-gray">Manage your platform tenants</p>
           </div>
 
           {tenants.length === 0 ? (
-            <div className="bg-white border-2 border-gray-200 rounded-sm shadow-elegant p-12 text-center">
-              <p className="text-slate">No active tenants found.</p>
+            <div className="bg-white rounded-clean-lg shadow-clean-lg p-12 text-center">
+              <p className="text-clean-gray">No active tenants found.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {tenants.map((tenant) => (
                 <div
                   key={tenant.slug}
                   data-testid={`tenant-card-${tenant.slug}`}
-                  className="bg-white border-2 border-gray-200 rounded-sm shadow-elegant hover:shadow-elegant-hover hover:-translate-y-0.5 hover:border-gold/30 transition-all duration-200 p-6 group"
+                  className="bg-white rounded-clean-lg shadow-clean-md hover:shadow-clean-hover transition-all duration-200 p-6"
                 >
-                  <div className="flex items-center gap-4 mb-6">
+                  <div className="flex items-center gap-4 mb-5">
                     {tenant.logo ? (
                       <img
                         src={tenant.logo}
                         alt={tenant.name}
-                        className="w-14 h-14 rounded-sm object-cover border-2 border-stone"
+                        className="w-12 h-12 rounded-lg object-cover"
                       />
                     ) : (
-                      <div className="w-14 h-14 rounded-sm bg-stone border-2 border-gray-300 flex items-center justify-center text-slate font-semibold text-lg">
+                      <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center text-clean-gray font-semibold text-lg">
                         {tenant.name.charAt(0).toUpperCase()}
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold text-charcoal truncate">{tenant.name}</h3>
-                      <p className="text-sm text-slate-blue">/{tenant.slug}</p>
+                      <h3 className="text-base font-semibold text-clean-black truncate">{tenant.name}</h3>
+                      <p className="text-sm text-clean-gray">/{tenant.slug}</p>
                     </div>
                   </div>
 
@@ -143,14 +143,14 @@ function RootPage() {
                     <Link
                       href={`/es/${tenant.slug}/dashboard`}
                       data-testid={`tenant-dashboard-link-${tenant.slug}`}
-                      className="flex-1 px-4 py-2.5 border-2 border-gray-300 rounded-sm text-sm font-medium text-charcoal bg-white hover:bg-stone hover:border-slate-blue transition-all duration-200 text-center focus:outline-none focus:shadow-gold-glow"
+                      className="flex-1 px-4 py-2 border border-clean-border rounded-lg text-sm font-medium text-clean-black hover:bg-gray-50 transition-all duration-200 text-center"
                     >
                       Dashboard
                     </Link>
                     <Link
                       href={`/es/${tenant.slug}`}
                       data-testid={`tenant-store-link-${tenant.slug}`}
-                      className="flex-1 px-4 py-2.5 border-2 border-gold-dark rounded-sm text-sm font-medium text-white bg-gold hover:bg-gold-light hover:border-gold hover:-translate-y-0.5 transition-all duration-200 text-center focus:outline-none focus:shadow-gold-glow shadow-elegant hover:shadow-elegant-lg"
+                      className="flex-1 px-4 py-2 bg-clean-black rounded-lg text-sm font-medium text-white hover:bg-gray-800 transition-all duration-200 text-center"
                     >
                       Tienda
                     </Link>
@@ -210,14 +210,14 @@ function LoginForm() {
   }
 
   return (
-    <main className="min-h-screen bg-alabaster bg-noise flex flex-col">
+    <main className="min-h-screen bg-clean-light flex flex-col">
       {/* Header */}
-      <header className="w-full px-6 py-4 border-b-2 border-gray-200 bg-white shadow-elegant" data-testid="login-header">
-        <div className="max-w-[1200px] mx-auto flex items-center gap-3">
-          <div className="w-12 h-12 bg-gold border-2 border-gold-dark rounded-sm flex items-center justify-center text-white font-semibold text-xl shadow-elegant">
+      <header className="w-full px-6 py-5 border-b border-clean-border bg-white" data-testid="login-header">
+        <div className="max-w-7xl mx-auto flex items-center gap-3">
+          <div className="w-10 h-10 bg-clean-black rounded-lg flex items-center justify-center text-white font-bold text-lg">
             M
           </div>
-          <h1 className="text-2xl md:text-3xl font-semibold text-charcoal font-display tracking-tight">
+          <h1 className="text-xl font-bold text-clean-black">
             Miicel.io
           </h1>
         </div>
@@ -226,21 +226,18 @@ function LoginForm() {
       {/* Login Form */}
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
-          <div className="bg-white border-2 border-gray-200 shadow-elegant-lg p-8 rounded-sm relative overflow-hidden" data-testid="login-form">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-gold via-gold-light to-gold"></div>
-            <div className="relative z-10">
-              <h2 className="text-3xl font-semibold text-charcoal font-display mb-2 text-center tracking-tight">
-                Sign In
-              </h2>
-              <p className="text-sm text-slate-blue text-center mb-8">Enter your credentials to continue</p>
+          <div className="bg-white shadow-clean-lg p-10 rounded-clean-lg" data-testid="login-form">
+            <h2 className="text-2xl font-bold text-clean-black mb-8">
+              Sign In
+            </h2>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label
                     htmlFor="email"
-                    className="block text-sm font-medium text-charcoal mb-2 tracking-wide"
+                    className="block text-sm font-medium text-clean-black mb-2"
                   >
-                    Email Address
+                    Email
                   </label>
                   <input
                     id="email"
@@ -250,7 +247,7 @@ function LoginForm() {
                     required
                     disabled={loading}
                     data-testid="login-email-input"
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-sm focus:outline-none focus:border-gold focus:shadow-gold-glow disabled:opacity-50 disabled:bg-stone text-charcoal font-medium transition-all duration-200 hover:border-gray-400"
+                    className="w-full px-4 py-3 border border-clean-border rounded-lg focus:outline-none focus:ring-2 focus:ring-clean-black focus:border-transparent disabled:opacity-50 disabled:bg-gray-50 text-clean-black transition-all duration-200"
                     placeholder="you@example.com"
                   />
                 </div>
@@ -258,7 +255,7 @@ function LoginForm() {
                 <div>
                   <label
                     htmlFor="password"
-                    className="block text-sm font-medium text-charcoal mb-2 tracking-wide"
+                    className="block text-sm font-medium text-clean-black mb-2"
                   >
                     Password
                   </label>
@@ -270,7 +267,7 @@ function LoginForm() {
                     required
                     disabled={loading}
                     data-testid="login-password-input"
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-sm focus:outline-none focus:border-gold focus:shadow-gold-glow disabled:opacity-50 disabled:bg-stone text-charcoal font-medium transition-all duration-200 hover:border-gray-400"
+                    className="w-full px-4 py-3 border border-clean-border rounded-lg focus:outline-none focus:ring-2 focus:ring-clean-black focus:border-transparent disabled:opacity-50 disabled:bg-gray-50 text-clean-black transition-all duration-200"
                     placeholder="••••••••"
                   />
                 </div>
@@ -278,7 +275,7 @@ function LoginForm() {
                 {error && (
                   <div
                     data-testid="login-error-message"
-                    className="p-4 bg-coral/10 border-2 border-coral rounded-sm text-coral text-sm font-medium"
+                    className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm"
                     role="alert"
                   >
                     {error}
@@ -289,7 +286,7 @@ function LoginForm() {
                   type="submit"
                   disabled={loading}
                   data-testid="login-submit-button"
-                  className="w-full py-3.5 px-6 bg-gold border-2 border-gold-dark rounded-sm text-white font-semibold text-sm tracking-wide hover:bg-gold-light hover:border-gold hover:-translate-y-0.5 focus:outline-none focus:shadow-gold-glow shadow-elegant hover:shadow-elegant-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 transition-all duration-200"
+                  className="w-full py-3 px-6 bg-clean-black rounded-lg text-white font-medium hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-clean-black shadow-clean-md hover:shadow-clean-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 >
                   {loading ? (
                     <span data-testid="login-loading-state">Signing in...</span>
@@ -298,13 +295,12 @@ function LoginForm() {
                   )}
                 </button>
               </form>
-            </div>
           </div>
         </div>
       </div>
 
       {/* Footer Note */}
-      <p className="text-xs text-slate text-center pb-8 uppercase tracking-wider font-medium">
+      <p className="text-xs text-clean-gray text-center pb-8">
         Platform Access Only
       </p>
     </main>
@@ -314,8 +310,8 @@ function LoginForm() {
 export default function HomePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-alabaster">
-        <div className="text-charcoal font-medium">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-clean-light">
+        <div className="text-clean-black">Loading...</div>
       </div>
     }>
       <RootPage />

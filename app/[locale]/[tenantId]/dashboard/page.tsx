@@ -30,12 +30,6 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenantId:
   useEffect(() => {
     const loadDashboard = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession()
-        if (!session) {
-          router.push(`/${locale}/login`)
-          return
-        }
-
         const { data: tenantData } = await supabase
           .from('tenants')
           .select('id, name, config')
