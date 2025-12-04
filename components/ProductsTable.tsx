@@ -70,6 +70,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                 </div>
                 <button
                     onClick={onAdd}
+                    data-testid="products-new-button"
                     className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-black text-white shadow hover:bg-black/90 h-9 px-4 py-2"
                 >
                     <Plus className="mr-2 h-4 w-4" />
@@ -79,7 +80,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
 
             <div className="rounded-md border bg-white shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left">
+                    <table data-testid="product-table" className="w-full text-sm text-left">
                         <thead className="bg-gray-50 text-gray-700 font-medium border-b">
                             <tr>
                                 <th className="px-4 py-3 w-[80px]">{t('form.image')}</th>
@@ -99,7 +100,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                                 </tr>
                             ) : (
                                 filteredProducts.map((product) => (
-                                    <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                                    <tr key={product.id} data-testid="product-table-row" className="hover:bg-gray-50 transition-colors">
                                         <td className="px-4 py-3">
                                             <div className="relative h-10 w-10 rounded-md overflow-hidden bg-gray-100 border">
                                                 {product.image_url ? (
@@ -146,6 +147,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                                             <div className="flex justify-end gap-2">
                                                 <button
                                                     onClick={() => onEdit(product)}
+                                                    data-testid="product-edit-button"
                                                     className="p-2 hover:bg-gray-100 rounded-md text-gray-600 hover:text-blue-600 transition-colors"
                                                     title={tCommon('edit')}
                                                 >
@@ -153,6 +155,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                                                 </button>
                                                 <button
                                                     onClick={() => onDelete(product)}
+                                                    data-testid="product-delete-button"
                                                     className="p-2 hover:bg-gray-100 rounded-md text-gray-600 hover:text-red-600 transition-colors"
                                                     title={tCommon('delete')}
                                                 >

@@ -19,8 +19,8 @@ import * as path from 'path'
 import { createClient } from '@supabase/supabase-js'
 
 // Test configuration
-const TEST_TENANT = 'test-store'
-const BASE_URL = `http://localhost:3000/${TEST_TENANT}`
+const TEST_TENANT = 'demo_galeria' // Use demo tenant ID 1
+const BASE_URL = `http://localhost:3000/es/${TEST_TENANT}`
 const ADMIN_PRODUCTS_URL = `${BASE_URL}/dashboard/products`
 
 // Supabase admin client for DB verification

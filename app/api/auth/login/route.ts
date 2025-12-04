@@ -45,22 +45,35 @@ export async function POST(request: Request) {
     // Determine redirect URL
     let redirectTo = '/' // Default to root (tenant list) for superadmins
 
-    // Check if superadmin
-    const { data: isSuperAdmin } = await supabase.rpc('is_superadmin')
+    // Check user role in users table (MII_4: tenant_admin, staff, platform_admin)
+    const { data: userRecord } = await supabase
+      .from('users')
+      .select('role, tenant_id, tenants(slug)')
+      .eq('auth_user_id', data.user.id)
+      .single()
 
-    if (!isSuperAdmin) {
-      // If not superadmin, find their tenant
-      const { data: tenant } = await supabase
-        .from('tenants')
-        .select('slug')
-        .eq('owner_id', data.user.id)
-        .single()
+    if (userRecord && userRecord.role === 'tenant_admin' && userRecord.tenants) {
+      // Tenant admin: redirect to their tenant dashboard
+      const tenantSlug = (userRecord.tenants as any).slug
+      redirectTo = `/es/${tenantSlug}/dashboard`
+    } else if (userRecord && userRecord.role === 'platform_admin') {
+      // Platform admin: redirect to root (tenant list)
+      redirectTo = '/'
+    } else {
+      // Fallback: check old logic (tenants.owner_id)
+      const { data: isSuperAdmin } = await supabase.rpc('is_superadmin')
 
-      if (tenant) {
-        // Redirect to their store dashboard
-        // Note: We assume 'es' locale for now, frontend should handle locale if needed
-        // or we could pass it from the request
-        redirectTo = `/es/${tenant.slug}/dashboard`
+      if (!isSuperAdmin) {
+        // If not superadmin, find their tenant
+        const { data: tenant } = await supabase
+          .from('tenants')
+          .select('slug')
+          .eq('owner_id', data.user.id)
+          .single()
+
+        if (tenant) {
+          redirectTo = `/es/${tenant.slug}/dashboard`
+        }
       }
     }
 

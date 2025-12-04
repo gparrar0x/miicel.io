@@ -1,13 +1,9 @@
 import { Page, expect } from '@playwright/test'
-import { createClient } from '@supabase/supabase-js'
 
 /**
  * Auth fixture helpers for E2E tests
  * Provides login utilities for owner and non-owner users
  */
-
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
 const TEST_USERS = {
   owner: {
@@ -22,97 +18,85 @@ const TEST_USERS = {
 
 /**
  * Login as owner user
- * Injects auth session into browser localStorage
+ * Uses real login flow via /api/auth/login to set cookies properly
  *
  * @param page - Playwright page object
- * @param tenantSlug - Tenant slug for redirect (default: test-store)
- * @returns Session data on success
+ * @param tenantSlug - Tenant slug for redirect (default: demo_galeria)
  */
-export async function loginAsOwner(page: Page, tenantSlug: string = 'test-store') {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+export async function loginAsOwner(page: Page, tenantSlug: string = 'demo_galeria') {
+  // Navigate to login page
+  await page.goto('http://localhost:3000/es/login')
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: TEST_USERS.owner.email,
-    password: TEST_USERS.owner.password,
-  })
+  // Fill login form
+  await page.getByTestId('login-email-input').fill(TEST_USERS.owner.email)
+  await page.getByTestId('login-password-input').fill(TEST_USERS.owner.password)
 
-  if (error) {
-    throw new Error(`Failed to login as owner: ${error.message}`)
-  }
+  // Submit form and wait for successful redirect (login redirects to dashboard)
+  await page.getByTestId('login-submit-button').click()
 
-  // Navigate to tenant page
-  await page.goto(`http://localhost:3000/${tenantSlug}`)
+  // Wait for redirect away from /login (successful login redirects to tenant dashboard or root)
+  await page.waitForURL(url => !url.pathname.includes('/login'), { timeout: 10000 })
 
-  // Inject session into localStorage via cookies (Supabase SSR pattern)
-  // The session is already set via Supabase client, reload to pick it up
-  await page.reload()
-
-  // Wait for auth state to be ready
+  // Wait for page to stabilize
   await page.waitForLoadState('networkidle')
-
-  return data.session
 }
 
 /**
  * Login as non-owner user
- * Non-owner should be redirected from admin routes
+ * Uses real login flow via /api/auth/login to set cookies properly
  *
  * @param page - Playwright page object
- * @param tenantSlug - Tenant slug for redirect (default: test-store)
- * @returns Session data on success
+ * @param tenantSlug - Tenant slug for redirect (default: demo_galeria)
  */
-export async function loginAsNonOwner(page: Page, tenantSlug: string = 'test-store') {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+export async function loginAsNonOwner(page: Page, tenantSlug: string = 'demo_galeria') {
+  // Navigate to login page
+  await page.goto('http://localhost:3000/es/login')
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: TEST_USERS.nonOwner.email,
-    password: TEST_USERS.nonOwner.password,
-  })
+  // Fill login form
+  await page.getByTestId('login-email-input').fill(TEST_USERS.nonOwner.email)
+  await page.getByTestId('login-password-input').fill(TEST_USERS.nonOwner.password)
 
-  if (error) {
-    throw new Error(`Failed to login as non-owner: ${error.message}`)
-  }
+  // Submit form and wait for successful redirect
+  await page.getByTestId('login-submit-button').click()
 
-  // Navigate to tenant page
-  await page.goto(`http://localhost:3000/${tenantSlug}`)
+  // Wait for redirect away from /login
+  await page.waitForURL(url => !url.pathname.includes('/login'), { timeout: 10000 })
 
-  // Reload to pick up session
-  await page.reload()
-
-  // Wait for auth state to be ready
+  // Wait for page to stabilize
   await page.waitForLoadState('networkidle')
-
-  return data.session
 }
 
 /**
  * Logout current user
- * Clears auth session and redirects to login
+ * Uses /api/auth/logout to clear server-side session
  *
  * @param page - Playwright page object
  */
 export async function logout(page: Page) {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-  await supabase.auth.signOut()
+  // Call logout API endpoint
+  await page.request.post('http://localhost:3000/api/auth/logout')
 
-  // Clear localStorage
+  // Clear client-side storage
   await page.evaluate(() => {
     localStorage.clear()
     sessionStorage.clear()
   })
 
-  // Wait for redirect to complete
+  // Wait for any redirects to complete
   await page.waitForLoadState('networkidle')
 }
 
 /**
  * Get current authenticated user
+ * NOTE: This requires app-side implementation to expose user data
  *
  * @param page - Playwright page object
  * @returns User object or null if not authenticated
  */
 export async function getCurrentUser(page: Page) {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-  const { data: { user } } = await supabase.auth.getUser()
-  return user
+  // Check if user is authenticated by looking for auth cookies
+  const cookies = await page.context().cookies()
+  const hasAuthCookie = cookies.some(c => c.name.includes('sb-') && c.name.includes('auth-token'))
+
+  return hasAuthCookie ? { authenticated: true } : null
 }

@@ -7,6 +7,83 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **User System Architecture (MII-4)**: Implemented separate tables for customers and staff/admin users
+  - **Database schema**:
+    - Enhanced `customers` table with `loyalty_points`, `total_orders`, `total_spent`, `last_order_at` (auto-updated via trigger)
+    - Created `users` table for staff/tenant_admin/platform_admin with RLS policies
+    - Trigger `update_customer_stats()` auto-updates customer analytics on order status changes
+  - **Auth integration**:
+    - Login redirect logic updated to support `users` table roles (tenant_admin → dashboard, platform_admin → tenant list)
+    - Backward compatible with existing `tenants.owner_id` auth flow
+    - Created auth user + linked to `users` table via `auth_user_id` column
+  - **Seeded users**:
+    - Platform admin: `admin@skywalking.dev`
+    - ArtMonkeys tenant admin: `info@artmonkeys.store` (tenant_id=3)
+  - **Migrations**: 031-034 (enhance_customers, create_users, customer_update_functions, seed_platform_admin)
+  - **Impact**: Foundation for multi-role auth, customer loyalty programs, and tenant-scoped admin access
+  - Files: `db/supabase/migrations/031-034`, `app/api/auth/login/route.ts`
+
+### Fixed
+
+- **E2E Tests Gallery Template Support (SKY-13)**: Fixed checkout tests for gallery template with proper product flow
+  - **Pixel fixes**: Added missing testids to gallery components
+    - `product-card` in GalleryGrid (product listing)
+    - `product-add-to-cart` in ArtworkDetail (add button)
+    - `product-size-{id}` in ArtworkDetail (size selection)
+    - `cart-checkout-button` in GalleryGrid (floating cart)
+    - `cart-item-count` in GalleryGrid (cart counter)
+  - **Sentinela fixes**: Updated test logic to add products before checkout
+    - `checkout-flow.spec.ts`: Tests now click product → select size → add to cart → checkout
+    - `checkout-mercadopago.spec.ts`: Fully rewritten with proper product add flow
+  - **Bug fix**: Trimmed `demo_galeria` slug (had trailing space causing redirect loops)
+  - **Test results**: 5/22 passing (gallery checkout working, admin/signup tests still failing)
+  - Files: `components/gallery-v2/*.tsx`, `tests/e2e/specs/checkout-*.spec.ts`
+
+### Changed
+
+- **E2E Tests Now Use Demo Tenants (Test Infrastructure)**: Updated all E2E tests to use production demo tenants instead of creating test data
+  - **Test tenants**: Now use `demo_galeria` (ID 1) and `demo_restaurant` (ID 2)
+  - **Fixtures updated**: `seed-test-data.ts` uses existing demos, updates owner to test user
+  - **Auth fixtures**: Default tenant changed from `test-store` → `demo_galeria`
+  - **Specs updated**: 5 test files updated with new tenant slugs and locale paths
+    - `checkout-flow.spec.ts`: Uses `/es/demo_galeria`
+    - `admin-products-crud.spec.ts`: Uses `demo_galeria`
+    - `admin-orders-management.spec.ts`: Uses `demo_galeria`
+    - `product-image-upload.spec.ts`: Uses `demo_galeria`
+    - `cross-tenant-isolation.spec.ts`: Uses `demo_galeria` (tenant A) + `demo_restaurant` (tenant B)
+  - **No test data creation**: Tests reuse existing demo products/config
+  - **Owner assignment**: Test user (`owner@test.com`) temporarily assigned as demo tenant owner during tests
+  - **Impact**: Faster test execution, no DB cleanup needed, tests run against real demo environment
+  - Files: `tests/e2e/fixtures/*.ts`, `tests/e2e/specs/**/*.spec.ts`
+
+- **Tenants Renumbered to Sequential IDs 1-5 (DB Maintenance)**: Renumbered all tenants to consecutive IDs without breaking references
+  - **ID mapping**:
+    - ID 1: demo_galeria (unchanged, 3 products)
+    - ID 36 → ID 2: demo_restaurant (13 products)
+    - ID 38 → ID 3: artmonkeys (3 products, 19 orders, 22 customers)
+    - ID 39 → ID 4: superhotdog (25 products)
+    - ID 40 → ID 5: mangobajito (13 products, 4 orders, 2 customers)
+  - **Foreign keys preserved**: All products, orders, customers, payments updated to new tenant_ids
+  - **Sequence reset**: tenants_id_new_seq → 6 (next tenant will be ID 6)
+  - **Zero data loss**: All references maintained, no broken foreign keys
+  - **Impact**: Clean sequential tenant IDs for better database organization
+  - Migration: `030_renumber_tenants_1_to_5.sql`
+
+- **Demo Tenants Reset & Clone (DB Maintenance)**: Cleaned and populated demo tenants with production data
+  - **Deleted test tenants**: Removed IDs 43-45 (empty, no references)
+  - **demo_galeria (ID 1)**: Cloned from artmonkeys (ID 38)
+    - Config: template=gallery, all branding/colors/settings copied
+    - Products: 3 products cloned (gallery template showcase)
+  - **demo_restaurant (ID 36)**: Cloned from mangobajito (ID 40)
+    - Config: template=restaurant, all branding/colors/settings copied
+    - Products: 13 products cloned (Venezuelan food menu)
+  - **Sequence reset**: tenants_id_new_seq → 50 (next tenant will be ID 50)
+  - **Source tenants preserved**: artmonkeys (38) and mangobajito (40) unchanged
+  - **Impact**: Clean demo environments with real production data for testing/demos
+  - Migration: `029_reset_tenants_and_clone_demos.sql`
+
 ## [0.3.0] - 2025-11-26
 
 ### Fixed

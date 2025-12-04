@@ -41,12 +41,15 @@ export function CartSheet({
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
+    phone: '',
     notes: '',
   })
   const [errors, setErrors] = useState({
     fullName: '',
     email: '',
+    phone: '',
   })
+  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'mercadopago'>('mercadopago')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const params = useParams()
   const tenantId = params?.tenantId as string
@@ -64,6 +67,7 @@ export function CartSheet({
     const newErrors = {
       fullName: '',
       email: '',
+      phone: '',
     }
 
     if (!formData.fullName.trim()) {
@@ -76,8 +80,12 @@ export function CartSheet({
       newErrors.email = 'Email inválido'
     }
 
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'El teléfono es requerido'
+    }
+
     setErrors(newErrors)
-    return !newErrors.fullName && !newErrors.email
+    return !newErrors.fullName && !newErrors.email && !newErrors.phone
   }
 
   const handleConfirmOrder = () => {
@@ -100,11 +108,11 @@ export function CartSheet({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           tenantId: tenantId,
-          paymentMethod: 'mercadopago',
+          paymentMethod: paymentMethod,
           returnUrl: typeof window !== 'undefined' ? window.location.origin : undefined,
           customer: {
             name: formData.fullName,
-            phone: '0000000000', // Restaurant template doesn't collect phone
+            phone: formData.phone,
             email: formData.email,
             notes: formData.notes,
           },
@@ -130,10 +138,16 @@ export function CartSheet({
         throw new Error(errorMsg)
       }
 
-      const { initPoint } = await checkoutResponse.json()
+      const data = await checkoutResponse.json()
 
-      // Redirect to MercadoPago directly
-      window.location.href = initPoint
+      // For cash payment, redirect to success page
+      if (paymentMethod === 'cash') {
+        const locale = params?.locale || 'es'
+        window.location.href = `/${locale}/${tenantId}/checkout/success?orderId=${data.orderId}`
+      } else {
+        // For MercadoPago, redirect to payment gateway
+        window.location.href = data.checkoutUrl || data.initPoint
+      }
     } catch (error) {
       console.error('Checkout error:', error)
 
@@ -161,7 +175,11 @@ export function CartSheet({
 
   return (
     <Sheet open={open} onOpenChange={handleSheetChange}>
-      <SheetContent side="right" className="w-full sm:max-w-lg bg-white">
+      <SheetContent
+        side="right"
+        className="w-full sm:max-w-lg bg-white"
+        data-testid={checkoutStep === 'checkout' ? 'checkout-modal-overlay' : undefined}
+      >
         {/* Loading Overlay */}
         {isSubmitting && (
           <div className="absolute inset-0 bg-white/90 flex items-center justify-center z-50 rounded-lg">
@@ -278,6 +296,7 @@ export function CartSheet({
                     <span className="font-bold" style={{ color: 'var(--color-primary)' }}>{formatPrice(totalPrice)}</span>
                   </div>
                   <Button
+                    data-testid="cart-checkout-button"
                     className="w-full text-white font-bold py-6 rounded-xl"
                     size="lg"
                     style={{
@@ -306,6 +325,7 @@ export function CartSheet({
                 </Label>
                 <Input
                   id="fullName"
+                  data-testid="checkout-input-name"
                   placeholder="Ej: Juan Pérez"
                   value={formData.fullName}
                   onChange={(e) => {
@@ -324,6 +344,7 @@ export function CartSheet({
                 </Label>
                 <Input
                   id="email"
+                  data-testid="checkout-input-email"
                   type="email"
                   placeholder="Ej: juan@ejemplo.com"
                   value={formData.email}
@@ -338,11 +359,66 @@ export function CartSheet({
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="phone" className="text-base font-semibold text-gray-900 dark:text-white">
+                  Teléfono <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="phone"
+                  data-testid="checkout-input-phone"
+                  type="tel"
+                  placeholder="Ej: 1234567890"
+                  value={formData.phone}
+                  onChange={(e) => {
+                    setFormData({ ...formData, phone: e.target.value })
+                    if (errors.phone) setErrors({ ...errors, phone: '' })
+                  }}
+                  className={errors.phone ? 'border-red-500' : ''}
+                  disabled={isSubmitting}
+                />
+                {errors.phone && <p className="text-sm text-red-500">{errors.phone}</p>}
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-base font-semibold text-gray-900 dark:text-white">
+                  Método de Pago <span className="text-red-500">*</span>
+                </Label>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <input
+                      type="radio"
+                      data-testid="checkout-payment-cash"
+                      name="payment"
+                      value="cash"
+                      checked={paymentMethod === 'cash'}
+                      onChange={() => setPaymentMethod('cash')}
+                      disabled={isSubmitting}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-gray-900 dark:text-white">Pago en Efectivo</span>
+                  </label>
+                  <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <input
+                      type="radio"
+                      data-testid="checkout-payment-mercadopago"
+                      name="payment"
+                      value="mercadopago"
+                      checked={paymentMethod === 'mercadopago'}
+                      onChange={() => setPaymentMethod('mercadopago')}
+                      disabled={isSubmitting}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-gray-900 dark:text-white">MercadoPago (Online)</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="notes" className="text-base font-semibold text-gray-900 dark:text-white">
                   Observaciones <span className="text-gray-400 dark:text-gray-600 text-sm">(opcional)</span>
                 </Label>
                 <Textarea
                   id="notes"
+                  data-testid="checkout-input-notes"
                   placeholder="Ej: Sin cebolla, extra salsa..."
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
@@ -377,6 +453,7 @@ export function CartSheet({
 
             <div className="absolute bottom-0 left-0 right-0 p-6 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
               <Button
+                data-testid="checkout-submit-button"
                 className="w-full text-white font-bold py-6 rounded-xl"
                 size="lg"
                 style={{

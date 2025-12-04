@@ -33,6 +33,7 @@ type CheckoutFormData = z.infer<typeof checkoutSchema>
 export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'mercadopago'>('mercadopago')
   const { items, getTotalPrice, clearCart } = useCartStore()
   const params = useParams()
   const tenantId = params?.tenantId as string
@@ -61,7 +62,7 @@ export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () =>
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           tenantId: tenantId,
-          paymentMethod: 'mercadopago',
+          paymentMethod: paymentMethod,
           returnUrl: typeof window !== 'undefined' ? window.location.origin : undefined, // Send actual browser URL
           customer: {
             name: data.name,
@@ -92,13 +93,21 @@ export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () =>
         throw new Error(errorMsg)
       }
 
-      const { initPoint } = await checkoutResponse.json()
+      const response = await checkoutResponse.json()
 
       // Clear cart before redirect
       clearCart()
 
-      // Redirect to MercadoPago
-      window.location.href = initPoint
+      // Handle response based on payment method
+      if (paymentMethod === 'mercadopago') {
+        // Redirect to MercadoPago
+        const { initPoint } = response
+        window.location.href = initPoint
+      } else if (paymentMethod === 'cash') {
+        // Redirect to success page for cash payment
+        const { orderId } = response
+        window.location.href = `/${tenantId}/checkout/success?orderId=${orderId}`
+      }
     } catch (error) {
       console.error('Checkout error:', error)
 
@@ -126,10 +135,10 @@ export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () =>
       <div
         className="fixed inset-0 bg-black/50 z-50"
         onClick={onClose}
-        data-testid="checkout-modal-overlay"
+        data-testid="checkout-modal-backdrop"
       />
       <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none p-4">
-        <div className="bg-white rounded-lg p-6 w-full max-w-md pointer-events-auto max-h-[90vh] overflow-y-auto relative" data-testid="checkout-modal">
+        <div className="bg-white rounded-lg p-6 w-full max-w-md pointer-events-auto max-h-[90vh] overflow-y-auto relative" data-testid="checkout-modal-container">
           {/* Loading Overlay */}
           {isSubmitting && (
             <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-50 rounded-lg">
@@ -223,7 +232,7 @@ export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () =>
                 }}
                 placeholder="John Doe"
                 disabled={isSubmitting}
-                data-testid="customer-name-input"
+                data-testid="checkout-name-input"
               />
               {errors.name && (
                 <p
@@ -257,7 +266,7 @@ export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () =>
                 placeholder="1234567890"
                 maxLength={10}
                 disabled={isSubmitting}
-                data-testid="customer-phone-input"
+                data-testid="checkout-phone-input"
               />
               {errors.phone && (
                 <p
@@ -290,7 +299,7 @@ export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () =>
                 }}
                 placeholder="john@example.com"
                 disabled={isSubmitting}
-                data-testid="customer-email-input"
+                data-testid="checkout-email-input"
               />
               {errors.email && (
                 <p
@@ -327,15 +336,53 @@ export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () =>
               />
             </div>
 
-            {/* Payment Info - MercadoPago Only (SKY-4) */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-1">
-                <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                <div className="font-medium text-blue-900">Secure Payment via MercadoPago</div>
+            {/* Payment Method Selection */}
+            <div className="space-y-3">
+              <label className="block text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>
+                Payment Method
+              </label>
+
+              {/* Cash Payment Option */}
+              <div className="flex items-start gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                style={{ borderColor: paymentMethod === 'cash' ? 'var(--color-primary)' : 'var(--color-border)' }}
+                onClick={() => setPaymentMethod('cash')}>
+                <input
+                  type="radio"
+                  id="payment-cash"
+                  name="paymentMethod"
+                  value="cash"
+                  checked={paymentMethod === 'cash'}
+                  onChange={(e) => setPaymentMethod(e.target.value as 'cash')}
+                  disabled={isSubmitting}
+                  data-testid="checkout-payment-cash"
+                  className="mt-1"
+                />
+                <label htmlFor="payment-cash" className="flex-1 cursor-pointer">
+                  <div className="font-medium" style={{ color: 'var(--color-text-primary)' }}>Cash on Delivery</div>
+                  <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Pay when you receive your order</p>
+                </label>
               </div>
-              <p className="text-sm text-blue-800">Pay with credit/debit card or other methods available in MercadoPago</p>
+
+              {/* MercadoPago Payment Option */}
+              <div className="flex items-start gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                style={{ borderColor: paymentMethod === 'mercadopago' ? 'var(--color-primary)' : 'var(--color-border)' }}
+                onClick={() => setPaymentMethod('mercadopago')}>
+                <input
+                  type="radio"
+                  id="payment-mercadopago"
+                  name="paymentMethod"
+                  value="mercadopago"
+                  checked={paymentMethod === 'mercadopago'}
+                  onChange={(e) => setPaymentMethod(e.target.value as 'mercadopago')}
+                  disabled={isSubmitting}
+                  data-testid="checkout-payment-mercadopago"
+                  className="mt-1"
+                />
+                <label htmlFor="payment-mercadopago" className="flex-1 cursor-pointer">
+                  <div className="font-medium" style={{ color: 'var(--color-text-primary)' }}>MercadoPago</div>
+                  <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Credit/debit card or local payment methods</p>
+                </label>
+              </div>
             </div>
 
             {/* Submit Button */}

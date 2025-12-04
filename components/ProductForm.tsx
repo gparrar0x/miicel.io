@@ -111,7 +111,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                                     {...register("name")}
                                     className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
                                     placeholder={t('namePlaceholder')}
-                                    data-testid="product-name-input"
+                                    data-testid="product-form-name"
                                 />
                                 {errors.name && (
                                     <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
@@ -126,7 +126,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                                     {...register("category")}
                                     className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
                                     placeholder={t('categoryPlaceholder')}
-                                    data-testid="product-category-input"
+                                    data-testid="product-form-category"
                                 />
                                 {errors.category && (
                                     <p className="mt-1 text-sm text-red-600">
@@ -147,7 +147,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                                     rows={4}
                                     className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
                                     placeholder={t('descPlaceholder')}
-                                    data-testid="product-description-input"
+                                    data-testid="product-form-description"
                                 />
                             </div>
 
@@ -165,7 +165,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                                             {...register("price")}
                                             className="block w-full rounded-md border border-gray-300 pl-7 pr-3 py-2 focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
                                             placeholder="0.00"
-                                            data-testid="product-price-input"
+                                            data-testid="product-form-price"
                                         />
                                     </div>
                                     {errors.price && (
@@ -177,13 +177,14 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">
-                                        {t('displayOrder')}
+                                        {t('stock')}
                                     </label>
                                     <input
                                         type="number"
-                                        {...register("display_order")}
-                                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm"
-                                        data-testid="product-display-order-input"
+                                        {...register("stock_quantity")}
+                                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
+                                        placeholder="0"
+                                        data-testid="product-form-stock"
                                     />
                                 </div>
                             </div>
@@ -216,7 +217,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                             type="submit"
                             disabled={isLoading}
                             className="inline-flex items-center justify-center rounded-md border border-transparent bg-black px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                            data-testid="product-form-submit-btn"
+                            data-testid="product-form-submit"
                         >
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             {initialData ? t('save') : t('create')}

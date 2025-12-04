@@ -75,7 +75,7 @@ export function GalleryGrid({ artworks, collections, tenantId }: GalleryGridProp
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.3 }}
             >
-              <Link href={`/${tenantId}/p/${artwork.id}`} className="group block space-y-4">
+              <Link href={`/${tenantId}/p/${artwork.id}`} className="group block space-y-4" data-testid="product-card">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-gray-100">
                   <Image
                     src={artwork.image || "/placeholder.svg"}
@@ -125,9 +125,10 @@ export function GalleryGrid({ artworks, collections, tenantId }: GalleryGridProp
                 size="lg"
                 className="w-full h-14 text-lg rounded-full text-white shadow-lg font-medium flex items-center justify-center gap-2"
                 style={{ backgroundColor: 'var(--color-accent-primary)' }}
+                data-testid="cart-checkout-button"
               >
                 <ShoppingBag className="h-5 w-5" />
-                Ir a Pagar ({totalItems})
+                <span data-testid="cart-item-count">Ir a Pagar ({totalItems})</span>
               </Button>
             </Link>
           </div>

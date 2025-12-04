@@ -9,8 +9,15 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 
 export const TEST_TENANT = {
-  slug: 'test-store',
-  name: 'Test Store',
+  slug: 'demo_galeria',
+  name: 'Demo Galería',
+  id: 1, // Use existing demo tenant
+}
+
+export const TEST_TENANT_2 = {
+  slug: 'demo_restaurant',
+  name: 'Demo Restaurant',
+  id: 2, // Use existing demo tenant
 }
 
 export const TEST_USERS = {
@@ -97,47 +104,44 @@ export async function seedTestData() {
       throw new Error(`Owner user has no email assigned`)
     }
 
-    // Get or create tenant (idempotent)
-    console.log(`  Getting or creating tenant: ${TEST_TENANT.slug}`)
+    // Use existing demo tenant (ID 1)
+    console.log(`  Using existing demo tenant: ${TEST_TENANT.slug} (ID ${TEST_TENANT.id})`)
     const { data: existingTenant, error: tenantFetchError } = await supabase
       .from('tenants')
       .select('*')
-      .eq('slug', TEST_TENANT.slug)
+      .eq('id', TEST_TENANT.id)
       .single()
 
-    if (existingTenant) {
-      tenant = existingTenant
-      console.log(`  ✓ Using existing tenant: ${tenant.id}`)
-    } else if (tenantFetchError?.code === 'PGRST116') {
-      // PGRST116 = no rows found, safe to create
-      const { data: newTenant, error: tenantError } = await supabase
-        .from('tenants')
-        .insert({
-          slug: TEST_TENANT.slug,
-          name: TEST_TENANT.name,
-          owner_id: owner.id,
-          owner_email: owner.email,
-          active: true,
-          config: {
-            colors: {
-              primary: '#3B82F6',
-              secondary: '#10B981',
-            },
-            business_name: TEST_TENANT.name,
-          },
-        })
-        .select()
-        .single()
-
-      if (tenantError) {
-        throw new Error(`Failed to create tenant: ${tenantError.message}`)
-      }
-
-      tenant = newTenant
-      console.log(`  ✓ Tenant created: ${tenant.id}`)
-    } else {
-      throw new Error(`Failed to fetch tenant: ${tenantFetchError?.message}`)
+    if (!existingTenant) {
+      throw new Error(`Demo tenant ${TEST_TENANT.slug} (ID ${TEST_TENANT.id}) not found in database`)
     }
+
+    // Update BOTH demo tenants owner to test user (for admin access)
+    console.log(`  Updating owners for demo tenants...`)
+    const { error: updateError1 } = await supabase
+      .from('tenants')
+      .update({
+        owner_email: owner.email,
+        owner_id: owner.id,
+      })
+      .eq('id', TEST_TENANT.id)
+
+    const { error: updateError2 } = await supabase
+      .from('tenants')
+      .update({
+        owner_email: owner.email,
+        owner_id: owner.id,
+      })
+      .eq('id', TEST_TENANT_2.id)
+
+    if (updateError1 || updateError2) {
+      console.log(`  ⚠ Could not update tenant owners: ${updateError1?.message || updateError2?.message}`)
+    } else {
+      console.log(`  ✓ Updated owners for tenants ${TEST_TENANT.id} and ${TEST_TENANT_2.id}`)
+    }
+
+    tenant = existingTenant
+    console.log(`  ✓ Using demo tenant: ${tenant.id}`)
 
     // 2. Get or create non-owner user (idempotent)
     console.log(`  Getting or creating non-owner user: ${TEST_USERS.nonOwner.email}`)

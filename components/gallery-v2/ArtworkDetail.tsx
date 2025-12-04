@@ -102,6 +102,7 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
                   key={size.id}
                   onClick={() => !isDisabled && setSelectedSizeId(size.id)}
                   disabled={isDisabled}
+                  data-testid={`product-size-${size.id}`}
                   className={cn(
                     "relative flex items-center justify-between p-6 rounded-xl border transition-all duration-200 text-left min-h-[100px] bg-white group",
                     isDisabled && "opacity-50 cursor-not-allowed bg-gray-50",
@@ -208,6 +209,7 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
               }}
               disabled={!selectedSizeId || selectedSize?.stock === 0}
               onClick={handleAddToCart}
+              data-testid="product-add-to-cart"
             >
               <AnimatePresence mode="wait">
                 {isAdded ? (
