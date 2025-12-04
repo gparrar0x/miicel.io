@@ -1,7 +1,7 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
-  darkMode: 'media', // Use @media (prefers-color-scheme: dark) instead of class
+  darkMode: 'media',
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -10,25 +10,28 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Clean Modern Palette (Kreosis-inspired)
-        'clean-black': '#000000',
-        'clean-gray': '#6B7280',
-        'clean-light': '#F9FAFB',
-        'clean-white': '#FFFFFF',
-        'clean-border': '#E5E7EB',
-        'clean-accent': '#111827',
-        // Keep legacy for compatibility
-        noir: '#0F0F0F',
-        charcoal: '#1A1A1A',
-        slate: '#2D2D2D',
-        stone: '#F5F5F5',
-        alabaster: '#FAFAFA',
-        gold: '#B8860B',
-        'gold-light': '#D4AF37',
-        'gold-dark': '#8B6508',
-        emerald: '#2D5F4F',
-        coral: '#D97760',
-        'slate-blue': '#4A5F7F',
+        // Miicel Design System
+        'mii': {
+          // Core
+          'white': '#FFFFFF',
+          'black': '#1A1A1A',
+          // Primary action
+          'blue': '#2563EB',
+          'blue-hover': '#1D4ED8',
+          // Grays
+          'gray-50': '#F9FAFB',
+          'gray-100': '#F3F4F6',
+          'gray-200': '#E5E7EB',
+          'gray-400': '#9CA3AF',
+          'gray-500': '#6B7280',
+          'gray-700': '#374151',
+          'gray-900': '#111827',
+          // Status
+          'success': '#10B981',
+          'error': '#EF4444',
+          'warning': '#F59E0B',
+        },
+        // Legacy (keep for storefront compatibility)
         gallery: {
           black: '#1A1A1A',
           white: '#FFFFFF',
@@ -37,27 +40,37 @@ const config: Config = {
         }
       },
       boxShadow: {
-        // Clean, modern shadows (Kreosis style)
-        'clean': '0 1px 3px rgba(0, 0, 0, 0.05)',
-        'clean-md': '0 4px 12px rgba(0, 0, 0, 0.08)',
-        'clean-lg': '0 10px 25px rgba(0, 0, 0, 0.1)',
-        'clean-hover': '0 8px 20px rgba(0, 0, 0, 0.12)',
-        // Keep elegant for reference
-        'elegant': '0 2px 8px rgba(15, 15, 15, 0.12), 0 1px 2px rgba(15, 15, 15, 0.08)',
-        'elegant-lg': '0 4px 16px rgba(15, 15, 15, 0.16), 0 2px 4px rgba(15, 15, 15, 0.08)',
-        'elegant-hover': '0 8px 24px rgba(15, 15, 15, 0.20), 0 4px 8px rgba(15, 15, 15, 0.12)',
-        'gold-glow': '0 0 0 3px rgba(184, 134, 11, 0.15)',
-        brutal: '4px 4px 0px rgba(0,0,0,1)',
-        'brutal-hover': '8px 8px 0px rgba(0,0,0,1)',
+        // Miicel shadows
+        'mii': '0 1px 3px rgba(0, 0, 0, 0.1)',
+        'mii-md': '0 4px 6px rgba(0, 0, 0, 0.1)',
+        'mii-lg': '0 10px 15px rgba(0, 0, 0, 0.1)',
       },
       borderRadius: {
-        'clean': '12px',
-        'clean-lg': '16px',
-        'clean-xl': '20px',
+        'mii': '8px',
+        'mii-sm': '4px',
       },
       fontFamily: {
-        display: ['Cinzel', 'serif'],
-        body: ['Inter', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      fontSize: {
+        // Miicel typography
+        'mii-h1': ['32px', { lineHeight: '1.2', fontWeight: '700' }],
+        'mii-h2': ['24px', { lineHeight: '1.3', fontWeight: '600' }],
+        'mii-h3': ['16px', { lineHeight: '1.4', fontWeight: '500' }],
+        'mii-label': ['14px', { lineHeight: '1.4', fontWeight: '600' }],
+        'mii-body': ['14px', { lineHeight: '1.5', fontWeight: '400' }],
+        'mii-small': ['12px', { lineHeight: '1.4', fontWeight: '400' }],
+      },
+      spacing: {
+        'mii-page': '24px',
+        'mii-card': '20px',
+        'mii-gap': '16px',
+      },
+      maxWidth: {
+        'mii-content': '1400px',
+      },
+      width: {
+        'mii-sidebar': '200px',
       }
     },
   },

@@ -44,7 +44,6 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
         setUserEmail(user.email || '')
-        // Extract name from email (before @) as fallback
         const emailName = user.email?.split('@')[0] || t('user')
         setUserName(user.user_metadata?.name || emailName)
       }
@@ -90,27 +89,29 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
 
   return (
     <>
-      {/* Mobile Header with Hamburger */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-clean-border">
+      {/* Mobile Header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-mii-white border-b border-mii-gray-200">
         <div className="flex items-center justify-between px-4 py-4">
           <div className="flex items-center gap-3">
             {tenantLogo ? (
-              <img src={tenantLogo} alt={tenantName || t('adminPanel')} className="h-8 w-8 rounded-lg object-cover" />
+              <img src={tenantLogo} alt={tenantName || t('adminPanel')} className="h-8 w-8 rounded-mii object-cover" />
             ) : (
-              <Store className="h-6 w-6 text-clean-black" />
+              <div className="h-8 w-8 rounded-mii bg-mii-black flex items-center justify-center">
+                <Store className="h-4 w-4 text-white" />
+              </div>
             )}
-            <span className="font-semibold text-clean-black">{tenantName || t('adminPanel')}</span>
+            <span className="text-mii-h3 text-mii-black">{tenantName || t('adminPanel')}</span>
           </div>
           <button
             data-testid="btn-toggle-sidebar"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="p-2 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+            className="p-2 rounded-mii-sm hover:bg-mii-gray-50 transition-colors duration-200"
             aria-label="Toggle menu"
           >
             {isMobileMenuOpen ? (
-              <X className="h-6 w-6 text-clean-gray" />
+              <X className="h-6 w-6 text-mii-gray-500" />
             ) : (
-              <Menu className="h-6 w-6 text-clean-gray" />
+              <Menu className="h-6 w-6 text-mii-gray-500" />
             )}
           </button>
         </div>
@@ -119,39 +120,40 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
           onClick={closeMobileMenu}
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar - Black Background */}
       <aside
         data-testid="admin-sidebar"
         className={cn(
-          "fixed top-0 left-0 z-40 h-screen w-64 bg-white border-r border-clean-border transition-transform duration-300",
+          "fixed top-0 left-0 z-40 h-screen w-mii-sidebar bg-mii-black transition-transform duration-300 flex flex-col",
           "lg:translate-x-0",
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
         {/* Sidebar Header */}
-        <div className="h-16 flex items-center gap-3 px-5 border-b border-clean-border mt-14 lg:mt-0">
+        <div className="h-16 flex items-center gap-3 px-4 border-b border-white/10 mt-14 lg:mt-0">
           {tenantLogo ? (
-            <img src={tenantLogo} alt={tenantName || t('adminPanel')} className="h-10 w-10 rounded-lg object-cover" />
+            <img src={tenantLogo} alt={tenantName || t('adminPanel')} className="h-10 w-10 rounded-mii object-cover" />
           ) : (
-            <div className="h-10 w-10 rounded-lg bg-clean-black flex items-center justify-center">
+            <div className="h-10 w-10 rounded-mii bg-mii-blue flex items-center justify-center">
               <Store className="h-5 w-5 text-white" />
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-clean-black truncate">
+            <p className="text-sm font-medium text-white truncate">
               {tenantName || t('adminPanel')}
             </p>
-            <p className="text-xs text-clean-gray truncate">/{tenant}</p>
+            <p className="text-xs text-white/50 truncate">/{tenant}</p>
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-1">
+        <nav className="flex-1 px-3 py-4 space-y-1">
+          <p className="px-3 mb-2 text-xs font-medium text-white/40 uppercase tracking-wider">Menu</p>
           {navItems.map((item) => {
             const isActive = pathname === item.href ||
               (item.href !== `/${tenant}/dashboard` && pathname.startsWith(item.href))
@@ -164,45 +166,45 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
                 data-testid={item.testId}
                 onClick={closeMobileMenu}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-mii-sm transition-all duration-200",
                   "text-sm font-medium",
                   isActive
-                    ? "bg-gray-100 text-clean-black"
-                    : "text-clean-gray hover:bg-gray-50 hover:text-clean-black"
+                    ? "bg-mii-blue text-white"
+                    : "text-white/70 hover:bg-white/10 hover:text-white"
                 )}
               >
-                <Icon className={cn("h-5 w-5", isActive ? "text-clean-black" : "text-clean-gray")} />
+                <Icon className="h-5 w-5" />
                 <span>{item.name}</span>
               </Link>
             )
           })}
 
           {/* View Store Link */}
-          <div className="pt-4 mt-4 border-t border-clean-border">
+          <div className="pt-4 mt-4 border-t border-white/10">
             <Link
               href={`/${tenant}`}
               data-testid="nav-view-store"
               onClick={closeMobileMenu}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium text-clean-gray hover:bg-gray-50 hover:text-clean-black"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-mii-sm transition-all duration-200 text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white"
             >
-              <Store className="h-5 w-5 text-clean-gray" />
+              <Store className="h-5 w-5" />
               <span>{t('viewStore')}</span>
             </Link>
           </div>
         </nav>
 
         {/* User Info & Logout */}
-        <div className="border-t border-clean-border p-4">
+        <div className="border-t border-white/10 p-3">
           {/* User Info */}
           <div className="flex items-center gap-3 px-3 py-2 mb-2">
-            <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-              <User className="h-4 w-4 text-clean-gray" />
+            <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+              <User className="h-4 w-4 text-white/70" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-clean-black truncate">
+              <p className="text-sm font-medium text-white truncate">
                 {userName}
               </p>
-              <p className="text-xs text-clean-gray truncate">
+              <p className="text-xs text-white/50 truncate">
                 {userEmail}
               </p>
             </div>
@@ -212,7 +214,7 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
           <button
             data-testid="btn-logout"
             onClick={handleSignOut}
-            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-clean-gray hover:bg-red-50 hover:text-red-600 transition-all duration-200"
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-mii-sm text-sm font-medium text-white/70 hover:bg-mii-error/20 hover:text-mii-error transition-all duration-200"
           >
             <LogOut className="h-5 w-5" />
             <span>{t('logout')}</span>
