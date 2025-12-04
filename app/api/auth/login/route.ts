@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 
@@ -46,7 +47,9 @@ export async function POST(request: Request) {
     let redirectTo = '/' // Default to root (tenant list) for superadmins
 
     // Check user role in users table (MII_4: tenant_admin, staff, platform_admin)
-    const { data: userRecord } = await supabase
+    // Use service role to bypass RLS during login flow
+    const supabaseAdmin = createServiceRoleClient()
+    const { data: userRecord } = await supabaseAdmin
       .from('users')
       .select('role, tenant_id, tenants(slug)')
       .eq('auth_user_id', data.user.id)
