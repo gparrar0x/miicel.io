@@ -13,8 +13,8 @@ interface DashboardStats {
   revenue: number
 }
 
-export default function AdminDashboard({ params }: { params: Promise<{ tenantId: string }> }) {
-  const { tenantId } = use(params)
+export default function AdminDashboard({ params }: { params: Promise<{ tenantId: string; locale: string }> }) {
+  const { tenantId, locale } = use(params)
   const router = useRouter()
   const supabase = createClient()
   const t = useTranslations('Dashboard')
@@ -32,14 +32,14 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenantId:
       try {
         const { data: { session } } = await supabase.auth.getSession()
         if (!session) {
-          router.push('/login')
+          router.push(`/${locale}/login`)
           return
         }
 
         const { data: tenantData } = await supabase
           .from('tenants')
           .select('id, name, config')
-          .eq('slug', tenantId)
+          .eq('id', parseInt(tenantId))
           .single()
 
         if (!tenantData) {
@@ -93,7 +93,7 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenantId:
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gallery-gold mx-auto"></div>
           <p className="mt-4 text-gray-600">{t('loading')}</p>
         </div>
       </div>
@@ -105,60 +105,60 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenantId:
       <AdminSidebar tenant={tenantId} tenantName={tenantName} />
       <div className="lg:pl-64 min-h-screen bg-gray-50">
         <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 mt-16 lg:mt-0">
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg p-8 mb-8 text-white">
-          <h2 className="text-3xl font-bold mb-2">{t('welcomeTitle')}</h2>
-          <p className="text-blue-100">
+        <div className="bg-gallery-black rounded-none shadow-brutal p-8 mb-8 text-white">
+          <h2 className="text-3xl font-bold font-display mb-2">{t('welcomeTitle')}</h2>
+          <p className="text-gray-200">
             {t('welcomeDesc')}
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="bg-white rounded-none shadow-brutal p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">{t('activeProducts')}</p>
                 <p className="text-3xl font-bold text-gray-900 mt-2">{stats.totalProducts}</p>
               </div>
-              <div className="bg-blue-100 rounded-full p-3">
-                <Package className="h-6 w-6 text-blue-600" />
+              <div className="bg-gallery-gold/10 rounded-full p-3">
+                <Package className="h-6 w-6 text-gallery-gold" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="bg-white rounded-none shadow-brutal p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">{t('completedOrders')}</p>
                 <p className="text-3xl font-bold text-gray-900 mt-2">{stats.totalOrders}</p>
               </div>
-              <div className="bg-green-100 rounded-full p-3">
-                <ShoppingCart className="h-6 w-6 text-green-600" />
+              <div className="bg-gallery-gold/10 rounded-full p-3">
+                <ShoppingCart className="h-6 w-6 text-gallery-gold" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="bg-white rounded-none shadow-brutal p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">{t('totalRevenue')}</p>
                 <p className="text-3xl font-bold text-gray-900 mt-2">${stats.revenue.toFixed(2)}</p>
               </div>
-              <div className="bg-purple-100 rounded-full p-3">
-                <DollarSign className="h-6 w-6 text-purple-600" />
+              <div className="bg-gallery-gold/10 rounded-full p-3">
+                <DollarSign className="h-6 w-6 text-gallery-gold" />
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-white rounded-none shadow-brutal p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('quickActions')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <button
               onClick={() => router.push(`/${tenantId}/dashboard/settings/appearance`)}
-              className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors group"
+              className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-none hover:border-gallery-gold hover:bg-gallery-gold/5 transition-colors group"
             >
-              <Settings className="h-8 w-8 text-gray-400 group-hover:text-purple-600 mb-2" />
-              <span className="text-sm font-medium text-gray-700 group-hover:text-purple-600">
+              <Settings className="h-8 w-8 text-gray-400 group-hover:text-gallery-gold mb-2" />
+              <span className="text-sm font-medium text-gray-700 group-hover:text-gallery-gold">
                 {t('settings')}
               </span>
             </button>

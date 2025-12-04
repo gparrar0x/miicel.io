@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Gallery Identity Rebrand (MIIC-5)**: Adopted gallery template visual identity across platform areas (landing, login, dashboard)
+  - **Design tokens**:
+    - Extended Tailwind config with gallery colors (`gallery-gold: #B8860B`, `gallery-black: #1A1A1A`), brutal shadows, Cinzel/Inter fonts
+    - Updated shadcn variables: `--accent` and `--ring` now use gallery gold (#B8860B)
+    - Updated platform defaults: `--color-primary` → black, `--color-accent` → gold
+  - **Platform pages updated**:
+    - **Landing (`app/[locale]/page.tsx`)**: Orange → gold (logo, buttons, hover), brutal shadows on tenant cards, Cinzel headings, noise overlay
+    - **Login (`app/[locale]/login/page.tsx`)**: Gold focus rings, brutal shadows on card, rounded-none, Cinzel heading, noise bg
+    - **Dashboard (`app/[locale]/[tenantId]/dashboard/page.tsx`)**: Blue gradient → black header, gold stat icons, brutal shadows on cards
+    - **AdminSidebar**: Gold active nav states, gold user avatar, gold Store icon, brutal shadow on container
+  - **Typography**: All platform headings now use `font-display` (Cinzel serif)
+  - **Visual effects**: Brutal shadows (4px 4px 0px black), noise overlays on backgrounds
+  - **Scope**: Platform areas only - tenant storefronts maintain custom theming
+  - **Build**: Successful, no breaking changes
+  - Files: `tailwind.config.ts`, `app/globals.css`, `app/[locale]/page.tsx`, `app/[locale]/login/page.tsx`, `app/[locale]/[tenantId]/dashboard/page.tsx`, `components/AdminSidebar.tsx`
+
 ### Added
 
 - **User System Architecture (MII-4)**: Implemented separate tables for customers and staff/admin users

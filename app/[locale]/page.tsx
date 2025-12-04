@@ -80,20 +80,20 @@ function RootPage() {
 
   if (isSuperAdmin) {
     return (
-      <main className="min-h-screen bg-[#F8F8F8]">
+      <main className="min-h-screen bg-[#F8F8F8] bg-noise">
         <header className="w-full px-6 py-4 border-b border-[#E5E5E5] bg-white">
           <div className="max-w-[1200px] mx-auto flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#FF6B35] flex items-center justify-center text-white font-bold text-lg">
+              <div className="w-10 h-10 rounded-full bg-gallery-gold flex items-center justify-center text-white font-bold text-lg">
                 M
               </div>
-              <h1 className="text-xl md:text-2xl font-bold text-[#1A1A1A]">
+              <h1 className="text-xl md:text-2xl font-bold text-[#1A1A1A] font-display">
                 Miicel.io - Admin
               </h1>
             </div>
             <button
               onClick={handleLogout}
-              className="px-4 py-2 text-sm font-medium text-[#1A1A1A] hover:text-[#FF6B35] transition-colors"
+              className="px-4 py-2 text-sm font-medium text-[#1A1A1A] hover:text-gallery-gold transition-colors"
             >
               Sign Out
             </button>
@@ -110,7 +110,7 @@ function RootPage() {
               {tenants.map((tenant) => (
                 <div
                   key={tenant.slug}
-                  className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
+                  className="bg-white rounded-none shadow-brutal hover:shadow-brutal-hover transition-shadow p-6"
                 >
                   <div className="flex items-center gap-4 mb-4">
                     {tenant.logo ? (
@@ -139,7 +139,7 @@ function RootPage() {
                     </Link>
                     <Link
                       href={`/es/${tenant.slug}`}
-                      className="flex-1 px-4 py-2 text-sm font-medium text-white bg-[#FF6B35] rounded-md hover:bg-[#E55A2B] transition-colors text-center"
+                      className="flex-1 px-4 py-2 text-sm font-medium text-white bg-gallery-gold rounded-md hover:bg-gallery-gold-hover transition-colors text-center"
                     >
                       Tienda
                     </Link>
@@ -199,15 +199,15 @@ function LoginForm() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F8F8F8] flex flex-col">
+    <main className="min-h-screen bg-[#F8F8F8] bg-noise flex flex-col">
       {/* Header */}
       <header className="w-full px-6 py-4 border-b border-[#E5E5E5] bg-white" data-testid="login-header">
         <div className="max-w-[1200px] mx-auto flex items-center gap-3">
           {/* Logo placeholder - puedes reemplazar con una imagen si tienes logo */}
-          <div className="w-10 h-10 rounded-full bg-[#FF6B35] flex items-center justify-center text-white font-bold text-lg">
+          <div className="w-10 h-10 rounded-full bg-gallery-gold flex items-center justify-center text-white font-bold text-lg">
             M
           </div>
-          <h1 className="text-xl md:text-2xl font-bold text-[#1A1A1A]">
+          <h1 className="text-xl md:text-2xl font-bold text-[#1A1A1A] font-display">
             Miicel.io
           </h1>
         </div>
@@ -216,8 +216,8 @@ function LoginForm() {
       {/* Login Form */}
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
-          <div className="bg-white rounded-lg shadow-md p-8" data-testid="login-form">
-            <h2 className="text-2xl font-bold text-[#1A1A1A] mb-6 text-center">
+          <div className="bg-white rounded-none shadow-brutal p-8" data-testid="login-form">
+            <h2 className="text-2xl font-bold text-[#1A1A1A] font-display mb-6 text-center">
               Sign In
             </h2>
 
@@ -237,7 +237,7 @@ function LoginForm() {
                   required
                   disabled={loading}
                   data-testid="login-email-input"
-                  className="w-full px-3 py-2 border border-[#E5E5E5] rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6B35] disabled:opacity-50 text-[#1A1A1A]"
+                  className="w-full px-3 py-2 border border-[#E5E5E5] rounded-md focus:outline-none focus:ring-2 focus:ring-gallery-gold disabled:opacity-50 text-[#1A1A1A]"
                 />
               </div>
 
@@ -256,7 +256,7 @@ function LoginForm() {
                   required
                   disabled={loading}
                   data-testid="login-password-input"
-                  className="w-full px-3 py-2 border border-[#E5E5E5] rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6B35] disabled:opacity-50 text-[#1A1A1A]"
+                  className="w-full px-3 py-2 border border-[#E5E5E5] rounded-md focus:outline-none focus:ring-2 focus:ring-gallery-gold disabled:opacity-50 text-[#1A1A1A]"
                 />
               </div>
 
@@ -274,7 +274,7 @@ function LoginForm() {
                 type="submit"
                 disabled={loading}
                 data-testid="login-submit-button"
-                className="w-full py-2 px-4 bg-[#FF6B35] text-white font-medium rounded-md hover:bg-[#E55A2B] focus:outline-none focus:ring-2 focus:ring-[#FF6B35] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full py-2 px-4 bg-gallery-gold text-white font-medium rounded-md hover:bg-gallery-gold-hover focus:outline-none focus:ring-2 focus:ring-gallery-gold focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {loading ? (
                   <span data-testid="login-loading-state">Signing in...</span>

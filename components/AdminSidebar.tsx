@@ -97,7 +97,7 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
             {tenantLogo ? (
               <img src={tenantLogo} alt={tenantName || t('adminPanel')} className="h-8 w-8 rounded" />
             ) : (
-              <Store className="h-8 w-8 text-blue-600" />
+              <Store className="h-8 w-8 text-gallery-gold" />
             )}
             <span className="font-semibold text-gray-900">{tenantName || t('adminPanel')}</span>
           </div>
@@ -128,7 +128,7 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
       <aside
         data-testid="admin-sidebar"
         className={cn(
-          "fixed top-0 left-0 z-40 h-screen w-64 bg-white border-r border-gray-200 transition-transform duration-300",
+          "fixed top-0 left-0 z-40 h-screen w-64 bg-white border-r border-gray-200 shadow-brutal transition-transform duration-300",
           "lg:translate-x-0",
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
@@ -138,7 +138,7 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
           {tenantLogo ? (
             <img src={tenantLogo} alt={tenantName || t('adminPanel')} className="h-10 w-10 rounded" />
           ) : (
-            <div className="h-10 w-10 rounded bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center">
+            <div className="h-10 w-10 rounded bg-gallery-black flex items-center justify-center">
               <Store className="h-6 w-6 text-white" />
             </div>
           )}
@@ -167,11 +167,11 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
                   "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
                   "text-sm font-medium",
                   isActive
-                    ? "bg-blue-50 text-blue-700"
+                    ? "bg-gallery-gold/10 text-gallery-black"
                     : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                 )}
               >
-                <Icon className={cn("h-5 w-5", isActive ? "text-blue-700" : "text-gray-400")} />
+                <Icon className={cn("h-5 w-5", isActive ? "text-gallery-gold" : "text-gray-400")} />
                 <span>{item.name}</span>
               </Link>
             )
@@ -183,7 +183,7 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
               href={`/${tenant}`}
               data-testid="nav-view-store"
               onClick={closeMobileMenu}
-              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-sm font-medium text-gray-700 hover:bg-orange-50 hover:text-orange-700"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-sm font-medium text-gray-700 hover:bg-gallery-gold/10 hover:text-gallery-gold"
             >
               <Store className="h-5 w-5 text-gray-400" />
               <span>{t('viewStore')}</span>
@@ -195,8 +195,8 @@ export function AdminSidebar({ tenant, tenantName, tenantLogo }: AdminSidebarPro
         <div className="border-t border-gray-200 p-4">
           {/* User Info */}
           <div className="flex items-center gap-3 px-4 py-3 mb-2">
-            <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-              <User className="h-4 w-4 text-blue-600" />
+            <div className="h-8 w-8 rounded-full bg-gallery-gold/20 flex items-center justify-center flex-shrink-0">
+              <User className="h-4 w-4 text-gallery-gold" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">

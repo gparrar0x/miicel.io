@@ -46,10 +46,10 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F8F8F8] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#F8F8F8] bg-noise px-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-lg shadow-md p-8" data-testid="login-form">
-          <h1 className="text-2xl font-bold text-[#1A1A1A] mb-6 text-center">
+        <div className="bg-white rounded-none shadow-brutal p-8" data-testid="login-form">
+          <h1 className="text-2xl font-bold text-[#1A1A1A] font-display mb-6 text-center">
             Sign In
           </h1>
 
@@ -69,7 +69,7 @@ function LoginForm() {
                 required
                 disabled={loading}
                 data-testid="login-email-input"
-                className="w-full px-3 py-2 border border-[#E5E5E5] rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6B35] disabled:opacity-50 text-[#1A1A1A]"
+                className="w-full px-3 py-2 border border-[#E5E5E5] rounded-md focus:outline-none focus:ring-2 focus:ring-gallery-gold disabled:opacity-50 text-[#1A1A1A]"
               />
             </div>
 
@@ -88,7 +88,7 @@ function LoginForm() {
                 required
                 disabled={loading}
                 data-testid="login-password-input"
-                className="w-full px-3 py-2 border border-[#E5E5E5] rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6B35] disabled:opacity-50 text-[#1A1A1A]"
+                className="w-full px-3 py-2 border border-[#E5E5E5] rounded-md focus:outline-none focus:ring-2 focus:ring-gallery-gold disabled:opacity-50 text-[#1A1A1A]"
               />
             </div>
 
@@ -106,7 +106,7 @@ function LoginForm() {
               type="submit"
               disabled={loading}
               data-testid="login-submit-button"
-              className="w-full py-2 px-4 bg-[#FF6B35] text-white font-medium rounded-md hover:bg-[#E55A2B] focus:outline-none focus:ring-2 focus:ring-[#FF6B35] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full py-2 px-4 bg-gallery-gold text-white font-medium rounded-md hover:bg-gallery-gold-hover focus:outline-none focus:ring-2 focus:ring-gallery-gold focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? (
                 <span data-testid="login-loading-state">Signing in...</span>

@@ -22,13 +22,13 @@
   --secondary-foreground: #111111;
   --muted: #F5F5F5; /* Matches --color-bg-subtle */
   --muted-foreground: #666666; /* Matches --color-text-secondary */
-  --accent: #CCFF00; /* Matches --color-acid-green */
+  --accent: #B8860B; /* Gallery gold - was #CCFF00 acid green */
   --accent-foreground: #111111;
   --destructive: #ef4444;
   --destructive-foreground: #FFFFFF;
   --border: #E5E5E5; /* Matches --color-border */
   --input: #E5E5E5;
-  --ring: #111111;
+  --ring: #B8860B; /* Gallery gold focus rings - was #111111 */
   --radius: 0.5rem;
 
   /* Charts */
@@ -50,9 +50,9 @@
   --color-hyper-purple: #8C52FF;
 
   /* Tenant Theming Defaults (Overridden by ThemeProvider) */
-  --color-primary: var(--color-electric-blue);
+  --color-primary: #1A1A1A; /* Gallery black - was electric blue */
   --color-secondary: var(--color-ink);
-  --color-accent: var(--color-acid-green);
+  --color-accent: #B8860B; /* Gallery gold - was acid green */
 
   /* Surfaces */
   --color-bg-base: var(--background);

@@ -8,7 +8,24 @@ const config: Config = {
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        gallery: {
+          black: '#1A1A1A',
+          white: '#FFFFFF',
+          gold: '#B8860B',
+          'gold-hover': '#9A7209',
+        }
+      },
+      boxShadow: {
+        brutal: '4px 4px 0px rgba(0,0,0,1)',
+        'brutal-hover': '8px 8px 0px rgba(0,0,0,1)',
+      },
+      fontFamily: {
+        display: ['Cinzel', 'serif'],
+        body: ['Inter', 'sans-serif'],
+      }
+    },
   },
   plugins: [],
 }
