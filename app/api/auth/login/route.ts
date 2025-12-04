@@ -21,6 +21,9 @@ export async function POST(request: Request) {
                    request.headers.get('referer')?.match(/\/(en|es)\//)?.[1] ||
                    'es'
 
+    // Collect cookies to set in response
+    const cookiesToSet: Array<{ name: string; value: string; options: any }> = []
+
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -30,10 +33,10 @@ export async function POST(request: Request) {
             return cookieStore.get(name)?.value
           },
           set(name: string, value: string, options: any) {
-            cookieStore.set({ name, value, ...options })
+            cookiesToSet.push({ name, value, options })
           },
           remove(name: string, options: any) {
-            cookieStore.set({ name, value: '', ...options })
+            cookiesToSet.push({ name, value: '', options })
           },
         },
       }
@@ -56,14 +59,13 @@ export async function POST(request: Request) {
     const supabaseAdmin = createServiceRoleClient()
     const { data: userRecord } = await supabaseAdmin
       .from('users')
-      .select('role, tenant_id, tenants(slug)')
+      .select('role, tenant_id')
       .eq('auth_user_id', data.user.id)
       .single()
 
-    if (userRecord && userRecord.role === 'tenant_admin' && userRecord.tenants) {
+    if (userRecord && userRecord.role === 'tenant_admin' && userRecord.tenant_id) {
       // Tenant admin: redirect to their tenant dashboard
-      const tenantSlug = (userRecord.tenants as any).slug
-      redirectTo = `/${locale}/${tenantSlug}/dashboard`
+      redirectTo = `/${locale}/${userRecord.tenant_id}/dashboard`
     } else if (userRecord && userRecord.role === 'platform_admin') {
       // Platform admin: redirect to root (tenant list)
       redirectTo = `/${locale}`
@@ -85,11 +87,19 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json({
+    // Return response with cookies
+    const res = NextResponse.json({
       user: data.user,
       session: data.session,
       redirectTo,
     })
+
+    // Set all collected cookies
+    cookiesToSet.forEach(({ name, value, options }) => {
+      res.cookies.set(name, value, options)
+    })
+
+    return res
   } catch (err: any) {
     console.error('Login error:', err)
     return NextResponse.json(

@@ -14,7 +14,7 @@ export default async function SettingsPage({ params }: PageProps) {
     const { data: tenant } = await supabase
         .from("tenants")
         .select("id, slug, name, config")
-        .eq("slug", tenantId)
+        .eq("id", parseInt(tenantId))
         .single()
 
     if (!tenant) {

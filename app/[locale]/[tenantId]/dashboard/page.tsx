@@ -82,11 +82,11 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenantId:
     }
 
     loadDashboard()
-  }, [tenantId, router, supabase])
+  }, [tenantId, locale])
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
-    router.push(`/${tenantId}`)
+    router.push(`/${locale}/${tenantId}`)
   }
 
   if (loading) {
@@ -162,7 +162,7 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenantId:
           <h3 className="text-2xl font-bold font-display text-gallery-black mb-6 pb-3 border-b-4 border-gallery-gold">{t('quickActions')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <button
-              onClick={() => router.push(`/${tenantId}/dashboard/settings/appearance`)}
+              onClick={() => router.push(`/${locale}/${tenantId}/dashboard/settings/appearance`)}
               className="flex flex-col items-center justify-center p-8 border-4 border-black bg-white hover:bg-gallery-gold hover:-translate-y-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 group"
             >
               <Settings className="h-10 w-10 text-gallery-black mb-3" />

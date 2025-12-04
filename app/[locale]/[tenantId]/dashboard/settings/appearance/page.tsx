@@ -38,7 +38,7 @@ export default async function AppearanceSettingsPage({
   const { data: tenant, error: tenantError } = await supabase
     .from('tenants')
     .select('id, slug, template, theme_overrides, tenant_users!inner(user_id, role)')
-    .eq('slug', tenantId)
+    .eq('id', parseInt(tenantId))
     .eq('active', true)
     .eq('tenant_users.user_id', user.id)
     .maybeSingle()

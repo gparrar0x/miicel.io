@@ -14,8 +14,8 @@ export default async function AdminOrdersPage({ params }: PageProps) {
     // 1. Get Tenant
     const { data: tenant } = await supabase
         .from("tenants")
-        .select("id, name")
-        .eq("slug", tenantId)
+        .select("id, slug, name")
+        .eq("id", parseInt(tenantId))
         .single()
 
     if (!tenant) {
