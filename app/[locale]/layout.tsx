@@ -7,6 +7,13 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import "../globals.css";
 import { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+
+const inter = Inter({
+    subsets: ['latin'],
+    weight: ['400', '500', '600', '700'],
+    display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'Miicel.io',
@@ -33,7 +40,7 @@ export default async function LocaleLayout({
 
     return (
         <html lang={locale}>
-            <body className="antialiased" suppressHydrationWarning>
+            <body className={`${inter.className} antialiased`} suppressHydrationWarning>
                 <NextIntlClientProvider messages={messages}>
                     {children}
                     <Toaster position="top-right" />

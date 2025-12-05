@@ -13,42 +13,42 @@
   --color-bg-secondary: #FAFAFA;
 
   /* Text */
-  --color-text-primary: #1A1A1A;
-  --color-text-secondary: #666666;
-  --color-text-muted: #999999;
+  --color-text-primary: #111827;
+  --color-text-secondary: #374151;
+  --color-text-muted: #6B7280;
 
   /* Accent */
-  --color-accent-primary: #B8860B;
-  --color-accent-hover: #9A7209;
+  --color-accent-primary: #2563EB;
+  --color-accent-hover: #1D4ED8;
 
   /* Borders & Shadows */
   --color-border-subtle: #E5E5E5;
-  --color-shadow-soft: rgba(0, 0, 0, 0.08);
+  --color-shadow-soft: rgba(0, 0, 0, 0.10);
 
   /* Semantic */
   --color-success: #10B981;
   --color-warning: #F59E0B;
   --color-error: #EF4444;
-  --color-info: #3B82F6;
+  --color-info: #2563EB;
 
   /* ===== SPACING (Mobile-First) ===== */
   --spacing-xs: 8px;
   --spacing-sm: 16px;
-  --spacing-md: 24px;
-  --spacing-lg: 32px;
-  --spacing-xl: 48px;
+  --spacing-md: 20px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
 
   /* ===== TYPOGRAPHY (Mobile-First) ===== */
-  --font-size-h1: 24px;
-  --font-size-h2: 20px;
+  --font-size-h1: 32px;
+  --font-size-h2: 24px;
   --font-size-h3: 18px;
   --font-size-h4: 16px;
-  --font-size-body: 16px;
-  --font-size-small: 14px;
-  --font-size-tiny: 12px;
+  --font-size-body: 14px;
+  --font-size-small: 12px;
+  --font-size-tiny: 11px;
 
   --font-weight-regular: 400;
-  --font-weight-medium: 600;
+  --font-weight-medium: 500;
   --font-weight-bold: 700;
 
   --line-height-tight: 1.2;
@@ -62,8 +62,8 @@
 
   /* ===== ANIMATION ===== */
   --timing-fast: 100ms;
-  --timing-normal: 300ms;
-  --timing-slow: 500ms;
+  --timing-normal: 200ms;
+  --timing-slow: 400ms;
 
   --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
@@ -76,19 +76,19 @@
   --card-gap-mobile: 16px;
   --card-gap-tablet: 24px;
   --card-gap-desktop: 32px;
-  --card-padding: 16px;
+  --card-padding: 20px;
   --card-image-aspect: 1 / 1;
 
   /* Badge */
-  --badge-padding: 4px 8px;
-  --badge-min-height: 22px;
+  --badge-padding: 4px 12px;
+  --badge-min-height: 24px;
   --badge-min-width: 32px;
   --badge-font-size: 11px;
   --badge-border-radius: 4px;
 
   /* Modal */
   --modal-backdrop: rgba(0, 0, 0, 0.6);
-  --modal-padding: 16px;
+  --modal-padding: 24px;
   --modal-image-height-mobile: 360px;
 
   /* Badge Colors - Type */
