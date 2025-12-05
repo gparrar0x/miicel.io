@@ -1,9 +1,12 @@
 'use client'
 
-import { useState, Suspense, useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
 import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Container } from '@/components/ui/container'
+import { Card } from '@/components/ui/card'
 
 interface Tenant {
   slug: string
@@ -72,7 +75,7 @@ function RootPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-mii-white">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-mii-gray-500">Loading...</div>
       </div>
     )
@@ -80,60 +83,64 @@ function RootPage() {
 
   if (isSuperAdmin) {
     return (
-      <main className="min-h-screen bg-mii-white" data-testid="landing-page">
-        {/* Header */}
-        <header className="w-full px-mii-page py-4 border-b border-mii-gray-200" data-testid="landing-header">
-          <div className="max-w-mii-content mx-auto flex items-center justify-between">
+      <main className="min-h-screen bg-mii-gray-50" data-testid="landing-page">
+        <header
+          className="w-full border-b border-mii-gray-200 bg-white/90 backdrop-blur"
+          data-testid="landing-header"
+        >
+          <Container className="flex items-center justify-between py-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-mii-black rounded-mii flex items-center justify-center">
+              <div className="w-10 h-10 rounded-[8px] bg-mii-blue flex items-center justify-center shadow-mii">
                 <span className="text-white font-bold text-lg">M</span>
               </div>
-              <span className="text-mii-h3 text-mii-black">Miicel.io</span>
+              <span className="text-[20px] font-semibold text-mii-gray-900">Miicel.io</span>
             </div>
-            <button
-              onClick={handleLogout}
+            <Button
+              variant="secondary"
+              size="sm"
               data-testid="button-sign-out"
-              className="px-4 py-2 border border-mii-gray-200 rounded-mii-sm text-mii-body text-mii-gray-700 hover:bg-mii-gray-50 transition-all duration-200"
+              onClick={handleLogout}
             >
               Sign Out
-            </button>
-          </div>
+            </Button>
+          </Container>
         </header>
 
-        {/* Content */}
-        <div className="max-w-mii-content mx-auto px-mii-page py-mii-page">
-          <div className="mb-8">
-            <h1 className="text-mii-h1 text-mii-black mb-2">Active Tenants</h1>
-            <p className="text-mii-body text-mii-gray-500">Manage your platform tenants</p>
+        <Container className="py-10 space-y-8">
+          <div className="space-y-2">
+            <h1 className="text-[32px] font-bold text-mii-gray-900">Active Tenants</h1>
+            <p className="text-[14px] text-mii-gray-700">Manage your platform tenants</p>
           </div>
 
           {tenants.length === 0 ? (
-            <div className="bg-mii-white border border-mii-gray-200 rounded-mii shadow-mii p-12 text-center">
-              <p className="text-mii-body text-mii-gray-500">No active tenants found.</p>
-            </div>
+            <Card className="text-center">
+              <p className="text-mii-gray-700 text-[14px]">No active tenants found.</p>
+            </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-mii-gap">
               {tenants.map((tenant) => (
-                <div
+                <Card
                   key={tenant.slug}
                   data-testid={`tenant-card-${tenant.slug}`}
-                  className="bg-mii-white border border-mii-gray-200 rounded-mii shadow-mii hover:shadow-mii-md transition-all duration-200 p-mii-card"
+                  className="h-full"
                 >
-                  <div className="flex items-center gap-4 mb-5">
+                  <div className="flex items-center gap-4 mb-4">
                     {tenant.logo ? (
                       <img
                         src={tenant.logo}
                         alt={tenant.name}
-                        className="w-12 h-12 rounded-mii object-cover"
+                        className="w-12 h-12 rounded-[8px] object-cover"
                       />
                     ) : (
-                      <div className="w-12 h-12 rounded-mii bg-mii-gray-100 flex items-center justify-center text-mii-gray-500 font-semibold text-lg">
+                      <div className="w-12 h-12 rounded-[8px] bg-mii-gray-100 flex items-center justify-center text-mii-gray-700 font-semibold text-lg">
                         {tenant.name.charAt(0).toUpperCase()}
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-mii-h3 text-mii-black truncate">{tenant.name}</h3>
-                      <p className="text-mii-small text-mii-gray-500">/{tenant.slug}</p>
+                      <h3 className="text-[18px] font-semibold text-mii-gray-900 truncate">
+                        {tenant.name}
+                      </h3>
+                      <p className="text-[12px] text-mii-gray-500">/{tenant.slug}</p>
                     </div>
                   </div>
 
@@ -141,23 +148,27 @@ function RootPage() {
                     <Link
                       href={`/es/${tenant.slug}/dashboard`}
                       data-testid={`tenant-dashboard-link-${tenant.slug}`}
-                      className="flex-1 px-4 py-2 border border-mii-gray-200 rounded-mii-sm text-mii-label text-mii-gray-700 hover:bg-mii-gray-50 transition-all duration-200 text-center"
+                      className="flex-1"
                     >
-                      Dashboard
+                      <Button variant="secondary" className="w-full" data-testid={`tenant-dashboard-link-${tenant.slug}`}>
+                        Dashboard
+                      </Button>
                     </Link>
                     <Link
                       href={`/es/${tenant.slug}`}
                       data-testid={`tenant-store-link-${tenant.slug}`}
-                      className="flex-1 px-4 py-2 bg-mii-blue rounded-mii-sm text-mii-label text-white hover:bg-mii-blue-hover transition-all duration-200 text-center"
+                      className="flex-1"
                     >
-                      Tienda
+                      <Button className="w-full" variant="primary" data-testid={`tenant-store-link-${tenant.slug}`}>
+                        Tienda
+                      </Button>
                     </Link>
                   </div>
-                </div>
+                </Card>
               ))}
             </div>
           )}
-        </div>
+        </Container>
       </main>
     )
   }

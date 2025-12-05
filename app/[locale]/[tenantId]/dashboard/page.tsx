@@ -3,9 +3,13 @@
 import { use, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Store, Package, ShoppingCart, DollarSign, Settings } from 'lucide-react'
+import { Package, ShoppingCart, DollarSign, Settings } from 'lucide-react'
 import { AdminSidebar } from '@/components/AdminSidebar'
 import { useTranslations } from 'next-intl'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { DashboardHeader } from '@/components/ui/dashboard-header'
+import { Container } from '@/components/ui/container'
 
 interface DashboardStats {
   totalProducts: number
@@ -85,88 +89,122 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenantId:
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gallery-gold mx-auto"></div>
-          <p className="mt-4 text-gray-600">{t('loading')}</p>
+      <div className="min-h-screen bg-mii-gray-50 flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-2 border-mii-blue border-t-transparent" />
+          <p className="text-mii-gray-700 text-sm">{t('loading')}</p>
         </div>
       </div>
     )
   }
 
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat(locale, { style: 'currency', currency: 'USD' }).format(value)
+
   return (
     <>
       <AdminSidebar tenant={tenantId} tenantName={tenantName} />
-      <div className="lg:pl-64 min-h-screen bg-[#FAFAFA]">
-        <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 mt-16 lg:mt-0">
-        {/* Header Hero - Brutalist Style */}
-        <div className="bg-gallery-black border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-8 mb-8 relative overflow-hidden">
-          <div className="absolute inset-0 bg-noise opacity-10 pointer-events-none"></div>
-          <div className="relative z-10">
-            <h2 className="text-4xl font-bold font-display mb-2 text-white">{t('welcomeTitle')}</h2>
-            <p className="text-gray-300 text-lg">
-              {t('welcomeDesc')}
-            </p>
-          </div>
-          {/* Accent stripe */}
-          <div className="absolute bottom-0 left-0 w-full h-2 bg-gallery-gold"></div>
-        </div>
-
-        {/* Stats Cards - High Contrast */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-mono uppercase tracking-wider text-gray-500 mb-1">{t('activeProducts')}</p>
-                <p className="text-4xl font-bold text-gallery-black mt-2">{stats.totalProducts}</p>
-              </div>
-              <div className="bg-gallery-gold border-2 border-black p-3">
-                <Package className="h-7 w-7 text-black" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-mono uppercase tracking-wider text-gray-500 mb-1">{t('completedOrders')}</p>
-                <p className="text-4xl font-bold text-gallery-black mt-2">{stats.totalOrders}</p>
-              </div>
-              <div className="bg-gallery-gold border-2 border-black p-3">
-                <ShoppingCart className="h-7 w-7 text-black" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-mono uppercase tracking-wider text-gray-500 mb-1">{t('totalRevenue')}</p>
-                <p className="text-4xl font-bold text-gallery-black mt-2">${stats.revenue.toFixed(2)}</p>
-              </div>
-              <div className="bg-gallery-gold border-2 border-black p-3">
-                <DollarSign className="h-7 w-7 text-black" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Actions - Brutalist Grid */}
-        <div className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-8">
-          <h3 className="text-2xl font-bold font-display text-gallery-black mb-6 pb-3 border-b-4 border-gallery-gold">{t('quickActions')}</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <button
-              onClick={() => router.push(`/${locale}/${tenantId}/dashboard/settings/appearance`)}
-              className="flex flex-col items-center justify-center p-8 border-4 border-black bg-white hover:bg-gallery-gold hover:-translate-y-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 group"
+      <div className="lg:pl-mii-sidebar min-h-screen bg-mii-gray-50">
+        <DashboardHeader
+          title={t('welcomeTitle')}
+          subtitle={t('welcomeDesc')}
+          actions={
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => router.push(`/${locale}/${tenantId}/dashboard/settings`)}
+              data-testid="button-settings"
             >
-              <Settings className="h-10 w-10 text-gallery-black mb-3" />
-              <span className="text-sm font-bold font-mono uppercase tracking-wide text-gallery-black">
-                {t('settings')}
-              </span>
-            </button>
+              <Settings className="h-4 w-4" />
+              Settings
+            </Button>
+          }
+        />
+
+        <Container className="py-8 space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-mii-gap">
+            <Card data-testid="stat-card-products" className="gap-3">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-[12px] font-semibold text-mii-gray-600 uppercase tracking-wide">
+                    {t('activeProducts')}
+                  </p>
+                  <p className="text-[28px] font-semibold text-mii-gray-900">{stats.totalProducts}</p>
+                </div>
+                <div className="h-10 w-10 rounded-full bg-mii-blue/10 flex items-center justify-center">
+                  <Package className="h-5 w-5 text-mii-blue" />
+                </div>
+              </div>
+            </Card>
+
+            <Card data-testid="stat-card-orders" className="gap-3">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-[12px] font-semibold text-mii-gray-600 uppercase tracking-wide">
+                    {t('completedOrders')}
+                  </p>
+                  <p className="text-[28px] font-semibold text-mii-gray-900">{stats.totalOrders}</p>
+                </div>
+                <div className="h-10 w-10 rounded-full bg-mii-blue/10 flex items-center justify-center">
+                  <ShoppingCart className="h-5 w-5 text-mii-blue" />
+                </div>
+              </div>
+            </Card>
+
+            <Card data-testid="stat-card-revenue" className="gap-3">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-[12px] font-semibold text-mii-gray-600 uppercase tracking-wide">
+                    {t('totalRevenue')}
+                  </p>
+                  <p className="text-[28px] font-semibold text-mii-gray-900">{formatCurrency(stats.revenue)}</p>
+                </div>
+                <div className="h-10 w-10 rounded-full bg-mii-blue/10 flex items-center justify-center">
+                  <DollarSign className="h-5 w-5 text-mii-blue" />
+                </div>
+              </div>
+            </Card>
           </div>
-        </div>
-        </main>
+
+          <Card data-testid="quick-actions" className="gap-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[18px] font-semibold text-mii-gray-900">{t('quickActions')}</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-mii-gap">
+              <Button
+                variant="secondary"
+                className="justify-start gap-3"
+                onClick={() => router.push(`/${locale}/${tenantId}/dashboard/products`)}
+              >
+                <Package className="h-5 w-5" />
+                {t('products')}
+              </Button>
+              <Button
+                variant="secondary"
+                className="justify-start gap-3"
+                onClick={() => router.push(`/${locale}/${tenantId}/dashboard/orders`)}
+              >
+                <ShoppingCart className="h-5 w-5" />
+                {t('orders')}
+              </Button>
+              <Button
+                variant="secondary"
+                className="justify-start gap-3"
+                onClick={() => router.push(`/${locale}/${tenantId}/dashboard/settings`)}
+              >
+                <Settings className="h-5 w-5" />
+                {t('settings')}
+              </Button>
+              <Button
+                variant="secondary"
+                className="justify-start gap-3"
+                onClick={() => router.push(`/${locale}/${tenantId}`)}
+              >
+                {t('viewStore')}
+              </Button>
+            </div>
+          </Card>
+        </Container>
       </div>
     </>
   )

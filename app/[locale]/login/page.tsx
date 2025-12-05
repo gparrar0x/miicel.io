@@ -3,6 +3,9 @@
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Container } from '@/components/ui/container'
 
 function LoginForm() {
   const router = useRouter()
@@ -53,32 +56,25 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-mii-white">
-      {/* Header */}
-      <header className="w-full px-mii-page py-4 border-b border-mii-gray-200">
-        <div className="max-w-mii-content mx-auto flex items-center gap-3">
-          <div className="w-10 h-10 bg-mii-black rounded-mii flex items-center justify-center">
+    <div className="min-h-screen flex flex-col bg-white">
+      <header className="w-full border-b border-mii-gray-200 bg-white/90 backdrop-blur">
+        <Container className="flex items-center gap-3 py-4">
+          <div className="w-10 h-10 bg-mii-blue rounded-[8px] flex items-center justify-center shadow-mii">
             <span className="text-white font-bold text-lg">M</span>
           </div>
-          <span className="text-mii-h3 text-mii-black">Miicel.io</span>
-        </div>
+          <span className="text-[20px] font-semibold text-mii-gray-900">Miicel.io</span>
+        </Container>
       </header>
 
-      {/* Login Form */}
-      <div className="flex-1 flex items-center justify-center px-mii-page py-12">
+      <div className="flex-1 flex items-center justify-center px-mii-page py-12 bg-mii-gray-50">
         <div className="w-full max-w-md">
-          <div className="bg-mii-white border border-mii-gray-200 shadow-mii p-8 rounded-mii" data-testid="login-form">
-            <h1 className="text-mii-h1 text-mii-black mb-2">Sign In</h1>
-            <p className="text-mii-body text-mii-gray-500 mb-8">
-              Access your dashboard
-            </p>
+          <Card data-testid="login-form" className="p-8 shadow-mii">
+            <h1 className="text-[32px] font-bold text-mii-gray-900 mb-2">Sign In</h1>
+            <p className="text-[14px] text-mii-gray-700 mb-8">Access your dashboard</p>
 
-            <form onSubmit={handleSubmit} className="space-y-mii-gap">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-mii-label text-mii-gray-700 mb-2"
-                >
+                <label htmlFor="email" className="block text-[14px] font-semibold text-mii-gray-700 mb-2">
                   Email
                 </label>
                 <input
@@ -89,16 +85,13 @@ function LoginForm() {
                   required
                   disabled={loading}
                   data-testid="login-email-input"
-                  className="w-full px-4 py-3 border border-mii-gray-200 rounded-mii-sm text-mii-body text-mii-gray-900 placeholder:text-mii-gray-400 focus:outline-none focus:ring-2 focus:ring-mii-blue focus:border-transparent disabled:opacity-50 disabled:bg-mii-gray-50 transition-all duration-200"
+                  className="w-full rounded-[4px] border border-mii-gray-200 bg-white px-4 py-3 text-[14px] text-mii-gray-900 placeholder:text-mii-gray-500 focus-visible:border-mii-blue focus-visible:ring-2 focus-visible:ring-mii-blue focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:opacity-60 disabled:bg-mii-gray-100 transition"
                   placeholder="you@example.com"
                 />
               </div>
 
               <div>
-                <label
-                  htmlFor="password"
-                  className="block text-mii-label text-mii-gray-700 mb-2"
-                >
+                <label htmlFor="password" className="block text-[14px] font-semibold text-mii-gray-700 mb-2">
                   Password
                 </label>
                 <input
@@ -109,7 +102,7 @@ function LoginForm() {
                   required
                   disabled={loading}
                   data-testid="login-password-input"
-                  className="w-full px-4 py-3 border border-mii-gray-200 rounded-mii-sm text-mii-body text-mii-gray-900 placeholder:text-mii-gray-400 focus:outline-none focus:ring-2 focus:ring-mii-blue focus:border-transparent disabled:opacity-50 disabled:bg-mii-gray-50 transition-all duration-200"
+                  className="w-full rounded-[4px] border border-mii-gray-200 bg-white px-4 py-3 text-[14px] text-mii-gray-900 placeholder:text-mii-gray-500 focus-visible:border-mii-blue focus-visible:ring-2 focus-visible:ring-mii-blue focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:opacity-60 disabled:bg-mii-gray-100 transition"
                   placeholder="••••••••"
                 />
               </div>
@@ -117,29 +110,25 @@ function LoginForm() {
               {error && (
                 <div
                   data-testid="login-error-message"
-                  className="p-4 bg-red-50 border border-mii-error/20 rounded-mii-sm text-mii-error text-mii-body"
+                  className="p-4 bg-red-50 border border-red-200 rounded-[4px] text-mii-gray-900 text-[14px]"
                   role="alert"
                 >
                   {error}
                 </div>
               )}
 
-              <button
+              <Button
                 type="submit"
                 disabled={loading}
                 data-testid="login-submit-button"
-                className="w-full py-3 px-6 bg-mii-blue rounded-mii-sm text-white text-mii-label hover:bg-mii-blue-hover focus:outline-none focus:ring-2 focus:ring-mii-blue focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                className="w-full"
               >
-                {loading ? (
-                  <span data-testid="login-loading-state">Signing in...</span>
-                ) : (
-                  'Sign In'
-                )}
-              </button>
+                {loading ? <span data-testid="login-loading-state">Signing in...</span> : 'Sign In'}
+              </Button>
             </form>
-          </div>
+          </Card>
 
-          <p className="mt-6 text-mii-small text-mii-gray-500 text-center">
+          <p className="mt-6 text-[12px] text-mii-gray-600 text-center">
             Platform access only
           </p>
         </div>
