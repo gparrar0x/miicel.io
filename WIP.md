@@ -1,19 +1,20 @@
 # WIP - MIIC_6 Pixel Implementation
 
-## Context
+## Status
 - Branch: feature/MIIC-6/design-pixel-20251205
-- Scope: Apply Aurora's refined brand identity across landing, login, dashboard, sidebar per MIIC_6_PIXEL_TASKS.md.
-- Design refs: backlog/MIIC_6_refined_brand_identity/{DESIGN_SYSTEM.md, COMPONENT_SPECS.md, DESIGN_QUICK_REFERENCE.md, styles.css}.
+- Current focus: Apply blue minimal design across platform surfaces (landing, login, dashboard, sidebar) and shared UI components.
 
-## Decisions so far
-- Status set to IN_PROGRESS as of 2025-12-05.
-- Will prioritize Phase 1 foundation: import styles.css, extend tailwind tokens, load Cinzel/Inter fonts.
+## Done
+- Rethemed design specs and CSS vars to blue minimal system.
+- Updated globals + tokens to Inter-only + blue palette.
+- Rebuilt core UI components with test IDs (Button, Input, Card, Badge, Container, DashboardHeader).
+- Applied new styling to superadmin landing, login, and admin dashboard pages.
+- Documented changes in CHANGELOG.
 
-## Next steps
-1) Review DESIGN_SYSTEM.md and COMPONENT_SPECS.md to extract tokens (colors, typography, shadows, spacing).
-2) Update tailwind.config.ts with tokens and utilities; ensure Cinzel/Inter loaded globally.
-3) Import styles.css into app/globals.css and verify CSS variables exposed.
-4) Start component library updates (Button, Input, Card, Badge, Container, DashboardHeader) with testids.
+## Next
+- Validate pages in browser (smoke) and ensure test IDs still match Sentinela contracts.
+- Extend styling to remaining admin pages (products/orders/settings) if in scope.
+- Hand off test ID changes (none changed, new components align with existing ids).
 
-## Blockers / Risks
-- None identified yet; dependencies on Aurora specs appear complete.
+## Notes
+- Sidebar already aligned to blue accents and black background; active state uses blue.
