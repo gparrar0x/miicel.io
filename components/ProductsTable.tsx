@@ -2,9 +2,10 @@
 
 import { useState } from "react"
 import { Product } from "@/lib/schemas/product"
-import { Edit, Trash2, Plus, Search, Filter } from "lucide-react"
+import { Edit, Trash2, Plus, Search } from "lucide-react"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
+import { Button } from "./ui/button"
 
 interface ProductsTableProps {
     products: Product[]
@@ -35,19 +36,19 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
 
     return (
         <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row justify-between gap-4 items-center bg-white p-4 rounded-lg shadow-sm border">
+            <div className="flex flex-col sm:flex-row justify-between gap-4 items-center bg-white p-4 rounded-[8px] shadow-mii border border-mii-gray-200">
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                     <div className="relative flex-1 sm:w-64">
-                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
+                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-mii-gray-500" />
                         <input
                             placeholder={t('table.search')}
-                            className="pl-8 h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF6B35] text-[#1A1A1A]"
+                            className="pl-8 h-11 w-full rounded-[4px] border border-mii-gray-200 bg-white px-3 py-2 text-sm shadow-mii transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mii-blue focus-visible:ring-offset-2 focus-visible:ring-offset-white text-mii-gray-900"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
                     <select
-                        className="h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF6B35] text-[#1A1A1A]"
+                        className="h-11 rounded-[4px] border border-mii-gray-200 bg-white px-3 py-2 text-sm shadow-mii focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mii-blue focus-visible:ring-offset-2 focus-visible:ring-offset-white text-mii-gray-900"
                         value={categoryFilter}
                         onChange={(e) => setCategoryFilter(e.target.value)}
                     >
@@ -59,7 +60,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                         ))}
                     </select>
                     <select
-                        className="h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF6B35] text-[#1A1A1A]"
+                        className="h-11 rounded-[4px] border border-mii-gray-200 bg-white px-3 py-2 text-sm shadow-mii focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mii-blue focus-visible:ring-offset-2 focus-visible:ring-offset-white text-mii-gray-900"
                         value={activeFilter}
                         onChange={(e) => setActiveFilter(e.target.value)}
                     >
@@ -68,20 +69,22 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                         <option value="INACTIVE">{t('inactive')}</option>
                     </select>
                 </div>
-                <button
-                    onClick={onAdd}
-                    data-testid="products-new-button"
-                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-black text-white shadow hover:bg-black/90 h-9 px-4 py-2"
+                <Button
+                  onClick={onAdd}
+                  data-testid="products-new-button"
+                  variant="primary"
+                  size="sm"
+                  className="h-11 px-4"
                 >
-                    <Plus className="mr-2 h-4 w-4" />
-                    {t('addProduct')}
-                </button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t('addProduct')}
+                </Button>
             </div>
 
-            <div className="rounded-md border bg-white shadow-sm overflow-hidden">
+            <div className="rounded-[8px] border border-mii-gray-200 bg-white shadow-mii overflow-hidden">
                 <div className="overflow-x-auto">
                     <table data-testid="product-table" className="w-full text-sm text-left">
-                        <thead className="bg-gray-50 text-gray-700 font-medium border-b">
+                        <thead className="bg-mii-gray-50 text-mii-gray-700 font-semibold border-b border-mii-gray-200">
                             <tr>
                                 <th className="px-4 py-3 w-[80px]">{t('form.image')}</th>
                                 <th className="px-4 py-3">{t('name')}</th>
@@ -94,15 +97,15 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                         <tbody className="divide-y">
                             {filteredProducts.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                                    <td colSpan={6} className="px-4 py-8 text-center text-mii-gray-600">
                                         {t('table.noProducts')}
                                     </td>
                                 </tr>
                             ) : (
                                 filteredProducts.map((product) => (
-                                    <tr key={product.id} data-testid="product-table-row" className="hover:bg-gray-50 transition-colors">
+                                    <tr key={product.id} data-testid="product-table-row" className="hover:bg-mii-gray-50 transition-colors">
                                         <td className="px-4 py-3">
-                                            <div className="relative h-10 w-10 rounded-md overflow-hidden bg-gray-100 border">
+                                            <div className="relative h-10 w-10 rounded-[6px] overflow-hidden bg-mii-gray-100 border border-mii-gray-200">
                                                 {product.image_url ? (
                                                     <Image
                                                         src={product.image_url}
@@ -111,22 +114,22 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                                                         className="object-cover"
                                                     />
                                                 ) : (
-                                                    <div className="flex items-center justify-center h-full text-gray-400">
+                                                    <div className="flex items-center justify-center h-full text-mii-gray-400">
                                                         <span className="text-xs">{t('table.noImg')}</span>
                                                     </div>
                                                 )}
                                             </div>
                                         </td>
-                                        <td className="px-4 py-3 font-medium text-gray-900">
+                                        <td className="px-4 py-3 font-medium text-mii-gray-900">
                                             {product.name}
                                             {product.description && (
-                                                <p className="text-xs text-gray-500 truncate max-w-[200px]">
+                                                <p className="text-xs text-mii-gray-600 truncate max-w-[200px]">
                                                     {product.description}
                                                 </p>
                                             )}
                                         </td>
                                         <td className="px-4 py-3">
-                                            <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 bg-gray-100 text-gray-800">
+                                            <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors border-mii-gray-200 bg-mii-gray-50 text-mii-gray-800">
                                                 {product.category}
                                             </span>
                                         </td>
@@ -136,8 +139,8 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                                         <td className="px-4 py-3 text-center">
                                             <span
                                                 className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${product.active
-                                                    ? "bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20"
-                                                    : "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20"
+                                                    ? "bg-[#ECFDF3] text-[#15803D] ring-1 ring-inset ring-[#BBF7D0]"
+                                                    : "bg-[#FEF2F2] text-[#B91C1C] ring-1 ring-inset ring-[#FECACA]"
                                                     }`}
                                             >
                                                 {product.active ? t('active') : t('inactive')}
@@ -148,7 +151,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                                                 <button
                                                     onClick={() => onEdit(product)}
                                                     data-testid="product-edit-button"
-                                                    className="p-2 hover:bg-gray-100 rounded-md text-gray-600 hover:text-blue-600 transition-colors"
+                                                    className="p-2 hover:bg-mii-gray-50 rounded-md text-mii-gray-600 hover:text-mii-blue transition-colors"
                                                     title={tCommon('edit')}
                                                 >
                                                     <Edit className="h-4 w-4" />
@@ -156,7 +159,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                                                 <button
                                                     onClick={() => onDelete(product)}
                                                     data-testid="product-delete-button"
-                                                    className="p-2 hover:bg-gray-100 rounded-md text-gray-600 hover:text-red-600 transition-colors"
+                                                    className="p-2 hover:bg-mii-gray-50 rounded-md text-mii-gray-600 hover:text-[#EF4444] transition-colors"
                                                     title={tCommon('delete')}
                                                 >
                                                     <Trash2 className="h-4 w-4" />

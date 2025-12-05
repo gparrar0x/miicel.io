@@ -10,6 +10,8 @@ import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 
 import { AdminSidebar } from "@/components/AdminSidebar"
+import { DashboardHeader } from "@/components/ui/dashboard-header"
+import { Container } from "@/components/ui/container"
 
 interface AdminProductsClientProps {
     initialProducts: Product[]
@@ -123,17 +125,9 @@ export function AdminProductsClient({ initialProducts, tenantId, tenantSlug, ten
     return (
         <>
             <AdminSidebar tenant={tenantSlug} tenantName={tenantName} />
-            <div className="lg:pl-64 min-h-screen bg-gray-50">
-                <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 mt-16 lg:mt-0">
-                    <div className="flex justify-between items-center mb-8">
-                        <div>
-                            <h1 className="text-3xl font-bold tracking-tight text-gray-900">{t('title')}</h1>
-                            <p className="text-gray-500 mt-2">
-                                {t('subtitle')}
-                            </p>
-                        </div>
-                    </div>
-
+            <div className="lg:pl-mii-sidebar min-h-screen bg-mii-gray-50">
+                <DashboardHeader title={t('title')} subtitle={t('subtitle')} />
+                <Container className="py-8 space-y-6">
                     <ProductsTable
                         products={products}
                         onAdd={handleAdd}
@@ -150,7 +144,7 @@ export function AdminProductsClient({ initialProducts, tenantId, tenantSlug, ten
                             isLoading={isLoading}
                         />
                     )}
-                </main>
+                </Container>
             </div>
         </>
     )
