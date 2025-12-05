@@ -3,7 +3,8 @@ id: MII_6
 project_code: MII
 project: miicel.io
 title: "MII_6: Fix dashboard redirect loop after login"
-estado: active
+estado: done
+completed_at: 2025-12-05
 tags:
   - bug
   - auth
@@ -92,29 +93,15 @@ Identificar y eliminar la causa del redirect loop para que usuarios autenticados
 
 ## Next Steps
 
-- [ ] **Investigar redirect loop en profundidad:**
-  - Revisar si hay middleware causando redirects
-  - Verificar si parent layouts tienen redirects
-  - Analizar network waterfall en DevTools para ver secuencia exacta de redirects
+- [x] **Root cause fixed (2025-12-04, commits ecacac2 / ca9acc6):** proxy resolves tenant by slug or ID and preserves locale, breaking the redirect loop.
+- [x] Replaced hard `window.location.href` with server-side proxy redirect; dashboard loads correctly for tenant_admin and platform_admin.
+- [x] Verified Supabase cookies and dashboard auth check; loop no longer reproducible.
 
-- [ ] **Cambiar de `window.location.href` a `router.push()`:**
-  - En `app/[locale]/login/page.tsx` línea 47
-  - Ver si SPA navigation sin hard refresh soluciona el problema
+## Outcome
 
-- [ ] **Verificar cookies Supabase en SSR:**
-  - Confirmar que cookies persisten entre requests en Next.js 15
-  - Revisar si `createClient()` en dashboard lee cookies correctamente
-  - Considerar usar `createServerClient` en dashboard si es server component
-
-- [ ] **Debug con logs granulares:**
-  - Agregar `console.log` en cada paso del useEffect
-  - Verificar si tenantData query falla y causa redirect
-  - Confirmar que no hay múltiples useEffect corriendo
-
-- [ ] **Considerar alternativas:**
-  - Server-side redirect desde `/api/auth/login-redirect` en lugar de client-side
-  - Usar Next.js redirect() desde Server Action
-  - Implementar middleware para auth check en lugar de useEffect
+- Dashboard accessible at `/en/3/dashboard` for `tenant@miicel.io`; no `ERR_TOO_MANY_REDIRECTS`.
+- Roles validated against `users` table in proxy before dashboard access.
+- Regression risk low; tracked in `CHANGELOG.md` under Unreleased → Fixed.
 
 ## References
 

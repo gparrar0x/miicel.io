@@ -3,7 +3,8 @@ id: MII_4
 project_code: MII
 project: miicel.io
 title: "MII_4: User System Architecture - Customers vs Staff/Admin"
-estado: active
+estado: done
+completed_at: 2025-12-05
 tags:
   - architecture
   - database
@@ -115,13 +116,17 @@ CREATE POLICY users_tenant_isolation ON users
 2. **Performance**: Customer queries don't scan staff rows (measured via query plans)
 3. **Maintainability**: Adding customer feature (e.g., wishlists) doesn't touch `users` table
 
-## Next Steps
-- [ ] **Kokoro**: Implement migration scripts (customers + users tables, RLS policies)
-- [ ] **Kokoro**: Update auth middleware to set `app.current_tenant` context
-- [ ] **Pixel**: Build customer login flow (magic link UI)
-- [ ] **Pixel**: Build staff invite/login flow (admin portal)
-- [ ] **Sentinela**: E2E tests for tenant isolation (customer cannot access staff endpoints)
-- [ ] **Sentinela**: E2E tests for role-based access (staff cannot edit tenant config)
+## Next Steps (cerrado)
+- [x] **Kokoro**: Migrations aplicadas para `customers` (loyalty, totals) y nueva tabla `users` con RLS básica; seeds de admin incluidos.
+- [x] **Kokoro**: Login redirect y proxy actualizados para usar roles de `users` y tenant ID numérico; Supabase types regenerados.
+- [ ] **Pixel**: Flujos UI (magic link customers / staff invite) movidos a ticket nuevo (crear follow-up).
+- [ ] **Sentinela**: E2E de aislamiento y roles movidos a ticket nuevo (crear follow-up).
+
+## Outcome
+
+- Arquitectura de usuarios separada (`customers` vs `users`) en producción; roles `platform_admin`, `tenant_admin`, `staff` operativos.
+- Login redirige según rol y respeta tenant/locale; compatible con `tenants.owner_id` legado.
+- Base para loyalty/analytics en customers y permisos extensibles vía `users.permissions`.
 
 ## References
 - Current tenant isolation: `db/supabase/migrations/` (existing tenant table)

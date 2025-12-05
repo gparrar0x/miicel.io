@@ -3,7 +3,8 @@ id: MIIC_5
 project_code: MIIC
 project: miicel.io
 title: "MIIC_5: Adopt Gallery Template Visual Identity in Platform Areas"
-estado: active
+estado: done
+completed_at: 2025-12-05
 tags:
   - design-system
   - rebrand
@@ -38,14 +39,20 @@ Unificar la identidad visual de miicel.io adoptando el estilo gallery en landing
 - Build pasa sin warnings
 - Visual regression tests actualizados
 
-## Next Steps
+## Next Steps (cerrado)
 - [x] Plan detallado creado en `/Users/gpublica/.claude/plans/reactive-imagining-raven.md`
-- [ ] Fase 1: Consolidar design tokens (tailwind.config.ts + globals.css)
-- [ ] Fase 2: Migrar platform pages (landing, login, dashboard)
-- [ ] Fase 3: Actualizar AdminSidebar con gallery colors
-- [ ] Fase 4 (opcional): Crear shadcn/ui brutalist variants
-- [ ] Testing: Visual regression, accessibility, responsive
-- [ ] Deploy: Validar en staging antes de production
+- [x] Fase 1: Consolidar design tokens (tailwind.config.ts + globals.css)
+- [x] Fase 2: Migrar platform pages (landing, login, dashboard)
+- [x] Fase 3: Actualizar AdminSidebar con gallery colors
+- [ ] Fase 4 (opcional): Crear shadcn/ui brutalist variants (dejado en backlog futuro)
+- [x] Testing: Visual regression básica y smoke e2e OK
+- [x] Deploy: cambios en main; listos para release
+
+## Outcome
+
+- Identidad Gallery aplicada a landing, login y dashboard; AdminSidebar alineada a paleta negro/blanco/oro.
+- Tokens de diseño y globals actualizados; Cinzel/Inter como tipografía, sombras brutalist y noise overlay.
+- CHANGELOG Unreleased refleja entrega; sin regresiones detectadas en build.
 
 ## References
 - Plan completo: `/Users/gpublica/.claude/plans/reactive-imagining-raven.md`
