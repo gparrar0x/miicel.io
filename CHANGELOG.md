@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Design System Retheme to Blue Minimal (MIIC-6)**: Replaced gold/Cinzel gallery identity with blue/white, Inter-based system and updated docs/tokens
+  - Design specs updated to new palette, spacing, accessibility: `backlog/MIIC_6_refined_brand_identity/{DESIGN_SYSTEM.md, DESIGN_QUICK_REFERENCE.md, COMPONENT_SPECS.md, styles.css}`
+  - Platform globals now import new vars, drop Cinzel, and use Inter via next/font: `app/globals.css`, `app/[locale]/layout.tsx`
+  - Legacy token file rethemed to blue palette and 24/20/16 spacing: `styles/tokens.css`
+  - Core UI components rebuilt with test IDs and blue styling (Button, Input, Card, Badge, Container, DashboardHeader): `components/ui/*.tsx`
+
 - **Gallery Identity Rebrand (MIIC-5)**: Adopted gallery template visual identity across platform areas (landing, login, dashboard)
   - **Design tokens**:
     - Extended Tailwind config with gallery colors (`gallery-gold: #B8860B`, `gallery-black: #1A1A1A`), brutal shadows, Cinzel/Inter fonts
