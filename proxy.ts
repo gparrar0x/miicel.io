@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import createMiddleware from 'next-intl/middleware'
@@ -182,8 +183,9 @@ export async function proxy(req: NextRequest) {
       return NextResponse.redirect(new URL(`/${locale}/login`, req.url))
     }
 
-    // Check user role and tenant assignment
-    const { data: userRecord } = await supabase
+    // Check user role and tenant assignment (bypass RLS to avoid false negatives)
+    const supabaseAdmin = createServiceRoleClient()
+    const { data: userRecord } = await supabaseAdmin
       .from('users')
       .select('role, tenant_id')
       .eq('auth_user_id', user.id)
