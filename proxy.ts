@@ -99,7 +99,12 @@ export async function proxy(req: NextRequest) {
     return supabaseResponse
   }
 
-  const tenantSlug = secondSegment
+  const tenantIdentifier = secondSegment
+  const locale = pathSegments[0]
+
+  // Accept both numeric tenant IDs and slugs in the URL. The dashboard now uses
+  // numeric IDs (e.g. /en/3/dashboard), but existing links may still pass slugs.
+  const isNumericTenantId = /^\d+$/.test(tenantIdentifier)
 
   // Check if we should bypass cache
   // 1. Header-based bypass (for API calls)
@@ -108,17 +113,20 @@ export async function proxy(req: NextRequest) {
     req.headers.get('x-bypass-tenant-cache') === 'true' ||
     req.nextUrl.searchParams.has('_t')
 
-  const cached = tenantCache.get(tenantSlug)
+  // Cache lookup uses the original identifier to keep behaviour predictable
+  const cached = tenantCache.get(tenantIdentifier)
   let tenant: TenantData
 
   if (cached && cached.expires > Date.now() && !bypassCache) {
     tenant = cached
   } else {
-    const { data, error } = await supabase
+    const tenantQuery = supabase
       .from('tenants')
       .select('id, slug, name, config, active, owner_id, updated_at')
-      .eq('slug', tenantSlug)
-      .single()
+
+    const { data, error } = isNumericTenantId
+      ? await tenantQuery.eq('id', Number(tenantIdentifier)).single()
+      : await tenantQuery.eq('slug', tenantIdentifier).single()
 
     if (error || !data) {
       // If not found, we might want to let it pass (maybe it's a static file or something else)
@@ -151,7 +159,8 @@ export async function proxy(req: NextRequest) {
     const isRecentlyActivated = Date.now() - updatedAt < 10000
     const cacheTTL = isRecentlyActivated ? 5000 : CACHE_TTL
 
-    tenantCache.set(tenantSlug, { ...tenant, expires: Date.now() + cacheTTL })
+    // Cache using the identifier that came in the URL (ID or slug)
+    tenantCache.set(tenantIdentifier, { ...tenant, expires: Date.now() + cacheTTL })
   }
 
   const requestHeaders = new Headers(req.headers)
@@ -169,21 +178,28 @@ export async function proxy(req: NextRequest) {
     const { data: { user }, error } = await supabase.auth.getUser()
 
     if (error || !user) {
-      return NextResponse.redirect(new URL('/login', req.url))
+      // Keep locale in the redirect target to avoid bouncing through the intl middleware
+      return NextResponse.redirect(new URL(`/${locale}/login`, req.url))
     }
 
-    // Check if user is superadmin
+    // Check user role and tenant assignment
+    const { data: userRecord } = await supabase
+      .from('users')
+      .select('role, tenant_id')
+      .eq('auth_user_id', user.id)
+      .single()
+
     const isSuperAdmin = user.email &&
       process.env.SUPER_ADMINS?.split(',').map(e => e.trim()).includes(user.email)
 
-    // If not superadmin, check if owner of this tenant
-    if (!isSuperAdmin && user.id !== tenant.owner_id) {
-      // Redirect to tenant root (which will be /es/tenant or /tenant)
-      // We should construct the URL carefully
-      // req.url includes the full path. We want to replace the path with `/${tenantSlug}` (plus locale)
-      // But `NextResponse.redirect` takes a URL.
-      // If we redirect to `/${tenantSlug}`, intl middleware will handle it.
-      return NextResponse.redirect(new URL(`/${tenantSlug}`, req.url))
+    const isPlatformAdmin = userRecord?.role === 'platform_admin'
+    const isTenantAdmin = userRecord?.role === 'tenant_admin' && userRecord?.tenant_id === tenant.id
+    const isStaff = userRecord?.role === 'staff' && userRecord?.tenant_id === tenant.id
+    const isOwner = user.id === tenant.owner_id
+
+    if (!(isSuperAdmin || isPlatformAdmin || isTenantAdmin || isStaff || isOwner)) {
+      // Unauthorized: send to locale-aware login to break redirect loop
+      return NextResponse.redirect(new URL(`/${locale}/login`, req.url))
     }
   }
 

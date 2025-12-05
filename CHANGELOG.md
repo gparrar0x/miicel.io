@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Dashboard redirect loop with numeric tenant IDs (MII-6)**: Auth proxy now resolves tenants by ID or slug and preserves locale-aware redirects to break loops after login. Roles checked against `users` table (platform_admin, tenant_admin, staff, owner) before allowing dashboard access. Files: `proxy.ts`
+
 ### Changed
 
 - **Gallery Identity Rebrand (MIIC-5)**: Adopted gallery template visual identity across platform areas (landing, login, dashboard)
