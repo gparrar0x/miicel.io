@@ -9,20 +9,20 @@
  * Mocks MP sandbox redirects; does not test real MP integration.
  */
 
-import { test, expect } from '@playwright/test'
+import { test, expect, Page, BrowserContext, Route } from '@playwright/test'
 
 test.describe('MercadoPago Checkout - Happy Paths', () => {
-  const TEST_TENANT = 'demo_galeria' // Use demo tenant ID 1
-  const BASE_URL = `http://localhost:3000/es/${TEST_TENANT}`
+  const TEST_TENANT = process.env.TEST_TENANT_SLUG || 'demo_galeria'
+  const BASE_URL = `${process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000'}/es/${TEST_TENANT}`
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page }: { page: Page }) => {
     // Navigate to tenant store
     await page.goto(BASE_URL)
   })
 
-  test('should complete checkout with valid MercadoPago form data', async ({ page, context }) => {
+  test('should complete checkout with valid MercadoPago form data', async ({ page, context }: { page: Page; context: BrowserContext }) => {
     // Mock the API response for MercadoPago checkout
-    await page.route('/api/checkout/create-preference', async (route) => {
+    await page.route('/api/checkout/create-preference', async (route: Route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -83,7 +83,7 @@ test.describe('MercadoPago Checkout - Happy Paths', () => {
     await expect(submitButton).not.toBeDisabled()
   })
 
-  test('should display success page after payment', async ({ page }) => {
+  test('should display success page after payment', async ({ page }: { page: Page }) => {
     // Navigate directly to success page (simulating MP callback) with tenant ID
     await page.goto(`${BASE_URL}/checkout/success?orderId=order-123`)
     await page.waitForLoadState('networkidle')
@@ -93,7 +93,7 @@ test.describe('MercadoPago Checkout - Happy Paths', () => {
     expect(page.url()).toContain('orderId=order-123')
   })
 
-  test('should show order details on success page', async ({ page }) => {
+  test('should show order details on success page', async ({ page }: { page: Page }) => {
     const orderId = 'order-123'
 
     // Navigate to success page with tenant ID
