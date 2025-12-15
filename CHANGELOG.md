@@ -7,12 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Complete Purchase Flow E2E Test (SKY-13)**: New test covering full buyer journey - catalog → product → cart → checkout → MercadoPago → success → WhatsApp
+  - `complete-purchase-flow.spec.ts`: 3 tests validating end-to-end purchase with MP payment simulation
+  - Tests verify WhatsApp button visibility based on payment status (`paid` vs `pending`)
+  - Fixed `checkout-mercadopago.spec.ts` tenant from `demo_restaurant` to `demo_galeria`
+  - **Result**: 9/9 checkout-related tests passing
+
 ### Fixed
 
 - **Dashboard redirect loop with numeric tenant IDs (MII-6)**: Auth proxy now resolves tenants by ID or slug and preserves locale-aware redirects to break loops after login. Roles checked against `users` table (platform_admin, tenant_admin, staff, owner) before allowing dashboard access. Files: `proxy.ts`
 
 ### Changed
 
+- **MercadoPago checkout flow (MIIC-6)**: Persist `checkout_id` (preference_id) en órdenes, webhook valida firma con secreto por tenant (fallback global) y usa token MP del tenant (fallback global), success page muestra CTA de WhatsApp solo con pagos `paid`, y los specs de checkout permiten configurar slug/base URL por env.
 - **Gallery Identity Rebrand (MIIC-5)**: Adopted gallery template visual identity across platform areas (landing, login, dashboard)
   - **Design tokens**:
     - Extended Tailwind config with gallery colors (`gallery-gold: #B8860B`, `gallery-black: #1A1A1A`), brutal shadows, Cinzel/Inter fonts
