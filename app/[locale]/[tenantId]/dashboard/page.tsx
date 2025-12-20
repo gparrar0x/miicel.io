@@ -1,11 +1,15 @@
 'use client'
 
-import { use, useEffect, useState } from 'react'
+import { use, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import { Store, Package, ShoppingCart, DollarSign, Settings } from 'lucide-react'
-import { AdminSidebar } from '@/components/AdminSidebar'
 import { useTranslations } from 'next-intl'
+import { DollarSign, Package, Settings, ShoppingCart } from 'lucide-react'
+
+import { StatCard } from '@/components/dashboard/stat-card'
+import { ChartCard } from '@/components/dashboard/chart-card'
+import { DataTable, StatusBadge } from '@/components/dashboard/data-table'
+import { Button } from '@/components/ui/button'
+import { createClient } from '@/lib/supabase/client'
 
 interface DashboardStats {
   totalProducts: number
@@ -13,27 +17,44 @@ interface DashboardStats {
   revenue: number
 }
 
+interface OrderRow {
+  id: number
+  total: number
+  status: string
+  created_at: string | null
+}
+
 export default function AdminDashboard({ params }: { params: Promise<{ tenantId: string; locale: string }> }) {
   const { tenantId, locale } = use(params)
   const router = useRouter()
   const supabase = createClient()
   const t = useTranslations('Dashboard')
-  
+
   const [loading, setLoading] = useState(true)
-  const [stats, setStats] = useState<DashboardStats>({
-    totalProducts: 0,
-    totalOrders: 0,
-    revenue: 0
-  })
+  const [stats, setStats] = useState<DashboardStats>({ totalProducts: 0, totalOrders: 0, revenue: 0 })
   const [tenantName, setTenantName] = useState('')
+  const [ordersChart, setOrdersChart] = useState<{ name: string; value: number }[]>([])
+  const [recentOrders, setRecentOrders] = useState<Array<{ id: number; total: number; status: string; created_at: string }>>([])
+
+  const currencyFormatter = useMemo(
+    () =>
+      new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }),
+    [locale],
+  )
 
   useEffect(() => {
     const loadDashboard = async () => {
       try {
+        const numericId = Number(tenantId)
         const { data: tenantData } = await supabase
           .from('tenants')
-          .select('id, name, config')
-          .eq('id', parseInt(tenantId))
+          .select('id, name, config, slug')
+          .eq(Number.isNaN(numericId) ? 'slug' : 'id', Number.isNaN(numericId) ? tenantId : numericId)
           .single()
 
         if (!tenantData) {
@@ -50,23 +71,35 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenantId:
           .eq('active', true)
           .eq('tenant_id', tenantData.id)
 
-        // Get first day of current month
         const now = new Date()
         const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
 
         const { data: orders } = await supabase
           .from('orders')
-          .select('total, created_at')
+          .select('id,total,status,created_at')
           .in('status', ['paid', 'preparing', 'ready', 'delivered'])
           .eq('tenant_id', tenantData.id)
           .gte('created_at', firstDayOfMonth)
 
         const revenue = orders?.reduce((sum, order) => sum + order.total, 0) || 0
 
+        const sortedOrders = (orders || [])
+          .filter((o): o is typeof o & { created_at: string } => o.created_at !== null)
+          .sort((a, b) => new Date(b.created_at).valueOf() - new Date(a.created_at).valueOf())
+
+        const buckets = new Map<string, number>()
+        sortedOrders.forEach((order) => {
+          const label = new Date(order.created_at).toLocaleDateString(locale, { month: 'short', day: 'numeric' })
+          buckets.set(label, (buckets.get(label) || 0) + 1)
+        })
+
+        setOrdersChart(Array.from(buckets.entries()).map(([name, value]) => ({ name, value })).slice(-10))
+        setRecentOrders(sortedOrders.slice(0, 6))
+
         setStats({
           totalProducts: productCount || 0,
           totalOrders: orders?.length || 0,
-          revenue
+          revenue,
         })
       } catch (error) {
         console.error('Error loading dashboard:', error)
@@ -78,96 +111,119 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenantId:
     loadDashboard()
   }, [tenantId, locale])
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.push(`/${locale}/${tenantId}`)
-  }
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gallery-gold mx-auto"></div>
-          <p className="mt-4 text-gray-600">{t('loading')}</p>
+      <div className="flex items-center justify-center h-full">
+        <div className="space-y-3 text-center">
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-2 border-border border-t-foreground" />
+          <p className="text-sm text-muted-foreground">{t('loading')}</p>
         </div>
       </div>
     )
   }
 
   return (
-    <>
-      <AdminSidebar tenant={tenantId} tenantName={tenantName} />
-      <div className="lg:pl-64 min-h-screen bg-[#FAFAFA]">
-        <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 mt-16 lg:mt-0">
-        {/* Header Hero - Brutalist Style */}
-        <div className="bg-gallery-black border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-8 mb-8 relative overflow-hidden">
-          <div className="absolute inset-0 bg-noise opacity-10 pointer-events-none"></div>
-          <div className="relative z-10">
-            <h2 className="text-4xl font-bold font-display mb-2 text-white">{t('welcomeTitle')}</h2>
-            <p className="text-gray-300 text-lg">
-              {t('welcomeDesc')}
-            </p>
-          </div>
-          {/* Accent stripe */}
-          <div className="absolute bottom-0 left-0 w-full h-2 bg-gallery-gold"></div>
-        </div>
-
-        {/* Stats Cards - High Contrast */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-mono uppercase tracking-wider text-gray-500 mb-1">{t('activeProducts')}</p>
-                <p className="text-4xl font-bold text-gallery-black mt-2">{stats.totalProducts}</p>
-              </div>
-              <div className="bg-gallery-gold border-2 border-black p-3">
-                <Package className="h-7 w-7 text-black" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-mono uppercase tracking-wider text-gray-500 mb-1">{t('completedOrders')}</p>
-                <p className="text-4xl font-bold text-gallery-black mt-2">{stats.totalOrders}</p>
-              </div>
-              <div className="bg-gallery-gold border-2 border-black p-3">
-                <ShoppingCart className="h-7 w-7 text-black" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-mono uppercase tracking-wider text-gray-500 mb-1">{t('totalRevenue')}</p>
-                <p className="text-4xl font-bold text-gallery-black mt-2">${stats.revenue.toFixed(2)}</p>
-              </div>
-              <div className="bg-gallery-gold border-2 border-black p-3">
-                <DollarSign className="h-7 w-7 text-black" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Actions - Brutalist Grid */}
-        <div className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-8">
-          <h3 className="text-2xl font-bold font-display text-gallery-black mb-6 pb-3 border-b-4 border-gallery-gold">{t('quickActions')}</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <button
-              onClick={() => router.push(`/${locale}/${tenantId}/dashboard/settings/appearance`)}
-              className="flex flex-col items-center justify-center p-8 border-4 border-black bg-white hover:bg-gallery-gold hover:-translate-y-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 group"
-            >
-              <Settings className="h-10 w-10 text-gallery-black mb-3" />
-              <span className="text-sm font-bold font-mono uppercase tracking-wide text-gallery-black">
-                {t('settings')}
-              </span>
-            </button>
-          </div>
-        </div>
-        </main>
+    <div className="space-y-6">
+      {/* Page header */}
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">{tenantName || t('welcomeTitle')}</h1>
+        <p className="text-muted-foreground">{t('welcomeDesc')}</p>
       </div>
-    </>
+
+      {/* Stats grid */}
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          title={t('activeProducts') || 'Productos activos'}
+          value={stats.totalProducts.toString()}
+          icon={Package}
+        />
+        <StatCard
+          title={t('completedOrders') || 'Pedidos completados'}
+          value={stats.totalOrders.toString()}
+          change={t('monthlyOrders') || 'Mes actual'}
+          icon={ShoppingCart}
+        />
+        <StatCard
+          title={t('totalRevenue') || 'Ingresos'}
+          value={currencyFormatter.format(stats.revenue)}
+          change={t('monthRevenue') || 'Ingresos mes'}
+          icon={DollarSign}
+        />
+        <StatCard
+          title={t('settings') || 'Ajustes'}
+          value={t('navDashboard') || 'En línea'}
+          icon={Settings}
+        />
+      </div>
+
+      {/* Charts section */}
+      <div className="grid gap-6 xl:grid-cols-3">
+        <div className="xl:col-span-2">
+          <ChartCard title={t('ordersTrend') || 'Pedidos por día'} data={ordersChart} />
+        </div>
+        <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
+          <h3 className="text-base font-semibold text-foreground">{t('quickActions')}</h3>
+          <div className="mt-4 space-y-3">
+            <Button
+              className="w-full justify-between"
+              variant="secondary"
+              onClick={() => router.push(`/${locale}/${tenantId}/dashboard/settings`)}
+            >
+              {t('settings') || 'Ajustes'}
+              <Settings className="h-4 w-4" />
+            </Button>
+            <Button
+              className="w-full justify-between"
+              variant="outline"
+              onClick={() => router.push(`/${locale}/${tenantId}/dashboard/products`)}
+            >
+              {t('addProduct') || 'Gestionar productos'}
+              <Package className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent orders */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">{t('recentOrders') || 'Pedidos recientes'}</h2>
+            <p className="text-sm text-muted-foreground">{t('recentOrdersHint') || 'Últimos movimientos del mes'}</p>
+          </div>
+          <Button variant="ghost" size="sm" onClick={() => router.push(`/${locale}/${tenantId}/dashboard/orders`)}>
+            {t('viewAll') || 'Ver todo'}
+          </Button>
+        </div>
+
+        <DataTable
+          data={recentOrders}
+          columns={[
+            { key: 'id', header: 'ID', render: (item) => `#${item.id}` },
+            {
+              key: 'status',
+              header: t('status') || 'Estado',
+              render: (item) => (
+                <StatusBadge
+                  status={item.status}
+                  variant={item.status === 'delivered' || item.status === 'paid' ? 'default' : 'secondary'}
+                />
+              ),
+            },
+            {
+              key: 'total',
+              header: t('total') || 'Total',
+              render: (item) => currencyFormatter.format(item.total),
+            },
+            {
+              key: 'created_at',
+              header: t('date') || 'Fecha',
+              render: (item) =>
+                new Date(item.created_at).toLocaleDateString(locale, { day: '2-digit', month: 'short' }),
+            },
+          ]}
+        />
+      </div>
+    </div>
   )
 }
