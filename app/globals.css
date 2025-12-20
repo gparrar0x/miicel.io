@@ -51,7 +51,6 @@
 
   /* Tenant Theming Defaults (Overridden by ThemeProvider) */
   --color-primary: #1A1A1A; /* Gallery black - was electric blue */
-  --color-secondary: var(--color-ink);
   --color-accent: #B8860B; /* Gallery gold - was acid green */
 
   /* Surfaces */
@@ -92,26 +91,25 @@
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--color-primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --radius: var(--radius);
-  
-  /* Existing Theme Mappings */
+
+  /* Fonts */
   --font-display: var(--font-display);
   --font-body: var(--font-body);
   --font-mono: var(--font-mono);
-
-  /* Tenant Theme Colors */
-  --color-primary: var(--color-primary);
-  --color-secondary: var(--color-secondary);
-  --color-accent: var(--color-accent);
 
   /* Extended Palette */
   --color-paper: var(--color-paper);
@@ -125,12 +123,45 @@
   --shadow-float: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
 }
 
+/* Dark mode via class toggle (Header) */
+.dark {
+  --background: #050505;
+  --foreground: #FFFFFF;
+
+  --card: #0A0A0A;
+  --card-foreground: #FFFFFF;
+  --popover: #0A0A0A;
+  --popover-foreground: #FFFFFF;
+  --secondary: #1A1A1A;
+  --secondary-foreground: #FFFFFF;
+  --muted: #1A1A1A;
+  --muted-foreground: #A1A1A1;
+  --accent: #1A1A1A;
+  --accent-foreground: #FFFFFF;
+  --destructive: #7f1d1d;
+  --destructive-foreground: #FFFFFF;
+  --border: #333333;
+  --input: #333333;
+  --ring: #E5E5E5;
+
+  --color-paper: #0A0A0A;
+  --color-ink: #FFFFFF;
+  --color-bg-base: #000000;
+  --color-bg-elevated: #111111;
+  --color-bg-subtle: #1A1A1A;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #A1A1A1;
+  --color-border: #333333;
+  --color-border-strong: #FFFFFF;
+  --color-primary: #FFFFFF;
+}
+
+/* Dark mode via OS preference */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(.light) {
     --background: #050505;
     --foreground: #FFFFFF;
-    
-    /* Shadcn Dark overrides */
+
     --card: #0A0A0A;
     --card-foreground: #FFFFFF;
     --popover: #0A0A0A;
@@ -156,6 +187,7 @@
     --color-text-secondary: #A1A1A1;
     --color-border: #333333;
     --color-border-strong: #FFFFFF;
+    --color-primary: #FFFFFF;
   }
 }
 
