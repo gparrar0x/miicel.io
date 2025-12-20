@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Dashboard sync with design-system (MIIC-7)**: Aligned dashboard layout and components with design-system source of truth
+  - Copied dashboard components from DS: Sidebar, Header, StatCard, ChartCard, DataTable
+  - Updated Sidebar to accept configurable `brand` + `navItems` props for multi-tenant support
+  - Dashboard page now matches DS exactly: 4 StatCards + 2 charts (50/50) + orders table
+  - Fixed CSS variable mapping: `--color-secondary` now points to Shadcn `--secondary` (light gray) instead of `--color-ink` (black)
+  - Added `.dark` class support for Header theme toggle
+  - Added i18n keys: navDashboard, navProducts, navOrders, navSettings, etc.
+  - Files: `components/dashboard/*`, `components/ui/*`, `app/globals.css`, `messages/*.json`
+
 ### Added
 
 - **Complete Purchase Flow E2E Test (SKY-13)**: New test covering full buyer journey - catalog → product → cart → checkout → MercadoPago → success → WhatsApp
