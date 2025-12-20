@@ -25,7 +25,7 @@ export async function GET(
 
     const supabase = await createClient()
 
-    // Fetch order with customer details
+    // Fetch order with customer details and tenant config
     const { data: order, error } = await supabase
       .from('orders')
       .select(`
@@ -43,6 +43,10 @@ export async function GET(
           name,
           email,
           phone
+        ),
+        tenants (
+          id,
+          config
         )
       `)
       .eq('id', orderId)
@@ -63,6 +67,10 @@ export async function GET(
       )
     }
 
+    // Extract WhatsApp phone from tenant config
+    const tenantConfig = (order.tenants as any)?.config || {}
+    const tenantWhatsapp = tenantConfig.whatsapp || null
+
     // Transform response
     const response = {
       orderId: order.id.toString(),
@@ -82,6 +90,7 @@ export async function GET(
       paymentMethod: order.payment_method,
       status: order.status,
       createdAt: order.created_at,
+      tenantWhatsapp,
     }
 
     return NextResponse.json(response)

@@ -8,6 +8,7 @@ dotenv.config({ path: '.env' })
  * Playwright Configuration for miicelio
  *
  * Configures browser automation for E2E testing with:
+ * - Multiple environments (local and production)
  * - Multiple browser engines (Chromium, Firefox, WebKit)
  * - Headless mode for CI/CD
  * - Headed mode for local debugging
@@ -15,17 +16,33 @@ dotenv.config({ path: '.env' })
  * - Automatic retries for flaky tests
  */
 
+  // Shared configuration for all projects
+  const sharedConfig = {
+    // Screenshot on failure
+    screenshot: 'only-on-failure' as const,
+
+    // Video on failure
+    video: 'retain-on-failure' as const,
+
+    // Trace on failure
+    trace: 'on-first-retry' as const,
+
+    // Network timeout (increased for MercadoPago sandbox)
+    navigationTimeout: 60000,
+    actionTimeout: 15000,
+  }
+
 export default defineConfig({
   testDir: './tests/e2e/specs',
 
   // Global setup (seed test data once before all tests)
   globalSetup: require.resolve('./tests/global-setup.ts'),
 
-  // Maximum time per test (20 seconds)
-  timeout: 20 * 1000,
+  // Maximum time per test (60 seconds for MercadoPago sandbox tests)
+  timeout: 60 * 1000,
 
-  // Global timeout for all tests (10 minutes)
-  globalTimeout: 10 * 60 * 1000,
+  // Global timeout for all tests (15 minutes for MercadoPago sandbox tests)
+  globalTimeout: 15 * 60 * 1000,
 
   // Maximum retries on CI (0 on local)
   retries: process.env.CI ? 2 : 0,
@@ -41,61 +58,55 @@ export default defineConfig({
     ['list'],
   ],
 
-  // Shared settings for all web browsers
-  use: {
-    // Base URL for the app
-    baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000',
+  // Projects (environments)
+  projects: [
+    // Local environment - runs against localhost with auto-start dev server
+    {
+      name: 'local',
+      use: {
+        ...sharedConfig,
+        baseURL: 'http://localhost:3000',
+        ...devices['Desktop Chrome'],
+      },
+    },
 
-    // Screenshot on failure
-    screenshot: 'only-on-failure',
+    // Production environment - runs against production URL
+    {
+      name: 'production',
+      use: {
+        ...sharedConfig,
+        baseURL: 'https://miicelio.vercel.app',
+        ...devices['Desktop Chrome'],
+        // Production may need longer timeouts due to network latency
+        navigationTimeout: 60000,
+        actionTimeout: 15000,
+      },
+    },
 
-    // Video on failure
-    video: 'retain-on-failure',
+    // MercadoPago Sandbox tests - requires longer timeouts
+    {
+      name: 'mercadopago-sandbox',
+      testMatch: /.*mercadopago-sandbox\.spec\.ts/,
+      use: {
+        ...sharedConfig,
+        baseURL: 'http://localhost:3000',
+        ...devices['Desktop Chrome'],
+        // Extended timeouts for MP sandbox interactions
+        navigationTimeout: 90000,
+        actionTimeout: 20000,
+      },
+      timeout: 120 * 1000, // 2 minutes per test
+    },
+  ],
 
-    // Trace on failure
-    trace: 'on-first-retry',
-
-    // Network timeout
-    navigationTimeout: 30000,
-    actionTimeout: 10000,
-  },
-
-  // Web Server configuration (auto-start Next.js dev server)
+  // Web Server configuration (only for local environment)
+  // Note: webServer is shared, but production tests won't use it
   webServer: {
     command: 'npm run dev',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },
-
-  // Projects (browser engines)
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
-
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
-
-    // Mobile testing
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-  ],
 
   // Fullypage screenshots
   snapshotDir: './tests/e2e/snapshots',

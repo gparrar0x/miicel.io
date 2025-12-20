@@ -105,12 +105,24 @@ Required environment variables in `.env`:
 ```bash
 # Playwright Test Configuration
 PLAYWRIGHT_TEST_BASE_URL=http://localhost:3000
+TEST_TENANT_SLUG=demo_galeria
 
 # Supabase (same as app)
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# MercadoPago Sandbox (for E2E tests with real MP integration)
+# Get these from: https://www.mercadopago.com/developers/panel/app
+MERCADOPAGO_TEST_ACCESS_TOKEN=your-sandbox-access-token
+MERCADOPAGO_TEST_CARD_NUMBER=5031 7557 3453 0604  # Argentina approved test card
+MERCADOPAGO_TEST_CARDHOLDER=APRO
+MERCADOPAGO_TEST_EXPIRATION_MONTH=11
+MERCADOPAGO_TEST_EXPIRATION_YEAR=25
+MERCADOPAGO_TEST_CVV=123
 ```
+
+**Note:** Tests that use MercadoPago sandbox will be skipped if `MERCADOPAGO_TEST_ACCESS_TOKEN` is not set.
 
 ### Installation
 
@@ -175,6 +187,104 @@ npx playwright test --project=chromium
 npx playwright test --project=firefox
 npx playwright test --project=webkit
 ```
+
+### Run MercadoPago Sandbox Tests
+```bash
+# Run only MercadoPago sandbox tests (requires MERCADOPAGO_TEST_ACCESS_TOKEN)
+npx playwright test --project=mercadopago-sandbox
+
+# Or run specific test file
+npx playwright test tests/e2e/specs/complete-purchase-flow-mercadopago-sandbox.spec.ts
+```
+
+**Note:** MercadoPago sandbox tests require:
+- `MERCADOPAGO_TEST_ACCESS_TOKEN` environment variable
+- Tests will be skipped if token is not set
+- Uses real MercadoPago sandbox (not mocked)
+- See [MercadoPago Testing Docs](https://www.mercadopago.com/developers/en/docs/checkout-api/testing) for test cards
+
+## Multi-Environment Testing
+
+The test suite supports running tests against multiple environments:
+
+### Local Environment (Default)
+
+Runs tests against `http://localhost:3000` with auto-start dev server:
+
+```bash
+# Run all tests in local environment
+npm run test:e2e:local
+
+# Run with UI mode
+npm run test:e2e:local:ui
+
+# Run with visible browser
+npm run test:e2e:local -- --headed
+```
+
+**Features:**
+- Auto-starts Next.js dev server (`npm run dev`)
+- Faster execution (local network)
+- Full control over test data and environment
+
+### Production Environment
+
+Runs tests against `https://miicelio.vercel.app/`:
+
+```bash
+# Run all tests in production environment
+npm run test:e2e:prod
+
+# Run with UI mode
+npm run test:e2e:prod:ui
+
+# Run with visible browser
+npm run test:e2e:prod -- --headed
+```
+
+**Features:**
+- Tests against live production deployment
+- No dev server needed (tests run against Vercel)
+- Longer timeouts (60s navigation, 15s action) to account for network latency
+- Conditional seeding (reuses existing test data if available)
+
+### Environment Detection
+
+The test suite automatically detects the environment:
+- **Local**: URLs containing `localhost:3000`
+- **Production**: URLs containing `vercel.app` or `miicelio.vercel.app`
+
+### Configuration
+
+Environments are configured in `playwright.config.ts` as separate projects:
+
+```typescript
+projects: [
+  {
+    name: 'local',
+    use: { baseURL: 'http://localhost:3000' },
+  },
+  {
+    name: 'production',
+    use: { baseURL: 'https://miicelio.vercel.app' },
+  },
+]
+```
+
+### Running Tests in Both Environments
+
+To run tests in both environments sequentially:
+
+```bash
+npm run test:e2e:local && npm run test:e2e:prod
+```
+
+### Notes
+
+- **Seeding**: Test data seeding is conditional - it checks for existing data before creating new records
+- **Cleanup**: Database cleanup fixtures work in both environments
+- **Credentials**: Both environments use the same Supabase credentials from `.env`
+- **Timeouts**: Production tests have longer timeouts to handle network latency
 
 ## Database Cleanup Strategy
 

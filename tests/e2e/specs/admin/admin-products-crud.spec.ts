@@ -16,15 +16,21 @@ import { loginAsOwner } from '../../fixtures/auth.fixture'
 
 test.describe('Admin Products CRUD - Happy Path', () => {
   const TEST_TENANT = 'demo_galeria' // Use demo tenant ID 1
-  const BASE_URL = `http://localhost:3000/es/${TEST_TENANT}/dashboard/products`
+
+  // Helper function to get base URL from page context
+  function getBaseUrl(page: any): string {
+    const baseURL = page.context().baseURL || 'http://localhost:3000'
+    return `${baseURL}/es/${TEST_TENANT}/dashboard/products`
+  }
 
   test.beforeEach(async ({ page }) => {
     // Login as owner
     await loginAsOwner(page, TEST_TENANT)
 
     // Navigate to products dashboard
-    await page.goto(BASE_URL)
-    await page.waitForURL(BASE_URL)
+    const url = getBaseUrl(page)
+    await page.goto(url)
+    await page.waitForURL(url)
   })
 
   test('should create product successfully', async ({ page }) => {

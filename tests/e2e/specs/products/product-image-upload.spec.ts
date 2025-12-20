@@ -20,8 +20,16 @@ import { createClient } from '@supabase/supabase-js'
 
 // Test configuration
 const TEST_TENANT = 'demo_galeria' // Use demo tenant ID 1
-const BASE_URL = `http://localhost:3000/es/${TEST_TENANT}`
-const ADMIN_PRODUCTS_URL = `${BASE_URL}/dashboard/products`
+
+// Helper function to get base URL from page context
+function getBaseUrl(page: any): string {
+  const baseURL = page.context().baseURL || 'http://localhost:3000'
+  return `${baseURL}/es/${TEST_TENANT}`
+}
+
+function getAdminProductsUrl(page: any): string {
+  return `${getBaseUrl(page)}/dashboard/products`
+}
 
 // Supabase admin client for DB verification
 function getSupabaseAdmin() {

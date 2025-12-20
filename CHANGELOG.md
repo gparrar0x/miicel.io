@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **MercadoPago Sandbox E2E Test Suite**: Complete real integration tests with MP sandbox
+  - New `mercadopago.helper.ts`: Handles iframe field detection, installment selection, payment completion, and redirect handling
+  - New `complete-purchase-flow-mercadopago-sandbox.spec.ts`: Full purchase flow with real MP sandbox (catalog → cart → checkout → MP payment → redirect)
+  - Uses official MP test cards (Mastercard `5031755734530604`, cardholder `APRO`, DNI `12345678`)
+  - Handles secure iframes via `fill()` strategy with proper waiting mechanisms
+  - Added `mercadopago-sandbox` Playwright project with network permissions and extended timeouts
+  - **Note**: Test automation works correctly; MP sandbox may reject payments due to Access Token configuration
+
 ### Changed
 
 - **Unified admin pages with dashboard design pattern**: Products, Orders, Settings pages now inherit shared layout (Sidebar + Header) from dashboard

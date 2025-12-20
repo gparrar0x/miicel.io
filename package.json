@@ -14,6 +14,10 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:report": "playwright show-report",
+    "test:e2e:local": "playwright test --project=local",
+    "test:e2e:local:ui": "playwright test --project=local --ui",
+    "test:e2e:prod": "playwright test --project=production",
+    "test:e2e:prod:ui": "playwright test --project=production --ui",
     "docs:dev": "cd website && npm run start",
     "docs:build": "cd website && npm run build",
     "docs:serve": "cd website && npm run serve"

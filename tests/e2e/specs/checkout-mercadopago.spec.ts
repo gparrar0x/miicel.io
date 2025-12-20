@@ -13,11 +13,16 @@ import { test, expect, Page, BrowserContext, Route } from '@playwright/test'
 
 test.describe('MercadoPago Checkout - Happy Paths', () => {
   const TEST_TENANT = process.env.TEST_TENANT_SLUG || 'demo_galeria'
-  const BASE_URL = `${process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000'}/es/${TEST_TENANT}`
+
+  // Helper function to get base URL from page context
+  function getBaseUrl(page: Page): string {
+    const baseURL = page.context().baseURL || 'http://localhost:3000'
+    return `${baseURL}/es/${TEST_TENANT}`
+  }
 
   test.beforeEach(async ({ page }: { page: Page }) => {
     // Navigate to tenant store
-    await page.goto(BASE_URL)
+    await page.goto(getBaseUrl(page))
   })
 
   test('should complete checkout with valid MercadoPago form data', async ({ page, context }: { page: Page; context: BrowserContext }) => {
@@ -54,7 +59,7 @@ test.describe('MercadoPago Checkout - Happy Paths', () => {
     await page.waitForTimeout(500)
 
     // Navigate to cart page
-    await page.goto(`${BASE_URL}/cart`)
+    await page.goto(`${getBaseUrl(page)}/cart`)
     await page.waitForLoadState('networkidle')
 
     // Open checkout modal
@@ -85,7 +90,7 @@ test.describe('MercadoPago Checkout - Happy Paths', () => {
 
   test('should display success page after payment', async ({ page }: { page: Page }) => {
     // Navigate directly to success page (simulating MP callback) with tenant ID
-    await page.goto(`${BASE_URL}/checkout/success?orderId=order-123`)
+    await page.goto(`${getBaseUrl(page)}/checkout/success?orderId=order-123`)
     await page.waitForLoadState('networkidle')
 
     // Verify page loaded and URL contains success
@@ -97,7 +102,7 @@ test.describe('MercadoPago Checkout - Happy Paths', () => {
     const orderId = 'order-123'
 
     // Navigate to success page with tenant ID
-    await page.goto(`${BASE_URL}/checkout/success?orderId=${orderId}`)
+    await page.goto(`${getBaseUrl(page)}/checkout/success?orderId=${orderId}`)
     await page.waitForLoadState('networkidle')
 
     // Verify page loaded and URL contains order ID

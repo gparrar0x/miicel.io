@@ -1,6 +1,7 @@
 -- Migration: 034_seed_platform_admin
 -- Description: Create platform admin user in auth.users and users table
 -- Created: 2024-12-04
+-- Note: Uses admin@miicel.io (production email) instead of admin@skywalking.dev from spec
 
 -- Create auth user for platform admin
 DO $$

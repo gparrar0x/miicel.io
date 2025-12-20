@@ -9,7 +9,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { Link } from '@/i18n/routing'
-import { CheckCircle, Package, User, CreditCard, ArrowLeft } from 'lucide-react'
+import { CheckCircle, Package, User, CreditCard, ArrowLeft, MessageCircle } from 'lucide-react'
 
 interface OrderData {
   orderId: string
@@ -27,6 +27,8 @@ interface OrderData {
   total: number
   currency: string
   paymentMethod: string
+  status: string
+  tenantWhatsapp?: string | null
 }
 
 export default function CheckoutSuccessPage() {
@@ -240,6 +242,37 @@ export default function CheckoutSuccessPage() {
             <Package className="w-5 h-5 mr-2" />
             Print Order
           </button>
+          {/* WhatsApp Button - Only show when order is paid and tenant has WhatsApp configured */}
+          {orderData.status === 'paid' && orderData.tenantWhatsapp && (() => {
+            // Build WhatsApp message with order details
+            const whatsappMessage = `Hola! Mi pedido es:\n\n` +
+              `*Pedido #${orderData.orderId}*\n\n` +
+              `*Cliente:* ${orderData.customer.name}\n` +
+              `*Email:* ${orderData.customer.email}\n` +
+              `*Teléfono:* ${orderData.customer.phone}\n\n` +
+              `*DETALLE DEL PEDIDO:*\n` +
+              orderData.items.map(item => 
+                `- ${item.name} (x${item.quantity}): ${item.currency} ${(item.price * item.quantity).toFixed(2)}`
+              ).join('\n') +
+              `\n\n*TOTAL: ${orderData.currency} ${orderData.total.toFixed(2)}*`
+            
+            // Clean phone number (remove spaces, dashes, etc.)
+            const cleanPhone = orderData.tenantWhatsapp.replace(/\D/g, '')
+            const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(whatsappMessage)}`
+            
+            return (
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 inline-flex items-center justify-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                data-testid="checkout-success-whatsapp"
+              >
+                <MessageCircle className="w-5 h-5 mr-2" />
+                Enviar por WhatsApp
+              </a>
+            )
+          })()}
         </div>
 
         {/* Next Steps */}

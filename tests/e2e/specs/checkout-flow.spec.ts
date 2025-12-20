@@ -15,11 +15,16 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Checkout Flow - Happy Paths', () => {
   const TEST_TENANT = 'demo_galeria' // Use demo tenant ID 1
-  const BASE_URL = `http://localhost:3000/es/${TEST_TENANT}`
+
+  // Helper function to get base URL from page context
+  function getBaseUrl(page: any): string {
+    const baseURL = page.context().baseURL || 'http://localhost:3000'
+    return `${baseURL}/es/${TEST_TENANT}`
+  }
 
   test.beforeEach(async ({ page }) => {
     // Navigate to tenant store
-    await page.goto(BASE_URL)
+    await page.goto(getBaseUrl(page))
   })
 
   test('should successfully submit checkout with cash payment', async ({ page, context }) => {
@@ -55,7 +60,7 @@ test.describe('Checkout Flow - Happy Paths', () => {
     await page.waitForTimeout(500)
 
     // Navigate to cart page
-    await page.goto(`${BASE_URL}/cart`)
+    await page.goto(`${getBaseUrl(page)}/cart`)
     await page.waitForLoadState('networkidle')
 
     // Open checkout modal
@@ -123,7 +128,7 @@ test.describe('Checkout Flow - Happy Paths', () => {
     await page.waitForTimeout(500)
 
     // Navigate to cart page
-    await page.goto(`${BASE_URL}/cart`)
+    await page.goto(`${getBaseUrl(page)}/cart`)
     await page.waitForLoadState('networkidle')
 
     // Open checkout modal
@@ -179,7 +184,7 @@ test.describe('Checkout Flow - Happy Paths', () => {
     })
 
     // Navigate directly to success page
-    await page.goto(`${BASE_URL}/checkout/success?orderId=12345`)
+    await page.goto(`${getBaseUrl(page)}/checkout/success?orderId=12345`)
 
     // Verify success page elements
     await expect(page.getByTestId('checkout-success-header')).toBeVisible()

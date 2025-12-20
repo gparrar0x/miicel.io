@@ -201,9 +201,11 @@ Create first platform admin user for testing:
 -- Migration: 034_seed_platform_admin.sql
 
 -- Insert platform admin (replace email with real admin email)
+-- NOTE: Actual migration uses admin@miicel.io (see 034_seed_platform_admin.sql)
+-- This spec shows the intended structure; actual implementation includes auth user creation
 INSERT INTO users (email, role, name, is_active, permissions)
 VALUES (
-  'admin@skywalking.dev', -- TODO: Replace with real admin email
+  'admin@miicel.io', -- Production email (migration creates auth user + users record)
   'platform_admin',
   'Platform Admin',
   true,
@@ -270,12 +272,13 @@ SELECT id, email, role, is_active FROM users WHERE role = 'platform_admin';
 
 ## Success Criteria
 
-- [ ] `customers` table has loyalty_points, total_orders, total_spent, last_order_at, updated_at
-- [ ] `users` table created with id, tenant_id, email, role, name, permissions, auth_user_id
-- [ ] RLS policies on `users`: tenant admins see tenant users, platform admins see all
-- [ ] Trigger auto-updates customer stats when orders change status
-- [ ] Platform admin user seeded in `users` table
-- [ ] Zero breaking changes to existing order creation flow (`/api/orders/create/route.ts`)
+- [x] `customers` table has loyalty_points, total_orders, total_spent, last_order_at, updated_at
+- [x] `users` table created with id, tenant_id, email, role, name, permissions, auth_user_id
+- [x] RLS policies on `users`: tenant admins see tenant users, platform admins see all
+- [x] Trigger auto-updates customer stats when orders change status
+- [x] Platform admin user seeded in `users` table
+- [x] Zero breaking changes to existing order creation flow (`/api/orders/create/route.ts`)
+- [x] Migration files 031-034 created and documented (idempotent)
 
 ---
 

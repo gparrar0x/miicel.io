@@ -48,6 +48,18 @@ next-env.d.ts
 /tests/test-results.json
 /tests/junit.xml
 /playwright/.cache/
+/playwright-report/
+
+# test debug artifacts
+mp-debug-*.png
+mp-form-*.png
+before-checkout-*.png
+test-debug.log
+test-output.log
+test-ui-output.log
+test-ui.pid
+test.pid
+*.debug.png
 
 # documentation (local only)
 /docs/backlog/

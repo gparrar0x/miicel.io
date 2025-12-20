@@ -16,7 +16,12 @@ import { test, expect, Page, Route } from '@playwright/test'
 
 test.describe('Complete Purchase Flow - Happy Path', () => {
   const TEST_TENANT = 'demo_galeria'
-  const BASE_URL = `http://localhost:3000/es/${TEST_TENANT}`
+
+  // Helper function to get base URL from page context
+  function getBaseUrl(page: Page): string {
+    const baseURL = page.context().baseURL || 'http://localhost:3000'
+    return `${baseURL}/es/${TEST_TENANT}`
+  }
 
   // Mock order data for success page
   const mockOrderData = {
@@ -39,7 +44,7 @@ test.describe('Complete Purchase Flow - Happy Path', () => {
     // ========================================
     // STEP 1: Browse Catalog
     // ========================================
-    await page.goto(BASE_URL)
+    await page.goto(getBaseUrl(page))
     await page.waitForLoadState('networkidle')
 
     // Verify catalog loads with products
@@ -76,7 +81,7 @@ test.describe('Complete Purchase Flow - Happy Path', () => {
     // ========================================
     // STEP 4: Go to Cart
     // ========================================
-    await page.goto(`${BASE_URL}/cart`)
+    await page.goto(`${getBaseUrl(page)}/cart`)
     await page.waitForLoadState('networkidle')
 
     // Verify cart has items
@@ -120,7 +125,7 @@ test.describe('Complete Purchase Flow - Happy Path', () => {
         body: JSON.stringify({
           success: true,
           orderId: 99999,
-          initPoint: `${BASE_URL}/checkout/success?external_reference=99999&status=approved&payment_id=12345`,
+          initPoint: `${getBaseUrl(page)}/checkout/success?external_reference=99999&status=approved&payment_id=12345`,
         }),
       })
     })
@@ -188,7 +193,7 @@ test.describe('Complete Purchase Flow - Happy Path', () => {
     })
 
     // Simulate MercadoPago callback URL with all params
-    await page.goto(`${BASE_URL}/checkout/success?collection_id=123456&collection_status=approved&payment_id=123456&status=approved&external_reference=88888&payment_type=credit_card&merchant_order_id=789&preference_id=pref-xyz`)
+    await page.goto(`${getBaseUrl(page)}/checkout/success?collection_id=123456&collection_status=approved&payment_id=123456&status=approved&external_reference=88888&payment_type=credit_card&merchant_order_id=789&preference_id=pref-xyz`)
 
     await page.waitForLoadState('networkidle')
 
@@ -215,7 +220,7 @@ test.describe('Complete Purchase Flow - Happy Path', () => {
       })
     })
 
-    await page.goto(`${BASE_URL}/checkout/success?orderId=77777`)
+    await page.goto(`${getBaseUrl(page)}/checkout/success?orderId=77777`)
     await page.waitForLoadState('networkidle')
 
     // Verify success page loaded
