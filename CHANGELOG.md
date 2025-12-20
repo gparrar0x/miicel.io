@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Vercel build failures**: Added missing deps (`@radix-ui/react-avatar`, `@radix-ui/react-dropdown-menu`, `recharts`) + upgraded Next.js 16.0.1→16.1.0 to fix critical CVEs (RCE, Server Actions exposure, DoS). Files: `package.json`
+
 ### Changed
 
 - **Dashboard sync with design-system (MIIC-7)**: Aligned dashboard layout and components with design-system source of truth
