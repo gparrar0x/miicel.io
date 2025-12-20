@@ -53,6 +53,7 @@ export function Sidebar({ brand = "Micelio", navItems = defaultNavigation, colla
 
   return (
     <aside
+      data-testid="sidebar"
       className={cn(
         "flex h-screen flex-col border-r border-border bg-sidebar transition-all duration-300",
         collapsed ? "w-16" : "w-64",
@@ -75,6 +76,7 @@ export function Sidebar({ brand = "Micelio", navItems = defaultNavigation, colla
             <Link
               key={item.name}
               href={item.href}
+              data-testid={`nav-${typeof item.icon === 'string' ? item.icon : 'custom'}`}
               className={cn(
                 "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
                 isActive
@@ -91,7 +93,7 @@ export function Sidebar({ brand = "Micelio", navItems = defaultNavigation, colla
 
       {/* Collapse button */}
       <div className="border-t border-sidebar-border p-3">
-        <Button variant="ghost" size="sm" onClick={() => setCollapsed(!collapsed)} className="w-full justify-center">
+        <Button variant="ghost" size="sm" onClick={() => setCollapsed(!collapsed)} className="w-full justify-center" data-testid="btn-toggle-sidebar">
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
       </div>

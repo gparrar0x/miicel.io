@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Unified admin pages with dashboard design pattern**: Products, Orders, Settings pages now inherit shared layout (Sidebar + Header) from dashboard
+  - Removed duplicate `AdminSidebar` component - all pages use `components/dashboard/sidebar.tsx`
+  - Migrated client components to content-only (no layout wrappers)
+  - Unified table headers: `bg-secondary` + `text-xs font-semibold uppercase tracking-wider text-muted-foreground`
+  - Settings page refactored to use shadcn `Tabs`, `Card`, `Button` components
+  - All hardcoded colors (`gray-*`, `black`, `blue-*`) replaced with CSS variables for dark mode support
+  - Added `data-testid` attributes to sidebar navigation for E2E testing
+  - Fixed tenant lookup to support both numeric IDs and slugs in URL params
+  - Files: `AdminProductsClient.tsx`, `AdminOrdersClient.tsx`, `SettingsClient.tsx`, `OrdersTable.tsx`, `ProductsTable.tsx`, `sidebar.tsx`, page files
+
 ### Fixed
 
 - **Vercel build failures**: Added missing deps (`@radix-ui/react-avatar`, `@radix-ui/react-dropdown-menu`, `recharts`) + upgraded Next.js 16.0.1→16.1.0 to fix critical CVEs (RCE, Server Actions exposure, DoS). Files: `package.json`

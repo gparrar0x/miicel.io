@@ -105,17 +105,17 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
             </div>
 
             {/* Table */}
-            <div className="rounded-md border bg-white shadow-sm overflow-hidden">
+            <div className="rounded-lg border border-border bg-background overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left" data-testid="orders-table">
-                        <thead className="bg-gray-50 text-gray-700 font-medium border-b">
+                        <thead className="bg-secondary">
                             <tr>
-                                <th className="px-4 py-3">{t('orderId')}</th>
-                                <th className="px-4 py-3">{t('date')}</th>
-                                <th className="px-4 py-3">{t('customer')}</th>
-                                <th className="px-4 py-3 text-right">{t('total')}</th>
-                                <th className="px-4 py-3 text-center">{t('status')}</th>
-                                <th className="px-4 py-3 text-right">{tCommon('actions')}</th>
+                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t('orderId')}</th>
+                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t('date')}</th>
+                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t('customer')}</th>
+                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground text-right">{t('total')}</th>
+                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground text-center">{t('status')}</th>
+                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground text-right">{tCommon('actions')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y">
@@ -129,15 +129,15 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
                                 filteredOrders.map((order) => (
                                     <tr
                                         key={order.id}
-                                        className="hover:bg-gray-50 transition-colors"
+                                        className="hover:bg-accent/50 transition-colors"
                                         data-testid={`order-row-${order.id}`}
                                     >
-                                        <td className="px-4 py-3 font-medium text-gray-900">
+                                        <td className="px-4 py-3 font-medium text-foreground">
                                             #{order.id}
                                         </td>
-                                        <td className="px-4 py-3 text-gray-600">
+                                        <td className="px-4 py-3 text-muted-foreground">
                                             {new Date(order.created_at).toLocaleDateString()}
-                                            <p className="text-xs text-gray-500">
+                                            <p className="text-xs text-muted-foreground">
                                                 {new Date(order.created_at).toLocaleTimeString([], {
                                                     hour: '2-digit',
                                                     minute: '2-digit'
@@ -147,11 +147,11 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
                                         <td className="px-4 py-3">
                                             {order.customer ? (
                                                 <>
-                                                    <div className="font-medium text-gray-900">
+                                                    <div className="font-medium text-foreground">
                                                         {order.customer.name}
                                                     </div>
                                                     {order.customer.email && (
-                                                        <div className="text-xs text-gray-500">
+                                                        <div className="text-xs text-muted-foreground">
                                                             {order.customer.email}
                                                         </div>
                                                     )}

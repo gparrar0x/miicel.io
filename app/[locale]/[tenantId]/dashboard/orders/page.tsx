@@ -11,11 +11,14 @@ export default async function AdminOrdersPage({ params }: PageProps) {
     const { tenantId } = await params
     const supabase = await createClient()
 
-    // 1. Get Tenant
+    // 1. Get Tenant - try by ID first, then by slug
+    const numericId = parseInt(tenantId)
+    const isNumeric = !isNaN(numericId)
+
     const { data: tenant } = await supabase
         .from("tenants")
         .select("id, slug, name")
-        .eq("id", parseInt(tenantId))
+        .eq(isNumeric ? "id" : "slug", isNumeric ? numericId : tenantId)
         .single()
 
     if (!tenant) {
@@ -62,7 +65,6 @@ export default async function AdminOrdersPage({ params }: PageProps) {
             initialOrders={orders}
             tenantId={tenant.id}
             tenantSlug={tenantId}
-            tenantName={tenant.name}
         />
     )
 }

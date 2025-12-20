@@ -9,16 +9,13 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 
-import { AdminSidebar } from "@/components/AdminSidebar"
-
 interface AdminProductsClientProps {
     initialProducts: Product[]
     tenantId: number
     tenantSlug: string
-    tenantName: string
 }
 
-export function AdminProductsClient({ initialProducts, tenantId, tenantSlug, tenantName }: AdminProductsClientProps) {
+export function AdminProductsClient({ initialProducts, tenantId, tenantSlug }: AdminProductsClientProps) {
     const [products, setProducts] = useState<Product[]>(initialProducts)
     const [isFormOpen, setIsFormOpen] = useState(false)
     const [editingProduct, setEditingProduct] = useState<Product | undefined>(undefined)
@@ -121,37 +118,28 @@ export function AdminProductsClient({ initialProducts, tenantId, tenantSlug, ten
     }
 
     return (
-        <>
-            <AdminSidebar tenant={tenantSlug} tenantName={tenantName} />
-            <div className="lg:pl-64 min-h-screen bg-gray-50">
-                <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 mt-16 lg:mt-0">
-                    <div className="flex justify-between items-center mb-8">
-                        <div>
-                            <h1 className="text-3xl font-bold tracking-tight text-gray-900">{t('title')}</h1>
-                            <p className="text-gray-500 mt-2">
-                                {t('subtitle')}
-                            </p>
-                        </div>
-                    </div>
-
-                    <ProductsTable
-                        products={products}
-                        onAdd={handleAdd}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                    />
-
-                    {isFormOpen && (
-                        <ProductForm
-                            key={editingProduct?.id || 'new'}
-                            initialData={editingProduct}
-                            onSubmit={handleSubmit}
-                            onCancel={() => setIsFormOpen(false)}
-                            isLoading={isLoading}
-                        />
-                    )}
-                </main>
+        <div className="space-y-6">
+            <div>
+                <h1 className="text-2xl font-bold tracking-tight text-foreground">{t('title')}</h1>
+                <p className="text-muted-foreground">{t('subtitle')}</p>
             </div>
-        </>
+
+            <ProductsTable
+                products={products}
+                onAdd={handleAdd}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+            />
+
+            {isFormOpen && (
+                <ProductForm
+                    key={editingProduct?.id || 'new'}
+                    initialData={editingProduct}
+                    onSubmit={handleSubmit}
+                    onCancel={() => setIsFormOpen(false)}
+                    isLoading={isLoading}
+                />
+            )}
+        </div>
     )
 }

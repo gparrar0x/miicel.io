@@ -10,11 +10,14 @@ export default async function SettingsPage({ params }: PageProps) {
     const { tenantId } = await params
     const supabase = await createClient()
 
-    // 1. Get Tenant (no explicit auth check - handled by RLS + API)
+    // 1. Get Tenant - try by ID first, then by slug
+    const numericId = parseInt(tenantId)
+    const isNumeric = !isNaN(numericId)
+
     const { data: tenant } = await supabase
         .from("tenants")
         .select("id, slug, name, config")
-        .eq("id", parseInt(tenantId))
+        .eq(isNumeric ? "id" : "slug", isNumeric ? numericId : tenantId)
         .single()
 
     if (!tenant) {

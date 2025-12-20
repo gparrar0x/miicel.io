@@ -78,17 +78,17 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                 </button>
             </div>
 
-            <div className="rounded-md border bg-white shadow-sm overflow-hidden">
+            <div className="rounded-lg border border-border bg-background overflow-hidden">
                 <div className="overflow-x-auto">
                     <table data-testid="product-table" className="w-full text-sm text-left">
-                        <thead className="bg-gray-50 text-gray-700 font-medium border-b">
+                        <thead className="bg-secondary">
                             <tr>
-                                <th className="px-4 py-3 w-[80px]">{t('form.image')}</th>
-                                <th className="px-4 py-3">{t('name')}</th>
-                                <th className="px-4 py-3">{t('category')}</th>
-                                <th className="px-4 py-3">{t('price')}</th>
-                                <th className="px-4 py-3 text-center">{tCommon('active')}</th>
-                                <th className="px-4 py-3 text-right">{tCommon('actions')}</th>
+                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground w-[80px]">{t('form.image')}</th>
+                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t('name')}</th>
+                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t('category')}</th>
+                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t('price')}</th>
+                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground text-center">{tCommon('active')}</th>
+                                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground text-right">{tCommon('actions')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y">
@@ -100,7 +100,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                                 </tr>
                             ) : (
                                 filteredProducts.map((product) => (
-                                    <tr key={product.id} data-testid="product-table-row" className="hover:bg-gray-50 transition-colors">
+                                    <tr key={product.id} data-testid="product-table-row" className="hover:bg-accent/50 transition-colors">
                                         <td className="px-4 py-3">
                                             <div className="relative h-10 w-10 rounded-md overflow-hidden bg-gray-100 border">
                                                 {product.image_url ? (
@@ -117,10 +117,10 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                                                 )}
                                             </div>
                                         </td>
-                                        <td className="px-4 py-3 font-medium text-gray-900">
+                                        <td className="px-4 py-3 font-medium text-foreground">
                                             {product.name}
                                             {product.description && (
-                                                <p className="text-xs text-gray-500 truncate max-w-[200px]">
+                                                <p className="text-xs text-muted-foreground truncate max-w-[200px]">
                                                     {product.description}
                                                 </p>
                                             )}

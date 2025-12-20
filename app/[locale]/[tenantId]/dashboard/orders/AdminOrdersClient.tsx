@@ -5,7 +5,7 @@ import { OrderResponse } from "@/lib/schemas/order"
 import { OrdersTable } from "@/components/OrdersTable"
 import { KitchenDisplayOrders } from "@/components/KitchenDisplayOrders"
 import { OrderDetailModal } from "@/components/OrderDetailModal"
-import { AdminSidebar } from "@/components/AdminSidebar"
+import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { Monitor, Smartphone } from "lucide-react"
@@ -15,14 +15,12 @@ interface AdminOrdersClientProps {
     initialOrders: OrderResponse[]
     tenantId: number
     tenantSlug: string
-    tenantName: string
 }
 
 export function AdminOrdersClient({
     initialOrders,
     tenantId,
-    tenantSlug,
-    tenantName
+    tenantSlug
 }: AdminOrdersClientProps) {
     const [orders, setOrders] = useState<OrderResponse[]>(initialOrders)
     const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(null)
@@ -140,77 +138,66 @@ export function AdminOrdersClient({
     }
 
     return (
-        <>
-            <AdminSidebar tenant={tenantSlug} tenantName={tenantName} />
-            <div className="lg:pl-64 min-h-screen bg-gray-50">
-                <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 mt-16 lg:mt-0">
-                    {/* Header with View Toggle */}
-                    <div className="flex justify-between items-center mb-6">
-                        <div>
-                            <h1 className="text-3xl font-bold tracking-tight text-gray-900">{t('title')}</h1>
-                            <p className="text-gray-500 mt-2">
-                                {viewMode === 'kitchen' ? t('subtitleKitchen') : t('subtitleTable')}
-                            </p>
-                        </div>
+        <div className="space-y-6">
+            {/* Header with View Toggle */}
+            <div className="flex justify-between items-center">
+                <div>
+                    <h1 className="text-2xl font-bold tracking-tight text-foreground">{t('title')}</h1>
+                    <p className="text-muted-foreground">
+                        {viewMode === 'kitchen' ? t('subtitleKitchen') : t('subtitleTable')}
+                    </p>
+                </div>
 
-                        {/* View Mode Toggle */}
-                        <div className="flex gap-2 bg-white rounded-lg p-1 shadow-sm border">
-                            <button
-                                onClick={() => setViewMode('kitchen')}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                                    viewMode === 'kitchen'
-                                        ? 'bg-gray-900 text-white'
-                                        : 'text-gray-600 hover:text-gray-900'
-                                }`}
-                                data-testid="btn-kitchen-view"
-                            >
-                                <Smartphone className="w-4 h-4" />
-                                <span className="hidden sm:inline">{t('kitchenView')}</span>
-                            </button>
-                            <button
-                                onClick={() => setViewMode('table')}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                                    viewMode === 'table'
-                                        ? 'bg-gray-900 text-white'
-                                        : 'text-gray-600 hover:text-gray-900'
-                                }`}
-                                data-testid="btn-table-view"
-                            >
-                                <Monitor className="w-4 h-4" />
-                                <span className="hidden sm:inline">{t('tableView')}</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Conditional View */}
-                    {viewMode === 'kitchen' ? (
-                        <KitchenDisplayOrders
-                            orders={orders}
-                            onViewOrder={handleViewOrder}
-                            onStatusUpdate={handleStatusUpdate}
-                            onPrint={handlePrint}
-                            onRefresh={refreshData}
-                        />
-                    ) : (
-                        <OrdersTable
-                            orders={orders}
-                            onViewOrder={handleViewOrder}
-                            onStatusUpdate={handleStatusUpdate}
-                            onPrint={handlePrint}
-                        />
-                    )}
-
-                    {/* Order Detail Modal */}
-                    {selectedOrder && (
-                        <OrderDetailModal
-                            order={selectedOrder}
-                            onClose={() => setSelectedOrder(null)}
-                            onStatusUpdate={handleStatusUpdate}
-                            onPrint={handlePrint}
-                        />
-                    )}
-                </main>
+                {/* View Mode Toggle */}
+                <div className="flex gap-1 bg-secondary rounded-lg p-1">
+                    <Button
+                        variant={viewMode === 'kitchen' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setViewMode('kitchen')}
+                        data-testid="btn-kitchen-view"
+                    >
+                        <Smartphone className="w-4 h-4 mr-2" />
+                        <span className="hidden sm:inline">{t('kitchenView')}</span>
+                    </Button>
+                    <Button
+                        variant={viewMode === 'table' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setViewMode('table')}
+                        data-testid="btn-table-view"
+                    >
+                        <Monitor className="w-4 h-4 mr-2" />
+                        <span className="hidden sm:inline">{t('tableView')}</span>
+                    </Button>
+                </div>
             </div>
-        </>
+
+            {/* Conditional View */}
+            {viewMode === 'kitchen' ? (
+                <KitchenDisplayOrders
+                    orders={orders}
+                    onViewOrder={handleViewOrder}
+                    onStatusUpdate={handleStatusUpdate}
+                    onPrint={handlePrint}
+                    onRefresh={refreshData}
+                />
+            ) : (
+                <OrdersTable
+                    orders={orders}
+                    onViewOrder={handleViewOrder}
+                    onStatusUpdate={handleStatusUpdate}
+                    onPrint={handlePrint}
+                />
+            )}
+
+            {/* Order Detail Modal */}
+            {selectedOrder && (
+                <OrderDetailModal
+                    order={selectedOrder}
+                    onClose={() => setSelectedOrder(null)}
+                    onStatusUpdate={handleStatusUpdate}
+                    onPrint={handlePrint}
+                />
+            )}
+        </div>
     )
 }

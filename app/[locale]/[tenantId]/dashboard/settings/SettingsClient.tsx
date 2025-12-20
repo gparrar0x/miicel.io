@@ -1,12 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { AdminSidebar } from "@/components/AdminSidebar"
 import { toast } from "sonner"
 import { Upload, Save, Eye, EyeOff } from "lucide-react"
 import Image from "next/image"
 import { useRouter, usePathname } from '@/i18n/routing'
 import { useLocale, useTranslations } from "next-intl"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 interface SettingsClientProps {
     tenantId: number
@@ -15,8 +17,6 @@ interface SettingsClientProps {
     initialConfig: any
 }
 
-type Tab = 'general' | 'payment' | 'contact'
-
 export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig }: SettingsClientProps) {
     const router = useRouter()
     const pathname = usePathname()
@@ -24,7 +24,7 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
     const t = useTranslations('Settings')
     const tCommon = useTranslations('Common')
 
-    const [activeTab, setActiveTab] = useState<Tab>('general')
+    const [activeTab, setActiveTab] = useState<'general' | 'payment' | 'contact'>('general')
     const [loading, setLoading] = useState(false)
     const [settings, setSettings] = useState<any>(null)
 
@@ -274,57 +274,51 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
         router.replace(pathname, { locale: newLocale })
     }
 
-    const tabs = [
-        { id: 'general' as Tab, label: t('general'), testId: 'tab-general' },
-        { id: 'payment' as Tab, label: t('payment'), testId: 'tab-payment' },
-        { id: 'contact' as Tab, label: t('contact'), testId: 'tab-contact' }
-    ]
-
     return (
-        <>
-            <AdminSidebar tenant={tenantSlug} tenantName={tenantName} />
-            <div className="lg:pl-64 min-h-screen bg-gray-50">
-                <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 mt-16 lg:mt-0">
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-bold tracking-tight text-gray-900">{t('title')}</h1>
-                        <p className="text-gray-500 mt-2">
-                            {t('subtitle')}
-                        </p>
-                    </div>
+        <div className="space-y-6">
+            <div>
+                <h1 className="text-2xl font-bold tracking-tight text-foreground">{t('title')}</h1>
+                <p className="text-muted-foreground">{t('subtitle')}</p>
+            </div>
 
-                    {/* Tabs */}
-                    <div className="bg-white rounded-lg shadow-sm border">
-                        <div className="border-b border-gray-200">
-                            <nav className="flex -mb-px">
-                                {tabs.map(tab => (
-                                    <button
-                                        key={tab.id}
-                                        onClick={() => setActiveTab(tab.id)}
-                                        data-testid={tab.testId}
-                                        className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
-                                            ? 'border-blue-500 text-blue-600'
-                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                            }`}
-                                    >
-                                        {tab.label}
-                                    </button>
-                                ))}
-                            </nav>
-                        </div>
+            <Card>
+                <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'general' | 'payment' | 'contact')}>
+                    <TabsList className="w-full justify-start rounded-none border-b bg-transparent p-0">
+                        <TabsTrigger
+                            value="general"
+                            data-testid="tab-general"
+                            className="rounded-none border-b-2 border-transparent px-6 py-3 data-[state=active]:border-primary data-[state=active]:bg-transparent"
+                        >
+                            {t('general')}
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="payment"
+                            data-testid="tab-payment"
+                            className="rounded-none border-b-2 border-transparent px-6 py-3 data-[state=active]:border-primary data-[state=active]:bg-transparent"
+                        >
+                            {t('payment')}
+                        </TabsTrigger>
+                        <TabsTrigger
+                            value="contact"
+                            data-testid="tab-contact"
+                            className="rounded-none border-b-2 border-transparent px-6 py-3 data-[state=active]:border-primary data-[state=active]:bg-transparent"
+                        >
+                            {t('contact')}
+                        </TabsTrigger>
+                    </TabsList>
 
-                        <div className="p-6">
-                            {/* General Tab */}
-                            {activeTab === 'general' && (
-                                <div className="space-y-6" data-testid="general-tab-content">
+                    <TabsContent value="general" className="mt-0">
+                        <CardContent className="pt-6">
+                            <div className="space-y-6" data-testid="general-tab-content">
                                     {/* Language Selector */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        <label className="block text-sm font-medium text-foreground mb-2">
                                             {t('language')}
                                         </label>
                                         <select
                                             value={currentLocale}
                                             onChange={(e) => handleLanguageChange(e.target.value)}
-                                            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                                             data-testid="select-language"
                                         >
                                             <option value="es">Español</option>
@@ -334,14 +328,14 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
 
                                     {/* Business Name */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        <label className="block text-sm font-medium text-foreground mb-2">
                                             {t('businessName')}
                                         </label>
                                         <input
                                             type="text"
                                             value={businessName}
                                             onChange={(e) => setBusinessName(e.target.value)}
-                                            className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                                             data-testid="input-business-name"
                                         />
                                     </div>
@@ -349,7 +343,7 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
                                     {/* Hero subtitle & Location */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-foreground mb-2">
                                                 {t('heroTitle')}
                                             </label>
                                             <input
@@ -357,12 +351,12 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
                                                 value={heroSubtitle}
                                                 onChange={(e) => setHeroSubtitle(e.target.value)}
                                                 placeholder="Deliciosa comida Venezolana"
-                                                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                                                 data-testid="input-hero-title"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-foreground mb-2">
                                                 {t('storeLocation')}
                                             </label>
                                             <input
@@ -370,7 +364,7 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
                                                 value={businessLocation}
                                                 onChange={(e) => setBusinessLocation(e.target.value)}
                                                 placeholder="Centenario - Neuquén"
-                                                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                                                 data-testid="input-store-location"
                                             />
                                         </div>
@@ -380,7 +374,7 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     {/* Logo */}
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        <label className="block text-sm font-medium text-foreground mb-2">
                                             {t('logo')}
                                         </label>
                                         {logoUrl && !logoFile && (
@@ -396,12 +390,12 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
                                         )}
                                         {logoFile && (
                                             <div className="mb-4">
-                                                <p className="text-sm text-gray-600">
+                                                <p className="text-sm text-muted-foreground">
                                                     {t('newFile')} {logoFile.name}
                                                 </p>
                                             </div>
                                         )}
-                                        <label className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer">
+                                        <label className="inline-flex items-center gap-2 px-4 py-2 bg-background border border-input rounded-md text-sm font-medium text-foreground hover:bg-accent cursor-pointer">
                                             <Upload className="h-4 w-4" />
                                             {t('chooseLogo')}
                                             <input
@@ -419,7 +413,7 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
 
                                         {/* Banner */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-foreground mb-2">
                                                 {t('banner')}
                                             </label>
                                             {bannerUrl && !bannerFile && (
@@ -435,12 +429,12 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
                                             )}
                                             {bannerFile && (
                                                 <div className="mb-4">
-                                                    <p className="text-sm text-gray-600">
+                                                    <p className="text-sm text-muted-foreground">
                                                         {t('newFile')} {bannerFile.name}
                                                     </p>
                                                 </div>
                                             )}
-                                            <label className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer">
+                                            <label className="inline-flex items-center gap-2 px-4 py-2 bg-background border border-input rounded-md text-sm font-medium text-foreground hover:bg-accent cursor-pointer">
                                                 <Upload className="h-4 w-4" />
                                                 {t('chooseBanner')}
                                                 <input
@@ -460,41 +454,54 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
                                     {/* Colors */}
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-foreground mb-2">
                                                 {t('primaryColor')}
                                             </label>
                                             <input
                                                 type="color"
                                                 value={primaryColor}
                                                 onChange={(e) => setPrimaryColor(e.target.value)}
-                                                className="h-10 w-full rounded border border-gray-300"
+                                                className="h-10 w-full rounded border border-input"
                                                 data-testid="input-primary-color"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-foreground mb-2">
                                                 {t('secondaryColor')}
                                             </label>
                                             <input
                                                 type="color"
                                                 value={secondaryColor}
                                                 onChange={(e) => setSecondaryColor(e.target.value)}
-                                                className="h-10 w-full rounded border border-gray-300"
+                                                className="h-10 w-full rounded border border-input"
                                                 data-testid="input-secondary-color"
                                             />
                                         </div>
                                     </div>
                                 </div>
-                            )}
 
-                            {/* Payment Tab */}
-                            {activeTab === 'payment' && (
-                                <div className="space-y-6" data-testid="payment-tab-content">
+                            {/* Save Button */}
+                            <div className="mt-8 flex justify-end">
+                                <Button
+                                    onClick={handleSave}
+                                    disabled={loading}
+                                    data-testid="btn-save-settings"
+                                >
+                                    <Save className="h-4 w-4 mr-2" />
+                                    {loading ? t('saving') : t('save')}
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </TabsContent>
+
+                    <TabsContent value="payment" className="mt-0">
+                        <CardContent className="pt-6">
+                            <div className="space-y-6" data-testid="payment-tab-content">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        <label className="block text-sm font-medium text-foreground mb-2">
                                             {t('mpToken')}
                                         </label>
-                                        <p className="text-sm text-gray-500 mb-3">
+                                        <p className="text-sm text-muted-foreground mb-3">
                                             {t('mpTokenDesc')}
                                         </p>
                                         <div className="relative">
@@ -503,28 +510,41 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
                                                 value={mpAccessToken}
                                                 onChange={(e) => setMpAccessToken(e.target.value)}
                                                 placeholder="APP_USR-..."
-                                                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 pr-10 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full rounded-md border border-input bg-background px-3 py-2 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                                                 data-testid="input-mp-token"
                                             />
                                             <button
                                                 type="button"
                                                 onClick={() => setShowMpToken(!showMpToken)}
-                                                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground"
                                             >
                                                 {showMpToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                             </button>
                                         </div>
                                     </div>
                                 </div>
-                            )}
 
-                            {/* Contact Tab */}
-                            {activeTab === 'contact' && (
-                                <div className="space-y-6" data-testid="contact-tab-content">
+                            {/* Save Button */}
+                            <div className="mt-8 flex justify-end">
+                                <Button
+                                    onClick={handleSave}
+                                    disabled={loading}
+                                    data-testid="btn-save-settings"
+                                >
+                                    <Save className="h-4 w-4 mr-2" />
+                                    {loading ? t('saving') : t('save')}
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </TabsContent>
+
+                    <TabsContent value="contact" className="mt-0">
+                        <CardContent className="pt-6">
+                            <div className="space-y-6" data-testid="contact-tab-content">
                                     {/* Contact Info */}
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-foreground mb-2">
                                                 {t('whatsapp')}
                                             </label>
                                             <input
@@ -532,12 +552,12 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
                                                 value={whatsapp}
                                                 onChange={(e) => setWhatsapp(e.target.value)}
                                                 placeholder="+54 11 1234 5678"
-                                                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                                                 data-testid="input-whatsapp"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-foreground mb-2">
                                                 {t('email')}
                                             </label>
                                             <input
@@ -545,12 +565,12 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
                                                 placeholder="contact@business.com"
-                                                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                                                 data-testid="input-email"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-foreground mb-2">
                                                 {t('instagram')}
                                             </label>
                                             <input
@@ -558,7 +578,7 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
                                                 value={instagram}
                                                 onChange={(e) => setInstagram(e.target.value)}
                                                 placeholder="@yourbusiness"
-                                                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                                                 data-testid="input-instagram"
                                             />
                                         </div>
@@ -566,7 +586,7 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
 
                                     {/* Business Hours */}
                                     <div>
-                                        <h3 className="text-sm font-medium text-gray-700 mb-3">{t('hours')}</h3>
+                                        <h3 className="text-sm font-medium text-foreground mb-3">{t('hours')}</h3>
                                         <div className="space-y-3">
                                             {[
                                                 { day: 'monday', state: monday, setState: setMonday },
@@ -578,43 +598,41 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
                                                 { day: 'sunday', state: sunday, setState: setSunday }
                                             ].map(({ day, state, setState }) => (
                                                 <div key={day} className="flex items-center gap-4">
-                                                    <label className="w-24 text-sm text-gray-700">{t(`days.${day}`)}</label>
+                                                    <label className="w-24 text-sm text-foreground">{t(`days.${day}`)}</label>
                                                     <input
                                                         type="time"
                                                         value={state.open}
                                                         onChange={(e) => setState({ ...state, open: e.target.value })}
-                                                        className="rounded-md border border-gray-300 bg-white px-3 py-1 text-sm text-gray-900"
+                                                        className="rounded-md border border-input bg-background px-3 py-1 text-sm text-foreground"
                                                     />
-                                                    <span className="text-sm text-gray-500">to</span>
+                                                    <span className="text-sm text-muted-foreground">to</span>
                                                     <input
                                                         type="time"
                                                         value={state.close}
                                                         onChange={(e) => setState({ ...state, close: e.target.value })}
-                                                        className="rounded-md border border-gray-300 bg-white px-3 py-1 text-sm text-gray-900"
+                                                        className="rounded-md border border-input bg-background px-3 py-1 text-sm text-foreground"
                                                     />
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
                                 </div>
-                            )}
 
                             {/* Save Button */}
                             <div className="mt-8 flex justify-end">
-                                <button
+                                <Button
                                     onClick={handleSave}
                                     disabled={loading}
-                                    className="inline-flex items-center gap-2 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     data-testid="btn-save-settings"
                                 >
-                                    <Save className="h-4 w-4" />
+                                    <Save className="h-4 w-4 mr-2" />
                                     {loading ? t('saving') : t('save')}
-                                </button>
+                                </Button>
                             </div>
-                        </div>
-                    </div>
-                </main>
-            </div>
-        </>
+                        </CardContent>
+                    </TabsContent>
+                </Tabs>
+            </Card>
+        </div>
     )
 }
