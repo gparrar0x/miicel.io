@@ -8,6 +8,8 @@ import { useState } from "react"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
 
+const AVAILABLE_BADGES = ['popular', 'new', 'sale'] as const
+
 interface ProductFormProps {
     initialData?: Product
     onSubmit: (data: Product, imageFile?: File) => Promise<void>
@@ -23,11 +25,15 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
         initialData?.image_url || null
     )
     const [imageFile, setImageFile] = useState<File | undefined>(undefined)
+    const [selectedBadges, setSelectedBadges] = useState<string[]>(
+        (initialData?.metadata as any)?.badges || []
+    )
 
     const {
         register,
         handleSubmit,
         reset,
+        setValue,
         formState: { errors },
     } = useForm({
         resolver: zodResolver(productSchema),
@@ -35,8 +41,17 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
             active: true,
             display_order: 0,
             price: 0,
+            metadata: { badges: [] },
         },
     })
+
+    const toggleBadge = (badge: string) => {
+        const newBadges = selectedBadges.includes(badge)
+            ? selectedBadges.filter(b => b !== badge)
+            : [...selectedBadges, badge]
+        setSelectedBadges(newBadges)
+        setValue('metadata', { ...((initialData?.metadata as any) || {}), badges: newBadges })
+    }
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -189,6 +204,20 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                                 </div>
                             </div>
 
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    {t('displayOrder')}
+                                </label>
+                                <input
+                                    type="number"
+                                    {...register("display_order")}
+                                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
+                                    placeholder="0"
+                                    data-testid="product-form-display-order"
+                                />
+                                <p className="mt-1 text-xs text-gray-500">{t('displayOrderHint')}</p>
+                            </div>
+
                             <div className="flex items-center gap-2">
                                 <input
                                     type="checkbox"
@@ -200,6 +229,29 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                                 <label htmlFor="active" className="text-sm font-medium text-gray-700">
                                     {t('activeLabel')}
                                 </label>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    {t('badges')}
+                                </label>
+                                <div className="flex flex-wrap gap-2">
+                                    {AVAILABLE_BADGES.map((badge) => (
+                                        <button
+                                            key={badge}
+                                            type="button"
+                                            onClick={() => toggleBadge(badge)}
+                                            className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                                                selectedBadges.includes(badge)
+                                                    ? 'bg-black text-white'
+                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            }`}
+                                            data-testid={`badge-${badge}`}
+                                        >
+                                            {t(`badge_${badge}`)}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>

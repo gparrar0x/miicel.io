@@ -172,7 +172,13 @@
             "description": "Descripción",
             "descPlaceholder": "Descripción del producto...",
             "displayOrder": "Orden de Visualización",
+            "displayOrderHint": "Menor número = aparece primero",
+            "stock": "Stock",
             "activeLabel": "Producto Activo",
+            "badges": "Etiquetas",
+            "badge_popular": "Popular",
+            "badge_new": "Nuevo",
+            "badge_sale": "Oferta",
             "save": "Guardar Cambios",
             "create": "Crear Producto"
         },

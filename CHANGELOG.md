@@ -21,7 +21,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - API `/api/settings` PATCH now accepts `owner_email` and syncs to `public.users`
   - i18n translations added (ES: "Email del Administrador", EN: "Owner Email")
 
+- **Enhanced ProductForm with missing fields**: Added display_order and metadata.badges
+  - `display_order`: Control product sort order (lower = first)
+  - `metadata.badges`: Toggle chips for Popular/New/Sale tags
+  - i18n translations for new fields in ES/EN
+
 ### Added
+
+- **components.json for shadcn/ui**: Added configuration file for shadcn CLI (new-york style, RSC enabled)
 
 - **MercadoPago Sandbox E2E Test Suite**: Complete real integration tests with MP sandbox
   - New `mercadopago.helper.ts`: Handles iframe field detection, installment selection, payment completion, and redirect handling
