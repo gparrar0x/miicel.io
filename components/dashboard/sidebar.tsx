@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { MicelioLogo } from "@/components/icons/micelio-logo"
-import { Package, ShoppingCart, Users, Settings, LayoutDashboard, ChevronLeft, ChevronRight } from "lucide-react"
+import { Package, ShoppingCart, Users, Settings, LayoutDashboard, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
 import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import type { LucideIcon } from "lucide-react"
@@ -90,6 +90,22 @@ export function Sidebar({ brand = "Micelio", navItems = defaultNavigation, colla
           )
         })}
       </nav>
+
+      {/* View Store button */}
+      <div className="border-t border-sidebar-border p-3">
+        <Link
+          href={pathname.replace(/\/dashboard.*$/, '')}
+          target="_blank"
+          data-testid="nav-view-store"
+          className={cn(
+            "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
+            "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+          )}
+        >
+          <ExternalLink className="h-5 w-5 shrink-0" />
+          {!collapsed && <span>Ver Tienda</span>}
+        </Link>
+      </div>
 
       {/* Collapse button */}
       <div className="border-t border-sidebar-border p-3">
