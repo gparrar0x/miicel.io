@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Product } from "@/lib/schemas/product"
 import { ProductsTable } from "@/components/ProductsTable"
-import { ProductForm } from "@/components/ProductForm"
+import { ProductEditModal } from "@/components/product-edit-modal"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
@@ -13,24 +13,30 @@ interface AdminProductsClientProps {
     initialProducts: Product[]
     tenantId: number
     tenantSlug: string
+    template?: string
 }
 
-export function AdminProductsClient({ initialProducts, tenantId, tenantSlug }: AdminProductsClientProps) {
+export function AdminProductsClient({ initialProducts, tenantId, tenantSlug, template }: AdminProductsClientProps) {
     const [products, setProducts] = useState<Product[]>(initialProducts)
     const [isFormOpen, setIsFormOpen] = useState(false)
-    const [editingProduct, setEditingProduct] = useState<Product | undefined>(undefined)
+    const [editingProduct, setEditingProduct] = useState<Product | null>(null)
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
     const supabase = createClient()
     const t = useTranslations('Products')
-    const tCommon = useTranslations('Common')
+
+    // Extract unique categories from existing products
+    const categories = useMemo(() =>
+        Array.from(new Set(products.map(p => p.category).filter(Boolean))),
+        [products]
+    )
 
     const refreshData = async () => {
         router.refresh()
     }
 
     const handleAdd = () => {
-        setEditingProduct(undefined)
+        setEditingProduct(null)
         setIsFormOpen(true)
     }
 
@@ -131,15 +137,15 @@ export function AdminProductsClient({ initialProducts, tenantId, tenantSlug }: A
                 onDelete={handleDelete}
             />
 
-            {isFormOpen && (
-                <ProductForm
-                    key={editingProduct?.id || 'new'}
-                    initialData={editingProduct}
-                    onSubmit={handleSubmit}
-                    onCancel={() => setIsFormOpen(false)}
-                    isLoading={isLoading}
-                />
-            )}
+            <ProductEditModal
+                open={isFormOpen}
+                onOpenChange={setIsFormOpen}
+                product={editingProduct}
+                onSave={handleSubmit}
+                categories={categories}
+                isLoading={isLoading}
+                template={template}
+            />
         </div>
     )
 }

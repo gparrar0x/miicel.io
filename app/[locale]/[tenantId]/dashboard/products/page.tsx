@@ -17,7 +17,7 @@ export default async function AdminProductsPage({ params }: PageProps) {
 
     const { data: tenant } = await supabase
         .from("tenants")
-        .select("id, slug, name")
+        .select("id, slug, name, template")
         .eq(isNumeric ? "id" : "slug", isNumeric ? numericId : tenantId)
         .single()
 
@@ -48,6 +48,7 @@ export default async function AdminProductsPage({ params }: PageProps) {
             initialProducts={formattedProducts}
             tenantId={tenant.id}
             tenantSlug={tenantId}
+            template={tenant.template}
         />
     )
 }

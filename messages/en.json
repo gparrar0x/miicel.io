@@ -179,6 +179,12 @@
             "badge_popular": "Popular",
             "badge_new": "New",
             "badge_sale": "Sale",
+            "sizes": "Sizes / Variants",
+            "addSize": "Add Size",
+            "sizeLabel": "Label",
+            "sizeDimensions": "Dimensions",
+            "sizeLabelPlaceholder": "e.g., Large",
+            "noSizes": "No sizes. Add variants with different prices and stock.",
             "save": "Save Changes",
             "create": "Create Product"
         },

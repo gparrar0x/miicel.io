@@ -3,21 +3,30 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Product, productSchema } from "@/lib/schemas/product"
-import { X, Upload, Loader2 } from "lucide-react"
+import { X, Upload, Loader2, Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
 
 const AVAILABLE_BADGES = ['popular', 'new', 'sale'] as const
 
+interface ProductSize {
+    id: string
+    label: string
+    price: number
+    stock: number
+    dimensions: string
+}
+
 interface ProductFormProps {
     initialData?: Product
     onSubmit: (data: Product, imageFile?: File) => Promise<void>
     onCancel: () => void
     isLoading?: boolean
+    template?: string
 }
 
-export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: ProductFormProps) {
+export function ProductForm({ initialData, onSubmit, onCancel, isLoading, template = 'restaurant' }: ProductFormProps) {
     const t = useTranslations('Products.form')
     const tCommon = useTranslations('Common')
 
@@ -28,12 +37,16 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
     const [selectedBadges, setSelectedBadges] = useState<string[]>(
         (initialData?.metadata as any)?.badges || []
     )
+    const [sizes, setSizes] = useState<ProductSize[]>(
+        (initialData?.metadata as any)?.sizes || []
+    )
 
     const {
         register,
         handleSubmit,
         reset,
         setValue,
+        watch,
         formState: { errors },
     } = useForm({
         resolver: zodResolver(productSchema),
@@ -41,16 +54,47 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
             active: true,
             display_order: 0,
             price: 0,
-            metadata: { badges: [] },
+            metadata: { badges: [], sizes: [] },
         },
     })
+
+    const updateMetadata = (badges: string[], sizesData: ProductSize[]) => {
+        setValue('metadata', { badges, sizes: sizesData })
+    }
 
     const toggleBadge = (badge: string) => {
         const newBadges = selectedBadges.includes(badge)
             ? selectedBadges.filter(b => b !== badge)
             : [...selectedBadges, badge]
         setSelectedBadges(newBadges)
-        setValue('metadata', { ...((initialData?.metadata as any) || {}), badges: newBadges })
+        updateMetadata(newBadges, sizes)
+    }
+
+    const addSize = () => {
+        const newSize: ProductSize = {
+            id: `size-${Date.now()}`,
+            label: '',
+            price: 0,
+            stock: 1,
+            dimensions: ''
+        }
+        const newSizes = [...sizes, newSize]
+        setSizes(newSizes)
+        updateMetadata(selectedBadges, newSizes)
+    }
+
+    const removeSize = (index: number) => {
+        const newSizes = sizes.filter((_, i) => i !== index)
+        setSizes(newSizes)
+        updateMetadata(selectedBadges, newSizes)
+    }
+
+    const updateSize = (index: number, field: keyof ProductSize, value: string | number) => {
+        const newSizes = sizes.map((size, i) =>
+            i === index ? { ...size, [field]: value } : size
+        )
+        setSizes(newSizes)
+        updateMetadata(selectedBadges, newSizes)
     }
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -255,6 +299,97 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading }: Prod
                             </div>
                         </div>
                     </div>
+
+                    {/* Size Variants - Only for Gallery template */}
+                    {template === 'gallery' && (
+                        <div className="border-t pt-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        {t('sizes')}
+                                    </label>
+                                    <p className="text-xs text-gray-500">{t('sizesHint')}</p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={addSize}
+                                    className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-black bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                                    data-testid="add-size-btn"
+                                >
+                                    <Plus className="h-4 w-4" />
+                                    {t('addSize')}
+                                </button>
+                            </div>
+
+                            {sizes.length > 0 && (
+                                <div className="space-y-3">
+                                    {/* Header */}
+                                    <div className="grid grid-cols-12 gap-2 text-xs font-medium text-gray-500 uppercase tracking-wider px-1">
+                                        <div className="col-span-2">{t('sizeLabel')}</div>
+                                        <div className="col-span-3">{t('sizeDimensions')}</div>
+                                        <div className="col-span-3">{tCommon('price')}</div>
+                                        <div className="col-span-2">{t('stock')}</div>
+                                        <div className="col-span-2"></div>
+                                    </div>
+
+                                    {/* Size rows */}
+                                    {sizes.map((size, index) => (
+                                        <div key={size.id} className="grid grid-cols-12 gap-2 items-center" data-testid={`size-row-${index}`}>
+                                            <input
+                                                type="text"
+                                                value={size.label}
+                                                onChange={(e) => updateSize(index, 'label', e.target.value)}
+                                                placeholder="Small"
+                                                className="col-span-2 rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                                                data-testid={`size-label-${index}`}
+                                            />
+                                            <input
+                                                type="text"
+                                                value={size.dimensions}
+                                                onChange={(e) => updateSize(index, 'dimensions', e.target.value)}
+                                                placeholder="30 × 40 cm"
+                                                className="col-span-3 rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                                                data-testid={`size-dimensions-${index}`}
+                                            />
+                                            <div className="col-span-3 relative">
+                                                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
+                                                <input
+                                                    type="number"
+                                                    value={size.price}
+                                                    onChange={(e) => updateSize(index, 'price', parseFloat(e.target.value) || 0)}
+                                                    placeholder="0"
+                                                    className="w-full rounded-md border border-gray-300 pl-6 pr-2 py-1.5 text-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                                                    data-testid={`size-price-${index}`}
+                                                />
+                                            </div>
+                                            <input
+                                                type="number"
+                                                value={size.stock}
+                                                onChange={(e) => updateSize(index, 'stock', parseInt(e.target.value) || 0)}
+                                                placeholder="1"
+                                                className="col-span-2 rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                                                data-testid={`size-stock-${index}`}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => removeSize(index)}
+                                                className="col-span-2 inline-flex items-center justify-center p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                                                data-testid={`size-remove-${index}`}
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {sizes.length === 0 && (
+                                <p className="text-sm text-gray-500 text-center py-4 border border-dashed border-gray-300 rounded-md">
+                                    {t('noSizes')}
+                                </p>
+                            )}
+                        </div>
+                    )}
 
                     <div className="flex justify-end gap-3 pt-4 border-t">
                         <button
