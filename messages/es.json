@@ -52,6 +52,7 @@
         "payment": "Pagos",
         "contact": "Contacto y Horarios",
         "businessName": "Nombre del Negocio",
+        "ownerEmail": "Email del Administrador",
         "heroTitle": "Frase principal (Hero)",
         "storeLocation": "Ubicación (ciudad / barrio)",
         "logo": "Logo",

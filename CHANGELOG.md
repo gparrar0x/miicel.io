@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Unified owner management in public.users table**: Tenant owners now stored in `public.users` with role='owner' for consistency
+  - Migration `035_add_owner_role_and_sync.sql`: Adds 'owner' to role constraint + syncs existing owners
+  - Updated `signup/route.ts`: Creates owner record in `public.users` on tenant creation
+  - Updated RLS policy to recognize owners for tenant user management
+  - Changed unique constraint from `UNIQUE(email)` to `UNIQUE(email, tenant_id)` to allow same user as owner of multiple tenants
+  - **Why**: Single source of truth for all tenant users (owner/admin/staff) instead of split between `tenants.owner_id` and `public.users`
+
+- **Owner email editable from dashboard**: Added owner email field to Settings > General tab
+  - New field in `SettingsClient.tsx` to display and edit owner email
+  - API `/api/settings` PATCH now accepts `owner_email` and syncs to `public.users`
+  - i18n translations added (ES: "Email del Administrador", EN: "Owner Email")
+
 ### Added
 
 - **MercadoPago Sandbox E2E Test Suite**: Complete real integration tests with MP sandbox

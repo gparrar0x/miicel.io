@@ -30,6 +30,7 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
 
     // General tab state
     const [businessName, setBusinessName] = useState(tenantName)
+    const [ownerEmail, setOwnerEmail] = useState('')
     const [heroSubtitle, setHeroSubtitle] = useState('')
     const [businessLocation, setBusinessLocation] = useState('')
     const [logoUrl, setLogoUrl] = useState<string | null>(null)
@@ -74,6 +75,7 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
 
             // General
             setBusinessName(data.name || tenantName)
+            setOwnerEmail(data.owner_email || '')
             setHeroSubtitle(config.business?.subtitle || config.subtitle || '')
             setBusinessLocation(config.business?.location || config.location || '')
             setLogoUrl(config.logo || config.logo_url || null)
@@ -186,6 +188,7 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
 
             if (activeTab === 'general') {
                 updateData.name = businessName
+                updateData.owner_email = ownerEmail
                 updateData.config = {
                     ...(settings?.config || {}),
                     business_name: businessName,
@@ -326,18 +329,32 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
                                         </select>
                                     </div>
 
-                                    {/* Business Name */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-foreground mb-2">
-                                            {t('businessName')}
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={businessName}
-                                            onChange={(e) => setBusinessName(e.target.value)}
-                                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                                            data-testid="input-business-name"
-                                        />
+                                    {/* Business Name & Owner Email */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-foreground mb-2">
+                                                {t('businessName')}
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={businessName}
+                                                onChange={(e) => setBusinessName(e.target.value)}
+                                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                                                data-testid="input-business-name"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-foreground mb-2">
+                                                {t('ownerEmail')}
+                                            </label>
+                                            <input
+                                                type="email"
+                                                value={ownerEmail}
+                                                onChange={(e) => setOwnerEmail(e.target.value)}
+                                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                                                data-testid="input-owner-email"
+                                            />
+                                        </div>
                                     </div>
 
                                     {/* Hero subtitle & Location */}

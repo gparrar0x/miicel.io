@@ -202,6 +202,7 @@ export async function PATCH(request: Request) {
     }
 
     if (body.name !== undefined) updates.name = body.name
+    if (body.owner_email !== undefined) updates.owner_email = body.owner_email
     if (body.config !== undefined) updates.config = body.config
     if (body.secure_config !== undefined) updates.secure_config = body.secure_config
     if (body.template !== undefined) updates.template = body.template
@@ -239,6 +240,21 @@ export async function PATCH(request: Request) {
         { error: 'Failed to update tenant settings.' },
         { status: 500 }
       )
+    }
+
+    // Sync owner_email to public.users if it was updated
+    if (body.owner_email !== undefined) {
+      const serviceClient = createServiceRoleClient()
+      const { error: userUpdateError } = await serviceClient
+        .from('users')
+        .update({ email: body.owner_email, updated_at: new Date().toISOString() })
+        .eq('tenant_id', parseInt(tenantId))
+        .eq('role', 'owner')
+
+      if (userUpdateError) {
+        console.error('Failed to sync owner email to users table:', userUpdateError)
+        // Non-fatal: tenant update succeeded, just log the sync failure
+      }
     }
 
     // Return success (without decrypted token)

@@ -52,6 +52,7 @@
         "payment": "Payment",
         "contact": "Contact & Hours",
         "businessName": "Business Name",
+        "ownerEmail": "Owner Email",
         "heroTitle": "Hero tagline",
         "storeLocation": "Location (city / neighborhood)",
         "logo": "Logo",

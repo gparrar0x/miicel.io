@@ -120,6 +120,24 @@ export async function POST(request: Request) {
       )
     }
 
+    // Step 4: Create owner record in public.users
+    const { error: userError } = await supabaseAdmin
+      .from('users')
+      .insert({
+        tenant_id: tenantData.id,
+        email,
+        role: 'owner',
+        name: businessName,
+        auth_user_id: userId,
+        is_active: true,
+      })
+
+    if (userError) {
+      console.error('User record creation failed:', userError)
+      // Non-fatal: tenant + auth exist, just log warning
+      // Owner can still access via tenants.owner_id fallback
+    }
+
     // Success!
     return NextResponse.json(
       {
