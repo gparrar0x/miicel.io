@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ImageIcon, Package, DollarSign, Layers, GripVertical, Upload, Loader2, Plus, Trash2 } from "lucide-react"
+import { ImageIcon, Package, DollarSign, Layers, GripVertical, Upload, Loader2, Plus, Trash2, Pencil } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -50,6 +50,7 @@ export function ProductEditModal({
   template,
 }: ProductEditModalProps) {
   const t = useTranslations('Products.form')
+  const tProducts = useTranslations('Products')
   const tCommon = useTranslations('Common')
 
   const [formData, setFormData] = React.useState<Omit<Product, "id">>({
@@ -68,6 +69,7 @@ export function ProductEditModal({
   const [imageFile, setImageFile] = React.useState<File | undefined>(undefined)
   const [selectedBadges, setSelectedBadges] = React.useState<string[]>([])
   const [sizes, setSizes] = React.useState<ProductSize[]>([])
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
 
   React.useEffect(() => {
     if (product) {
@@ -202,28 +204,45 @@ export function ProductEditModal({
               {/* Image Upload */}
               <div>
                 <Label className="text-sm font-medium mb-2 block">{t('image')}</Label>
-                <div className="relative flex flex-col items-center justify-center w-full h-40 rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/50 overflow-hidden">
-                  {imagePreview ? (
+                {imagePreview ? (
+                  <div className="relative w-full h-48 rounded-lg overflow-hidden bg-muted/30">
                     <Image
                       src={imagePreview}
                       alt="Preview"
                       fill
                       className="object-cover"
                     />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center">
-                      <Upload className="size-8 mb-2 text-muted-foreground/50" />
-                      <p className="text-sm text-muted-foreground">{t('upload')}</p>
-                    </div>
-                  )}
-                  <input
-                    type="file"
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    data-testid="product-image-input"
-                  />
-                </div>
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="absolute bottom-2 right-2 p-2 rounded-full bg-black/60 hover:bg-black/80 text-white transition-colors"
+                      title={t('upload')}
+                    >
+                      <Pencil className="size-4" />
+                    </button>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      data-testid="product-image-input"
+                    />
+                  </div>
+                ) : (
+                  <div className="relative flex flex-col items-center justify-center w-full h-48 rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/50 overflow-hidden cursor-pointer hover:bg-muted/70 transition-colors">
+                    <Upload className="size-8 mb-2 text-muted-foreground/50" />
+                    <p className="text-sm text-muted-foreground">{t('upload')}</p>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      data-testid="product-image-input"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Name Field */}
@@ -244,7 +263,7 @@ export function ProductEditModal({
               {/* Category Field */}
               <div className="space-y-2">
                 <Label htmlFor="category" className="text-sm font-medium">
-                  {t('categoryPlaceholder')}
+                  {tProducts('category')}
                 </Label>
                 {categories.length > 0 ? (
                   <Select value={formData.category} onValueChange={(value) => handleChange("category", value)}>
