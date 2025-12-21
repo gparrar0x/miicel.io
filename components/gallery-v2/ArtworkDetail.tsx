@@ -56,13 +56,13 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
 
   return (
     <div className="animate-in fade-in duration-500 bg-white text-black">
-      {/* Hero Image - Mobile First: Full width, immersive */}
-      <div className="relative w-full aspect-[4/5] md:aspect-video md:h-[80vh] bg-gray-50">
+      {/* Hero Image - Full artwork display without cropping */}
+      <div className="relative w-full min-h-[50vh] md:min-h-[70vh] bg-gray-50 flex items-center justify-center">
         <Image
           src={artwork.image || "/placeholder.svg"}
           alt={artwork.title}
           fill
-          className="object-contain md:object-cover"
+          className="object-contain"
           priority
           sizes="(max-width: 768px) 100vw, 80vw"
         />
