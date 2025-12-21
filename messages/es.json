@@ -1,5 +1,7 @@
 {
     "Common": {
+        "name": "Nombre",
+        "price": "Precio",
         "save": "Guardar",
         "cancel": "Cancelar",
         "loading": "Cargando...",
