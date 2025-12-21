@@ -26,6 +26,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `metadata.badges`: Toggle chips for Popular/New/Sale tags
   - i18n translations for new fields in ES/EN
 
+- **Product sizes/variants for Gallery template**: Added `metadata.sizes` editor in ProductEditModal
+  - Conditional UI: Only shows when tenant template === 'gallery'
+  - Size fields: label, dimensions, price, stock per variant
+  - Add/remove size buttons with dynamic form
+  - Template prop passed from page → AdminProductsClient → ProductEditModal
+  - i18n translations for sizes section (ES/EN)
+
 ### Added
 
 - **components.json for shadcn/ui**: Added configuration file for shadcn CLI (new-york style, RSC enabled)
