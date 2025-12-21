@@ -57,7 +57,7 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
   return (
     <div className="animate-in fade-in duration-500 bg-white text-black">
       {/* Hero Image - Full artwork display without cropping */}
-      <div className="relative w-full min-h-[50vh] md:min-h-[70vh] bg-gray-50 flex items-center justify-center">
+      <div className="relative w-full min-h-[60vh] md:min-h-[85vh] bg-gray-50 flex items-center justify-center">
         <Image
           src={artwork.image || "/placeholder.svg"}
           alt={artwork.title}
