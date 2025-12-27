@@ -218,6 +218,17 @@
         "outOfStock": "Este producto está agotado actualmente",
         "addToCart": "Agregar al carrito"
     },
+    "Login": {
+        "title": "Iniciar Sesión",
+        "subtitle": "Accede a tu panel de control",
+        "email": "Email",
+        "emailPlaceholder": "tu@ejemplo.com",
+        "password": "Contraseña",
+        "passwordPlaceholder": "••••••••",
+        "submit": "Entrar",
+        "submitting": "Iniciando sesión...",
+        "platformOnly": "Acceso solo para plataforma"
+    },
     "Checkout": {
         "title": "Finalizar Compra",
         "name": "Nombre",

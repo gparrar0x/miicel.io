@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Login page redesign with dashboard design system**: Unified login UI with shadcn/ui components
+  - Replaced legacy `mii-*` tokens with CSS variables (`bg-background`, `border-border`, etc.)
+  - Uses `Card`, `Button`, `Input`, `Label` components from shadcn/ui
+  - Added i18n translations for Login (ES: "Iniciar Sesión", "Entrar" / EN: "Sign In")
+  - Updated both `/[locale]/login` and `/[locale]` (root) login forms for consistency
+  - Form supports Enter key submission
+
+- **Dashboard auth protection with returnUrl**: Added server-side auth guard to dashboard layout
+  - Redirects unauthenticated users to `/login?returnUrl=...`
+  - After login, users return to their original destination
+  - Verifies tenant ownership before rendering dashboard
+
+### Changed
+
 - **Unified owner management in public.users table**: Tenant owners now stored in `public.users` with role='owner' for consistency
   - Migration `035_add_owner_role_and_sync.sql`: Adds 'owner' to role constraint + syncs existing owners
   - Updated `signup/route.ts`: Creates owner record in `public.users` on tenant creation
