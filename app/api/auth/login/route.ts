@@ -63,7 +63,7 @@ export async function POST(request: Request) {
       .eq('auth_user_id', data.user.id)
       .single()
 
-    if (userRecord && userRecord.role === 'tenant_admin' && userRecord.tenant_id) {
+    if (userRecord && ['tenant_admin', 'owner'].includes(userRecord.role) && userRecord.tenant_id) {
       // Tenant admin: redirect to their tenant dashboard
       redirectTo = `/${locale}/${userRecord.tenant_id}/dashboard`
     } else if (userRecord && userRecord.role === 'platform_admin') {

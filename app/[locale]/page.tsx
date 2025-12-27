@@ -54,7 +54,7 @@ function RootPage() {
           .from('tenants')
           .select('slug')
           .eq('owner_id', user.id)
-          .single()
+          .maybeSingle()
 
         if (tenant) {
           router.push(`/es/${tenant.slug}/dashboard`)
