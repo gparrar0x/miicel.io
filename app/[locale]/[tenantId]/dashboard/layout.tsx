@@ -9,7 +9,7 @@
 import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { Sidebar, type NavItem } from '@/components/dashboard/sidebar'
 import { Header } from '@/components/dashboard/header'
 
@@ -49,8 +49,28 @@ export default async function DashboardLayout({ children, params }: LayoutProps)
     .eq(Number.isNaN(numericId) ? 'slug' : 'id', Number.isNaN(numericId) ? tenantId : numericId)
     .single()
 
-  if (!tenant || tenant.owner_id !== user.id) {
-    // User is not the owner, redirect to storefront
+  if (!tenant) {
+    redirect(`/${locale}/${tenantId}`)
+  }
+
+  // Check access: owner_id match OR user has owner/tenant_admin role for this tenant
+  let hasAccess = tenant.owner_id === user.id
+
+  if (!hasAccess) {
+    // Check users table for role-based access (use service role to avoid RLS recursion)
+    const supabaseAdmin = createServiceRoleClient()
+    const { data: userRecord } = await supabaseAdmin
+      .from('users')
+      .select('role, tenant_id')
+      .eq('auth_user_id', user.id)
+      .maybeSingle()
+
+    hasAccess = !!(userRecord &&
+      ['owner', 'tenant_admin'].includes(userRecord.role) &&
+      userRecord.tenant_id === tenant.id)
+  }
+
+  if (!hasAccess) {
     redirect(`/${locale}/${tenantId}`)
   }
 

@@ -49,12 +49,22 @@ function RootPage() {
           setTenants(tenantsData)
         }
       } else {
-        // Not superadmin, redirect to their tenant dashboard
+        // Not superadmin, get redirect URL from API (uses service role to avoid RLS recursion)
+        const redirectRes = await fetch('/api/auth/login-redirect')
+        if (redirectRes.ok) {
+          const { redirectTo } = await redirectRes.json()
+          if (redirectTo && redirectTo !== '/') {
+            router.push(redirectTo)
+            return
+          }
+        }
+
+        // Fallback: check tenants.owner_id (legacy)
         const { data: tenant } = await supabase
           .from('tenants')
           .select('slug')
           .eq('owner_id', user.id)
-          .single()
+          .maybeSingle()
 
         if (tenant) {
           router.push(`/es/${tenant.slug}/dashboard`)

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Login redirect for 'owner' role users**: Users with `role='owner'` in `public.users` now correctly redirect to their tenant dashboard
+  - Added 'owner' to allowed roles in `/api/auth/login` redirect logic
+  - Changed `.single()` to `.maybeSingle()` in root page to prevent 406 error when no tenant found
+  - Fixed root page post-login redirect to check `users.tenant_id` before legacy `tenants.owner_id`
+
 ### Changed
 
 - **Login page redesign with dashboard design system**: Unified login UI with shadcn/ui components
