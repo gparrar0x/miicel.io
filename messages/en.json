@@ -218,6 +218,17 @@
         "outOfStock": "This product is currently out of stock.",
         "addToCart": "Add to Cart"
     },
+    "Login": {
+        "title": "Sign In",
+        "subtitle": "Access your dashboard",
+        "email": "Email",
+        "emailPlaceholder": "you@example.com",
+        "password": "Password",
+        "passwordPlaceholder": "••••••••",
+        "submit": "Sign In",
+        "submitting": "Signing in...",
+        "platformOnly": "Platform access only"
+    },
     "Checkout": {
         "title": "Checkout",
         "name": "Name",

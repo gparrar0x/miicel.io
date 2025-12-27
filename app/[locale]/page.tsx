@@ -2,8 +2,14 @@
 
 import { useState, Suspense, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { createBrowserClient } from '@supabase/ssr'
 import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { MicelioLogo } from '@/components/icons/micelio-logo'
 
 interface Tenant {
   slug: string
@@ -72,8 +78,8 @@ function RootPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-mii-white">
-        <div className="text-mii-gray-500">Loading...</div>
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-foreground" />
       </div>
     )
   }
@@ -166,8 +172,8 @@ function RootPage() {
 }
 
 function LoginForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
+  const t = useTranslations('Login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -199,43 +205,35 @@ function LoginForm() {
       // Redirect to return URL or root (tenant list)
       const returnUrl = searchParams.get('returnUrl') || data.redirectTo || '/'
       window.location.href = returnUrl
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Login error:', err)
-      setError(err.message || 'An error occurred. Please try again.')
+      setError(err instanceof Error ? err.message : 'An error occurred. Please try again.')
       setLoading(false)
     }
   }
 
   return (
-    <main className="min-h-screen bg-mii-white flex flex-col">
+    <div className="flex min-h-screen flex-col bg-background">
       {/* Header */}
-      <header className="w-full px-mii-page py-4 border-b border-mii-gray-200" data-testid="login-header">
-        <div className="max-w-mii-content mx-auto flex items-center gap-3">
-          <div className="w-10 h-10 bg-mii-black rounded-mii flex items-center justify-center">
-            <span className="text-white font-bold text-lg">M</span>
-          </div>
-          <span className="text-mii-h3 text-mii-black">Miicel.io</span>
+      <header className="flex h-16 items-center border-b border-border px-6" data-testid="login-header">
+        <div className="flex items-center gap-3">
+          <MicelioLogo className="h-8 w-8 text-foreground" />
+          <span className="text-lg font-semibold tracking-tight text-foreground">Miicel.io</span>
         </div>
       </header>
 
       {/* Login Form */}
-      <div className="flex-1 flex items-center justify-center px-mii-page py-12">
-        <div className="w-full max-w-md">
-          <div className="bg-mii-white border border-mii-gray-200 shadow-mii p-8 rounded-mii" data-testid="login-form">
-            <h1 className="text-mii-h1 text-mii-black mb-2">Sign In</h1>
-            <p className="text-mii-body text-mii-gray-500 mb-8">
-              Access your dashboard
-            </p>
-
-            <form onSubmit={handleSubmit} className="space-y-mii-gap">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-mii-label text-mii-gray-700 mb-2"
-                >
-                  Email
-                </label>
-                <input
+      <div className="flex flex-1 items-center justify-center p-6">
+        <Card className="w-full max-w-md" data-testid="login-form">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold tracking-tight">{t('title')}</CardTitle>
+            <CardDescription>{t('subtitle')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">{t('email')}</Label>
+                <Input
                   id="email"
                   type="email"
                   value={email}
@@ -243,19 +241,14 @@ function LoginForm() {
                   required
                   disabled={loading}
                   data-testid="login-email-input"
-                  className="w-full px-4 py-3 border border-mii-gray-200 rounded-mii-sm text-mii-body text-mii-gray-900 placeholder:text-mii-gray-400 focus:outline-none focus:ring-2 focus:ring-mii-blue focus:border-transparent disabled:opacity-50 disabled:bg-mii-gray-50 transition-all duration-200"
-                  placeholder="you@example.com"
+                  placeholder={t('emailPlaceholder')}
+                  autoComplete="email"
                 />
               </div>
 
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-mii-label text-mii-gray-700 mb-2"
-                >
-                  Password
-                </label>
-                <input
+              <div className="space-y-2">
+                <Label htmlFor="password">{t('password')}</Label>
+                <Input
                   id="password"
                   type="password"
                   value={password}
@@ -263,50 +256,51 @@ function LoginForm() {
                   required
                   disabled={loading}
                   data-testid="login-password-input"
-                  className="w-full px-4 py-3 border border-mii-gray-200 rounded-mii-sm text-mii-body text-mii-gray-900 placeholder:text-mii-gray-400 focus:outline-none focus:ring-2 focus:ring-mii-blue focus:border-transparent disabled:opacity-50 disabled:bg-mii-gray-50 transition-all duration-200"
-                  placeholder="••••••••"
+                  placeholder={t('passwordPlaceholder')}
+                  autoComplete="current-password"
                 />
               </div>
 
               {error && (
                 <div
                   data-testid="login-error-message"
-                  className="p-4 bg-red-50 border border-mii-error/20 rounded-mii-sm text-mii-error text-mii-body"
+                  className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive"
                   role="alert"
                 >
                   {error}
                 </div>
               )}
 
-              <button
+              <Button
                 type="submit"
                 disabled={loading}
                 data-testid="login-submit-button"
-                className="w-full py-3 px-6 bg-mii-blue rounded-mii-sm text-white text-mii-label hover:bg-mii-blue-hover focus:outline-none focus:ring-2 focus:ring-mii-blue focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                className="w-full"
               >
                 {loading ? (
-                  <span data-testid="login-loading-state">Signing in...</span>
+                  <span data-testid="login-loading-state">{t('submitting')}</span>
                 ) : (
-                  'Sign In'
+                  t('submit')
                 )}
-              </button>
+              </Button>
             </form>
-          </div>
-
-          <p className="mt-6 text-mii-small text-mii-gray-500 text-center">
-            Platform access only
-          </p>
-        </div>
+          </CardContent>
+        </Card>
       </div>
-    </main>
+
+      {/* Footer */}
+      <footer className="flex h-12 items-center justify-center border-t border-border">
+        <p className="text-sm text-muted-foreground">{t('platformOnly')}</p>
+      </footer>
+    </div>
   )
 }
 
 export default function HomePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-mii-white">
-        <div className="text-mii-gray-500">Loading...</div>
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-foreground" />
       </div>
     }>
       <RootPage />
