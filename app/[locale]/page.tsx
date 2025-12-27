@@ -50,6 +50,19 @@ function RootPage() {
         }
       } else {
         // Not superadmin, redirect to their tenant dashboard
+        // First check users table for tenant_id (new model)
+        const { data: userRecord } = await supabase
+          .from('users')
+          .select('tenant_id, role')
+          .eq('auth_user_id', user.id)
+          .maybeSingle()
+
+        if (userRecord && ['tenant_admin', 'owner'].includes(userRecord.role) && userRecord.tenant_id) {
+          router.push(`/es/${userRecord.tenant_id}/dashboard`)
+          return
+        }
+
+        // Fallback: check tenants.owner_id (legacy)
         const { data: tenant } = await supabase
           .from('tenants')
           .select('slug')
