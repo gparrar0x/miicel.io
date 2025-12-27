@@ -43,14 +43,14 @@ function RootPage() {
       if (isSuperAdminResult) {
         setIsSuperAdmin(true)
         // Fetch tenants list
-        const response = await fetch('/api/tenants/list')
+        const response = await fetch('/api/tenants/list', { credentials: 'include' })
         if (response.ok) {
           const tenantsData = await response.json()
           setTenants(tenantsData)
         }
       } else {
         // Not superadmin, get redirect URL from API (uses service role to avoid RLS recursion)
-        const redirectRes = await fetch('/api/auth/login-redirect')
+        const redirectRes = await fetch('/api/auth/login-redirect', { credentials: 'include' })
         if (redirectRes.ok) {
           const { redirectTo } = await redirectRes.json()
           if (redirectTo && redirectTo !== '/') {
@@ -199,6 +199,7 @@ function LoginForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
+        credentials: 'include',
       })
 
       if (!res.ok) {
