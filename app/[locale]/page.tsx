@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { MicelioLogo } from '@/components/icons/micelio-logo'
+import { LayoutDashboard, Store, LogOut } from 'lucide-react'
 
 interface Tenant {
   slug: string
@@ -96,85 +97,99 @@ function RootPage() {
 
   if (isSuperAdmin) {
     return (
-      <main className="min-h-screen bg-mii-white" data-testid="landing-page">
+      <div className="flex min-h-screen flex-col bg-background" data-testid="landing-page">
         {/* Header */}
-        <header className="w-full px-mii-page py-4 border-b border-mii-gray-200" data-testid="landing-header">
-          <div className="max-w-mii-content mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-mii-black rounded-mii flex items-center justify-center">
-                <span className="text-white font-bold text-lg">M</span>
-              </div>
-              <span className="text-mii-h3 text-mii-black">Miicel.io</span>
-            </div>
-            <button
-              onClick={handleLogout}
-              data-testid="button-sign-out"
-              className="px-4 py-2 border border-mii-gray-200 rounded-mii-sm text-mii-body text-mii-gray-700 hover:bg-mii-gray-50 transition-all duration-200"
-            >
-              Sign Out
-            </button>
+        <header className="flex h-16 items-center justify-between border-b border-border bg-background px-6" data-testid="landing-header">
+          <div className="flex items-center gap-3">
+            <MicelioLogo className="h-8 w-8 text-foreground" />
+            <span className="text-lg font-semibold tracking-tight text-foreground">Miicel.io</span>
           </div>
+          <Button
+            variant="outline"
+            onClick={handleLogout}
+            data-testid="button-sign-out"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Sign Out
+          </Button>
         </header>
 
         {/* Content */}
-        <div className="max-w-mii-content mx-auto px-mii-page py-mii-page">
-          <div className="mb-8">
-            <h1 className="text-mii-h1 text-mii-black mb-2">Active Tenants</h1>
-            <p className="text-mii-body text-mii-gray-500">Manage your platform tenants</p>
-          </div>
-
-          {tenants.length === 0 ? (
-            <div className="bg-mii-white border border-mii-gray-200 rounded-mii shadow-mii p-12 text-center">
-              <p className="text-mii-body text-mii-gray-500">No active tenants found.</p>
+        <main className="flex-1 p-6">
+          <div className="mx-auto max-w-6xl">
+            <div className="mb-8">
+              <h1 className="text-2xl font-bold tracking-tight text-foreground">Active Tenants</h1>
+              <p className="text-muted-foreground">Manage your platform tenants</p>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-mii-gap">
-              {tenants.map((tenant) => (
-                <div
-                  key={tenant.slug}
-                  data-testid={`tenant-card-${tenant.slug}`}
-                  className="bg-mii-white border border-mii-gray-200 rounded-mii shadow-mii hover:shadow-mii-md transition-all duration-200 p-mii-card"
-                >
-                  <div className="flex items-center gap-4 mb-5">
-                    {tenant.logo ? (
-                      <img
-                        src={tenant.logo}
-                        alt={tenant.name}
-                        className="w-12 h-12 rounded-mii object-cover"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 rounded-mii bg-mii-gray-100 flex items-center justify-center text-mii-gray-500 font-semibold text-lg">
-                        {tenant.name.charAt(0).toUpperCase()}
+
+            {tenants.length === 0 ? (
+              <Card>
+                <CardContent className="flex items-center justify-center p-12">
+                  <p className="text-muted-foreground">No active tenants found.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {tenants.map((tenant) => (
+                  <Card
+                    key={tenant.slug}
+                    data-testid={`tenant-card-${tenant.slug}`}
+                    className="border-border transition-shadow hover:shadow-md"
+                  >
+                    <CardContent className="p-6">
+                      <div className="mb-4 flex items-center gap-4">
+                        {tenant.logo ? (
+                          <img
+                            src={tenant.logo}
+                            alt={tenant.name}
+                            className="h-12 w-12 rounded-lg object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-lg font-semibold text-foreground">
+                            {tenant.name.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <h3 className="truncate font-semibold text-foreground">{tenant.name}</h3>
+                          <p className="text-sm text-muted-foreground">/{tenant.slug}</p>
+                        </div>
                       </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-mii-h3 text-mii-black truncate">{tenant.name}</h3>
-                      <p className="text-mii-small text-mii-gray-500">/{tenant.slug}</p>
-                    </div>
-                  </div>
 
-                  <div className="flex gap-3">
-                    <Link
-                      href={`/es/${tenant.slug}/dashboard`}
-                      data-testid={`tenant-dashboard-link-${tenant.slug}`}
-                      className="flex-1 px-4 py-2 border border-mii-gray-200 rounded-mii-sm text-mii-label text-mii-gray-700 hover:bg-mii-gray-50 transition-all duration-200 text-center"
-                    >
-                      Dashboard
-                    </Link>
-                    <Link
-                      href={`/es/${tenant.slug}`}
-                      data-testid={`tenant-store-link-${tenant.slug}`}
-                      className="flex-1 px-4 py-2 bg-mii-blue rounded-mii-sm text-mii-label text-white hover:bg-mii-blue-hover transition-all duration-200 text-center"
-                    >
-                      Tienda
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </main>
+                      <div className="flex gap-3">
+                        <Button
+                          variant="outline"
+                          className="flex-1"
+                          asChild
+                        >
+                          <Link
+                            href={`/es/${tenant.slug}/dashboard`}
+                            data-testid={`tenant-dashboard-link-${tenant.slug}`}
+                          >
+                            <LayoutDashboard className="mr-2 h-4 w-4" />
+                            Dashboard
+                          </Link>
+                        </Button>
+                        <Button
+                          className="flex-1"
+                          asChild
+                        >
+                          <Link
+                            href={`/es/${tenant.slug}`}
+                            data-testid={`tenant-store-link-${tenant.slug}`}
+                          >
+                            <Store className="mr-2 h-4 w-4" />
+                            Tienda
+                          </Link>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+        </main>
+      </div>
     )
   }
 

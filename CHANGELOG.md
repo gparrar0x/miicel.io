@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Superadmin tenant list redesign**: Unified `/en` page with platform design system
+  - Replaced legacy `mii-*` custom classes with shadcn/ui components (`Card`, `Button`)
+  - Added icons: `LayoutDashboard` for dashboard, `Store` for tienda, `LogOut` for sign out
+  - Uses semantic tokens (`bg-background`, `text-foreground`, `border-border`)
+  - Consistent with dashboard and login page aesthetics
+
 ### Fixed
 
 - **Login redirect for 'owner' role users**: Users with `role='owner'` in `public.users` now correctly redirect to their tenant dashboard
