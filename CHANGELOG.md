@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Uses semantic tokens (`bg-background`, `text-foreground`, `border-border`)
   - Consistent with dashboard and login page aesthetics
 
+- **Superadmin access to all tenant dashboards**: Platform admins can now access any tenant dashboard
+  - Added `is_superadmin` RPC check in dashboard layout auth guard
+  - Superadmins bypass tenant ownership verification
+
 ### Fixed
 
 - **Login redirect for 'owner' role users**: Users with `role='owner'` in `public.users` now correctly redirect to their tenant dashboard
