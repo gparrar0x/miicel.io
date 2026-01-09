@@ -16,6 +16,13 @@ interface DashboardStats {
   revenue: number
 }
 
+interface StatsChanges {
+  products: { value: number; type: 'positive' | 'negative' | 'neutral' }
+  orders: { value: number; type: 'positive' | 'negative' | 'neutral' }
+  users: { value: number; type: 'positive' | 'negative' | 'neutral' }
+  revenue: { value: number; type: 'positive' | 'negative' | 'neutral' }
+}
+
 export default function AdminDashboard({ params }: { params: Promise<{ tenantId: string; locale: string }> }) {
   const { tenantId, locale } = use(params)
   const supabase = createClient()
@@ -23,6 +30,12 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenantId:
 
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState<DashboardStats>({ totalProducts: 0, totalOrders: 0, totalUsers: 0, revenue: 0 })
+  const [changes, setChanges] = useState<StatsChanges>({
+    products: { value: 0, type: 'neutral' },
+    orders: { value: 0, type: 'neutral' },
+    users: { value: 0, type: 'neutral' },
+    revenue: { value: 0, type: 'neutral' },
+  })
   const [salesChart, setSalesChart] = useState<{ name: string; value: number }[]>([])
   const [usersChart, setUsersChart] = useState<{ name: string; value: number }[]>([])
   const [recentOrders, setRecentOrders] = useState<Array<{ id: string; cliente: string; total: string; estado: string; fecha: string }>>([])
@@ -66,10 +79,13 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenantId:
           .select('*', { count: 'exact', head: true })
           .eq('tenant_id', tenantData.id)
 
-        // Orders this month
+        // Date ranges
         const now = new Date()
         const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+        const firstDayOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString()
+        const lastDayOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString()
 
+        // Orders this month
         const { data: orders } = await supabase
           .from('orders')
           .select('id, total, status, created_at')
@@ -79,6 +95,65 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenantId:
           .order('created_at', { ascending: false })
 
         const revenue = orders?.reduce((sum, order) => sum + order.total, 0) || 0
+
+        // Orders last month (for comparison)
+        const { data: lastMonthOrders } = await supabase
+          .from('orders')
+          .select('id, total')
+          .in('status', ['paid', 'preparing', 'ready', 'delivered'])
+          .eq('tenant_id', tenantData.id)
+          .gte('created_at', firstDayOfLastMonth)
+          .lte('created_at', lastDayOfLastMonth)
+
+        const lastMonthRevenue = lastMonthOrders?.reduce((sum, order) => sum + order.total, 0) || 0
+        const lastMonthOrderCount = lastMonthOrders?.length || 0
+
+        // Customers last month (for comparison)
+        const { count: lastMonthCustomerCount } = await supabase
+          .from('customers')
+          .select('*', { count: 'exact', head: true })
+          .eq('tenant_id', tenantData.id)
+          .gte('created_at', firstDayOfLastMonth)
+          .lte('created_at', lastDayOfLastMonth)
+
+        // New customers this month
+        const { count: thisMonthCustomerCount } = await supabase
+          .from('customers')
+          .select('*', { count: 'exact', head: true })
+          .eq('tenant_id', tenantData.id)
+          .gte('created_at', firstDayOfMonth)
+
+        // Products created this month vs last month
+        const { count: thisMonthProducts } = await supabase
+          .from('products')
+          .select('*', { count: 'exact', head: true })
+          .eq('active', true)
+          .eq('tenant_id', tenantData.id)
+          .gte('created_at', firstDayOfMonth)
+
+        const { count: lastMonthProducts } = await supabase
+          .from('products')
+          .select('*', { count: 'exact', head: true })
+          .eq('active', true)
+          .eq('tenant_id', tenantData.id)
+          .gte('created_at', firstDayOfLastMonth)
+          .lte('created_at', lastDayOfLastMonth)
+
+        // Calculate percentage changes
+        const calcChange = (current: number, previous: number): { value: number; type: 'positive' | 'negative' | 'neutral' } => {
+          if (previous === 0) {
+            return current > 0 ? { value: 100, type: 'positive' } : { value: 0, type: 'neutral' }
+          }
+          const pct = Math.round(((current - previous) / previous) * 100)
+          return { value: Math.abs(pct), type: pct > 0 ? 'positive' : pct < 0 ? 'negative' : 'neutral' }
+        }
+
+        const statsChanges: StatsChanges = {
+          products: calcChange(thisMonthProducts || 0, lastMonthProducts || 0),
+          orders: calcChange(orders?.length || 0, lastMonthOrderCount),
+          users: calcChange(thisMonthCustomerCount || 0, lastMonthCustomerCount || 0),
+          revenue: calcChange(revenue, lastMonthRevenue),
+        }
 
         // Get orders from last 7 months for sales chart
         const sevenMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, 1).toISOString()
@@ -157,6 +232,7 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenantId:
           totalUsers: customerCount || 0,
           revenue,
         })
+        setChanges(statsChanges)
         setSalesChart(salesData)
         setUsersChart(usersData)
         setRecentOrders(formattedOrders)
@@ -194,29 +270,29 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenantId:
         <StatCard
           title="Total Productos"
           value={stats.totalProducts.toLocaleString()}
-          change="+12% vs mes anterior"
-          changeType="positive"
+          change={formatChange(changes.products)}
+          changeType={changes.products.type}
           icon={Package}
         />
         <StatCard
           title="Pedidos Activos"
           value={stats.totalOrders.toLocaleString()}
-          change="+8% vs mes anterior"
-          changeType="positive"
+          change={formatChange(changes.orders)}
+          changeType={changes.orders.type}
           icon={ShoppingCart}
         />
         <StatCard
           title="Usuarios Registrados"
           value={stats.totalUsers.toLocaleString()}
-          change="+23% vs mes anterior"
-          changeType="positive"
+          change={formatChange(changes.users)}
+          changeType={changes.users.type}
           icon={Users}
         />
         <StatCard
           title="Ingresos"
           value={currencyFormatter.format(stats.revenue)}
-          change="+15% vs mes anterior"
-          changeType="positive"
+          change={formatChange(changes.revenue)}
+          changeType={changes.revenue.type}
           icon={TrendingUp}
         />
       </div>
@@ -263,4 +339,10 @@ function getRelativeTime(date: Date): string {
   if (diffHours < 24) return `Hace ${diffHours}h`
   const diffDays = Math.floor(diffHours / 24)
   return `Hace ${diffDays}d`
+}
+
+function formatChange(change: { value: number; type: 'positive' | 'negative' | 'neutral' }): string {
+  if (change.type === 'neutral' && change.value === 0) return 'Sin cambios vs mes anterior'
+  const sign = change.type === 'positive' ? '+' : change.type === 'negative' ? '-' : ''
+  return `${sign}${change.value}% vs mes anterior`
 }
