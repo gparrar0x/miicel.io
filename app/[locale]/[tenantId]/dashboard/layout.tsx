@@ -10,8 +10,8 @@ import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
-import { Sidebar, type NavItem } from '@/components/dashboard/sidebar'
-import { Header } from '@/components/dashboard/header'
+import { DashboardShell } from '@/components/dashboard/dashboard-shell'
+import type { NavItem } from '@/components/dashboard/sidebar'
 
 export const metadata: Metadata = {
   robots: {
@@ -85,12 +85,8 @@ export default async function DashboardLayout({ children, params }: LayoutProps)
   ]
 
   return (
-    <div className="flex h-screen bg-background">
-      <Sidebar brand="Miicel" navItems={navItems} />
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <Header />
-        <main className="flex-1 overflow-auto p-6">{children}</main>
-      </div>
-    </div>
+    <DashboardShell navItems={navItems}>
+      {children}
+    </DashboardShell>
   )
 }

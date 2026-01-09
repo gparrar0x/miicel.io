@@ -7,6 +7,8 @@ import { MicelioLogo } from "@/components/icons/micelio-logo"
 import { Package, ShoppingCart, Users, Settings, LayoutDashboard, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
 import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { useSidebar } from "./sidebar-context"
 import type { LucideIcon } from "lucide-react"
 
 export type NavItem = {
@@ -32,6 +34,7 @@ const defaultNavigation: NavItem[] = [
 export function Sidebar({ brand = "Micelio", navItems = defaultNavigation, collapsedDefault = false }: SidebarProps) {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(collapsedDefault)
+  const { isOpen, setIsOpen } = useSidebar()
 
   const iconMap = useMemo(
     () => ({
@@ -51,19 +54,17 @@ export function Sidebar({ brand = "Micelio", navItems = defaultNavigation, colla
     return icon
   }
 
-  return (
-    <aside
-      data-testid="sidebar"
-      className={cn(
-        "flex h-screen flex-col border-r border-border bg-sidebar transition-all duration-300",
-        collapsed ? "w-16" : "w-64",
-      )}
-    >
+  const NavContent = ({ mobile = false }: { mobile?: boolean }) => (
+    <>
       {/* Logo */}
       <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-4">
-        <Link href={navItems[0]?.href ?? "/dashboard"} className="flex items-center gap-3">
+        <Link
+          href={navItems[0]?.href ?? "/dashboard"}
+          className="flex items-center gap-3"
+          onClick={() => mobile && setIsOpen(false)}
+        >
           <MicelioLogo className="h-8 w-8 text-sidebar-foreground" />
-          {!collapsed && <span className="text-lg font-semibold tracking-tight text-sidebar-foreground">{brand}</span>}
+          {(mobile || !collapsed) && <span className="text-lg font-semibold tracking-tight text-sidebar-foreground">{brand}</span>}
         </Link>
       </div>
 
@@ -76,6 +77,7 @@ export function Sidebar({ brand = "Micelio", navItems = defaultNavigation, colla
             <Link
               key={item.name}
               href={item.href}
+              onClick={() => mobile && setIsOpen(false)}
               data-testid={`nav-${typeof item.icon === 'string' ? item.icon : 'custom'}`}
               className={cn(
                 "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
@@ -85,7 +87,7 @@ export function Sidebar({ brand = "Micelio", navItems = defaultNavigation, colla
               )}
             >
               <Icon className="h-5 w-5 shrink-0" />
-              {!collapsed && <span>{item.name}</span>}
+              {(mobile || !collapsed) && <span>{item.name}</span>}
             </Link>
           )
         })}
@@ -96,6 +98,7 @@ export function Sidebar({ brand = "Micelio", navItems = defaultNavigation, colla
         <Link
           href={pathname.replace(/\/dashboard.*$/, '')}
           target="_blank"
+          onClick={() => mobile && setIsOpen(false)}
           data-testid="nav-view-store"
           className={cn(
             "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
@@ -103,16 +106,42 @@ export function Sidebar({ brand = "Micelio", navItems = defaultNavigation, colla
           )}
         >
           <ExternalLink className="h-5 w-5 shrink-0" />
-          {!collapsed && <span>Ver Tienda</span>}
+          {(mobile || !collapsed) && <span>Ver Tienda</span>}
         </Link>
       </div>
 
-      {/* Collapse button */}
-      <div className="border-t border-sidebar-border p-3">
-        <Button variant="ghost" size="sm" onClick={() => setCollapsed(!collapsed)} className="w-full justify-center" data-testid="btn-toggle-sidebar">
-          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-        </Button>
-      </div>
-    </aside>
+      {/* Collapse button - only on desktop */}
+      {!mobile && (
+        <div className="border-t border-sidebar-border p-3">
+          <Button variant="ghost" size="sm" onClick={() => setCollapsed(!collapsed)} className="w-full justify-center" data-testid="btn-toggle-sidebar">
+            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          </Button>
+        </div>
+      )}
+    </>
+  )
+
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <aside
+        data-testid="sidebar"
+        className={cn(
+          "hidden md:flex h-screen flex-col border-r border-border bg-sidebar transition-all duration-300",
+          collapsed ? "w-16" : "w-64",
+        )}
+      >
+        <NavContent />
+      </aside>
+
+      {/* Mobile Sidebar (Sheet) */}
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetContent side="left" className="w-64 p-0 bg-sidebar border-sidebar-border">
+          <div className="flex h-full flex-col">
+            <NavContent mobile />
+          </div>
+        </SheetContent>
+      </Sheet>
+    </>
   )
 }
