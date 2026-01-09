@@ -80,27 +80,67 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenantId:
 
         const revenue = orders?.reduce((sum, order) => sum + order.total, 0) || 0
 
-        // Build sales chart data (monthly pattern like DS)
-        const salesData = [
-          { name: 'Ene', value: 4000 },
-          { name: 'Feb', value: 3000 },
-          { name: 'Mar', value: 5000 },
-          { name: 'Abr', value: 4500 },
-          { name: 'May', value: 6000 },
-          { name: 'Jun', value: 5500 },
-          { name: 'Jul', value: 7000 },
-        ]
+        // Get orders from last 7 months for sales chart
+        const sevenMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, 1).toISOString()
+        const { data: allOrders } = await supabase
+          .from('orders')
+          .select('total, created_at')
+          .in('status', ['paid', 'preparing', 'ready', 'delivered'])
+          .eq('tenant_id', tenantData.id)
+          .gte('created_at', sevenMonthsAgo)
 
-        // Users chart (same as DS)
-        const usersData = [
-          { name: 'Ene', value: 120 },
-          { name: 'Feb', value: 180 },
-          { name: 'Mar', value: 150 },
-          { name: 'Abr', value: 220 },
-          { name: 'May', value: 280 },
-          { name: 'Jun', value: 320 },
-          { name: 'Jul', value: 400 },
-        ]
+        // Get customers from last 7 months for users chart
+        const { data: allCustomers } = await supabase
+          .from('customers')
+          .select('created_at')
+          .eq('tenant_id', tenantData.id)
+          .gte('created_at', sevenMonthsAgo)
+
+        // Build monthly data for charts
+        const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+        const salesByMonth: Record<string, number> = {}
+        const customersByMonth: Record<string, number> = {}
+
+        // Initialize last 7 months
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+          const key = `${d.getFullYear()}-${d.getMonth()}`
+          salesByMonth[key] = 0
+          customersByMonth[key] = 0
+        }
+
+        // Aggregate sales by month
+        allOrders?.forEach(order => {
+          if (order.created_at) {
+            const d = new Date(order.created_at)
+            const key = `${d.getFullYear()}-${d.getMonth()}`
+            if (key in salesByMonth) {
+              salesByMonth[key] += order.total || 0
+            }
+          }
+        })
+
+        // Aggregate customers by month
+        allCustomers?.forEach(customer => {
+          if (customer.created_at) {
+            const d = new Date(customer.created_at)
+            const key = `${d.getFullYear()}-${d.getMonth()}`
+            if (key in customersByMonth) {
+              customersByMonth[key] += 1
+            }
+          }
+        })
+
+        // Convert to chart format
+        const salesData = Object.entries(salesByMonth).map(([key, value]) => {
+          const [, month] = key.split('-')
+          return { name: monthNames[parseInt(month)], value }
+        })
+
+        const usersData = Object.entries(customersByMonth).map(([key, value]) => {
+          const [, month] = key.split('-')
+          return { name: monthNames[parseInt(month)], value }
+        })
 
         // Format recent orders for table (exactly like DS format)
         const formattedOrders = (orders || []).slice(0, 5).map((order, idx) => ({
