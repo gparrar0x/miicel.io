@@ -49,7 +49,8 @@ function LoginForm() {
 
       // Use returnUrl from query params, or API redirect, or home
       const returnUrl = searchParams.get('returnUrl') || redirectTo || '/'
-      router.push(returnUrl)
+      // Full page navigation to ensure cookies are sent with server request
+      window.location.href = returnUrl
     } catch (err: unknown) {
       console.error('Login error:', err)
       setError(err instanceof Error ? err.message : 'An error occurred. Please try again.')
