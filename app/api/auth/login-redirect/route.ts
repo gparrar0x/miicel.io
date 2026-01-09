@@ -35,12 +35,13 @@ export async function GET(request: Request) {
     const supabaseAdmin = createServiceRoleClient()
     const { data: userRecord } = await supabaseAdmin
       .from('users')
-      .select('role, tenant_id')
+      .select('role, tenant_id, tenants(slug)')
       .eq('auth_user_id', user.id)
       .maybeSingle()
 
     if (userRecord && ['tenant_admin', 'owner'].includes(userRecord.role) && userRecord.tenant_id) {
-      return NextResponse.json({ redirectTo: `/${locale}/${userRecord.tenant_id}/dashboard` })
+      const tenantSlug = (userRecord as any).tenants?.slug || userRecord.tenant_id
+      return NextResponse.json({ redirectTo: `/${locale}/${tenantSlug}/dashboard` })
     }
 
     if (userRecord && userRecord.role === 'platform_admin') {
@@ -88,12 +89,13 @@ export async function POST(request: Request) {
     const supabaseAdmin = createServiceRoleClient()
     const { data: userRecord } = await supabaseAdmin
       .from('users')
-      .select('role, tenant_id')
+      .select('role, tenant_id, tenants(slug)')
       .eq('auth_user_id', userId)
       .maybeSingle()
 
     if (userRecord && ['tenant_admin', 'owner'].includes(userRecord.role) && userRecord.tenant_id) {
-      redirectTo = `/${locale}/${userRecord.tenant_id}/dashboard`
+      const tenantSlug = (userRecord as any).tenants?.slug || userRecord.tenant_id
+      redirectTo = `/${locale}/${tenantSlug}/dashboard`
     } else if (userRecord && userRecord.role === 'platform_admin') {
       redirectTo = `/${locale}`
     }

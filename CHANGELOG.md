@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Login redirect loop for tenant owners**: Fixed infinite redirect when tenant_admin/owner users logged in
+  - Changed `/api/auth/login-redirect` to use tenant slug instead of numeric tenant_id in redirect URL
+  - Route `/en/3/dashboard` returned 307 → login loop; now correctly uses `/en/artmonkeys/dashboard`
+
 ### Changed
 
 - **Superadmin tenant list redesign**: Unified `/en` page with platform design system
