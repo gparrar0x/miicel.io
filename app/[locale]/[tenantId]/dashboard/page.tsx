@@ -60,6 +60,12 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenantId:
           .eq('active', true)
           .eq('tenant_id', tenantData.id)
 
+        // Customers count
+        const { count: customerCount } = await supabase
+          .from('customers')
+          .select('*', { count: 'exact', head: true })
+          .eq('tenant_id', tenantData.id)
+
         // Orders this month
         const now = new Date()
         const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
@@ -108,7 +114,7 @@ export default function AdminDashboard({ params }: { params: Promise<{ tenantId:
         setStats({
           totalProducts: productCount || 0,
           totalOrders: orders?.length || 0,
-          totalUsers: 2847, // Mock like DS
+          totalUsers: customerCount || 0,
           revenue,
         })
         setSalesChart(salesData)

@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Changed `router.push()` to `window.location.href` for full page navigation ensuring cookies propagate to server
   - Fixed `proxy.ts` auth check: added `isOwnerByRole` to verify users with `role='owner'` in users table (not just `tenant.owner_id`)
 
+- **Dashboard showing fake user count**: Replaced hardcoded `2847` with actual customer count from `customers` table
+
 ### Changed
 
 - **Superadmin tenant list redesign**: Unified `/en` page with platform design system
