@@ -7,8 +7,9 @@ import { MicelioLogo } from "@/components/icons/micelio-logo"
 import { Package, ShoppingCart, Users, Settings, LayoutDashboard, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
 import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { useSidebar } from "./sidebar-context"
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import type { LucideIcon } from "lucide-react"
 
 export type NavItem = {
@@ -136,8 +137,11 @@ export function Sidebar({ brand = "Micelio", navItems = defaultNavigation, colla
 
       {/* Mobile Sidebar (Sheet) */}
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetContent side="left" className="w-64 p-0 bg-sidebar border-sidebar-border">
-          <div className="flex h-full flex-col">
+        <SheetContent side="left" className="w-72 p-0 bg-background border-r">
+          <VisuallyHidden>
+            <SheetTitle>Navigation menu</SheetTitle>
+          </VisuallyHidden>
+          <div className="flex h-full flex-col bg-sidebar">
             <NavContent mobile />
           </div>
         </SheetContent>
