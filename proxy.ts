@@ -197,9 +197,10 @@ export async function proxy(req: NextRequest) {
     const isPlatformAdmin = userRecord?.role === 'platform_admin'
     const isTenantAdmin = userRecord?.role === 'tenant_admin' && userRecord?.tenant_id === tenant.id
     const isStaff = userRecord?.role === 'staff' && userRecord?.tenant_id === tenant.id
-    const isOwner = user.id === tenant.owner_id
+    const isOwnerByTenant = user.id === tenant.owner_id
+    const isOwnerByRole = userRecord?.role === 'owner' && userRecord?.tenant_id === tenant.id
 
-    if (!(isSuperAdmin || isPlatformAdmin || isTenantAdmin || isStaff || isOwner)) {
+    if (!(isSuperAdmin || isPlatformAdmin || isTenantAdmin || isStaff || isOwnerByTenant || isOwnerByRole)) {
       // Unauthorized: send to locale-aware login to break redirect loop
       return NextResponse.redirect(new URL(`/${locale}/login`, req.url))
     }

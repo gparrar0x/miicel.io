@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Changed `/api/auth/login-redirect` to use tenant slug instead of numeric tenant_id in redirect URL
   - Route `/en/3/dashboard` returned 307 → login loop; now correctly uses `/en/artmonkeys/dashboard`
   - Changed `router.push()` to `window.location.href` for full page navigation ensuring cookies propagate to server
-  - Added `middleware.ts` for Supabase session sync between client and server
+  - Fixed `proxy.ts` auth check: added `isOwnerByRole` to verify users with `role='owner'` in users table (not just `tenant.owner_id`)
 
 ### Changed
 
