@@ -25,7 +25,7 @@ const TEST_USERS = {
  */
 export async function loginAsOwner(page: Page, tenantSlug: string = 'demo_galeria') {
   // Navigate to login page
-  await page.goto('http://localhost:3000/es/login')
+  await page.goto('/es/login')
 
   // Fill login form
   await page.getByTestId('login-email-input').fill(TEST_USERS.owner.email)
@@ -50,7 +50,7 @@ export async function loginAsOwner(page: Page, tenantSlug: string = 'demo_galeri
  */
 export async function loginAsNonOwner(page: Page, tenantSlug: string = 'demo_galeria') {
   // Navigate to login page
-  await page.goto('http://localhost:3000/es/login')
+  await page.goto('/es/login')
 
   // Fill login form
   await page.getByTestId('login-email-input').fill(TEST_USERS.nonOwner.email)
@@ -74,7 +74,7 @@ export async function loginAsNonOwner(page: Page, tenantSlug: string = 'demo_gal
  */
 export async function logout(page: Page) {
   // Call logout API endpoint
-  await page.request.post('http://localhost:3000/api/auth/logout')
+  await page.request.post('/api/auth/logout')
 
   // Clear client-side storage
   await page.evaluate(() => {

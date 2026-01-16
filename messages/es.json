@@ -196,6 +196,13 @@
             "allStatus": "Todos los Estados",
             "noProducts": "No se encontraron productos.",
             "noImg": "Sin img"
+        },
+        "qr": {
+            "title": "Código QR del Producto",
+            "description": "Escanea para ver la página del producto",
+            "print": "Imprimir",
+            "download": "Descargar PNG",
+            "url": "URL del Producto"
         }
     },
     "Cart": {

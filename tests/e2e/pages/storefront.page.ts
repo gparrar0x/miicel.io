@@ -28,7 +28,7 @@ export class StorefrontPage {
    * @param tenantSlug - Tenant slug (e.g., 'demo', 'superhotdog')
    */
   async goto(tenantSlug: string = 'test-store') {
-    await this.page.goto(`http://localhost:3000/${tenantSlug}`)
+    await this.page.goto(`/${tenantSlug}`)
     await this.page.waitForLoadState('networkidle')
   }
 

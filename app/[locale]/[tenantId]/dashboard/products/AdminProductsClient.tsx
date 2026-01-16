@@ -7,7 +7,7 @@ import { ProductEditModal } from "@/components/product-edit-modal"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 
 interface AdminProductsClientProps {
     initialProducts: Product[]
@@ -24,6 +24,7 @@ export function AdminProductsClient({ initialProducts, tenantId, tenantSlug, tem
     const router = useRouter()
     const supabase = createClient()
     const t = useTranslations('Products')
+    const locale = useLocale()
 
     // Extract unique categories from existing products
     const categories = useMemo(() =>
@@ -135,6 +136,8 @@ export function AdminProductsClient({ initialProducts, tenantId, tenantSlug, tem
                 onAdd={handleAdd}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                tenantId={tenantSlug}
+                locale={locale}
             />
 
             <ProductEditModal

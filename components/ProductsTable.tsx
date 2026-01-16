@@ -2,24 +2,29 @@
 
 import { useState } from "react"
 import { Product } from "@/lib/schemas/product"
-import { Edit, Trash2, Plus, Search, Filter } from "lucide-react"
+import { Edit, Trash2, Plus, Search, Filter, QrCode } from "lucide-react"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
+import { QRProductModal } from "@/components/QRProductModal"
 
 interface ProductsTableProps {
     products: Product[]
     onEdit: (product: Product) => void
     onDelete: (product: Product) => void
     onAdd: () => void
+    tenantId?: string
+    locale?: string
 }
 
-export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTableProps) {
+export function ProductsTable({ products, onEdit, onDelete, onAdd, tenantId = '', locale = 'en' }: ProductsTableProps) {
     const t = useTranslations('Products')
     const tCommon = useTranslations('Common')
 
     const [searchTerm, setSearchTerm] = useState("")
     const [categoryFilter, setCategoryFilter] = useState<string>("ALL")
     const [activeFilter, setActiveFilter] = useState<string>("ALL")
+    const [qrProduct, setQrProduct] = useState<Product | null>(null)
+    const [qrModalOpen, setQrModalOpen] = useState(false)
 
     const categories = Array.from(new Set(products.map((p) => p.category)))
 
@@ -32,6 +37,11 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
 
         return matchesSearch && matchesCategory && matchesActive
     })
+
+    const handleQrClick = (product: Product) => {
+        setQrProduct(product)
+        setQrModalOpen(true)
+    }
 
     return (
         <div className="space-y-4">
@@ -146,6 +156,14 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                                         <td className="px-4 py-3 text-right">
                                             <div className="flex justify-end gap-2">
                                                 <button
+                                                    onClick={() => handleQrClick(product)}
+                                                    data-testid={`product-row-qr-button-${product.id}`}
+                                                    className="p-2 hover:bg-gray-100 rounded-md text-gray-600 hover:text-blue-600 transition-colors"
+                                                    title="QR Code"
+                                                >
+                                                    <QrCode className="h-4 w-4" />
+                                                </button>
+                                                <button
                                                     onClick={() => onEdit(product)}
                                                     data-testid="product-edit-button"
                                                     className="p-2 hover:bg-gray-100 rounded-md text-gray-600 hover:text-blue-600 transition-colors"
@@ -170,6 +188,14 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd }: ProductsTab
                     </table>
                 </div>
             </div>
+
+            <QRProductModal
+                product={qrProduct}
+                tenantId={tenantId}
+                locale={locale}
+                isOpen={qrModalOpen}
+                onClose={() => setQrModalOpen(false)}
+            />
         </div>
     )
 }

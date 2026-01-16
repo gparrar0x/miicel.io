@@ -285,3 +285,50 @@ body {
 .mix-blend-difference {
   mix-blend-mode: difference;
 }
+
+/* Print Styles for QR Code Modal */
+@media print {
+  /* Hide everything except the QR code print area */
+  body * {
+    visibility: hidden;
+  }
+
+  .qr-code-print-area,
+  .qr-code-print-area * {
+    visibility: visible;
+  }
+
+  .qr-code-print-area {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 8cm !important;
+    height: 8cm !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    padding: 1cm;
+  }
+
+  .qr-code-print-area canvas {
+    width: 6cm !important;
+    height: 6cm !important;
+    min-width: 6cm !important;
+    min-height: 6cm !important;
+  }
+
+  /* Hide dialog overlay and chrome */
+  [role="dialog"],
+  [data-radix-portal] {
+    position: static !important;
+  }
+
+  /* Force white background for print */
+  @page {
+    margin: 2cm;
+    size: A4;
+  }
+}
