@@ -274,6 +274,7 @@ export type Database = {
           template: string
           theme_overrides: Json
           updated_at: string | null
+          whatsapp_number: string | null
         }
         Insert: {
           active?: boolean | null
@@ -290,6 +291,7 @@ export type Database = {
           template?: string
           theme_overrides?: Json
           updated_at?: string | null
+          whatsapp_number?: string | null
         }
         Update: {
           active?: boolean | null
@@ -306,6 +308,7 @@ export type Database = {
           template?: string
           theme_overrides?: Json
           updated_at?: string | null
+          whatsapp_number?: string | null
         }
         Relationships: []
       }

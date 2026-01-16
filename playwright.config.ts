@@ -65,7 +65,7 @@ export default defineConfig({
       name: 'local',
       use: {
         ...sharedConfig,
-        baseURL: 'http://localhost:3000',
+        baseURL: process.env.BASE_URL || 'http://localhost:3001',
         ...devices['Desktop Chrome'],
       },
     },
@@ -89,7 +89,7 @@ export default defineConfig({
       testMatch: /.*mercadopago-sandbox\.spec\.ts/,
       use: {
         ...sharedConfig,
-        baseURL: 'http://localhost:3000',
+        baseURL: process.env.BASE_URL || 'http://localhost:3001',
         ...devices['Desktop Chrome'],
         // Extended timeouts for MP sandbox interactions
         navigationTimeout: 90000,
@@ -103,7 +103,7 @@ export default defineConfig({
   // Note: webServer is shared, but production tests won't use it
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:3000',
+    url: process.env.BASE_URL || 'http://localhost:3001',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },

@@ -46,6 +46,7 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
 
     // Contact tab state
     const [whatsapp, setWhatsapp] = useState('')
+    const [whatsappNumber, setWhatsappNumber] = useState('')
     const [email, setEmail] = useState('')
     const [instagram, setInstagram] = useState('')
     const [monday, setMonday] = useState({ open: '09:00', close: '18:00' })
@@ -88,6 +89,7 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
 
             // Contact
             setWhatsapp(secureConfig.whatsapp || '')
+            setWhatsappNumber(data.whatsapp_number || '')
             setEmail(config.business?.email || '')
             setInstagram(config.business?.instagram || '')
 
@@ -234,6 +236,7 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
                     ...(settings?.secure_config || {}),
                     whatsapp
                 }
+                updateData.whatsapp_number = whatsappNumber || null
             }
 
             console.log('Sending update request:', updateData)
@@ -599,6 +602,24 @@ export function SettingsClient({ tenantId, tenantSlug, tenantName, initialConfig
                                                 data-testid="input-instagram"
                                             />
                                         </div>
+                                    </div>
+
+                                    {/* WhatsApp Floating Button Number */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-foreground mb-2">
+                                            WhatsApp Floating Button
+                                        </label>
+                                        <p className="text-sm text-muted-foreground mb-3">
+                                            Phone number for floating WhatsApp button (international format: +1234567890)
+                                        </p>
+                                        <input
+                                            type="tel"
+                                            value={whatsappNumber}
+                                            onChange={(e) => setWhatsappNumber(e.target.value)}
+                                            placeholder="+1234567890"
+                                            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                                            data-testid="whatsapp-number-input"
+                                        />
                                     </div>
 
                                     {/* Business Hours */}

@@ -14,6 +14,7 @@ import { GalleryGrid } from '@/components/gallery-v2/GalleryGrid'
 import { GalleryHeader } from '@/components/gallery-v2/GalleryHeader'
 import { CartBadge } from '@/components/commerce/CartBadge'
 import { RestaurantLayout } from '@/components/restaurant/layouts/RestaurantLayout'
+import { WhatsAppButton } from '@/components/storefront/WhatsAppButton'
 import { tenantConfigResponseSchema, type TenantConfigResponse } from '@/lib/schemas/order'
 import { createClient } from '@/lib/supabase/server'
 import { GalleryGridWrapper } from '@/components/storefront/GalleryGridWrapper'
@@ -30,7 +31,7 @@ async function getTenantConfig(tenantId: string): Promise<TenantConfigResponse |
   try {
     const { data: tenant, error } = await supabase
       .from('tenants')
-      .select('config, template')
+      .select('config, template, whatsapp_number')
       .eq('slug', tenantId)
       .single()
 
@@ -73,6 +74,7 @@ async function getTenantConfig(tenantId: string): Promise<TenantConfigResponse |
       },
       currency: config.currency || 'USD',
       template: (tenant as any).template || config.template || 'gallery',
+      whatsappNumber: (tenant as any).whatsapp_number || null,
     }
 
     return tenantConfigResponseSchema.parse(mappedConfig)
@@ -259,6 +261,7 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
           products={products}
           categories={categoriesWithIcons}
           currency={config.currency}
+          whatsappNumber={config.whatsappNumber || null}
         />
         <DashboardAccessButton tenantId={tenantId} />
       </ThemeProvider>
@@ -322,6 +325,7 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
              <GalleryGrid artworks={artworks} collections={categories} tenantId={tenantId} />
           </div>
         </main>
+        <WhatsAppButton phoneNumber={config.whatsappNumber || null} />
         <DashboardAccessButton tenantId={tenantId} />
       </ThemeProvider>
     )
@@ -392,6 +396,7 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
           <CartBadge />
         </Link>
 
+        <WhatsAppButton phoneNumber={config.whatsappNumber || null} />
         <DashboardAccessButton tenantId={tenantId} />
       </main>
     </ThemeProvider>

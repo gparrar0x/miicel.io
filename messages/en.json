@@ -196,6 +196,13 @@
             "allStatus": "All Status",
             "noProducts": "No products found.",
             "noImg": "No img"
+        },
+        "qr": {
+            "title": "Product QR Code",
+            "description": "Scan to view product page",
+            "print": "Print",
+            "download": "Download PNG",
+            "url": "Product URL"
         }
     },
     "Cart": {

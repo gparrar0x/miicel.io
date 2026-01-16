@@ -9,6 +9,7 @@ import { FloatingCartButton } from '../organisms/FloatingCartButton'
 import { RestaurantHeader } from '../organisms/RestaurantHeader'
 import { RestaurantFooter } from '../organisms/RestaurantFooter'
 import { CartSheet } from '../organisms/CartSheet'
+import { WhatsAppButton } from '@/components/storefront/WhatsAppButton'
 import { useCartStore } from '@/lib/stores/cartStore'
 import {
   Accordion,
@@ -29,6 +30,7 @@ interface RestaurantLayoutProps {
   products: Product[]
   categories: Category[]
   currency?: string
+  whatsappNumber?: string | null
 }
 
 export function RestaurantLayout({
@@ -43,6 +45,7 @@ export function RestaurantLayout({
   products,
   categories,
   currency = 'CLP',
+  whatsappNumber,
 }: RestaurantLayoutProps) {
   const router = useRouter()
   const { items, addItem, removeItem, updateQuantity } = useCartStore()
@@ -191,6 +194,9 @@ export function RestaurantLayout({
         tenantPhone="+54 294 503-2187"
         tenantInstagram="@mangobajitofoodtruck"
       />
+
+      {/* WhatsApp Floating Button */}
+      <WhatsAppButton phoneNumber={whatsappNumber} />
     </div>
   )
 }

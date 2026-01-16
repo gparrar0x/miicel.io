@@ -15,6 +15,7 @@ import { NextResponse } from 'next/server'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { encryptToken, decryptToken } from '@/lib/encryption'
 import { z } from 'zod'
+import { whatsappNumberSchema } from '@/lib/schemas/tenant'
 
 /**
  * GET /api/settings?tenant_id=123
@@ -114,7 +115,8 @@ export async function GET(request: Request) {
       template: tenant.template,
       theme_overrides: tenant.theme_overrides || {},
       plan: tenant.plan,
-      active: tenant.active
+      active: tenant.active,
+      whatsapp_number: tenant.whatsapp_number || null
     })
   } catch (error) {
     console.error('Unexpected error in GET /api/settings:', error)
@@ -137,7 +139,8 @@ export async function GET(request: Request) {
  *   secure_config?: object,    // Private config
  *   mp_access_token?: string,  // Will be encrypted
  *   template?: string,
- *   theme_overrides?: object
+ *   theme_overrides?: object,
+ *   whatsapp_number?: string | null  // E.164 format (e.g., +1234567890)
  * }
  *
  * Response:
@@ -196,6 +199,25 @@ export async function PATCH(request: Request) {
     // Parse request body
     const body = await request.json()
 
+    // Validate whatsapp_number if provided
+    if (body.whatsapp_number !== undefined) {
+      // Normalize: allow empty string to clear the field
+      const normalizedNumber = body.whatsapp_number === '' ? null : body.whatsapp_number
+
+      if (normalizedNumber !== null) {
+        const validation = whatsappNumberSchema.safeParse(normalizedNumber)
+        if (!validation.success) {
+          return NextResponse.json(
+            { error: validation.error.issues[0].message },
+            { status: 400 }
+          )
+        }
+      }
+
+      // Store normalized value for update
+      body.whatsapp_number = normalizedNumber
+    }
+
     // Build update object (only include provided fields)
     const updates: any = {
       updated_at: new Date().toISOString()
@@ -207,6 +229,7 @@ export async function PATCH(request: Request) {
     if (body.secure_config !== undefined) updates.secure_config = body.secure_config
     if (body.template !== undefined) updates.template = body.template
     if (body.theme_overrides !== undefined) updates.theme_overrides = body.theme_overrides
+    if (body.whatsapp_number !== undefined) updates.whatsapp_number = body.whatsapp_number
 
     // Encrypt MP access token if provided
     if (body.mp_access_token !== undefined) {
