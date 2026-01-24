@@ -1,10 +1,25 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+> miicel.io — Multi-tenant e-commerce SaaS
+> Updated: 2025-01-24
+
+---
+
+## Multi-Agent System
+
+Ver `../../CLAUDE.md` para metodología completa, agentes disponibles y `subagent_type`.
+
+### Backlog (este proyecto)
+
+- `docs/backlog/active/` — Task files por agente
+- `docs/backlog/done/` — Completados
+- `/backlog/` — Issue specs (YAML frontmatter para Linear sync)
+
+---
 
 ## Project Overview
 
-Multi-tenant e-commerce SaaS platform (miicel.io) with customizable templates (Gallery, Restaurant). Built with Next.js 16, React 19, Supabase, and TypeScript.
+Multi-tenant e-commerce SaaS platform (miicel.io) with customizable templates (Gallery, Restaurant). Built with Next.js 15, React 19, Supabase, and TypeScript.
 
 ## Commands
 
