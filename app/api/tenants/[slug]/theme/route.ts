@@ -19,7 +19,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { updateThemeSchema } from '@/lib/schemas/theme'
 import { z } from 'zod'
-import type { Json } from '@/types/supabase'
+import type { Json } from '@/types/database.types'
 
 const slugParamSchema = z.string().regex(/^[a-z0-9-]+$/, 'Invalid slug format')
 

@@ -62,7 +62,7 @@ export async function GET(request: Request) {
     }
 
     // Fetch tenant with ownership check
-    const { data: tenant, error: tenantError } = await supabase
+    const { data: tenant, error: tenantError } = await (supabase as any)
       .from('tenants')
       .select('*')
       .eq('id', parseInt(tenantId))

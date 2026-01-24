@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { MicelioLogo } from "@/components/icons/micelio-logo"
-import { Package, ShoppingCart, Users, Settings, LayoutDashboard, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
+import { Package, ShoppingCart, Users, Settings, LayoutDashboard, ChevronLeft, ChevronRight, ExternalLink, MapPin, BarChart3 } from "lucide-react"
 import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
@@ -15,7 +15,7 @@ import type { LucideIcon } from "lucide-react"
 export type NavItem = {
   name: string
   href: string
-  icon: "dashboard" | "products" | "orders" | "users" | "settings" | LucideIcon
+  icon: "dashboard" | "products" | "orders" | "users" | "settings" | "consignments" | "analytics" | LucideIcon
 }
 
 interface SidebarProps {
@@ -44,6 +44,8 @@ export function Sidebar({ brand = "Micelio", navItems = defaultNavigation, colla
       orders: ShoppingCart,
       users: Users,
       settings: Settings,
+      consignments: MapPin,
+      analytics: BarChart3,
     }),
     [],
   )

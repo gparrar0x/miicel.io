@@ -29,6 +29,7 @@ async function getTenantConfig(tenantId: string): Promise<TenantConfigResponse |
   const supabase = await createClient()
 
   try {
+    // @ts-ignore - whatsapp_number not in generated types yet
     const { data: tenant, error } = await supabase
       .from('tenants')
       .select('config, template, whatsapp_number')
@@ -40,6 +41,7 @@ async function getTenantConfig(tenantId: string): Promise<TenantConfigResponse |
       return null
     }
 
+    // @ts-ignore - tenant type affected by whatsapp_number query
     const config = (tenant.config as any) || {}
 
     console.log(`[getTenantConfig] Raw config from DB:`, JSON.stringify(config, null, 2))

@@ -18,7 +18,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { validateSlugRequestSchema, slugSchema } from '@/lib/schemas/order'
-import type { Database } from '@/types/supabase'
+import type { Database } from '@/types/database.types'
 
 // Service role client for checking slug uniqueness
 const supabaseAdmin = createClient<Database>(

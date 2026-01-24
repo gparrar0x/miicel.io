@@ -1,0 +1,406 @@
+/**
+ * SKY-53: Consignment Management Design Tokens
+ * Extends styles/tokens.css with consignment-specific theme variables
+ *
+ * Usage: Add to styles/tokens.css or import as @import in globals.css
+ * Implementation: Use CSS variables throughout components for consistency
+ */
+
+:root {
+  /* ========== CONSIGNMENT STATUS COLORS ========== */
+  /* Gallery: Primary gold (long-term placement) */
+  --color-status-gallery: #B8860B;
+  --color-status-gallery-light: #FEF3C7;
+  --color-status-gallery-dark: #92400E;
+
+  /* Transit: Blue (temporary movement) */
+  --color-status-transit: #3B82F6;
+  --color-status-transit-light: #DBEAFE;
+  --color-status-transit-dark: #1E3A8A;
+
+  /* Sold: Green (final disposition) */
+  --color-status-sold: #10B981;
+  --color-status-sold-light: #DCFCE7;
+  --color-status-sold-dark: #166534;
+
+  /* Pending: Amber (awaiting placement) */
+  --color-status-pending: #F59E0B;
+  --color-status-pending-light: #FEF3C7;
+  --color-status-pending-dark: #92400E;
+
+  /* Returned: Red (removed from rotation) */
+  --color-status-returned: #EF4444;
+  --color-status-returned-light: #FEE2E2;
+  --color-status-returned-dark: #991B1B;
+
+  /* ========== CONSIGNMENT BADGE TOKENS ========== */
+  /* In Gallery Badge */
+  --badge-gallery-bg: #FEF3C7;
+  --badge-gallery-text: #92400E;
+  --badge-gallery-border: #B8860B;
+  --badge-gallery-height: 24px;
+  --badge-gallery-padding: 4px 12px;
+
+  /* In Transit Badge */
+  --badge-transit-bg: #DBEAFE;
+  --badge-transit-text: #1E3A8A;
+  --badge-transit-border: #3B82F6;
+
+  /* Sold Badge */
+  --badge-sold-bg: #DCFCE7;
+  --badge-sold-text: #166534;
+  --badge-sold-border: #10B981;
+
+  /* Pending Badge */
+  --badge-pending-bg: #FEF3C7;
+  --badge-pending-text: #92400E;
+  --badge-pending-border: #F59E0B;
+
+  /* Returned Badge */
+  --badge-returned-bg: #FEE2E2;
+  --badge-returned-text: #991B1B;
+  --badge-returned-border: #EF4444;
+
+  /* ========== LOCATION CARD TOKENS ========== */
+  /* Mobile card height: compact view for list */
+  --location-card-height-mobile: 140px;
+  --location-card-height-tablet: 160px;
+
+  /* Thumbnail sizing */
+  --location-card-thumbnail-size: 64px;
+  --location-card-thumbnail-border-radius: 8px;
+
+  /* Spacing inside location card */
+  --location-card-padding: 12px;
+  --location-card-gap: 8px;
+
+  /* ========== WORK CARD TOKENS ========== */
+  /* Grid layout: image aspect ratio 1:1 (square) */
+  --work-card-image-aspect: 1 / 1;
+  --work-card-image-border-radius: 8px;
+
+  /* Badge positioning on work card */
+  --work-card-badge-position: absolute;
+  --work-card-badge-top: 8px;
+  --work-card-badge-right: 8px;
+
+  /* ========== TIMELINE TOKENS ========== */
+  /* Timeline dot (vertical line connector) */
+  --timeline-dot-size: 12px;
+  --timeline-dot-border-radius: 50%;
+  --timeline-dot-border-width: 2px;
+
+  /* Timeline connecting line */
+  --timeline-line-width: 2px;
+  --timeline-line-color: #E5E5E5;
+
+  /* Dark mode timeline line */
+  --timeline-line-color-dark: #2D2D2D;
+
+  /* Vertical spacing between timeline events */
+  --timeline-event-spacing: 16px;
+
+  /* Timeline text alignment */
+  --timeline-text-offset-left: 24px;
+
+  /* ========== MAP TOKENS ========== */
+  /* Map container heights (responsive) */
+  --map-height-mobile: 240px;
+  --map-height-tablet: 320px;
+  --map-height-desktop: 400px;
+
+  /* Map border and shadow */
+  --map-border-radius: 8px;
+  --map-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  /* Marker sizing */
+  --marker-size: 40px;
+  --marker-icon-size: 24px;
+  --marker-badge-size: 20px;
+
+  /* ========== MODAL TOKENS ========== */
+  /* Modal animation timing */
+  --modal-enter-duration: 300ms;
+  --modal-exit-duration: 200ms;
+
+  /* Mobile modal behavior */
+  --modal-mobile-height: 80vh;
+  --modal-mobile-padding: 16px;
+
+  /* Desktop modal sizing */
+  --modal-desktop-max-width: 600px;
+  --modal-desktop-padding: 24px;
+
+  /* ========== ACTION BUTTON TOKENS ========== */
+  /* Primary action (Assign, Save, Move) */
+  --btn-primary-bg: var(--color-accent-primary);
+  --btn-primary-text: #FFFFFF;
+  --btn-primary-padding: 12px 24px;
+  --btn-primary-height: 44px;
+
+  /* Secondary action (Cancel, Reset, Delete) */
+  --btn-secondary-bg: #F5F5F5;
+  --btn-secondary-text: var(--color-text-primary);
+  --btn-secondary-padding: 12px 24px;
+  --btn-secondary-height: 44px;
+
+  /* ========== FORM TOKENS ========== */
+  /* Input fields in modals */
+  --input-height: 44px;
+  --input-padding: 12px 16px;
+  --input-border-radius: 6px;
+  --input-border: 1px solid var(--color-border-subtle);
+
+  /* Search input in lists */
+  --search-input-height: 40px;
+
+  /* ========== ICON TOKENS ========== */
+  /* Icon sizes for consistency */
+  --icon-size-sm: 16px;
+  --icon-size-md: 24px;
+  --icon-size-lg: 32px;
+
+  /* Icon colors by context */
+  --icon-color-primary: var(--color-text-primary);
+  --icon-color-secondary: var(--color-text-secondary);
+  --icon-color-accent: var(--color-accent-primary);
+
+  /* ========== ANIMATION TOKENS ========== */
+  /* Reuse from tokens.css, extend here if needed */
+  /* Status badge pulse on assignment */
+  --badge-pulse-duration: 500ms;
+  --badge-pulse-scale-max: 1.1;
+
+  /* Toast notification slide */
+  --toast-enter-duration: 300ms;
+  --toast-exit-duration: 300ms;
+
+  /* ========== SPACING ADJUSTMENTS FOR CONSIGNMENT ========== */
+  /* Card gap in grid layouts */
+  --card-gap-consignment-mobile: 12px;
+  --card-gap-consignment-tablet: 16px;
+  --card-gap-consignment-desktop: 20px;
+
+  /* Filter pill gap */
+  --filter-pill-gap: 8px;
+  --filter-pill-height: 32px;
+
+  /* ========== SEMANTIC SPACING (Consistent with tokens.css) ========== */
+  /* Already defined in tokens.css, referencing for clarity */
+  /* --spacing-xs: 8px; */
+  /* --spacing-sm: 16px; */
+  /* --spacing-md: 24px; */
+  /* --spacing-lg: 32px; */
+  /* --spacing-xl: 48px; */
+}
+
+/* ========== DARK MODE OVERRIDES ========== */
+[data-theme="modern-dark"] {
+  /* Dark mode status colors (ensure contrast ≥ 4.5:1) */
+  --color-status-gallery: #EAB308;
+  --color-status-gallery-light: #713F12;
+  --color-status-gallery-dark: #FDE68A;
+
+  --color-status-transit: #60A5FA;
+  --color-status-transit-light: #1E3A8A;
+  --color-status-transit-dark: #93C5FD;
+
+  --color-status-sold: #34D399;
+  --color-status-sold-light: #064E3B;
+  --color-status-sold-dark: #86EFAC;
+
+  --color-status-returned: #F87171;
+  --color-status-returned-light: #7F1D1D;
+  --color-status-returned-dark: #FCA5A5;
+
+  /* Dark mode badge adjustments */
+  --badge-gallery-bg: #713F12;
+  --badge-gallery-text: #FDE68A;
+  --badge-gallery-border: #EAB308;
+
+  --badge-transit-bg: #1E3A8A;
+  --badge-transit-text: #93C5FD;
+  --badge-transit-border: #60A5FA;
+
+  --badge-sold-bg: #064E3B;
+  --badge-sold-text: #86EFAC;
+  --badge-sold-border: #34D399;
+
+  --badge-returned-bg: #7F1D1D;
+  --badge-returned-text: #FCA5A5;
+  --badge-returned-border: #F87171;
+
+  /* Timeline line color for dark mode */
+  --timeline-line-color: var(--timeline-line-color-dark);
+
+  /* Map shadow for dark mode */
+  --map-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* ========== WARM NEUTRAL PALETTE OVERRIDES ========== */
+[data-theme="warm-neutral"] {
+  --color-status-gallery: #8B7355;
+  --color-status-transit: #6B8E99;
+  --color-status-sold: #7BA873;
+  --color-status-pending: #A89968;
+  --color-status-returned: #A97B7B;
+
+  /* Adjust badge colors for warm palette */
+  --badge-gallery-bg: #E8DCC8;
+  --badge-gallery-text: #654A3F;
+  --badge-gallery-border: #8B7355;
+}
+
+/* ========== RESPONSIVE SCALING FOR TABLETS ========== */
+@media (min-width: 640px) and (max-width: 1023px) {
+  :root {
+    /* Increase spacing slightly for readability */
+    --location-card-height-tablet: 160px;
+
+    /* Timeline becomes slightly more spacious */
+    --timeline-event-spacing: 20px;
+
+    /* Map gets larger on tablet */
+    --map-height-tablet: 360px;
+
+    /* Modal on tablet: slightly more generous */
+    --modal-desktop-max-width: 90vw;
+  }
+}
+
+/* ========== RESPONSIVE SCALING FOR DESKTOP ========== */
+@media (min-width: 1024px) {
+  :root {
+    /* Desktop scaling */
+    --location-card-height-desktop: 180px;
+
+    /* Map larger on desktop */
+    --map-height-desktop: 450px;
+
+    /* Modal constrained for readability */
+    --modal-desktop-max-width: 600px;
+
+    /* Work grid: 3 columns on desktop */
+    --work-grid-columns: 3;
+
+    /* Increased icon sizes for prominence */
+    --icon-size-lg: 36px;
+
+    /* Button height can be slightly more generous */
+    --btn-primary-height: 48px;
+    --btn-secondary-height: 48px;
+  }
+}
+
+/* ========== UTILITY CLASSES (Reference for Pixel) ========== */
+/* Status Badge Utilities */
+.badge-gallery {
+  background-color: var(--badge-gallery-bg);
+  color: var(--badge-gallery-text);
+  border: 1px solid var(--badge-gallery-border);
+}
+
+.badge-transit {
+  background-color: var(--badge-transit-bg);
+  color: var(--badge-transit-text);
+  border: 1px solid var(--badge-transit-border);
+}
+
+.badge-sold {
+  background-color: var(--badge-sold-bg);
+  color: var(--badge-sold-text);
+  border: 1px solid var(--badge-sold-border);
+}
+
+.badge-pending {
+  background-color: var(--badge-pending-bg);
+  color: var(--badge-pending-text);
+  border: 1px solid var(--badge-pending-border);
+}
+
+.badge-returned {
+  background-color: var(--badge-returned-bg);
+  color: var(--badge-returned-text);
+  border: 1px solid var(--badge-returned-border);
+}
+
+/* Timeline Dot Utilities */
+.timeline-dot {
+  width: var(--timeline-dot-size);
+  height: var(--timeline-dot-size);
+  border-radius: var(--timeline-dot-border-radius);
+  border: var(--timeline-dot-border-width) solid var(--color-text-secondary);
+  background-color: var(--color-bg-primary);
+}
+
+.timeline-dot.active {
+  background-color: var(--color-accent-primary);
+  border-color: var(--color-accent-primary);
+}
+
+/* Timeline Line */
+.timeline-line {
+  width: var(--timeline-line-width);
+  background-color: var(--timeline-line-color);
+  min-height: var(--timeline-event-spacing);
+}
+
+/* Animations */
+@keyframes badge-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(var(--badge-pulse-scale-max));
+  }
+}
+
+.badge-pulse {
+  animation: badge-pulse var(--badge-pulse-duration) ease-out;
+}
+
+@keyframes status-highlight {
+  0% {
+    background-color: var(--color-accent-primary);
+    opacity: 0.3;
+  }
+  100% {
+    background-color: transparent;
+    opacity: 0;
+  }
+}
+
+.status-updated {
+  animation: status-highlight 1s ease-out;
+}
+
+/**
+ * IMPLEMENTATION NOTES FOR PIXEL:
+ *
+ * 1. Status Badge Strategy:
+ *    - Use semantic classes: .badge-gallery, .badge-transit, etc.
+ *    - Include text label + icon for WCAG compliance
+ *    - Hover state: Darken 10%, add subtle shadow
+ *
+ * 2. Timeline Component:
+ *    - Stack dots vertically
+ *    - Connect with line (flex or CSS grid)
+ *    - Label to the right of dot (offset: --timeline-text-offset-left)
+ *    - First/last dots: Circle fill (active dot color)
+ *
+ * 3. Responsive Behavior:
+ *    - Mobile: Full-width cards, single column
+ *    - Tablet: 2 column grid for works
+ *    - Desktop: 3 column grid, sidebar navigation
+ *
+ * 4. Motion Best Practices:
+ *    - Use CSS transforms (faster than layout changes)
+ *    - Prefers-reduced-motion: Disable animations if user prefers
+ *    - Consider GPU acceleration: transform, opacity
+ *
+ * 5. Accessibility:
+ *    - All interactive: 48px min tap target (--tap-target-min)
+ *    - Color + icon for status indication
+ *    - Keyboard: Tab through, Enter to select, Escape to close
+ *    - ARIA labels on modals and dynamic regions
+ */

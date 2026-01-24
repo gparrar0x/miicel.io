@@ -78,7 +78,7 @@ export async function PATCH(
     const { status: newStatus } = validationResult.data
 
     // Step 4: Fetch order with tenant ownership check
-    const { data: order, error: fetchError } = await supabase
+    const { data: order, error: fetchError } = await (supabase as any)
       .from('orders')
       .select('*, tenants!inner(owner_id)')
       .eq('id', orderId)

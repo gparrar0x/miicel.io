@@ -26,7 +26,7 @@ export async function GET(
     const supabase = await createClient()
 
     // Fetch order with customer details and tenant config
-    const { data: order, error } = await supabase
+    const { data: order, error } = await (supabase as any)
       .from('orders')
       .select(`
         id,

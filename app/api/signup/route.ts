@@ -21,7 +21,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { signupRequestSchema } from '@/lib/schemas/order'
-import type { Database } from '@/types/supabase'
+import type { Database } from '@/types/database.types'
 
 // Service role client for bypassing RLS
 const supabaseAdmin = createClient<Database>(
