@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Dark mode theme toggle** [2025-01-25]
+  - Header toggle now works with OS dark preference (adds `.light` class to override media query)
+  - Persists theme choice in localStorage
+  - Reads initial state from localStorage or falls back to OS preference
+
 ### Added
 
 - **Feature Flags System** [2025-01-24]
