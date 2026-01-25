@@ -71,10 +71,10 @@ export const WhatsAppLocators = {
   },
 
   // ============================================================================
-  // RESTAURANT TEMPLATE
+  // GASTRONOMY TEMPLATE
   // ============================================================================
-  restaurant: {
-    template: '[data-testid="product-grid-restaurant"]',
-    card: '[data-testid="product-card-restaurant"]',
+  gastronomy: {
+    template: '[data-testid="product-grid-gastronomy"]',
+    card: '[data-testid="product-card-gastronomy"]',
   },
 } as const

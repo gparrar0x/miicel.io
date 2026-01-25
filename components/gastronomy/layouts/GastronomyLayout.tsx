@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Product } from '@/types/commerce'
 import { Category } from '../organisms/CategoryTabsNav'
-import { ProductGridRestaurant } from '../organisms/ProductGridRestaurant'
+import { ProductGridGastronomy } from '../organisms/ProductGridGastronomy'
 import { FloatingCartButton } from '../organisms/FloatingCartButton'
-import { RestaurantHeader } from '../organisms/RestaurantHeader'
-import { RestaurantFooter } from '../organisms/RestaurantFooter'
+import { GastronomyHeader } from '../organisms/GastronomyHeader'
+import { GastronomyFooter } from '../organisms/GastronomyFooter'
 import { CartSheet } from '../organisms/CartSheet'
 import { WhatsAppButton } from '@/components/storefront/WhatsAppButton'
 import { useCartStore } from '@/lib/stores/cartStore'
@@ -18,7 +18,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 
-interface RestaurantLayoutProps {
+interface GastronomyLayoutProps {
   tenantSlug: string
   tenantName: string
   tenantLogo: string | null
@@ -33,7 +33,7 @@ interface RestaurantLayoutProps {
   whatsappNumber?: string | null
 }
 
-export function RestaurantLayout({
+export function GastronomyLayout({
   tenantSlug,
   tenantName,
   tenantLogo,
@@ -46,7 +46,7 @@ export function RestaurantLayout({
   categories,
   currency = 'CLP',
   whatsappNumber,
-}: RestaurantLayoutProps) {
+}: GastronomyLayoutProps) {
   const router = useRouter()
   const { items, addItem, removeItem, updateQuantity } = useCartStore()
 
@@ -70,7 +70,7 @@ export function RestaurantLayout({
       price: Number(product.price) > 0 ? Number(product.price) : 9990,
       currency: product.currency,
       image: product.images[0] || '/placeholder.svg',
-      // For restaurant, if stock is 0 or undefined, assume available (999)
+      // For gastronomy, if stock is 0 or undefined, assume available (999)
       maxQuantity: (product.stock && product.stock > 0) ? product.stock : 999,
       quantity: 1, // Default to 1
     })
@@ -88,11 +88,11 @@ export function RestaurantLayout({
   }))
 
   return (
-    <div data-testid="restaurant-layout" className="min-h-screen bg-gradient-to-b from-white/50 to-white" style={{
+    <div data-testid="gastronomy-layout" className="min-h-screen bg-gradient-to-b from-white/50 to-white" style={{
       backgroundImage: 'linear-gradient(to bottom, color-mix(in srgb, var(--color-primary) 5%, white), white)'
     }}>
       {/* Header */}
-      <RestaurantHeader
+      <GastronomyHeader
         tenantName={tenantName}
         tenantLogo={tenantLogo}
         tenantLogoText={tenantLogoText}
@@ -101,6 +101,7 @@ export function RestaurantLayout({
         tenantLocation={tenantLocation}
         hours={hours}
       />
+
 
       <main className="px-2 pt-6">
         {/* Collapsible Categories Accordion */}
@@ -140,7 +141,7 @@ export function RestaurantLayout({
               </AccordionTrigger>
               <AccordionContent className="px-2">
                 {categoryProducts.length > 0 ? (
-                  <ProductGridRestaurant
+                  <ProductGridGastronomy
                     products={categoryProducts}
                     onAddToCart={handleAddToCart}
                     onProductClick={handleProductClick}
@@ -180,7 +181,7 @@ export function RestaurantLayout({
         totalPrice={totalPrice}
         onUpdateQuantity={(pid, qty) => {
           // CartStore expects updateQuantity(productId, colorId, qty)
-          // Assuming no color variant for restaurant for now
+          // Assuming no color variant for gastronomy for now
           updateQuantity(pid, undefined, qty)
         }}
         onRemoveItem={(pid) => removeItem(pid, undefined)}
@@ -188,7 +189,7 @@ export function RestaurantLayout({
       />
 
       {/* Footer */}
-      <RestaurantFooter
+      <GastronomyFooter
         tenantName={tenantName}
         tenantLocation={tenantLocation}
         tenantPhone="+54 294 503-2187"

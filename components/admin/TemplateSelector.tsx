@@ -45,9 +45,9 @@ const TEMPLATES: Array<{
     icon: '🎯',
   },
   {
-    id: 'restaurant',
-    name: 'Restaurant',
-    description: 'Menu digital optimizado para comida. Tabs categorías, badges promos, mobile-first.',
+    id: 'gastronomy',
+    name: 'Gastronomy',
+    description: 'Digital menu optimized for food. Category tabs, promo badges, mobile-first.',
     icon: '🍔',
   },
 ]
@@ -117,13 +117,13 @@ export function TemplateSelector({ selectedTemplate, onTemplateChange }: Templat
                 <div className="mt-2 flex gap-4 text-xs text-gray-500">
                   <span>
                     Grid:{' '}
-                    {template.id === 'gallery' ? '3' : template.id === 'detail' ? '2' : template.id === 'restaurant' ? '2' : '4'} cols
+                    {template.id === 'gallery' ? '3' : template.id === 'detail' ? '2' : template.id === 'gastronomy' ? '2' : '4'} cols
                   </span>
                   <span>
                     Aspect:{' '}
                     {template.id === 'gallery'
                       ? '1:1'
-                      : template.id === 'detail' || template.id === 'restaurant'
+                      : template.id === 'detail' || template.id === 'gastronomy'
                         ? '16:9'
                         : '4:3'}
                   </span>
@@ -131,7 +131,7 @@ export function TemplateSelector({ selectedTemplate, onTemplateChange }: Templat
                     Style:{' '}
                     {template.id === 'gallery'
                       ? 'Elevated'
-                      : template.id === 'detail' || template.id === 'restaurant'
+                      : template.id === 'detail' || template.id === 'gastronomy'
                         ? 'Outlined'
                         : 'Flat'}
                   </span>

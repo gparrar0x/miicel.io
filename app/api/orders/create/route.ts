@@ -132,9 +132,9 @@ export async function POST(request: Request) {
         stockLabel = `${product.name} (${selectedSize.label})`
       }
       
-      // Restaurant template: Ignore stock levels (infinite supply)
+      // Gastronomy template: Ignore stock levels (infinite supply)
       // Other templates: Enforce stock limits
-      if (tenant.template !== 'restaurant' && availableStock < item.quantity) {
+      if (tenant.template !== 'gastronomy' && availableStock < item.quantity) {
         return NextResponse.json(
           { error: `Insufficient stock for ${stockLabel}. Available: ${availableStock}` },
           { status: 400 }

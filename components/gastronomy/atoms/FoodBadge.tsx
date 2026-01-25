@@ -10,7 +10,7 @@
 
 'use client'
 
-import { BadgeType, BADGE_CONFIG } from '@/lib/themes/restaurant'
+import { BadgeType, BADGE_CONFIG } from '@/lib/themes/gastronomy'
 
 interface FoodBadgeProps {
   type: BadgeType

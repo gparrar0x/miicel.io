@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 import { AdminOrdersClient } from "./AdminOrdersClient"
 import { OrderResponse, OrderItem } from "@/lib/schemas/order"
+import { isEnabled, Flags } from "@/lib/flags"
 
 interface PageProps {
     params: Promise<{ tenantId: string }>
@@ -17,13 +18,19 @@ export default async function AdminOrdersPage({ params }: PageProps) {
 
     const { data: tenant } = await supabase
         .from("tenants")
-        .select("id, slug, name")
+        .select("id, slug, name, template")
         .eq(isNumeric ? "id" : "slug", isNumeric ? numericId : tenantId)
         .single()
 
     if (!tenant) {
         notFound()
     }
+
+    // Check if kitchen view is enabled for this tenant
+    const showKitchenView = await isEnabled(Flags.KITCHEN_VIEW, {
+        tenantId: tenant.id,
+        tenantTemplate: tenant.template
+    })
 
     // 2. Get Orders with customer details
     const { data: rawOrders, error } = await supabase
@@ -46,7 +53,7 @@ export default async function AdminOrdersPage({ params }: PageProps) {
     }
 
     // Format orders with proper typing
-    // @ts-ignore - customer relation type mismatch in generated types
+    // @ts-expect-error - customer relation type mismatch in generated types
     const orders: OrderResponse[] = (rawOrders || []).map(order => ({
         id: order.id as number,
         tenant_id: order.tenant_id as number,
@@ -66,6 +73,7 @@ export default async function AdminOrdersPage({ params }: PageProps) {
             initialOrders={orders}
             tenantId={tenant.id}
             tenantSlug={tenantId}
+            showKitchenView={showKitchenView}
         />
     )
 }

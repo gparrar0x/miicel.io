@@ -26,7 +26,7 @@ interface ProductFormProps {
     template?: string
 }
 
-export function ProductForm({ initialData, onSubmit, onCancel, isLoading, template = 'restaurant' }: ProductFormProps) {
+export function ProductForm({ initialData, onSubmit, onCancel, isLoading, template = 'gastronomy' }: ProductFormProps) {
     const t = useTranslations('Products.form')
     const tCommon = useTranslations('Common')
 

@@ -69,7 +69,7 @@ export async function GET(
     const config = (tenant.config as any) || {}
 
     // Build response DTO with safe fallbacks matching Product Page design system
-    const validTemplates = ['gallery', 'detail', 'minimal', 'restaurant'] as const
+    const validTemplates = ['gallery', 'detail', 'minimal', 'gastronomy'] as const
     const rawTemplate = (tenant as any).template
     const template = validTemplates.includes(rawTemplate) ? rawTemplate : 'gallery'
 

@@ -1,6 +1,6 @@
 import { Clock, Phone, MapPin, Instagram } from "lucide-react"
 
-interface RestaurantFooterProps {
+interface GastronomyFooterProps {
   tenantName: string
   tenantLocation?: string
   tenantPhone?: string
@@ -12,7 +12,7 @@ interface RestaurantFooterProps {
   }>
 }
 
-export function RestaurantFooter({
+export function GastronomyFooter({
   tenantName,
   tenantLocation,
   tenantPhone,
@@ -26,7 +26,7 @@ export function RestaurantFooter({
     { day: "Sábado", hours: "11:00-00:30" },
     { day: "Domingo", hours: "11:00-00:30" },
   ],
-}: RestaurantFooterProps) {
+}: GastronomyFooterProps) {
   return (
     <footer className="text-white py-8 px-4 mt-8" style={{
       background: `linear-gradient(135deg, 

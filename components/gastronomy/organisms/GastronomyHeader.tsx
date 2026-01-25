@@ -1,6 +1,6 @@
 type HoursRecord = Record<string, { open: string; close: string }>
 
-interface RestaurantHeaderProps {
+interface GastronomyHeaderProps {
   tenantName: string
   tenantLogo?: string | null
   tenantLogoText?: string | null
@@ -10,7 +10,7 @@ interface RestaurantHeaderProps {
   hours?: HoursRecord
 }
 
-export function RestaurantHeader({
+export function GastronomyHeader({
   tenantName,
   tenantLogo,
   tenantLogoText,
@@ -18,7 +18,7 @@ export function RestaurantHeader({
   tenantSubtitle,
   tenantLocation,
   hours,
-}: RestaurantHeaderProps) {
+}: GastronomyHeaderProps) {
   const now = new Date()
   const dayIndex = now.getDay() // 0 = Sunday
   const dayKeys: Array<keyof HoursRecord> = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']

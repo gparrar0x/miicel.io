@@ -1,13 +1,13 @@
 /**
- * Restaurant Template Theme Configuration
+ * Gastronomy Template Theme Configuration
  *
- * Color palette and theme constants for food/restaurant template.
+ * Color palette and theme constants for food/gastronomy template.
  * Based on Aurora design specs (SKY_42_DESIGN_SPECS.md).
  *
  * Created: 2025-01-16 (SKY-42)
  */
 
-export const RESTAURANT_THEME = {
+export const GASTRONOMY_THEME = {
   primary: '#E63946',      // Red (appetite trigger)
   accent: '#F4A261',       // Orange (warmth)
   background: '#F8F9FA',   // Light gray
@@ -89,10 +89,10 @@ export const BADGE_CONFIG: Record<BadgeType, BadgeStyle> = {
 }
 
 /**
- * Generate CSS variables for restaurant theme
+ * Generate CSS variables for gastronomy theme
  */
-export function generateRestaurantCSSVars(overrides?: Partial<typeof RESTAURANT_THEME>) {
-  const theme = { ...RESTAURANT_THEME, ...overrides }
+export function generateGastronomyCSSVars(overrides?: Partial<typeof GASTRONOMY_THEME>) {
+  const theme = { ...GASTRONOMY_THEME, ...overrides }
 
   return {
     '--color-primary': theme.primary,

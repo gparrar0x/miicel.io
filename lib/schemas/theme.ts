@@ -36,7 +36,7 @@ export const themeOverridesSchema = z
  */
 export const updateThemeSchema = z
   .object({
-    template: z.enum(['gallery', 'detail', 'minimal', 'restaurant']).optional(),
+    template: z.enum(['gallery', 'detail', 'minimal', 'gastronomy']).optional(),
     overrides: themeOverridesSchema.optional(),
   })
   .strict()

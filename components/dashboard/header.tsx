@@ -20,18 +20,33 @@ export function Header() {
   const [mounted, setMounted] = useState(false)
   const { toggle } = useSidebar()
 
+  // Initialize theme from localStorage or OS preference
   useEffect(() => {
+    const stored = localStorage.getItem("theme")
+    if (stored === "dark") {
+      setIsDark(true)
+    } else if (stored === "light") {
+      setIsDark(false)
+    } else {
+      // Check OS preference
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
+      setIsDark(prefersDark)
+    }
     setMounted(true)
   }, [])
 
+  // Apply theme changes
   useEffect(() => {
+    if (!mounted) return
     const root = document.documentElement
     if (isDark) {
       root.classList.add("dark")
+      localStorage.setItem("theme", "dark")
     } else {
       root.classList.remove("dark")
+      localStorage.setItem("theme", "light")
     }
-  }, [isDark])
+  }, [isDark, mounted])
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-border bg-background px-4 md:px-6">

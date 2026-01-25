@@ -262,21 +262,21 @@ test.describe('WhatsApp Button - Storefront Display (Restaurant Template)', () =
     await settingsPage.verifySuccessMessage()
   })
 
-  test('should display WhatsApp button on restaurant template', async ({ page }) => {
+  test('should display WhatsApp button on gastronomy template', async ({ page }) => {
     await storefrontPage.goto(TEST_TENANT_SLUG)
 
     // Verify button visibility
     await storefrontPage.verifyButtonVisible()
 
-    // Try to verify restaurant template
+    // Try to verify gastronomy template
     try {
-      await storefrontPage.verifyTemplate('restaurant')
+      await storefrontPage.verifyTemplate('gastronomy')
     } catch {
       // Template might be different, that's ok
     }
   })
 
-  test('should have correct wa.me URL on restaurant template', async ({ page }) => {
+  test('should have correct wa.me URL on gastronomy template', async ({ page }) => {
     await storefrontPage.goto(TEST_TENANT_SLUG)
 
     // Verify wa.me URL

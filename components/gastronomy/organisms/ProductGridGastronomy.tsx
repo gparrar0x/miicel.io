@@ -1,20 +1,20 @@
 /**
- * ProductGridRestaurant - Responsive grid wrapper for restaurant cards
+ * ProductGridGastronomy - Responsive grid wrapper for gastronomy cards
  *
  * Grid: 1 col (mobile), 2 col (tablet), 3 col (desktop)
  * Max width: 1280px centered
  *
- * Test ID: product-grid-restaurant
+ * Test ID: product-grid-gastronomy
  * Created: 2025-01-16 (SKY-42, Fase 4)
  */
 
 'use client'
 
 import { Product } from '@/types/commerce'
-import { BadgeType } from '@/lib/themes/restaurant'
-import { ProductCardRestaurant } from '../molecules/ProductCardRestaurant'
+import { BadgeType } from '@/lib/themes/gastronomy'
+import { ProductCardGastronomy } from '../molecules/ProductCardGastronomy'
 
-interface ProductGridRestaurantProps {
+interface ProductGridGastronomyProps {
   products: Product[]
   onAddToCart: (productId: string) => void | Promise<void>
   onProductClick?: (product: Product) => void
@@ -41,17 +41,17 @@ function getProductBadges(product: Product): BadgeType[] {
   return badges
 }
 
-export function ProductGridRestaurant({
+export function ProductGridGastronomy({
   products,
   onAddToCart,
   onProductClick,
   currency = 'CLP',
   className = '',
-}: ProductGridRestaurantProps) {
+}: ProductGridGastronomyProps) {
   if (products.length === 0) {
     return (
       <div
-        data-testid="product-grid-restaurant-empty"
+        data-testid="product-grid-gastronomy-empty"
         className="text-center py-12 text-gray-500 dark:text-gray-400"
       >
         No hay productos en esta categoría
@@ -61,12 +61,12 @@ export function ProductGridRestaurant({
 
   return (
     <div
-      data-testid="product-grid-restaurant"
+      data-testid="product-grid-gastronomy"
       className={`py-1 ${className}`}
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
         {products.map((product) => (
-          <ProductCardRestaurant
+          <ProductCardGastronomy
             key={product.id}
             product={product}
             badges={getProductBadges(product)}

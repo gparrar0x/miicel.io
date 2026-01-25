@@ -41,7 +41,7 @@ async function getTenantConfig(tenantSlug: string) {
     const config = (tenant.config as any) || {}
 
     // Build response DTO (replicated from API route)
-    const validTemplates = ['gallery', 'detail', 'minimal', 'restaurant'] as const
+    const validTemplates = ['gallery', 'detail', 'minimal', 'gastronomy'] as const
     const rawTemplate = (tenant as any).template
     const template = validTemplates.includes(rawTemplate) ? rawTemplate : 'gallery'
 

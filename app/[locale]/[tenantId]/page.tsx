@@ -13,7 +13,7 @@ import { ProductGrid as ProductGridLegacy } from '@/components/commerce/ProductG
 import { GalleryGrid } from '@/components/gallery-v2/GalleryGrid'
 import { GalleryHeader } from '@/components/gallery-v2/GalleryHeader'
 import { CartBadge } from '@/components/commerce/CartBadge'
-import { RestaurantLayout } from '@/components/restaurant/layouts/RestaurantLayout'
+import { GastronomyLayout } from '@/components/gastronomy/layouts/GastronomyLayout'
 import { WhatsAppButton } from '@/components/storefront/WhatsAppButton'
 import { tenantConfigResponseSchema, type TenantConfigResponse } from '@/lib/schemas/order'
 import { createClient } from '@/lib/supabase/server'
@@ -225,11 +225,11 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
 
   console.log(`[${tenantId}] Template from config:`, config.template)
   console.log(`[${tenantId}] Template type:`, typeof config.template)
-  console.log(`[${tenantId}] Template === 'restaurant':`, config.template === 'restaurant')
+  console.log(`[${tenantId}] Template === 'gastronomy':`, config.template === 'gastronomy')
   console.log(`[${tenantId}] Full config:`, JSON.stringify(config, null, 2))
 
-  if (config.template === 'restaurant') {
-    console.log(`[${tenantId}] ✓ RENDERING RESTAURANT LAYOUT`)
+  if (config.template === 'gastronomy') {
+    console.log(`[${tenantId}] ✓ RENDERING GASTRONOMY LAYOUT`)
     
     const getCategoryIcon = (category: string): string => {
       const iconMap: Record<string, string> = {
@@ -251,7 +251,7 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
 
     return (
       <ThemeProvider config={config}>
-        <RestaurantLayout
+        <GastronomyLayout
           tenantSlug={tenantId}
           tenantName={config.businessName}
           tenantLogo={config.logoUrl}
@@ -270,6 +270,7 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
     )
   }
 
+  // Legacy support: also accept 'restaurant' for backwards compatibility
   if (config.template === 'gallery') {
     console.log(`[${tenantId}] ✓ RENDERING GALLERY LAYOUT`)
     // Transform products to Artwork format for new GalleryGrid

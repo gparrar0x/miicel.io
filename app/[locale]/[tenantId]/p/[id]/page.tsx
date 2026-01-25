@@ -55,7 +55,7 @@ async function getTenantConfig(tenantSlug: string) {
     const config = (tenant.config as any) || {}
 
     // Build response DTO (replicated from API route)
-    const validTemplates = ['gallery', 'detail', 'minimal', 'restaurant'] as const
+    const validTemplates = ['gallery', 'detail', 'minimal', 'gastronomy'] as const
     const rawTemplate = (tenant as any).template
     const template = validTemplates.includes(rawTemplate) ? rawTemplate : 'gallery'
 
@@ -187,7 +187,7 @@ export default async function ProductPage({ params }: PageProps) {
   product.currency = config.currency
 
   // Restaurant template: Ignore stock (assume infinite)
-  if (config.template === 'restaurant') {
+  if (config.template === 'gastronomy') {
     product.stock = 999
   }
 
@@ -293,7 +293,7 @@ export default async function ProductPage({ params }: PageProps) {
                 )}
 
                 {/* Stock indicator */}
-                {config.template !== 'restaurant' && (
+                {config.template !== 'gastronomy' && (
                   <div
                     className="text-sm"
                     style={{ color: 'var(--color-text-tertiary)' }}

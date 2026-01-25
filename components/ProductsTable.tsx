@@ -45,19 +45,19 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd, tenantId = ''
 
     return (
         <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row justify-between gap-4 items-center bg-white p-4 rounded-lg shadow-sm border">
+            <div className="flex flex-col sm:flex-row justify-between gap-4 items-center bg-card p-4 rounded-lg shadow-sm border border-border">
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                     <div className="relative flex-1 sm:w-64">
-                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
+                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                         <input
                             placeholder={t('table.search')}
-                            className="pl-8 h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF6B35] text-[#1A1A1A]"
+                            className="pl-8 h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground placeholder:text-muted-foreground"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
                     <select
-                        className="h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF6B35] text-[#1A1A1A]"
+                        className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground"
                         value={categoryFilter}
                         onChange={(e) => setCategoryFilter(e.target.value)}
                     >
@@ -69,7 +69,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd, tenantId = ''
                         ))}
                     </select>
                     <select
-                        className="h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF6B35] text-[#1A1A1A]"
+                        className="h-9 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-foreground"
                         value={activeFilter}
                         onChange={(e) => setActiveFilter(e.target.value)}
                     >
@@ -104,7 +104,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd, tenantId = ''
                         <tbody className="divide-y">
                             {filteredProducts.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                                    <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
                                         {t('table.noProducts')}
                                     </td>
                                 </tr>
@@ -112,7 +112,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd, tenantId = ''
                                 filteredProducts.map((product) => (
                                     <tr key={product.id} data-testid="product-table-row" className="hover:bg-accent/50 transition-colors">
                                         <td className="px-4 py-3">
-                                            <div className="relative h-10 w-10 rounded-md overflow-hidden bg-gray-100 border">
+                                            <div className="relative h-10 w-10 rounded-md overflow-hidden bg-muted border border-border">
                                                 {product.image_url ? (
                                                     <Image
                                                         src={product.image_url}
@@ -121,7 +121,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd, tenantId = ''
                                                         className="object-cover"
                                                     />
                                                 ) : (
-                                                    <div className="flex items-center justify-center h-full text-gray-400">
+                                                    <div className="flex items-center justify-center h-full text-muted-foreground">
                                                         <span className="text-xs">{t('table.noImg')}</span>
                                                     </div>
                                                 )}
@@ -136,7 +136,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd, tenantId = ''
                                             )}
                                         </td>
                                         <td className="px-4 py-3">
-                                            <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 bg-gray-100 text-gray-800">
+                                            <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
                                                 {product.category}
                                             </span>
                                         </td>
@@ -158,7 +158,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd, tenantId = ''
                                                 <button
                                                     onClick={() => handleQrClick(product)}
                                                     data-testid={`product-row-qr-button-${product.id}`}
-                                                    className="p-2 hover:bg-gray-100 rounded-md text-gray-600 hover:text-blue-600 transition-colors"
+                                                    className="p-2 hover:bg-accent rounded-md text-muted-foreground hover:text-blue-600 transition-colors"
                                                     title="QR Code"
                                                 >
                                                     <QrCode className="h-4 w-4" />
@@ -166,7 +166,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd, tenantId = ''
                                                 <button
                                                     onClick={() => onEdit(product)}
                                                     data-testid="product-edit-button"
-                                                    className="p-2 hover:bg-gray-100 rounded-md text-gray-600 hover:text-blue-600 transition-colors"
+                                                    className="p-2 hover:bg-accent rounded-md text-muted-foreground hover:text-blue-600 transition-colors"
                                                     title={tCommon('edit')}
                                                 >
                                                     <Edit className="h-4 w-4" />
@@ -174,7 +174,7 @@ export function ProductsTable({ products, onEdit, onDelete, onAdd, tenantId = ''
                                                 <button
                                                     onClick={() => onDelete(product)}
                                                     data-testid="product-delete-button"
-                                                    className="p-2 hover:bg-gray-100 rounded-md text-gray-600 hover:text-red-600 transition-colors"
+                                                    className="p-2 hover:bg-accent rounded-md text-muted-foreground hover:text-red-600 transition-colors"
                                                     title={tCommon('delete')}
                                                 >
                                                     <Trash2 className="h-4 w-4" />

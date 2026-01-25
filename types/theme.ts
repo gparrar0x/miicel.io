@@ -11,7 +11,7 @@
 /**
  * Template type determines layout and UX style
  */
-export type TenantTemplate = 'gallery' | 'detail' | 'minimal' | 'restaurant'
+export type TenantTemplate = 'gallery' | 'detail' | 'minimal' | 'gastronomy'
 
 /**
  * Card visual variant options
@@ -96,7 +96,7 @@ export const TEMPLATE_DEFAULTS: Record<TenantTemplate, Omit<ResolvedTheme, 'temp
     cardVariant: 'flat',
     spacing: 'compact',
   },
-  restaurant: {
+  gastronomy: {
     gridCols: 2,
     imageAspect: '16:9',
     cardVariant: 'outlined',
@@ -116,7 +116,7 @@ export const DEFAULT_COLORS: Required<ThemeColors> = {
  * Type guard for valid template values
  */
 export function isValidTemplate(value: unknown): value is TenantTemplate {
-  return typeof value === 'string' && ['gallery', 'detail', 'minimal', 'restaurant'].includes(value)
+  return typeof value === 'string' && ['gallery', 'detail', 'minimal', 'gastronomy'].includes(value)
 }
 
 /**

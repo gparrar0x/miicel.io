@@ -30,7 +30,7 @@ import { ThemePreview } from './ThemePreview'
 
 // Form schema matching API updateThemeSchema
 const themeFormSchema = z.object({
-  template: z.enum(['gallery', 'detail', 'minimal', 'restaurant']),
+  template: z.enum(['gallery', 'detail', 'minimal', 'gastronomy']),
   gridCols: z.number().int().min(1).max(6),
   imageAspect: z.string().regex(/^\d+:\d+$/, 'Must be ratio format (e.g., 1:1, 16:9)'),
   cardVariant: z.enum(['flat', 'elevated', 'outlined']),

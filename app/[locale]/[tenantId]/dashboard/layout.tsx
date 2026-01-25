@@ -12,6 +12,7 @@ import { getTranslations } from 'next-intl/server'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { DashboardShell } from '@/components/dashboard/dashboard-shell'
 import type { NavItem } from '@/components/dashboard/sidebar'
+import { isEnabled, Flags } from '@/lib/flags'
 
 export const metadata: Metadata = {
   robots: {
@@ -45,7 +46,7 @@ export default async function DashboardLayout({ children, params }: LayoutProps)
   const numericId = Number(tenantId)
   const { data: tenant } = await supabase
     .from('tenants')
-    .select('id, slug, owner_id')
+    .select('id, slug, owner_id, template')
     .eq(Number.isNaN(numericId) ? 'slug' : 'id', Number.isNaN(numericId) ? tenantId : numericId)
     .single()
 
@@ -77,12 +78,16 @@ export default async function DashboardLayout({ children, params }: LayoutProps)
 
   const t = await getTranslations('Dashboard')
 
+  // Check feature flags based on tenant template
+  const flagContext = { tenantId: tenant.id, tenantTemplate: tenant.template }
+  const showConsignments = await isEnabled(Flags.CONSIGNMENTS, flagContext)
+
   const navItems: NavItem[] = [
     { name: t('navDashboard') || 'Dashboard', href: `/${locale}/${tenantId}/dashboard`, icon: 'dashboard' },
     { name: t('navAnalytics') || 'Analytics', href: `/${locale}/${tenantId}/dashboard/analytics`, icon: 'analytics' },
     { name: t('navProducts') || 'Productos', href: `/${locale}/${tenantId}/dashboard/products`, icon: 'products' },
     { name: t('navOrders') || 'Pedidos', href: `/${locale}/${tenantId}/dashboard/orders`, icon: 'orders' },
-    { name: t('navConsignments') || 'Consignaciones', href: `/${locale}/${tenantId}/dashboard/consignments`, icon: 'consignments' },
+    ...(showConsignments ? [{ name: t('navConsignments') || 'Consignaciones', href: `/${locale}/${tenantId}/dashboard/consignments`, icon: 'consignments' as const }] : []),
     { name: t('navSettings') || 'Ajustes', href: `/${locale}/${tenantId}/dashboard/settings`, icon: 'settings' },
   ]
 

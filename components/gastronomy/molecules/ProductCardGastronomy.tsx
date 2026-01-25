@@ -6,9 +6,9 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { Product } from '@/types/commerce'
-import { BadgeType } from '@/lib/themes/restaurant'
+import { BadgeType } from '@/lib/themes/gastronomy'
 
-interface ProductCardRestaurantProps {
+interface ProductCardGastronomyProps {
   product: Product
   badges?: BadgeType[]
   onAddToCart: (productId: string) => void | Promise<void>
@@ -28,13 +28,13 @@ const badgeStyles: Record<string, string> = {
   nuevo: 'bg-blue-600 text-white',
 }
 
-export function ProductCardRestaurant({
+export function ProductCardGastronomy({
   product,
   badges = [],
   onAddToCart,
   onClick,
   currency = 'CLP',
-}: ProductCardRestaurantProps) {
+}: ProductCardGastronomyProps) {
   const [isAdding, setIsAdding] = useState(false)
 
   const handleAddToCart = async (e: React.MouseEvent) => {

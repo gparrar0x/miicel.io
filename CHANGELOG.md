@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Feature Flags System** [2025-01-24]
+  - DB-driven flags with tenant/user/template targeting and percentage rollouts
+  - `lib/flags.ts`: Server-side helpers with 1-min cache
+  - `lib/hooks/useFeatureFlag.ts`: Client-side hook with 30s cache
+  - `/api/flags` + `/api/flags/batch`: REST endpoints
+  - Migration: `feature_flags` table with RLS + seed data
+  - Supports: global on/off, tenant allowlist, user allowlist, template filter, % rollout, env filter
+  - Integrated flags:
+    - `consignments`: Gallery-only (hides nav + protects route)
+    - `kitchen_view`: Gastronomy-only (hides toggle + defaults to table view)
+
 ### Changed (Docs)
 
 - **CLAUDE.md optimizado** [2025-01-24]
@@ -44,5 +57,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Template rename: Restaurant → Gastronomy** [2025-01-24]
+  - `components/restaurant/` → `components/gastronomy/` (full component tree)
+  - `lib/themes/restaurant.ts` → `lib/themes/gastronomy.ts`
+  - Template identifier: `'restaurant'` → `'gastronomy'` in DB + code
+  - All imports/references updated across 15+ files
 - Updated Playwright config for improved test stability
 - Enhanced auth fixtures for E2E tests

@@ -38,7 +38,7 @@ export function ProductGrid({
     gallery: GalleryCard,
     detail: DetailCard,
     minimal: MinimalCard,
-    restaurant: GalleryCard,
+    gastronomy: GalleryCard,
   }[template]
 
   if (loading) {

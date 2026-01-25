@@ -19,7 +19,7 @@
 import { UseFormRegister, UseFormWatch, UseFormSetValue, FieldErrors } from 'react-hook-form'
 
 interface ThemeFormData {
-  template: 'gallery' | 'detail' | 'minimal' | 'restaurant'
+  template: 'gallery' | 'detail' | 'minimal' | 'gastronomy'
   gridCols: number
   imageAspect: string
   cardVariant: 'flat' | 'elevated' | 'outlined'

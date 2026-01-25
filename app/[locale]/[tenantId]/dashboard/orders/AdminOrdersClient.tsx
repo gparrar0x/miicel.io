@@ -15,16 +15,19 @@ interface AdminOrdersClientProps {
     initialOrders: OrderResponse[]
     tenantId: number
     tenantSlug: string
+    showKitchenView?: boolean  // Feature flag: only gastronomy tenants
 }
 
 export function AdminOrdersClient({
     initialOrders,
     tenantId,
-    tenantSlug
+    tenantSlug,
+    showKitchenView = false
 }: AdminOrdersClientProps) {
     const [orders, setOrders] = useState<OrderResponse[]>(initialOrders)
     const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(null)
-    const [viewMode, setViewMode] = useState<'kitchen' | 'table'>('kitchen')
+    // Default to kitchen view only if enabled, otherwise table view
+    const [viewMode, setViewMode] = useState<'kitchen' | 'table'>(showKitchenView ? 'kitchen' : 'table')
     const router = useRouter()
     const t = useTranslations('Orders')
 
@@ -148,31 +151,33 @@ export function AdminOrdersClient({
                     </p>
                 </div>
 
-                {/* View Mode Toggle */}
-                <div className="flex gap-1 bg-secondary rounded-lg p-1">
-                    <Button
-                        variant={viewMode === 'kitchen' ? 'default' : 'ghost'}
-                        size="sm"
-                        onClick={() => setViewMode('kitchen')}
-                        data-testid="btn-kitchen-view"
-                    >
-                        <Smartphone className="w-4 h-4 mr-2" />
-                        <span className="hidden sm:inline">{t('kitchenView')}</span>
-                    </Button>
-                    <Button
-                        variant={viewMode === 'table' ? 'default' : 'ghost'}
-                        size="sm"
-                        onClick={() => setViewMode('table')}
-                        data-testid="btn-table-view"
-                    >
-                        <Monitor className="w-4 h-4 mr-2" />
-                        <span className="hidden sm:inline">{t('tableView')}</span>
-                    </Button>
-                </div>
+                {/* View Mode Toggle - only show if kitchen view is enabled */}
+                {showKitchenView && (
+                    <div className="flex gap-1 bg-secondary rounded-lg p-1">
+                        <Button
+                            variant={viewMode === 'kitchen' ? 'default' : 'ghost'}
+                            size="sm"
+                            onClick={() => setViewMode('kitchen')}
+                            data-testid="btn-kitchen-view"
+                        >
+                            <Smartphone className="w-4 h-4 mr-2" />
+                            <span className="hidden sm:inline">{t('kitchenView')}</span>
+                        </Button>
+                        <Button
+                            variant={viewMode === 'table' ? 'default' : 'ghost'}
+                            size="sm"
+                            onClick={() => setViewMode('table')}
+                            data-testid="btn-table-view"
+                        >
+                            <Monitor className="w-4 h-4 mr-2" />
+                            <span className="hidden sm:inline">{t('tableView')}</span>
+                        </Button>
+                    </div>
+                )}
             </div>
 
-            {/* Conditional View */}
-            {viewMode === 'kitchen' ? (
+            {/* Conditional View - kitchen only if enabled */}
+            {showKitchenView && viewMode === 'kitchen' ? (
                 <KitchenDisplayOrders
                     orders={orders}
                     onViewOrder={handleViewOrder}

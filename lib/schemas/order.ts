@@ -254,7 +254,7 @@ export const tenantConfigResponseSchema = z.object({
   }),
   hours: z.record(z.string(), z.object({ open: z.string(), close: z.string() })),
   currency: z.string().default('USD'),
-  template: z.enum(['gallery', 'detail', 'minimal', 'restaurant']).default('gallery'),
+  template: z.enum(['gallery', 'detail', 'minimal', 'gastronomy']).default('gallery'),
   whatsappNumber: z.string().nullable().optional(),
 })
 

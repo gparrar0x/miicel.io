@@ -10,7 +10,7 @@
 import { Page, Locator, expect } from '@playwright/test'
 import { WhatsAppLocators } from '../locators/whatsapp.locators'
 
-type Template = 'gallery' | 'detail' | 'minimal' | 'restaurant'
+type Template = 'gallery' | 'detail' | 'minimal' | 'gastronomy'
 
 export class StorefrontWhatsAppPage {
   readonly page: Page
