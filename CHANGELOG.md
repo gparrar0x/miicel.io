@@ -9,12 +9,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Consignments Module - Critical Bugs** [2026-01-26] (SKY-56)
+  - `SelectProductModal`: Fixed API endpoint `/api/dashboard/products` → `/api/products`
+  - `SelectProductModal`: Fixed field mapping `title` → `name` (products table uses `name`)
+  - `SelectProductModal`: Changed testId to `assign-artwork-modal` per contract
+  - `artworks/route.ts`: Fixed query field `title` → `name` in products join
+  - `LocationDetailClient`: Added proper API response mapping for artwork assignments
+  - `LocationDetailClient`: Fixed interface to use `name` instead of `title`
+  - `artwork-assignment.spec.ts`: Removed silent `if/else` patterns - tests now fail when functionality is broken
+  - `consignments.page.ts`: Fixed dialog handler timing (register before click)
+  - `dashboard-overview.spec.ts`: Added `verifyOverviewVisible()` to beforeEach, fixed timing threshold
+
+### Added
+
+- **Consignments E2E Test Suite** [2025-01-25] (SKY-56)
+  - 4 comprehensive test specs: locations CRUD, artwork assignment, dashboard overview, history/timeline
+  - Page object layer (`ConsignmentsPage`) with 25+ reusable methods
+  - Locators layer (`consignments.locators.ts`) with data-testid contract
+  - 28 test scenarios covering happy paths, validation, edge cases, responsive layouts
+  - Deterministic runtime <90s per suite
+  - Files: `tests/e2e/specs/consignments/*`, `tests/e2e/pages/consignments.page.ts`, `tests/e2e/locators/consignments.locators.ts`
+
+### Fixed
+
 - **Dark mode theme toggle** [2025-01-25]
   - Header toggle now works with OS dark preference (adds `.light` class to override media query)
   - Persists theme choice in localStorage
   - Reads initial state from localStorage or falls back to OS preference
-
-### Added
 
 - **Feature Flags System** [2025-01-24]
   - DB-driven flags with tenant/user/template targeting and percentage rollouts

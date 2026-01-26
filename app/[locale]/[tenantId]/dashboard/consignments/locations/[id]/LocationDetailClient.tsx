@@ -16,10 +16,22 @@ import { toast } from 'sonner'
 
 interface Artwork {
   id: number
-  title: string
+  name: string
   image_url?: string
   price: number
   status: string
+}
+
+interface AssignmentResponse {
+  id: number
+  work_id: number
+  status: string
+  work: {
+    id: number
+    name: string
+    price: number
+    image_url?: string
+  }
 }
 
 interface LocationDetailClientProps {
@@ -55,7 +67,15 @@ export function LocationDetailClient({
       )
       if (!res.ok) throw new Error('Failed to fetch artworks')
       const data = await res.json()
-      setAssignedArtworks(data.items || [])
+      // Map API response to Artwork interface
+      const artworks: Artwork[] = (data.items || []).map((item: AssignmentResponse) => ({
+        id: item.work?.id || item.work_id,
+        name: item.work?.name || 'Sin nombre',
+        image_url: item.work?.image_url,
+        price: item.work?.price || 0,
+        status: item.status,
+      }))
+      setAssignedArtworks(artworks)
     } catch (error) {
       console.error('Error fetching assigned artworks:', error)
     } finally {
@@ -224,12 +244,12 @@ export function LocationDetailClient({
                   {artwork.image_url && (
                     <img
                       src={artwork.image_url}
-                      alt={artwork.title}
+                      alt={artwork.name}
                       className="w-12 h-12 object-cover rounded"
                     />
                   )}
                   <div>
-                    <p className="font-medium">{artwork.title}</p>
+                    <p className="font-medium">{artwork.name}</p>
                     <p className="text-sm text-gray-600">
                       ${artwork.price.toLocaleString()}
                     </p>

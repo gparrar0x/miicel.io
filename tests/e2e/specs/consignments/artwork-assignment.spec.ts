@@ -230,7 +230,7 @@ test.describe('Consignments - Artwork Assignment', () => {
     await expect(assignBtn).toBeVisible({ timeout: 5000 })
     await assignBtn.click()
 
-    const modal = page.getByTestId('select-product-modal')
+    const modal = page.getByTestId('assign-artwork-modal')
     await expect(modal).toBeVisible({ timeout: 5000 })
 
     // Type in search

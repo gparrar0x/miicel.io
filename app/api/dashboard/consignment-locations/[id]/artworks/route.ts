@@ -30,7 +30,7 @@ type RouteParams = {
  *     assigned_date: string,
  *     unassigned_date: string | null,
  *     notes: string | null,
- *     work: { id, title, price, image_url }
+ *     work: { id, name, price, image_url }
  *   }>
  * }
  */
@@ -97,7 +97,7 @@ export async function GET(request: Request, { params }: RouteParams) {
         notes,
         work:products (
           id,
-          title,
+          name,
           price,
           image_url
         )

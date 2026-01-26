@@ -12,7 +12,7 @@ import { X, Loader2, Search, Package } from 'lucide-react'
 
 interface Product {
   id: number
-  title: string
+  name: string
   price: number
   image_url?: string
   status: string
@@ -59,11 +59,11 @@ export function SelectProductModal({
   const fetchProducts = async () => {
     setLoading(true)
     try {
-      // Fetch products from tenant
-      const res = await fetch(`/api/dashboard/products?tenant_id=${tenantId}&per_page=100`)
+      // Fetch products from tenant via correct API route
+      const res = await fetch(`/api/products?tenant_id=${tenantId}`)
       if (!res.ok) throw new Error('Failed to fetch products')
       const data = await res.json()
-      setProducts(data.items || data || [])
+      setProducts(data.products || [])
     } catch (err) {
       console.error('Error fetching products:', err)
       setError('Error al cargar productos')
@@ -73,7 +73,7 @@ export function SelectProductModal({
   }
 
   const filteredProducts = products.filter((p) =>
-    p.title.toLowerCase().includes(searchTerm.toLowerCase())
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const handleSubmit = async () => {
@@ -100,7 +100,7 @@ export function SelectProductModal({
   return (
     <div
       className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center"
-      data-testid="select-product-modal"
+      data-testid="assign-artwork-modal"
     >
       <div className="bg-white w-full md:max-w-lg rounded-t-lg md:rounded-lg shadow-lg overflow-hidden max-h-[90vh] flex flex-col">
         {/* Header */}
@@ -160,7 +160,7 @@ export function SelectProductModal({
                   {product.image_url ? (
                     <img
                       src={product.image_url}
-                      alt={product.title}
+                      alt={product.name}
                       className="w-12 h-12 object-cover rounded"
                     />
                   ) : (
@@ -169,7 +169,7 @@ export function SelectProductModal({
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{product.title}</p>
+                    <p className="font-medium truncate">{product.name}</p>
                     <p className="text-sm text-gray-600">${product.price?.toLocaleString() || 0}</p>
                   </div>
                   {selectedProduct?.id === product.id && (
@@ -194,7 +194,7 @@ export function SelectProductModal({
           <div className="p-4 border-t border-gray-200 space-y-3">
             <div className="p-3 bg-gray-50 rounded-lg">
               <p className="text-xs text-gray-600">Obra seleccionada</p>
-              <p className="font-medium">{selectedProduct.title}</p>
+              <p className="font-medium">{selectedProduct.name}</p>
             </div>
 
             {/* Status Select */}
