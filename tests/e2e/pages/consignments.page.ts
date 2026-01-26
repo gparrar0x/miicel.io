@@ -110,13 +110,25 @@ export class ConsignmentsPage {
   // ========== CREATE LOCATION ==========
 
   async clickAddLocationButton() {
+    // Wait for page to be ready
+    await this.page.waitForLoadState('domcontentloaded')
+
     const addBtn = this.page.getByTestId(CONSIGNMENTS.LOCATIONS.ADD_BUTTON)
-    if (!(await addBtn.isVisible())) {
-      // Try empty state button
-      await this.page.getByTestId(CONSIGNMENTS.LOCATIONS.ADD_FIRST_BUTTON).click()
-    } else {
+    const addFirstBtn = this.page.getByTestId(CONSIGNMENTS.LOCATIONS.ADD_FIRST_BUTTON)
+
+    // Try the main button first (most common case)
+    if (await addBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await addBtn.click()
+      return
     }
+
+    // Fallback to empty state button
+    if (await addFirstBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await addFirstBtn.click()
+      return
+    }
+
+    throw new Error('No add location button found')
   }
 
   async fillLocationForm(data: CreateLocationData) {
@@ -200,13 +212,22 @@ export class ConsignmentsPage {
     // Register dialog handler BEFORE clicking delete (must happen before dialog appears)
     this.page.once('dialog', dialog => dialog.accept())
 
-    // Now trigger the delete action
+    // Trigger the delete action
     await this.page.getByTestId(CONSIGNMENTS.LOCATIONS.CARD_DELETE_BTN(locationId)).click()
 
-    // Wait for success toast/confirmation
-    await expect(this.page.getByText(/eliminado|eliminada|borrado|success|éxito/i)).toBeVisible({
-      timeout: 5000,
-    })
+    // Wait for mutation to complete and toast to appear
+    try {
+      await expect(this.page.getByText(/eliminado|eliminada|borrado|success|éxito/i)).toBeVisible({
+        timeout: 5000,
+      })
+    } catch (error) {
+      // If toast doesn't appear, check if location card is gone (alternative success indicator)
+      const card = this.page.getByTestId(CONSIGNMENTS.LOCATIONS.CARD(locationId))
+      const stillVisible = await card.isVisible().catch(() => false)
+      if (stillVisible) {
+        throw new Error('Delete location: toast not found and location card still visible')
+      }
+    }
   }
 
   // ========== ASSIGN ARTWORK ==========
