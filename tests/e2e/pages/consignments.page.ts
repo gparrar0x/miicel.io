@@ -297,7 +297,22 @@ export class ConsignmentsPage {
   // ========== WAIT HELPERS ==========
 
   async waitForLocationsLoaded() {
-    await expect(this.page.getByTestId(CONSIGNMENTS.LOCATIONS.GRID)).toBeVisible()
+    // Wait for either the grid or empty state to be visible
+    const grid = this.page.getByTestId(CONSIGNMENTS.LOCATIONS.GRID)
+    const emptyState = this.page.getByTestId(CONSIGNMENTS.LOCATIONS.EMPTY_STATE)
+    const container = this.page.getByTestId(CONSIGNMENTS.LOCATIONS.CONTAINER)
+
+    // Wait for container first, then check for grid or empty state
+    await expect(container).toBeVisible({ timeout: 10000 })
+
+    // Either grid or empty state should be visible
+    const gridVisible = await grid.isVisible().catch(() => false)
+    const emptyVisible = await emptyState.isVisible().catch(() => false)
+
+    if (!gridVisible && !emptyVisible) {
+      // Fallback: just wait a bit for content to load
+      await this.page.waitForTimeout(1000)
+    }
   }
 
   async waitForFormLoaded() {

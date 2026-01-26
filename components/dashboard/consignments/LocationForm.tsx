@@ -183,6 +183,7 @@ export function LocationForm({ location, onSave, onCancel, isOpen }: LocationFor
                   onChange={(e) => setFormData({ ...formData, contact_name: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Ej: María González"
+                  data-testid="location-contact-name-input"
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -197,6 +198,7 @@ export function LocationForm({ location, onSave, onCancel, isOpen }: LocationFor
                     onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="contacto@galeria.com"
+                    data-testid="location-contact-email-input"
                   />
                 </div>
                 <div>
@@ -210,6 +212,7 @@ export function LocationForm({ location, onSave, onCancel, isOpen }: LocationFor
                     onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="+54 11 1234-5678"
+                    data-testid="location-contact-phone-input"
                   />
                 </div>
               </div>

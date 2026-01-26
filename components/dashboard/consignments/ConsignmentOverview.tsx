@@ -20,25 +20,25 @@ export function ConsignmentOverview({ overview }: ConsignmentOverviewProps) {
       label: 'Total Obras',
       value: overview.total_works,
       icon: Package,
-      testId: 'stats-card-total-works',
+      testId: 'consignment-stat-total_works',
     },
     {
       label: 'Ubicaciones Activas',
       value: overview.active_locations,
       icon: MapPin,
-      testId: 'stats-card-active-locations',
+      testId: 'consignment-stat-active_locations',
     },
     {
       label: 'En Galería',
       value: overview.works_in_gallery,
       icon: Package,
-      testId: 'stats-card-in-gallery',
+      testId: 'consignment-stat-works_in_gallery',
     },
     {
       label: 'Vendidas Este Mes',
       value: overview.works_sold_this_month,
       icon: TrendingUp,
-      testId: 'stats-card-sold-month',
+      testId: 'consignment-stat-works_sold_this_month',
     },
   ]
 

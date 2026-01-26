@@ -89,7 +89,7 @@ export function useConsignmentLocations(
       const res = await fetch(`/api/dashboard/consignment-locations/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, tenant_id: tenantId }),
       })
 
       if (!res.ok) {
@@ -103,7 +103,7 @@ export function useConsignmentLocations(
       )
       return updatedLocation
     },
-    []
+    [tenantId]
   )
 
   const deleteLocation = useCallback(async (locationId: string) => {
