@@ -47,249 +47,210 @@ test.describe('Consignments - Artwork Assignment', () => {
     expect(locationId).toBeTruthy()
 
     // Navigate to location detail
-    if (locationId) {
-      await consignmentsPage.navigateToLocation(TEST_TENANT, locationId)
+    expect(locationId).toBeTruthy()
+    await consignmentsPage.navigateToLocation(TEST_TENANT, locationId!)
 
-      // Try to find assign button
-      const assignBtn = page.locator('button:has-text("Asignar")')
-      if (await assignBtn.isVisible()) {
-        await assignBtn.click()
+    // Assign button must be visible
+    const assignBtn = page.locator('button:has-text("Asignar")')
+    await expect(assignBtn).toBeVisible({ timeout: 5000 })
+    await assignBtn.click()
 
-        // Modal should appear
-        const modal = page.getByTestId('assign-artwork-modal')
-        if (await modal.isVisible()) {
-          // Select first available artwork from dropdown
-          const artworkSelect = page.getByTestId('artwork-select')
-          if (await artworkSelect.isVisible()) {
-            await artworkSelect.click()
-            const firstOption = page.locator('[role="option"]').first()
-            if (await firstOption.isVisible()) {
-              await firstOption.click()
-            }
-          }
+    // Modal must appear
+    const modal = page.getByTestId('assign-artwork-modal')
+    await expect(modal).toBeVisible({ timeout: 5000 })
 
-          // Confirm assignment
-          await consignmentsPage.confirmAssignment()
+    // Select first available artwork from dropdown
+    const artworkSelect = page.getByTestId('artwork-select')
+    await expect(artworkSelect).toBeVisible({ timeout: 5000 })
+    await artworkSelect.click()
 
-          // Verify success
-          const successMsg = page.getByText(/asignado|asignada|success|éxito/i)
-          expect(await successMsg.isVisible()).toBeTruthy()
-        }
-      }
-    }
+    const firstOption = page.locator('[role="option"]').first()
+    await expect(firstOption).toBeVisible({ timeout: 5000 })
+    await firstOption.click()
+
+    // Confirm assignment
+    await consignmentsPage.confirmAssignment()
+
+    // Verify success message appears
+    const successMsg = page.getByText(/asignado|asignada|success|éxito/i)
+    await expect(successMsg).toBeVisible({ timeout: 5000 })
   })
 
   test('should assign artwork with IN_GALLERY status', async ({ page }) => {
     expect(locationId).toBeTruthy()
+    await consignmentsPage.navigateToLocation(TEST_TENANT, locationId!)
 
-    if (locationId) {
-      await consignmentsPage.navigateToLocation(TEST_TENANT, locationId)
+    const assignBtn = page.locator('button:has-text("Asignar")')
+    await expect(assignBtn).toBeVisible({ timeout: 5000 })
+    await assignBtn.click()
 
-      const assignBtn = page.locator('button:has-text("Asignar")')
-      if (await assignBtn.isVisible()) {
-        await assignBtn.click()
+    const modal = page.getByTestId('assign-artwork-modal')
+    await expect(modal).toBeVisible({ timeout: 5000 })
 
-        const modal = page.getByTestId('assign-artwork-modal')
-        if (await modal.isVisible()) {
-          // Select artwork
-          const artworkSelect = page.getByTestId('artwork-select')
-          if (await artworkSelect.isVisible()) {
-            await artworkSelect.click()
-            const firstOption = page.locator('[role="option"]').first()
-            if (await firstOption.isVisible()) {
-              await firstOption.click()
-            }
-          }
+    // Select artwork
+    const artworkSelect = page.getByTestId('artwork-select')
+    await expect(artworkSelect).toBeVisible({ timeout: 5000 })
+    await artworkSelect.click()
 
-          // Set status to IN_GALLERY
-          const statusSelect = page.getByTestId('status-select')
-          if (await statusSelect.isVisible()) {
-            await statusSelect.click()
-            const option = page.locator('[role="option"]').filter({ hasText: /gallery|galería/i }).first()
-            if (await option.isVisible()) {
-              await option.click()
-            }
-          }
+    const firstOption = page.locator('[role="option"]').first()
+    await expect(firstOption).toBeVisible({ timeout: 5000 })
+    await firstOption.click()
 
-          await consignmentsPage.confirmAssignment()
+    // Set status to IN_GALLERY
+    const statusSelect = page.getByTestId('status-select')
+    await expect(statusSelect).toBeVisible({ timeout: 5000 })
+    await statusSelect.click()
 
-          const successMsg = page.getByText(/asignado|asignada|success|éxito/i)
-          expect(await successMsg.isVisible()).toBeTruthy()
-        }
-      }
-    }
+    const option = page.locator('[role="option"]').filter({ hasText: /gallery|galería/i }).first()
+    await expect(option).toBeVisible({ timeout: 5000 })
+    await option.click()
+
+    await consignmentsPage.confirmAssignment()
+
+    const successMsg = page.getByText(/asignado|asignada|success|éxito/i)
+    await expect(successMsg).toBeVisible({ timeout: 5000 })
   })
 
   test('should verify artwork count increases after assignment', async ({ page }) => {
     expect(locationId).toBeTruthy()
 
-    if (locationId) {
-      // Get initial stats
-      const initialStats = await consignmentsPage.getOverviewStats()
+    // Get initial stats
+    const initialStats = await consignmentsPage.getOverviewStats()
 
-      // Navigate to location and assign artwork
-      await consignmentsPage.navigateToLocation(TEST_TENANT, locationId)
+    // Navigate to location and assign artwork
+    await consignmentsPage.navigateToLocation(TEST_TENANT, locationId!)
 
-      const assignBtn = page.locator('button:has-text("Asignar")')
-      if (await assignBtn.isVisible()) {
-        await assignBtn.click()
+    const assignBtn = page.locator('button:has-text("Asignar")')
+    await expect(assignBtn).toBeVisible({ timeout: 5000 })
+    await assignBtn.click()
 
-        const modal = page.getByTestId('assign-artwork-modal')
-        if (await modal.isVisible()) {
-          const artworkSelect = page.getByTestId('artwork-select')
-          if (await artworkSelect.isVisible()) {
-            await artworkSelect.click()
-            const firstOption = page.locator('[role="option"]').first()
-            if (await firstOption.isVisible()) {
-              await firstOption.click()
-            }
-          }
+    const modal = page.getByTestId('assign-artwork-modal')
+    await expect(modal).toBeVisible({ timeout: 5000 })
 
-          await consignmentsPage.confirmAssignment()
+    const artworkSelect = page.getByTestId('artwork-select')
+    await expect(artworkSelect).toBeVisible({ timeout: 5000 })
+    await artworkSelect.click()
 
-          await page.waitForTimeout(1000)
+    const firstOption = page.locator('[role="option"]').first()
+    await expect(firstOption).toBeVisible({ timeout: 5000 })
+    await firstOption.click()
 
-          // Navigate back to overview
-          await consignmentsPage.navigateToDashboard(TEST_TENANT)
-          await page.waitForLoadState('networkidle')
+    await consignmentsPage.confirmAssignment()
 
-          // Verify stats updated
-          const updatedStats = await consignmentsPage.getOverviewStats()
-          expect(updatedStats.totalWorks).toBeGreaterThanOrEqual(initialStats.totalWorks)
-        }
-      }
-    }
+    await page.waitForTimeout(1000)
+
+    // Navigate back to overview
+    await consignmentsPage.navigateToDashboard(TEST_TENANT)
+    await page.waitForLoadState('networkidle')
+
+    // Verify stats updated
+    const updatedStats = await consignmentsPage.getOverviewStats()
+    expect(updatedStats.totalWorks).toBeGreaterThanOrEqual(initialStats.totalWorks)
   })
 
   test('should show assignment confirmation message', async ({ page }) => {
     expect(locationId).toBeTruthy()
 
-    if (locationId) {
-      await consignmentsPage.navigateToLocation(TEST_TENANT, locationId)
+    await consignmentsPage.navigateToLocation(TEST_TENANT, locationId!)
 
-      const assignBtn = page.locator('button:has-text("Asignar")')
-      if (await assignBtn.isVisible()) {
-        await assignBtn.click()
+    const assignBtn = page.locator('button:has-text("Asignar")')
+    await expect(assignBtn).toBeVisible({ timeout: 5000 })
+    await assignBtn.click()
 
-        const modal = page.getByTestId('assign-artwork-modal')
-        if (await modal.isVisible()) {
-          // Select artwork
-          const artworkSelect = page.getByTestId('artwork-select')
-          if (await artworkSelect.isVisible()) {
-            await artworkSelect.click()
-            const firstOption = page.locator('[role="option"]').first()
-            if (await firstOption.isVisible()) {
-              await firstOption.click()
-            }
+    const modal = page.getByTestId('assign-artwork-modal')
+    await expect(modal).toBeVisible({ timeout: 5000 })
 
-            // Confirm
-            await consignmentsPage.confirmAssignment()
+    // Select artwork
+    const artworkSelect = page.getByTestId('artwork-select')
+    await expect(artworkSelect).toBeVisible({ timeout: 5000 })
+    await artworkSelect.click()
 
-            // Look for success message
-            const successPatterns = [/asignado|asignada|assigned|success|éxito|completado/i]
-            let foundSuccess = false
+    const firstOption = page.locator('[role="option"]').first()
+    await expect(firstOption).toBeVisible({ timeout: 5000 })
+    await firstOption.click()
 
-            for (const pattern of successPatterns) {
-              const msg = page.getByText(pattern)
-              if (await msg.isVisible().catch(() => false)) {
-                foundSuccess = true
-                break
-              }
-            }
+    // Confirm
+    await consignmentsPage.confirmAssignment()
 
-            // At minimum, modal should close
-            const modalStillOpen = await modal.isVisible().catch(() => false)
-            expect(!modalStillOpen || foundSuccess).toBeTruthy()
-          }
-        }
-      }
-    }
+    // Verify modal closes and success message appears
+    await expect(modal).not.toBeVisible({ timeout: 5000 })
+
+    const successMsg = page.getByText(/asignado|asignada|assigned|success|éxito|completado/i)
+    await expect(successMsg).toBeVisible({ timeout: 5000 })
   })
 
   test('should cancel artwork assignment', async ({ page }) => {
     expect(locationId).toBeTruthy()
 
-    if (locationId) {
-      await consignmentsPage.navigateToLocation(TEST_TENANT, locationId)
+    await consignmentsPage.navigateToLocation(TEST_TENANT, locationId!)
 
-      const assignBtn = page.locator('button:has-text("Asignar")')
-      if (await assignBtn.isVisible()) {
-        await assignBtn.click()
+    const assignBtn = page.locator('button:has-text("Asignar")')
+    await expect(assignBtn).toBeVisible({ timeout: 5000 })
+    await assignBtn.click()
 
-        const modal = page.getByTestId('assign-artwork-modal')
-        if (await modal.isVisible()) {
-          // Click cancel
-          const cancelBtn = page.getByTestId('cancel-button')
-          if (await cancelBtn.isVisible()) {
-            await cancelBtn.click()
-          }
+    const modal = page.getByTestId('assign-artwork-modal')
+    await expect(modal).toBeVisible({ timeout: 5000 })
 
-          // Verify modal closed
-          const modalStillOpen = await modal.isVisible().catch(() => false)
-          expect(modalStillOpen).toBe(false)
-        }
-      }
-    }
+    // Click cancel
+    const cancelBtn = page.getByTestId('cancel-button')
+    await expect(cancelBtn).toBeVisible({ timeout: 5000 })
+    await cancelBtn.click()
+
+    // Verify modal closed
+    await expect(modal).not.toBeVisible({ timeout: 5000 })
   })
 
   test('should close assignment modal with close button', async ({ page }) => {
     expect(locationId).toBeTruthy()
 
-    if (locationId) {
-      await consignmentsPage.navigateToLocation(TEST_TENANT, locationId)
+    await consignmentsPage.navigateToLocation(TEST_TENANT, locationId!)
 
-      const assignBtn = page.locator('button:has-text("Asignar")')
-      if (await assignBtn.isVisible()) {
-        await assignBtn.click()
+    const assignBtn = page.locator('button:has-text("Asignar")')
+    await expect(assignBtn).toBeVisible({ timeout: 5000 })
+    await assignBtn.click()
 
-        const modal = page.getByTestId('assign-artwork-modal')
-        if (await modal.isVisible()) {
-          // Click close button (X)
-          const closeBtn = page.getByTestId('close-modal')
-          if (await closeBtn.isVisible()) {
-            await closeBtn.click()
-          }
+    const modal = page.getByTestId('assign-artwork-modal')
+    await expect(modal).toBeVisible({ timeout: 5000 })
 
-          // Verify modal closed
-          const modalStillOpen = await modal.isVisible().catch(() => false)
-          expect(modalStillOpen).toBe(false)
-        }
-      }
-    }
+    // Click close button (X)
+    const closeBtn = page.getByTestId('close-modal')
+    await expect(closeBtn).toBeVisible({ timeout: 5000 })
+    await closeBtn.click()
+
+    // Verify modal closed
+    await expect(modal).not.toBeVisible({ timeout: 5000 })
   })
 
   test('should filter artwork by search in assignment modal', async ({ page }) => {
     expect(locationId).toBeTruthy()
 
-    if (locationId) {
-      await consignmentsPage.navigateToLocation(TEST_TENANT, locationId)
+    await consignmentsPage.navigateToLocation(TEST_TENANT, locationId!)
 
-      const assignBtn = page.locator('button:has-text("Asignar")')
-      if (await assignBtn.isVisible()) {
-        await assignBtn.click()
+    const assignBtn = page.locator('button:has-text("Asignar")')
+    await expect(assignBtn).toBeVisible({ timeout: 5000 })
+    await assignBtn.click()
 
-        const modal = page.getByTestId('select-product-modal')
-        if (await modal.isVisible()) {
-          // Type in search
-          const searchInput = page.getByTestId('product-search')
-          if (await searchInput.isVisible()) {
-            await searchInput.fill('test')
-            await page.waitForTimeout(300)
+    const modal = page.getByTestId('select-product-modal')
+    await expect(modal).toBeVisible({ timeout: 5000 })
 
-            // Verify search results exist or "no results" message
-            const results = page.locator('[role="option"]')
-            const count = await results.count()
-            // Should have at least attempted to filter
-            expect(count).toBeGreaterThanOrEqual(0)
-          }
+    // Type in search
+    const searchInput = page.getByTestId('product-search')
+    await expect(searchInput).toBeVisible({ timeout: 5000 })
+    await searchInput.fill('test')
+    await page.waitForTimeout(300)
 
-          // Cancel
-          const cancelBtn = page.getByTestId('cancel-button')
-          if (await cancelBtn.isVisible()) {
-            await cancelBtn.click()
-          }
-        }
-      }
-    }
+    // Verify search results exist or "no results" message
+    const results = page.locator('[role="option"]')
+    const count = await results.count()
+    // Should have at least attempted to filter (zero results is valid)
+    expect(count).toBeGreaterThanOrEqual(0)
+
+    // Cancel
+    const cancelBtn = page.getByTestId('cancel-button')
+    await expect(cancelBtn).toBeVisible({ timeout: 5000 })
+    await cancelBtn.click()
+
+    // Verify modal closed
+    await expect(modal).not.toBeVisible({ timeout: 5000 })
   })
 })
