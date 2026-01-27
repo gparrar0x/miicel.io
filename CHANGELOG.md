@@ -24,6 +24,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **styles/CLAUDE.md**: Theming guidelines to prevent future dark mode issues
   - CSS variable reference, component checklist, common mistakes table
 
+- **Consignments E2E documentation** [2025-01-27]
+  - `CONSIGNMENTS_E2E_GUIDE.md`: Test suite guide
+  - `docs/CONSIGNMENTS_TEST_CODE_REVIEW.md`: Code review notes
+  - `docs/CONSIGNMENTS_TEST_FIXES.md`: Fix documentation
+  - `scripts/verify-consignments-tests.sh`: Verification script
+
+### Changed
+
+- **Dashboard page refactored** [2025-01-27]
+  - `dashboard/page.tsx`: Extracted to `AnalyticsDashboard` component
+  - Removed duplicate `analytics/page.tsx`
+
 - **Consignments Module - Critical Bugs** [2026-01-26] (SKY-56)
   - `SelectProductModal`: Fixed API endpoint `/api/dashboard/products` → `/api/products`
   - `SelectProductModal`: Fixed field mapping `title` → `name` (products table uses `name`)

@@ -76,7 +76,7 @@ export class AnalyticsDashboardPage {
    * @param locale - Optional locale (default: es)
    */
   async navigate(tenantSlug: string, locale: string = 'es') {
-    const url = `/es/${tenantSlug}/dashboard/analytics`
+    const url = `/${locale}/${tenantSlug}/dashboard`
     await this.page.goto(url)
     await this.waitForPageLoad()
   }

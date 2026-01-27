@@ -83,8 +83,7 @@ export default async function DashboardLayout({ children, params }: LayoutProps)
   const showConsignments = await isEnabled(Flags.CONSIGNMENTS, flagContext)
 
   const navItems: NavItem[] = [
-    { name: t('navDashboard') || 'Dashboard', href: `/${locale}/${tenantId}/dashboard`, icon: 'dashboard' },
-    { name: t('navAnalytics') || 'Analytics', href: `/${locale}/${tenantId}/dashboard/analytics`, icon: 'analytics' },
+    { name: t('navDashboard') || 'Dashboard', href: `/${locale}/${tenantId}/dashboard`, icon: 'analytics' },
     { name: t('navProducts') || 'Productos', href: `/${locale}/${tenantId}/dashboard/products`, icon: 'products' },
     { name: t('navOrders') || 'Pedidos', href: `/${locale}/${tenantId}/dashboard/orders`, icon: 'orders' },
     ...(showConsignments ? [{ name: t('navConsignments') || 'Consignaciones', href: `/${locale}/${tenantId}/dashboard/consignments`, icon: 'consignments' as const }] : []),
