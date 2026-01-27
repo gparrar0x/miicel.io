@@ -52,10 +52,10 @@ export function LocationsList({
     <div className="space-y-4" data-testid="location-list">
       {/* Header with Add Button */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Ubicaciones</h2>
+        <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">Ubicaciones</h2>
         <button
           onClick={onAddNew}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] border-2 border-[var(--btn-primary-border)] rounded-lg hover:bg-[var(--btn-primary-hover-bg)] transition-colors shadow-[var(--btn-primary-shadow)]"
           data-testid="add-location-button"
         >
           <Plus className="h-4 w-4" />
@@ -65,13 +65,13 @@ export function LocationsList({
 
       {/* Search Bar */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] h-5 w-5" />
         <input
           type="text"
           placeholder="Buscar ubicación..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full pl-10 pr-4 py-2 border border-[var(--color-border-subtle)] rounded-lg bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)]"
           data-testid="location-search"
         />
       </div>
@@ -81,10 +81,10 @@ export function LocationsList({
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => setFilterCity(null)}
-            className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+            className={`px-3 py-1 rounded-full text-sm font-medium transition-colors border ${
               filterCity === null
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] border-[var(--btn-primary-border)]'
+                : 'bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-text)] border-[var(--btn-secondary-border)] hover:bg-[var(--btn-secondary-hover-bg)]'
             }`}
           >
             Todas
@@ -93,10 +93,10 @@ export function LocationsList({
             <button
               key={city}
               onClick={() => setFilterCity(filterCity === city ? null : city)}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors border ${
                 filterCity === city
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] border-[var(--btn-primary-border)]'
+                  : 'bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-text)] border-[var(--btn-secondary-border)] hover:bg-[var(--btn-secondary-hover-bg)]'
               }`}
               data-testid={`city-filter-${city}`}
             >
@@ -124,13 +124,13 @@ export function LocationsList({
         </div>
       ) : (
         <div className="text-center py-12">
-          <p className="text-gray-600">No se encontraron ubicaciones</p>
+          <p className="text-[var(--color-text-secondary)]">No se encontraron ubicaciones</p>
           <button
             onClick={() => {
               setSearchTerm('')
               setFilterCity(null)
             }}
-            className="mt-4 text-blue-600 hover:underline"
+            className="mt-4 text-[var(--color-text-primary)] hover:underline"
           >
             Limpiar filtros
           </button>
@@ -143,18 +143,18 @@ export function LocationsList({
 function LocationsListEmpty({ onAddNew }: { onAddNew: () => void }) {
   return (
     <div className="text-center py-16" data-testid="locations-empty-state">
-      <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-        <MapPin className="h-8 w-8 text-gray-400" />
+      <div className="mx-auto w-16 h-16 bg-[var(--color-bg-secondary)] rounded-full flex items-center justify-center mb-4">
+        <MapPin className="h-8 w-8 text-[var(--color-text-muted)]" />
       </div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+      <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-2">
         No hay ubicaciones registradas
       </h3>
-      <p className="text-gray-600 mb-6 max-w-md mx-auto">
+      <p className="text-[var(--color-text-secondary)] mb-6 max-w-md mx-auto">
         Crea tu primera ubicación para comenzar a gestionar tus consignaciones
       </p>
       <button
         onClick={onAddNew}
-        className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+        className="inline-flex items-center gap-2 px-6 py-3 bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] border-2 border-[var(--btn-primary-border)] rounded-lg hover:bg-[var(--btn-primary-hover-bg)] transition-colors font-medium shadow-[var(--btn-primary-shadow)]"
         data-testid="add-first-location-button"
       >
         <Plus className="h-5 w-5" />
@@ -172,7 +172,7 @@ export function LocationsListSkeleton() {
         .map((_, i) => (
           <div
             key={i}
-            className="bg-gray-100 rounded-lg h-40 animate-pulse"
+            className="bg-[var(--color-bg-secondary)] rounded-lg h-40 animate-pulse"
             data-testid={`location-skeleton-${i}`}
           />
         ))}

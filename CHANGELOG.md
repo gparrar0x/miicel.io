@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Dark mode support for dashboard components** [2025-01-27]
+  - `tokens.css`: Added `.dark` class selector alongside `[data-theme]` for proper dark mode
+  - `tokens.css`: Added `@media (prefers-color-scheme: dark)` fallback
+  - `globals.css`: Changed accent colors from gold (#B8860B) to neutral transparent
+  - `OrdersTable`: Fixed search bar, filters, and buttons using CSS variables
+  - `OrderDetailModal`, `ProductForm`, `ProductsTable`: Theme token integration
+  - Consignment modals (LocationForm, AssignArtworkModal, SelectProductModal): Now respect dark mode
+  - `SummaryCards`: Changed "Items Vendidos" → "Productos Vendidos"
+  - `button.tsx`: Neo-brutalist button tokens (primary/secondary with shadows)
+
+### Added
+
+- **styles/CLAUDE.md**: Theming guidelines to prevent future dark mode issues
+  - CSS variable reference, component checklist, common mistakes table
+
 - **Consignments Module - Critical Bugs** [2026-01-26] (SKY-56)
   - `SelectProductModal`: Fixed API endpoint `/api/dashboard/products` → `/api/products`
   - `SelectProductModal`: Fixed field mapping `title` → `name` (products table uses `name`)

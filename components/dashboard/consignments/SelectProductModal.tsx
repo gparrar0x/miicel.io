@@ -8,7 +8,7 @@
  */
 
 import { useState, useEffect } from 'react'
-import { X, Loader2, Search, Package } from 'lucide-react'
+import { X, Loader2, Search, Package, Check } from 'lucide-react'
 
 interface Product {
   id: number
@@ -102,16 +102,16 @@ export function SelectProductModal({
       className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center"
       data-testid="assign-artwork-modal"
     >
-      <div className="bg-white w-full md:max-w-lg rounded-t-lg md:rounded-lg shadow-lg overflow-hidden max-h-[90vh] flex flex-col">
+      <div className="bg-[var(--color-bg-primary)] w-full md:max-w-lg rounded-t-lg md:rounded-lg shadow-lg overflow-hidden max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 border-b border-[var(--color-border-subtle)]">
           <div>
-            <h2 className="text-lg font-semibold">Asignar Obra</h2>
-            <p className="text-sm text-gray-600">a {locationName}</p>
+            <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">Asignar Obra</h2>
+            <p className="text-sm text-[var(--color-text-secondary)]">a {locationName}</p>
           </div>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-gray-100 rounded"
+            className="p-1 hover:bg-[var(--color-bg-secondary)] rounded text-[var(--color-text-secondary)]"
             data-testid="close-modal"
           >
             <X className="h-5 w-5" />
@@ -119,15 +119,15 @@ export function SelectProductModal({
         </div>
 
         {/* Search */}
-        <div className="p-4 border-b border-gray-200">
+        <div className="p-4 border-b border-[var(--color-border-subtle)]">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] h-4 w-4" />
             <input
               type="text"
               placeholder="Buscar producto..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              className="w-full pl-9 pr-4 py-2 border border-[var(--color-border-subtle)] rounded-lg bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)] text-sm"
               data-testid="product-search"
             />
           </div>
@@ -137,11 +137,11 @@ export function SelectProductModal({
         <div className="flex-1 overflow-y-auto p-4 max-h-64">
           {loading ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+              <Loader2 className="h-6 w-6 animate-spin text-[var(--color-text-muted)]" />
             </div>
           ) : filteredProducts.length === 0 ? (
-            <div className="text-center py-8 text-gray-600">
-              <Package className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+            <div className="text-center py-8 text-[var(--color-text-secondary)]">
+              <Package className="h-8 w-8 mx-auto mb-2 text-[var(--color-text-muted)]" />
               <p>No hay productos disponibles</p>
             </div>
           ) : (
@@ -152,8 +152,8 @@ export function SelectProductModal({
                   onClick={() => setSelectedProduct(product)}
                   className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-colors text-left ${
                     selectedProduct?.id === product.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:bg-gray-50'
+                      ? 'border-[var(--color-accent-primary)] bg-[var(--color-accent-primary)]/10'
+                      : 'border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-secondary)]'
                   }`}
                   data-testid={`product-option-${product.id}`}
                 >
@@ -164,23 +164,17 @@ export function SelectProductModal({
                       className="w-12 h-12 object-cover rounded"
                     />
                   ) : (
-                    <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center">
-                      <Package className="h-5 w-5 text-gray-400" />
+                    <div className="w-12 h-12 bg-[var(--color-bg-secondary)] rounded flex items-center justify-center">
+                      <Package className="h-5 w-5 text-[var(--color-text-muted)]" />
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate">{product.name}</p>
-                    <p className="text-sm text-gray-600">${product.price?.toLocaleString() || 0}</p>
+                    <p className="font-medium text-[var(--color-text-primary)] truncate">{product.name}</p>
+                    <p className="text-sm text-[var(--color-text-secondary)]">${product.price?.toLocaleString() || 0}</p>
                   </div>
                   {selectedProduct?.id === product.id && (
-                    <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
-                      <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                          fillRule="evenodd"
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
+                    <div className="w-5 h-5 bg-[var(--color-accent-primary)] rounded-full flex items-center justify-center">
+                      <Check className="w-3 h-3 text-[var(--color-bg-primary)]" />
                     </div>
                   )}
                 </button>
@@ -191,19 +185,19 @@ export function SelectProductModal({
 
         {/* Selected Product Details */}
         {selectedProduct && (
-          <div className="p-4 border-t border-gray-200 space-y-3">
-            <div className="p-3 bg-gray-50 rounded-lg">
-              <p className="text-xs text-gray-600">Obra seleccionada</p>
-              <p className="font-medium">{selectedProduct.name}</p>
+          <div className="p-4 border-t border-[var(--color-border-subtle)] space-y-3">
+            <div className="p-3 bg-[var(--color-bg-secondary)] rounded-lg">
+              <p className="text-xs text-[var(--color-text-secondary)]">Obra seleccionada</p>
+              <p className="font-medium text-[var(--color-text-primary)]">{selectedProduct.name}</p>
             </div>
 
             {/* Status Select */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+              <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">Estado</label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                className="w-full px-3 py-2 border border-[var(--color-border-subtle)] rounded-lg bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)] text-sm"
                 data-testid="status-select"
               >
                 {STATUS_OPTIONS.map((opt) => (
@@ -216,12 +210,12 @@ export function SelectProductModal({
 
             {/* Notes */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Notas (opcional)</label>
+              <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">Notas (opcional)</label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 maxLength={500}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none h-16 text-sm"
+                className="w-full px-3 py-2 border border-[var(--color-border-subtle)] rounded-lg bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)] resize-none h-16 text-sm"
                 placeholder="Agregar notas..."
               />
             </div>
@@ -231,19 +225,19 @@ export function SelectProductModal({
         {/* Error */}
         {error && (
           <div className="px-4 pb-2">
-            <div className="p-2 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
+            <div className="p-2 bg-[var(--color-error)]/10 border border-[var(--color-error)]/30 rounded text-[var(--color-error)] text-sm">
               {error}
             </div>
           </div>
         )}
 
         {/* Buttons */}
-        <div className="flex gap-3 p-4 border-t border-gray-200">
+        <div className="flex gap-3 p-4 border-t border-[var(--color-border-subtle)]">
           <button
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 text-sm"
+            className="flex-1 px-4 py-2 bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-text)] border-2 border-[var(--btn-secondary-border)] rounded-lg hover:bg-[var(--btn-secondary-hover-bg)] disabled:opacity-50 text-sm shadow-[var(--btn-secondary-shadow)]"
             data-testid="cancel-button"
           >
             Cancelar
@@ -251,7 +245,7 @@ export function SelectProductModal({
           <button
             onClick={handleSubmit}
             disabled={isSubmitting || !selectedProduct}
-            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
+            className="flex-1 px-4 py-2 bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] border-2 border-[var(--btn-primary-border)] rounded-lg hover:bg-[var(--btn-primary-hover-bg)] disabled:opacity-50 flex items-center justify-center gap-2 text-sm shadow-[var(--btn-primary-shadow)]"
             data-testid="confirm-assign-btn"
           >
             {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}

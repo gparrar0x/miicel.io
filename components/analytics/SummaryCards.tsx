@@ -42,7 +42,7 @@ export function SummaryCards({ data, loading }: SummaryCardsProps) {
       testId: 'average-ticket',
     },
     {
-      title: 'Items Vendidos',
+      title: 'Productos Vendidos',
       value: data.items_sold.toString(),
       icon: Package,
       testId: 'items-sold',

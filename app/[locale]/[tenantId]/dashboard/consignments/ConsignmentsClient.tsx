@@ -82,10 +82,10 @@ export function ConsignmentsClient({ tenantId, tenantSlug, locale }: Consignment
     return (
       <div className="space-y-8">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-64"></div>
+          <div className="h-8 bg-[var(--color-bg-secondary)] rounded w-64"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-32 bg-gray-200 rounded"></div>
+              <div key={i} className="h-32 bg-[var(--color-bg-secondary)] rounded"></div>
             ))}
           </div>
         </div>
@@ -114,8 +114,8 @@ export function ConsignmentsClient({ tenantId, tenantSlug, locale }: Consignment
     <div className="space-y-8" data-testid="consignments-page">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Gestión de Consignaciones</h1>
-        <p className="text-gray-600 mt-2">
+        <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">Gestión de Consignaciones</h1>
+        <p className="text-[var(--color-text-secondary)] mt-2">
           Administra tus obras en diferentes ubicaciones y monitorea su rendimiento
         </p>
       </div>
@@ -124,7 +124,7 @@ export function ConsignmentsClient({ tenantId, tenantSlug, locale }: Consignment
       {overview && <ConsignmentOverview overview={overview} />}
 
       {/* Locations List */}
-      <div className="pt-8 border-t border-gray-200">
+      <div className="pt-8 border-t border-[var(--color-border-subtle)]">
         <LocationsList
           locations={locations}
           onLocationSelect={handleLocationSelect}

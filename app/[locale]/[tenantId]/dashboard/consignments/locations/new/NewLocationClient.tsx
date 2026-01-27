@@ -40,7 +40,7 @@ export function NewLocationClient({ tenantId, tenantSlug }: NewLocationClientPro
     <div className="container mx-auto px-4 py-8 max-w-2xl">
       <button
         onClick={handleCancel}
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+        className="flex items-center gap-2 text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] mb-6"
       >
         <ArrowLeft className="h-4 w-4" />
         Volver

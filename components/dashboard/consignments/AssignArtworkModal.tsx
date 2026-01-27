@@ -78,13 +78,13 @@ export function AssignArtworkModal({
       className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center"
       data-testid="assign-artwork-modal"
     >
-      <div className="bg-white w-full md:max-w-md rounded-t-lg md:rounded-lg shadow-lg overflow-hidden max-h-[90vh] flex flex-col">
+      <div className="bg-[var(--color-bg-primary)] w-full md:max-w-md rounded-t-lg md:rounded-lg shadow-lg overflow-hidden max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold">Asignar Obra</h2>
+        <div className="flex items-center justify-between p-6 border-b border-[var(--color-border-subtle)]">
+          <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">Asignar Obra</h2>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-gray-100 rounded"
+            className="p-1 hover:bg-[var(--color-bg-secondary)] rounded text-[var(--color-text-secondary)]"
             data-testid="close-modal"
           >
             <X className="h-5 w-5" />
@@ -94,7 +94,7 @@ export function AssignArtworkModal({
         {/* Content */}
         <form onSubmit={handleSubmit} className="overflow-y-auto p-6 space-y-4">
           {/* Artwork Info */}
-          <div className="p-3 bg-gray-50 rounded-lg">
+          <div className="p-3 bg-[var(--color-bg-secondary)] rounded-lg">
             <div className="flex items-center gap-3">
               {artworkImage && (
                 <img
@@ -104,22 +104,22 @@ export function AssignArtworkModal({
                 />
               )}
               <div>
-                <p className="text-xs text-gray-600">Obra</p>
-                <p className="font-medium">{artworkTitle}</p>
+                <p className="text-xs text-[var(--color-text-secondary)]">Obra</p>
+                <p className="font-medium text-[var(--color-text-primary)]">{artworkTitle}</p>
               </div>
             </div>
           </div>
 
           {/* Location Select */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Ubicación <span className="text-red-600">*</span>
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">
+              Ubicación <span className="text-[var(--color-error)]">*</span>
             </label>
             <select
               required
               value={selectedLocationId}
               onChange={(e) => setSelectedLocationId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-[var(--color-border-subtle)] rounded-lg bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)]"
               data-testid="artwork-select"
             >
               <option value="">Seleccionar ubicación...</option>
@@ -133,14 +133,14 @@ export function AssignArtworkModal({
 
           {/* Status Select */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Estado <span className="text-red-600">*</span>
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">
+              Estado <span className="text-[var(--color-error)]">*</span>
             </label>
             <select
               required
               value={status}
               onChange={(e) => setStatus(e.target.value as ConsignmentStatus)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-[var(--color-border-subtle)] rounded-lg bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)]"
               data-testid="status-select"
             >
               {STATUS_OPTIONS.map((opt) => (
@@ -153,22 +153,22 @@ export function AssignArtworkModal({
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">
               Notas (opcional)
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               maxLength={1000}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none h-20"
+              className="w-full px-3 py-2 border border-[var(--color-border-subtle)] rounded-lg bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-primary)] resize-none h-20"
               placeholder="Agregar notas sobre esta asignación..."
             />
-            <p className="text-xs text-gray-500 mt-1">{notes.length}/1000</p>
+            <p className="text-xs text-[var(--color-text-muted)] mt-1">{notes.length}/1000</p>
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
               {error}
             </div>
           )}
@@ -179,7 +179,7 @@ export function AssignArtworkModal({
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50"
+              className="flex-1 px-4 py-2 bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-text)] border-2 border-[var(--btn-secondary-border)] rounded-lg hover:bg-[var(--btn-secondary-hover-bg)] disabled:opacity-50 shadow-[var(--btn-secondary-shadow)]"
               data-testid="cancel-button"
             >
               Cancelar
@@ -187,7 +187,7 @@ export function AssignArtworkModal({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-2 bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] border-2 border-[var(--btn-primary-border)] rounded-lg hover:bg-[var(--btn-primary-hover-bg)] disabled:opacity-50 flex items-center justify-center gap-2 shadow-[var(--btn-primary-shadow)]"
               data-testid="confirm-assign-btn"
             >
               {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}

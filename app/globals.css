@@ -22,13 +22,13 @@
   --secondary-foreground: #111111;
   --muted: #F5F5F5; /* Matches --color-bg-subtle */
   --muted-foreground: #666666; /* Matches --color-text-secondary */
-  --accent: #B8860B; /* Gallery gold - was #CCFF00 acid green */
+  --accent: rgba(26, 26, 26, 0.08); /* Subtle neutral accent */
   --accent-foreground: #111111;
   --destructive: #ef4444;
   --destructive-foreground: #FFFFFF;
   --border: #E5E5E5; /* Matches --color-border */
   --input: #E5E5E5;
-  --ring: #B8860B; /* Gallery gold focus rings - was #111111 */
+  --ring: #1A1A1A; /* Neutral focus rings */
   --radius: 0.5rem;
 
   /* Charts */
@@ -51,7 +51,7 @@
 
   /* Tenant Theming Defaults (Overridden by ThemeProvider) */
   --color-primary: #1A1A1A; /* Gallery black - was electric blue */
-  --color-accent: #B8860B; /* Gallery gold - was acid green */
+  --color-accent: rgba(26, 26, 26, 0.08); /* Subtle neutral accent */
 
   /* Surfaces */
   --color-bg-base: var(--background);
@@ -136,13 +136,13 @@
   --secondary-foreground: #FFFFFF;
   --muted: #1A1A1A;
   --muted-foreground: #A1A1A1;
-  --accent: #1A1A1A;
+  --accent: rgba(245, 245, 245, 0.1);
   --accent-foreground: #FFFFFF;
   --destructive: #7f1d1d;
   --destructive-foreground: #FFFFFF;
   --border: #333333;
   --input: #333333;
-  --ring: #E5E5E5;
+  --ring: #F5F5F5;
 
   --color-paper: #0A0A0A;
   --color-ink: #FFFFFF;
@@ -170,13 +170,13 @@
     --secondary-foreground: #FFFFFF;
     --muted: #1A1A1A;
     --muted-foreground: #A1A1A1;
-    --accent: #1A1A1A;
+    --accent: rgba(245, 245, 245, 0.1);
     --accent-foreground: #FFFFFF;
     --destructive: #7f1d1d;
     --destructive-foreground: #FFFFFF;
     --border: #333333;
     --input: #333333;
-    --ring: #E5E5E5;
+    --ring: #F5F5F5;
 
     --color-paper: #0A0A0A;
     --color-ink: #FFFFFF;

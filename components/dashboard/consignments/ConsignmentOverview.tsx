@@ -56,29 +56,29 @@ export function ConsignmentOverview({ overview }: ConsignmentOverviewProps) {
         {stats.map((stat) => (
           <div
             key={stat.testId}
-            className="bg-white border border-gray-200 rounded-lg p-4"
+            className="bg-[var(--color-bg-primary)] border border-[var(--color-border-subtle)] rounded-lg p-4"
             data-testid={stat.testId}
           >
             <div className="flex items-center justify-between mb-2">
-              <stat.icon className="h-5 w-5 text-gray-600" />
-              <span className="text-2xl font-bold">{stat.value}</span>
+              <stat.icon className="h-5 w-5 text-[var(--color-text-secondary)]" />
+              <span className="text-2xl font-bold text-[var(--color-text-primary)]">{stat.value}</span>
             </div>
-            <p className="text-sm text-gray-600">{stat.label}</p>
+            <p className="text-sm text-[var(--color-text-secondary)]">{stat.label}</p>
           </div>
         ))}
       </div>
 
       {/* Revenue Card */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
+      <div className="bg-[var(--color-bg-primary)] border border-[var(--color-border-subtle)] rounded-lg p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5 text-gray-600" />
-            <h3 className="font-semibold">Ingresos Este Mes</h3>
+            <DollarSign className="h-5 w-5 text-[var(--color-text-secondary)]" />
+            <h3 className="font-semibold text-[var(--color-text-primary)]">Ingresos Este Mes</h3>
           </div>
           {revenueGrowth !== 0 && (
             <span
               className={`text-sm ${
-                revenueGrowth > 0 ? 'text-green-600' : 'text-red-600'
+                revenueGrowth > 0 ? 'text-[var(--color-success)]' : 'text-[var(--color-error)]'
               }`}
             >
               {revenueGrowth > 0 ? '+' : ''}
@@ -86,24 +86,24 @@ export function ConsignmentOverview({ overview }: ConsignmentOverviewProps) {
             </span>
           )}
         </div>
-        <p className="text-3xl font-bold">${overview.revenue_this_month.toLocaleString()}</p>
-        <p className="text-sm text-gray-600 mt-1">
+        <p className="text-3xl font-bold text-[var(--color-text-primary)]">${overview.revenue_this_month.toLocaleString()}</p>
+        <p className="text-sm text-[var(--color-text-secondary)] mt-1">
           Mes anterior: ${overview.revenue_last_month.toLocaleString()}
         </p>
       </div>
 
       {/* Top Location */}
       {overview.top_location_by_sales && (
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <h3 className="font-semibold mb-3">Mejor Ubicación del Mes</h3>
+        <div className="bg-[var(--color-bg-primary)] border border-[var(--color-border-subtle)] rounded-lg p-6">
+          <h3 className="font-semibold text-[var(--color-text-primary)] mb-3">Mejor Ubicación del Mes</h3>
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium">{overview.top_location_by_sales.location_name}</p>
-              <p className="text-sm text-gray-600">
+              <p className="font-medium text-[var(--color-text-primary)]">{overview.top_location_by_sales.location_name}</p>
+              <p className="text-sm text-[var(--color-text-secondary)]">
                 ${overview.top_location_by_sales.revenue.toLocaleString()} en ventas
               </p>
             </div>
-            <TrendingUp className="h-8 w-8 text-green-600" />
+            <TrendingUp className="h-8 w-8 text-[var(--color-success)]" />
           </div>
         </div>
       )}
@@ -111,14 +111,14 @@ export function ConsignmentOverview({ overview }: ConsignmentOverviewProps) {
       {/* Alert: Longest in Gallery */}
       {overview.longest_in_gallery && overview.longest_in_gallery.days > 90 && (
         <div
-          className="bg-amber-50 border border-amber-200 rounded-lg p-6"
+          className="bg-[var(--color-warning)]/10 border border-[var(--color-warning)]/30 rounded-lg p-6"
           data-testid={`alert-item-${overview.longest_in_gallery.work_id}`}
         >
           <div className="flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5" />
+            <AlertCircle className="h-5 w-5 text-[var(--color-warning)] mt-0.5" />
             <div>
-              <h4 className="font-semibold text-amber-900">Obra con Tiempo Prolongado</h4>
-              <p className="text-sm text-amber-800 mt-1">
+              <h4 className="font-semibold text-[var(--color-text-primary)]">Obra con Tiempo Prolongado</h4>
+              <p className="text-sm text-[var(--color-text-secondary)] mt-1">
                 <strong>{overview.longest_in_gallery.work_title}</strong> lleva{' '}
                 {overview.longest_in_gallery.days} días en{' '}
                 {overview.longest_in_gallery.location_name}

@@ -57,21 +57,21 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
     return (
         <div className="space-y-4">
             {/* Filters */}
-            <div className="flex flex-col sm:flex-row justify-between gap-4 items-center bg-white p-4 rounded-lg shadow-sm border">
+            <div className="flex flex-col sm:flex-row justify-between gap-4 items-center bg-[var(--color-bg-primary)] p-4 rounded-lg shadow-sm border border-[var(--color-border-subtle)]">
                 <div className="flex flex-wrap items-center gap-2 w-full">
                     <div className="relative flex-1 sm:w-64 min-w-[200px]">
-                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
+                        <Search className="absolute left-2 top-2.5 h-4 w-4 text-[var(--color-text-muted)]" />
                         <input
                             data-testid="orders-search-input"
                             placeholder={t('searchPlaceholder')}
-                            className="pl-8 h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF6B35] text-[#1A1A1A]"
+                            className="pl-8 h-9 w-full rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)]"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
                     <select
                         data-testid="orders-status-filter"
-                        className="h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF6B35] text-[#1A1A1A]"
+                        className="h-9 rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-[var(--color-text-primary)]"
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                     >
@@ -83,7 +83,7 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
                     <input
                         data-testid="orders-date-from"
                         type="date"
-                        className="h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF6B35] text-[#1A1A1A]"
+                        className="h-9 rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-[var(--color-text-primary)]"
                         value={dateFrom}
                         onChange={(e) => setDateFrom(e.target.value)}
                         placeholder={tCommon('from')}
@@ -91,7 +91,7 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
                     <input
                         data-testid="orders-date-to"
                         type="date"
-                        className="h-9 rounded-md border border-gray-300 bg-white px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF6B35] text-[#1A1A1A]"
+                        className="h-9 rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-[var(--color-text-primary)]"
                         value={dateTo}
                         onChange={(e) => setDateTo(e.target.value)}
                         placeholder={tCommon('to')}
@@ -100,7 +100,7 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
             </div>
 
             {/* Results count */}
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-[var(--color-text-secondary)]">
                 {t('showing', { count: filteredOrders.length, total: orders.length })}
             </div>
 
@@ -121,7 +121,7 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
                         <tbody className="divide-y">
                             {filteredOrders.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                                    <td colSpan={6} className="px-4 py-8 text-center text-[var(--color-text-muted)]">
                                         {t('noOrders')}
                                     </td>
                                 </tr>
@@ -157,7 +157,7 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
                                                     )}
                                                 </>
                                             ) : (
-                                                <span className="text-gray-400 text-sm">{t('noCustomer')}</span>
+                                                <span className="text-[var(--color-text-muted)] text-sm">{t('noCustomer')}</span>
                                             )}
                                         </td>
                                         <td className="px-4 py-3 text-right font-medium">
@@ -177,7 +177,7 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
                                             <div className="flex justify-end gap-2">
                                                 <button
                                                     onClick={() => onViewOrder(order)}
-                                                    className="p-2 hover:bg-gray-100 rounded-md text-gray-600 hover:text-blue-600 transition-colors"
+                                                    className="p-2 hover:bg-[var(--color-bg-secondary)] rounded-md text-[var(--color-text-secondary)] hover:text-blue-600 transition-colors"
                                                     title={t('viewDetails')}
                                                     data-testid={`view-order-${order.id}`}
                                                 >
@@ -185,7 +185,7 @@ export function OrdersTable({ orders, onViewOrder, onStatusUpdate, onPrint }: Or
                                                 </button>
                                                 <button
                                                     onClick={() => onPrint(order)}
-                                                    className="p-2 hover:bg-gray-100 rounded-md text-gray-600 hover:text-green-600 transition-colors"
+                                                    className="p-2 hover:bg-[var(--color-bg-secondary)] rounded-md text-[var(--color-text-secondary)] hover:text-green-600 transition-colors"
                                                     title={t('printInvoice')}
                                                     data-testid={`print-order-${order.id}`}
                                                 >

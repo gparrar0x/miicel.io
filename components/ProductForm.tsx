@@ -115,16 +115,16 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading, templa
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-            <div className="w-full max-w-2xl rounded-lg bg-white shadow-xl max-h-[90vh] overflow-y-auto">
-                <div className="flex items-center justify-between border-b px-6 py-4">
-                    <h2 className="text-lg font-semibold">
+            <div className="w-full max-w-2xl rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border-subtle)] shadow-xl max-h-[90vh] overflow-y-auto">
+                <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] px-6 py-4">
+                    <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
                         {initialData ? t('edit') : t('new')}
                     </h2>
                     <button
                         onClick={onCancel}
-                        className="rounded-full p-2 hover:bg-gray-100 transition-colors"
+                        className="rounded-full p-2 hover:bg-[var(--color-bg-secondary)] transition-colors"
                     >
-                        <X className="h-5 w-5 text-gray-500" />
+                        <X className="h-5 w-5 text-[var(--color-text-muted)]" />
                     </button>
                 </div>
 
@@ -133,10 +133,10 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading, templa
                         {/* Left Column: Image & Basic Info */}
                         <div className="space-y-6">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                                     {t('image')}
                                 </label>
-                                <div className="relative flex flex-col items-center justify-center w-full h-48 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 transition-colors overflow-hidden">
+                                <div className="relative flex flex-col items-center justify-center w-full h-48 rounded-lg border-2 border-dashed border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)] hover:bg-[var(--color-accent-hover)] transition-colors overflow-hidden">
                                     {imagePreview ? (
                                         <Image
                                             src={imagePreview}
@@ -146,8 +146,8 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading, templa
                                         />
                                     ) : (
                                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                            <Upload className="w-8 h-8 mb-3 text-gray-400" />
-                                            <p className="mb-2 text-sm text-gray-500">
+                                            <Upload className="w-8 h-8 mb-3 text-[var(--color-text-muted)]" />
+                                            <p className="mb-2 text-sm text-[var(--color-text-secondary)]">
                                                 <span className="font-semibold">{t('upload')}</span>
                                             </p>
                                         </div>
@@ -163,32 +163,32 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading, templa
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">
+                                <label className="block text-sm font-medium text-[var(--color-text-primary)]">
                                     {tCommon('name')}
                                 </label>
                                 <input
                                     {...register("name")}
-                                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
+                                    className="mt-1 block w-full rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-2 shadow-sm focus:border-[var(--btn-primary-border)] focus:outline-none focus:ring-1 focus:ring-[var(--btn-primary-border)] sm:text-sm text-[var(--color-text-primary)]"
                                     placeholder={t('namePlaceholder')}
                                     data-testid="product-form-name"
                                 />
                                 {errors.name && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+                                    <p className="mt-1 text-sm text-[var(--color-error)]">{errors.name.message}</p>
                                 )}
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">
+                                <label className="block text-sm font-medium text-[var(--color-text-primary)]">
                                     {t('categoryPlaceholder')}
                                 </label>
                                 <input
                                     {...register("category")}
-                                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
+                                    className="mt-1 block w-full rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-2 shadow-sm focus:border-[var(--btn-primary-border)] focus:outline-none focus:ring-1 focus:ring-[var(--btn-primary-border)] sm:text-sm text-[var(--color-text-primary)]"
                                     placeholder={t('categoryPlaceholder')}
                                     data-testid="product-form-category"
                                 />
                                 {errors.category && (
-                                    <p className="mt-1 text-sm text-red-600">
+                                    <p className="mt-1 text-sm text-[var(--color-error)]">
                                         {errors.category.message}
                                     </p>
                                 )}
@@ -198,13 +198,13 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading, templa
                         {/* Right Column: Details */}
                         <div className="space-y-6">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">
+                                <label className="block text-sm font-medium text-[var(--color-text-primary)]">
                                     {t('description')}
                                 </label>
                                 <textarea
                                     {...register("description")}
                                     rows={4}
-                                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
+                                    className="mt-1 block w-full rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-2 shadow-sm focus:border-[var(--btn-primary-border)] focus:outline-none focus:ring-1 focus:ring-[var(--btn-primary-border)] sm:text-sm text-[var(--color-text-primary)]"
                                     placeholder={t('descPlaceholder')}
                                     data-testid="product-form-description"
                                 />
@@ -212,36 +212,36 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading, templa
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">
+                                    <label className="block text-sm font-medium text-[var(--color-text-primary)]">
                                         {tCommon('price')}
                                     </label>
-                                    <div className="relative mt-1 rounded-md shadow-sm">
+                                    <div className="relative mt-1 rounded-lg shadow-sm">
                                         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                            <span className="text-gray-500 sm:text-sm">$</span>
+                                            <span className="text-[var(--color-text-secondary)] sm:text-sm">$</span>
                                         </div>
                                         <input
                                             type="number"
                                             {...register("price")}
-                                            className="block w-full rounded-md border border-gray-300 pl-7 pr-3 py-2 focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
+                                            className="block w-full rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] pl-7 pr-3 py-2 focus:border-[var(--btn-primary-border)] focus:outline-none focus:ring-1 focus:ring-[var(--btn-primary-border)] sm:text-sm text-[var(--color-text-primary)]"
                                             placeholder="0.00"
                                             data-testid="product-form-price"
                                         />
                                     </div>
                                     {errors.price && (
-                                        <p className="mt-1 text-sm text-red-600">
+                                        <p className="mt-1 text-sm text-[var(--color-error)]">
                                             {errors.price.message}
                                         </p>
                                     )}
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">
+                                    <label className="block text-sm font-medium text-[var(--color-text-primary)]">
                                         {t('stock')}
                                     </label>
                                     <input
                                         type="number"
                                         {...register("stock")}
-                                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
+                                        className="mt-1 block w-full rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-2 shadow-sm focus:border-[var(--btn-primary-border)] focus:outline-none focus:ring-1 focus:ring-[var(--btn-primary-border)] sm:text-sm text-[var(--color-text-primary)]"
                                         placeholder="0"
                                         data-testid="product-form-stock"
                                     />
@@ -249,17 +249,17 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading, templa
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">
+                                <label className="block text-sm font-medium text-[var(--color-text-primary)]">
                                     {t('displayOrder')}
                                 </label>
                                 <input
                                     type="number"
                                     {...register("display_order")}
-                                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black sm:text-sm text-[#1A1A1A]"
+                                    className="mt-1 block w-full rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-2 shadow-sm focus:border-[var(--btn-primary-border)] focus:outline-none focus:ring-1 focus:ring-[var(--btn-primary-border)] sm:text-sm text-[var(--color-text-primary)]"
                                     placeholder="0"
                                     data-testid="product-form-display-order"
                                 />
-                                <p className="mt-1 text-xs text-gray-500">{t('displayOrderHint')}</p>
+                                <p className="mt-1 text-xs text-[var(--color-text-secondary)]">{t('displayOrderHint')}</p>
                             </div>
 
                             <div className="flex items-center gap-2">
@@ -267,16 +267,16 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading, templa
                                     type="checkbox"
                                     {...register("active")}
                                     id="active"
-                                    className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
+                                    className="h-4 w-4 rounded border-[var(--color-border-subtle)] text-[var(--btn-primary-bg)] focus:ring-[var(--btn-primary-border)]"
                                     data-testid="product-active-checkbox"
                                 />
-                                <label htmlFor="active" className="text-sm font-medium text-gray-700">
+                                <label htmlFor="active" className="text-sm font-medium text-[var(--color-text-primary)]">
                                     {t('activeLabel')}
                                 </label>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
                                     {t('badges')}
                                 </label>
                                 <div className="flex flex-wrap gap-2">
@@ -287,8 +287,8 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading, templa
                                             onClick={() => toggleBadge(badge)}
                                             className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
                                                 selectedBadges.includes(badge)
-                                                    ? 'bg-black text-white'
-                                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                                    ? 'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)]'
+                                                    : 'bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)] hover:bg-[var(--color-accent-hover)]'
                                             }`}
                                             data-testid={`badge-${badge}`}
                                         >
@@ -302,18 +302,18 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading, templa
 
                     {/* Size Variants - Only for Gallery template */}
                     {template === 'gallery' && (
-                        <div className="border-t pt-6">
+                        <div className="border-t border-[var(--color-border-subtle)] pt-6">
                             <div className="flex items-center justify-between mb-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">
+                                    <label className="block text-sm font-medium text-[var(--color-text-primary)]">
                                         {t('sizes')}
                                     </label>
-                                    <p className="text-xs text-gray-500">{t('sizesHint')}</p>
+                                    <p className="text-xs text-[var(--color-text-secondary)]">{t('sizesHint')}</p>
                                 </div>
                                 <button
                                     type="button"
                                     onClick={addSize}
-                                    className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-black bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                                    className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-text)] border-2 border-[var(--btn-secondary-border)] rounded-lg hover:bg-[var(--btn-secondary-hover-bg)] transition-colors"
                                     data-testid="add-size-btn"
                                 >
                                     <Plus className="h-4 w-4" />
@@ -324,7 +324,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading, templa
                             {sizes.length > 0 && (
                                 <div className="space-y-3">
                                     {/* Header */}
-                                    <div className="grid grid-cols-12 gap-2 text-xs font-medium text-gray-500 uppercase tracking-wider px-1">
+                                    <div className="grid grid-cols-12 gap-2 text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wider px-1">
                                         <div className="col-span-2">{t('sizeLabel')}</div>
                                         <div className="col-span-3">{t('sizeDimensions')}</div>
                                         <div className="col-span-3">{tCommon('price')}</div>
@@ -340,7 +340,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading, templa
                                                 value={size.label}
                                                 onChange={(e) => updateSize(index, 'label', e.target.value)}
                                                 placeholder="Small"
-                                                className="col-span-2 rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                                                className="col-span-2 rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-2 py-1.5 text-sm text-[var(--color-text-primary)] focus:border-[var(--btn-primary-border)] focus:outline-none focus:ring-1 focus:ring-[var(--btn-primary-border)]"
                                                 data-testid={`size-label-${index}`}
                                             />
                                             <input
@@ -348,17 +348,17 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading, templa
                                                 value={size.dimensions}
                                                 onChange={(e) => updateSize(index, 'dimensions', e.target.value)}
                                                 placeholder="30 × 40 cm"
-                                                className="col-span-3 rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                                                className="col-span-3 rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-2 py-1.5 text-sm text-[var(--color-text-primary)] focus:border-[var(--btn-primary-border)] focus:outline-none focus:ring-1 focus:ring-[var(--btn-primary-border)]"
                                                 data-testid={`size-dimensions-${index}`}
                                             />
                                             <div className="col-span-3 relative">
-                                                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
+                                                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] text-sm">$</span>
                                                 <input
                                                     type="number"
                                                     value={size.price}
                                                     onChange={(e) => updateSize(index, 'price', parseFloat(e.target.value) || 0)}
                                                     placeholder="0"
-                                                    className="w-full rounded-md border border-gray-300 pl-6 pr-2 py-1.5 text-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                                                    className="w-full rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] pl-6 pr-2 py-1.5 text-sm text-[var(--color-text-primary)] focus:border-[var(--btn-primary-border)] focus:outline-none focus:ring-1 focus:ring-[var(--btn-primary-border)]"
                                                     data-testid={`size-price-${index}`}
                                                 />
                                             </div>
@@ -367,13 +367,13 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading, templa
                                                 value={size.stock}
                                                 onChange={(e) => updateSize(index, 'stock', parseInt(e.target.value) || 0)}
                                                 placeholder="1"
-                                                className="col-span-2 rounded-md border border-gray-300 px-2 py-1.5 text-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                                                className="col-span-2 rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-2 py-1.5 text-sm text-[var(--color-text-primary)] focus:border-[var(--btn-primary-border)] focus:outline-none focus:ring-1 focus:ring-[var(--btn-primary-border)]"
                                                 data-testid={`size-stock-${index}`}
                                             />
                                             <button
                                                 type="button"
                                                 onClick={() => removeSize(index)}
-                                                className="col-span-2 inline-flex items-center justify-center p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                                                className="col-span-2 inline-flex items-center justify-center p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-error)] transition-colors"
                                                 data-testid={`size-remove-${index}`}
                                             >
                                                 <Trash2 className="h-4 w-4" />
@@ -384,18 +384,18 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading, templa
                             )}
 
                             {sizes.length === 0 && (
-                                <p className="text-sm text-gray-500 text-center py-4 border border-dashed border-gray-300 rounded-md">
+                                <p className="text-sm text-[var(--color-text-secondary)] text-center py-4 border border-dashed border-[var(--color-border-subtle)] rounded-lg">
                                     {t('noSizes')}
                                 </p>
                             )}
                         </div>
                     )}
 
-                    <div className="flex justify-end gap-3 pt-4 border-t">
+                    <div className="flex justify-end gap-3 pt-4 border-t border-[var(--color-border-subtle)]">
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
+                            className="rounded-lg bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-text)] border-2 border-[var(--btn-secondary-border)] px-4 py-2 text-sm font-medium hover:bg-[var(--btn-secondary-hover-bg)] focus:outline-none focus:ring-2 focus:ring-[var(--btn-primary-border)] focus:ring-offset-2 shadow-[var(--btn-secondary-shadow)]"
                             data-testid="product-form-cancel-btn"
                         >
                             {tCommon('cancel')}
@@ -403,7 +403,7 @@ export function ProductForm({ initialData, onSubmit, onCancel, isLoading, templa
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="inline-flex items-center justify-center rounded-md border border-transparent bg-black px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="inline-flex items-center justify-center rounded-lg bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] border-2 border-[var(--btn-primary-border)] px-4 py-2 text-sm font-medium hover:bg-[var(--btn-primary-hover-bg)] focus:outline-none focus:ring-2 focus:ring-[var(--btn-primary-border)] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-[var(--btn-primary-shadow)]"
                             data-testid="product-form-submit"
                         >
                             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
