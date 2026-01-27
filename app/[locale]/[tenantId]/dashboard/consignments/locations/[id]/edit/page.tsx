@@ -44,7 +44,6 @@ export default async function EditLocationPage({ params }: PageProps) {
   const dbClient = isSuperAdmin ? createServiceRoleClient() : supabase
 
   // Get location
-  // @ts-expect-error - consignment_locations not in generated types yet
   const { data: location, error } = await dbClient.from('consignment_locations').select('*').eq('id', parseInt(id)).eq('tenant_id', tenant.id).single()
 
   if (error || !location) {

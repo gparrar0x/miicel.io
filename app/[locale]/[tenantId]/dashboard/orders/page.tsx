@@ -53,7 +53,6 @@ export default async function AdminOrdersPage({ params }: PageProps) {
     }
 
     // Format orders with proper typing
-    // @ts-expect-error - customer relation type mismatch in generated types
     const orders: OrderResponse[] = (rawOrders || []).map(order => ({
         id: order.id as number,
         tenant_id: order.tenant_id as number,
