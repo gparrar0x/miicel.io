@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Analytics page route** [2025-01-27] (SKY-44)
+  - `app/[locale]/[tenantId]/dashboard/analytics/page.tsx`: Created route for AnalyticsDashboard component
+  - Matches pattern of other dashboard pages (products, orders)
+  - Includes SEO metadata with noindex for dashboard
+
 ### Fixed
 
 - **Dark mode support for dashboard components** [2025-01-27]

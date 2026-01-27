@@ -25,7 +25,7 @@ import { AnalyticsDashboardPage } from '../pages/analytics-dashboard.page'
 import { loginAsOwner } from '../fixtures/auth.fixture'
 
 // Test tenant (with pre-seeded data)
-const TEST_TENANT = 'superhotdog'
+const TEST_TENANT = 'demo_galeria'
 const LOCALE = 'es'
 
 test.describe('Analytics Dashboard', () => {
