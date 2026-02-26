@@ -25,6 +25,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  transpilePackages: ['@skywalking/core'],
   turbopack: {
     root: __dirname,
   },
