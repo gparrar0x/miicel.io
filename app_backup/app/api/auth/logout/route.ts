@@ -20,7 +20,7 @@ export async function POST() {
           cookieStore.set({ name, value: '', ...options })
         },
       },
-    }
+    },
   )
 
   await supabase.auth.signOut()

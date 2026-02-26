@@ -5,8 +5,8 @@
  * Returns: { enabled: boolean, flag?: FeatureFlag }
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { isEnabled, getFlag } from '@/lib/flags'
+import { type NextRequest, NextResponse } from 'next/server'
+import { getFlag, isEnabled } from '@/lib/flags'
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
@@ -15,10 +15,7 @@ export async function GET(request: NextRequest) {
   const userId = searchParams.get('userId')
 
   if (!key) {
-    return NextResponse.json(
-      { error: 'Missing required parameter: key' },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: 'Missing required parameter: key' }, { status: 400 })
   }
 
   const context = {

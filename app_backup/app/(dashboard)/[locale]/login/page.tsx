@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense, useState } from 'react'
 
 function LoginForm() {
-  const router = useRouter()
+  const _router = useRouter()
   const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -48,16 +48,11 @@ function LoginForm() {
     <div className="min-h-screen flex items-center justify-center bg-[#F8F8F8] px-4">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-lg shadow-md p-8" data-testid="login-form">
-          <h1 className="text-2xl font-bold text-[#1A1A1A] mb-6 text-center">
-            Sign In
-          </h1>
+          <h1 className="text-2xl font-bold text-[#1A1A1A] mb-6 text-center">Sign In</h1>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-[#1A1A1A] mb-1"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-[#1A1A1A] mb-1">
                 Email
               </label>
               <input
@@ -73,10 +68,7 @@ function LoginForm() {
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-[#1A1A1A] mb-1"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-[#1A1A1A] mb-1">
                 Password
               </label>
               <input
@@ -107,11 +99,7 @@ function LoginForm() {
               data-testid="login-submit-button"
               className="w-full py-2 px-4 bg-[#FF6B35] text-white font-medium rounded-md hover:bg-[#E55A2B] focus:outline-none focus:ring-2 focus:ring-[#FF6B35] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {loading ? (
-                <span data-testid="login-loading-state">Signing in...</span>
-              ) : (
-                'Sign In'
-              )}
+              {loading ? <span data-testid="login-loading-state">Signing in...</span> : 'Sign In'}
             </button>
           </form>
         </div>
@@ -122,11 +110,13 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-[#F8F8F8]">
-        <div className="text-[#1A1A1A]">Loading...</div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[#F8F8F8]">
+          <div className="text-[#1A1A1A]">Loading...</div>
+        </div>
+      }
+    >
       <LoginForm />
     </Suspense>
   )

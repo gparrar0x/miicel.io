@@ -1,15 +1,15 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import Image from "next/image"
-import type { Artwork } from "./types"
-import { Button } from "@/components/ui/button"
-import { useCartStore } from "@/lib/stores/cartStore"
-import { Check, ChevronRight, Info } from "lucide-react"
-import { cn } from "@/lib/utils"
-import Link from "next/link"
-import { motion, AnimatePresence } from "framer-motion"
-import { Badge } from "@/components/ui/shadcn-badge"
+import { AnimatePresence, motion } from 'framer-motion'
+import { Check, ChevronRight, Info } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/shadcn-badge'
+import { useCartStore } from '@/lib/stores/cartStore'
+import { cn } from '@/lib/utils'
+import type { Artwork } from './types'
 
 interface ArtworkDetailProps {
   artwork: Artwork
@@ -46,8 +46,8 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
         size: {
           id: selectedSizeId,
           label: selectedSize.label,
-          dimensions: selectedSize.dimensions
-        }
+          dimensions: selectedSize.dimensions,
+        },
       })
       setIsAdded(true)
       setTimeout(() => setIsAdded(false), 2000)
@@ -59,7 +59,7 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
       {/* Hero Image - Full artwork display without cropping */}
       <div className="relative w-full min-h-[60vh] md:min-h-[85vh] bg-gray-50 flex items-center justify-center">
         <Image
-          src={artwork.image || "/placeholder.svg"}
+          src={artwork.image || '/placeholder.svg'}
           alt={artwork.title}
           fill
           className="object-contain"
@@ -74,14 +74,19 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
           <div className="flex items-center justify-between">
             <p className="text-lg text-black">{artwork.year}</p>
             {artwork.isLimitedEdition && (
-              <Badge variant="secondary" className="font-normal bg-gray-100 text-black border-gray-200">
+              <Badge
+                variant="secondary"
+                className="font-normal bg-gray-100 text-black border-gray-200"
+              >
                 Limited Edition
               </Badge>
             )}
           </div>
           {/* Description */}
           <div className="mb-10 prose prose-gray max-w-none mt-4">
-            <p className="text-xl md:text-2xl leading-relaxed text-black font-sans">{artwork.description}</p>
+            <p className="text-xl md:text-2xl leading-relaxed text-black font-sans">
+              {artwork.description}
+            </p>
             <div className="mt-6 flex items-center gap-2 text-sm text-gray-500">
               <Info className="h-4 w-4" />
               <span>{artwork.technique}</span>
@@ -104,11 +109,11 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
                   disabled={isDisabled}
                   data-testid={`product-size-${size.id}`}
                   className={cn(
-                    "relative flex items-center justify-between p-6 rounded-xl border transition-all duration-200 text-left min-h-[100px] bg-white group",
-                    isDisabled && "opacity-50 cursor-not-allowed bg-gray-50",
+                    'relative flex items-center justify-between p-6 rounded-xl border transition-all duration-200 text-left min-h-[100px] bg-white group',
+                    isDisabled && 'opacity-50 cursor-not-allowed bg-gray-50',
                     !isDisabled && selectedSizeId === size.id
-                      ? "border-black ring-1 ring-black shadow-md z-10"
-                      : "border-gray-200 hover:border-gray-400 hover:shadow-sm",
+                      ? 'border-black ring-1 ring-black shadow-md z-10'
+                      : 'border-gray-200 hover:border-gray-400 hover:shadow-sm',
                   )}
                 >
                   <div className="flex flex-col gap-1">
@@ -117,14 +122,19 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
                   </div>
                   <div className="flex flex-col items-end gap-1">
                     <span className="font-bold text-2xl text-black">
-                      {new Intl.NumberFormat('en-US', { style: 'currency', currency: artwork.currency }).format(size.price)}
+                      {new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: artwork.currency,
+                      }).format(size.price)}
                     </span>
                     {size.stock !== null && (
-                      <span className={cn(
-                        "text-sm font-medium",
-                        isOutOfStock ? "text-red-600" : "text-amber-600"
-                      )}>
-                        {isOutOfStock ? "Sin stock" : `${size.stock} left`}
+                      <span
+                        className={cn(
+                          'text-sm font-medium',
+                          isOutOfStock ? 'text-red-600' : 'text-amber-600',
+                        )}
+                      >
+                        {isOutOfStock ? 'Sin stock' : `${size.stock} left`}
                       </span>
                     )}
                   </div>
@@ -143,8 +153,13 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
         {relatedArtworks.length > 0 && (
           <div className="border-t border-gray-200 pt-12 mt-12">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-serif font-bold text-black">More from {artwork.collection}</h3>
-              <Link href={`/${tenantId}`} className="text-sm font-medium text-black hover:underline flex items-center">
+              <h3 className="text-xl font-serif font-bold text-black">
+                More from {artwork.collection}
+              </h3>
+              <Link
+                href={`/${tenantId}`}
+                className="text-sm font-medium text-black hover:underline flex items-center"
+              >
                 View All <ChevronRight className="h-4 w-4 ml-1" />
               </Link>
             </div>
@@ -153,7 +168,7 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
                 <Link key={related.id} href={`/${tenantId}/p/${related.id}`} className="group">
                   <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100 mb-2">
                     <Image
-                      src={related.image || "/placeholder.svg"}
+                      src={related.image || '/placeholder.svg'}
                       alt={related.title}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -169,14 +184,23 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
       </div>
 
       {/* Sticky Bottom Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-sm border-t z-40 safe-area-bottom shadow-sm" style={{ borderColor: 'var(--color-border-subtle)' }}>
+      <div
+        className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-sm border-t z-40 safe-area-bottom shadow-sm"
+        style={{ borderColor: 'var(--color-border-subtle)' }}
+      >
         <div className="container mx-auto max-w-4xl flex items-center justify-end gap-4">
           <div className="hidden md:block flex-1">
             {selectedSize ? (
               <div className="flex flex-col">
-                <span className="font-medium" style={{ color: 'var(--color-text-primary)' }}>{artwork.title}</span>
+                <span className="font-medium" style={{ color: 'var(--color-text-primary)' }}>
+                  {artwork.title}
+                </span>
                 <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-                  {selectedSize.dimensions} — {new Intl.NumberFormat('en-US', { style: 'currency', currency: artwork.currency }).format(selectedSize.price)}
+                  {selectedSize.dimensions} —{' '}
+                  {new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: artwork.currency,
+                  }).format(selectedSize.price)}
                 </span>
               </div>
             ) : (
@@ -199,13 +223,17 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
             <Button
               size="lg"
               className={cn(
-                "w-full md:w-auto md:min-w-[200px] h-14 text-lg rounded-full shadow-lg transition-all font-medium",
+                'w-full md:w-auto md:min-w-[200px] h-14 text-lg rounded-full shadow-lg transition-all font-medium',
                 isAdded
-                  ? "text-white"
-                  : "text-white disabled:opacity-50 disabled:cursor-not-allowed",
+                  ? 'text-white'
+                  : 'text-white disabled:opacity-50 disabled:cursor-not-allowed',
               )}
               style={{
-                backgroundColor: isAdded ? 'var(--color-success)' : selectedSizeId && selectedSize?.stock !== 0 ? 'var(--color-accent-primary)' : 'var(--color-border-subtle)',
+                backgroundColor: isAdded
+                  ? 'var(--color-success)'
+                  : selectedSizeId && selectedSize?.stock !== 0
+                    ? 'var(--color-accent-primary)'
+                    : 'var(--color-border-subtle)',
               }}
               disabled={!selectedSizeId || selectedSize?.stock === 0}
               onClick={handleAddToCart}
@@ -230,7 +258,7 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                   >
-                    {selectedSize ? "Agregar al Carrito" : "Selecciona un Tamaño"}
+                    {selectedSize ? 'Agregar al Carrito' : 'Selecciona un Tamaño'}
                   </motion.div>
                 )}
               </AnimatePresence>

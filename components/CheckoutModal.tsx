@@ -8,19 +8,20 @@
 
 'use client'
 
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Loader2, X } from 'lucide-react'
+import { useParams } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { X, Loader2 } from 'lucide-react'
-import { useCartStore } from '@/lib/stores/cartStore'
 import { toast } from 'sonner'
-import { useParams } from 'next/navigation'
+import { z } from 'zod'
+import { useCartStore } from '@/lib/stores/cartStore'
 
 // Validation schema - Only MercadoPago supported (SKY-4)
 const checkoutSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
-  phone: z.string()
+  phone: z
+    .string()
     .regex(/^\d{10}$/, 'Phone must be 10 digits for WhatsApp')
     .min(10, 'Phone must be 10 digits')
     .max(10, 'Phone must be 10 digits'),
@@ -70,7 +71,7 @@ export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () =>
             email: data.email,
             notes: data.notes,
           },
-          items: items.map(item => ({
+          items: items.map((item) => ({
             productId: Number(item.productId),
             name: item.name,
             price: Number(item.price),
@@ -116,7 +117,10 @@ export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () =>
       if (error instanceof Error) {
         if (error.message.includes('stock')) {
           message = 'Some products are out of stock. Please review your cart.'
-        } else if (error.message.includes('MercadoPago') || error.message.includes('not configured')) {
+        } else if (
+          error.message.includes('MercadoPago') ||
+          error.message.includes('not configured')
+        ) {
           message = 'Payment provider unavailable. Please contact the store.'
         } else {
           message = error.message
@@ -138,12 +142,18 @@ export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () =>
         data-testid="checkout-modal-backdrop"
       />
       <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none p-4">
-        <div className="bg-white rounded-lg p-6 w-full max-w-md pointer-events-auto max-h-[90vh] overflow-y-auto relative" data-testid="checkout-modal-container">
+        <div
+          className="bg-white rounded-lg p-6 w-full max-w-md pointer-events-auto max-h-[90vh] overflow-y-auto relative"
+          data-testid="checkout-modal-container"
+        >
           {/* Loading Overlay */}
           {isSubmitting && (
             <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-50 rounded-lg">
               <div className="flex flex-col items-center gap-2">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" style={{ color: 'var(--color-primary)' }} />
+                <Loader2
+                  className="h-8 w-8 animate-spin text-primary"
+                  style={{ color: 'var(--color-primary)' }}
+                />
                 <p className="text-sm text-gray-600">Redirecting to payment...</p>
               </div>
             </div>
@@ -177,7 +187,10 @@ export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () =>
           {/* Order Summary */}
           <div
             className="mb-6 p-4 rounded-lg"
-            style={{ backgroundColor: 'var(--color-bg-elevated)', borderColor: 'var(--color-border)' }}
+            style={{
+              backgroundColor: 'var(--color-bg-elevated)',
+              borderColor: 'var(--color-border)',
+            }}
             data-testid="checkout-order-summary"
           >
             <h3 className="font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>
@@ -200,10 +213,7 @@ export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () =>
               ))}
               <div className="pt-2 border-t flex justify-between font-bold">
                 <span style={{ color: 'var(--color-text-primary)' }}>Total</span>
-                <span
-                  style={{ color: 'var(--color-primary)' }}
-                  data-testid="checkout-total"
-                >
+                <span style={{ color: 'var(--color-primary)' }} data-testid="checkout-total">
                   {currency} {totalPrice.toFixed(2)}
                 </span>
               </div>
@@ -338,14 +348,22 @@ export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () =>
 
             {/* Payment Method Selection */}
             <div className="space-y-3">
-              <label className="block text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>
+              <label
+                className="block text-sm font-medium"
+                style={{ color: 'var(--color-text-primary)' }}
+              >
                 Payment Method
               </label>
 
               {/* Cash Payment Option */}
-              <div className="flex items-start gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-                style={{ borderColor: paymentMethod === 'cash' ? 'var(--color-primary)' : 'var(--color-border)' }}
-                onClick={() => setPaymentMethod('cash')}>
+              <div
+                className="flex items-start gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                style={{
+                  borderColor:
+                    paymentMethod === 'cash' ? 'var(--color-primary)' : 'var(--color-border)',
+                }}
+                onClick={() => setPaymentMethod('cash')}
+              >
                 <input
                   type="radio"
                   id="payment-cash"
@@ -358,15 +376,26 @@ export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () =>
                   className="mt-1"
                 />
                 <label htmlFor="payment-cash" className="flex-1 cursor-pointer">
-                  <div className="font-medium" style={{ color: 'var(--color-text-primary)' }}>Cash on Delivery</div>
-                  <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Pay when you receive your order</p>
+                  <div className="font-medium" style={{ color: 'var(--color-text-primary)' }}>
+                    Cash on Delivery
+                  </div>
+                  <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                    Pay when you receive your order
+                  </p>
                 </label>
               </div>
 
               {/* MercadoPago Payment Option */}
-              <div className="flex items-start gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-                style={{ borderColor: paymentMethod === 'mercadopago' ? 'var(--color-primary)' : 'var(--color-border)' }}
-                onClick={() => setPaymentMethod('mercadopago')}>
+              <div
+                className="flex items-start gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                style={{
+                  borderColor:
+                    paymentMethod === 'mercadopago'
+                      ? 'var(--color-primary)'
+                      : 'var(--color-border)',
+                }}
+                onClick={() => setPaymentMethod('mercadopago')}
+              >
                 <input
                   type="radio"
                   id="payment-mercadopago"
@@ -379,8 +408,12 @@ export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () =>
                   className="mt-1"
                 />
                 <label htmlFor="payment-mercadopago" className="flex-1 cursor-pointer">
-                  <div className="font-medium" style={{ color: 'var(--color-text-primary)' }}>MercadoPago</div>
-                  <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Credit/debit card or local payment methods</p>
+                  <div className="font-medium" style={{ color: 'var(--color-text-primary)' }}>
+                    MercadoPago
+                  </div>
+                  <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                    Credit/debit card or local payment methods
+                  </p>
                 </label>
               </div>
             </div>

@@ -9,57 +9,57 @@
 :root {
   /* ========== CONSIGNMENT STATUS COLORS ========== */
   /* Gallery: Primary gold (long-term placement) */
-  --color-status-gallery: #B8860B;
-  --color-status-gallery-light: #FEF3C7;
-  --color-status-gallery-dark: #92400E;
+  --color-status-gallery: #b8860b;
+  --color-status-gallery-light: #fef3c7;
+  --color-status-gallery-dark: #92400e;
 
   /* Transit: Blue (temporary movement) */
-  --color-status-transit: #3B82F6;
-  --color-status-transit-light: #DBEAFE;
-  --color-status-transit-dark: #1E3A8A;
+  --color-status-transit: #3b82f6;
+  --color-status-transit-light: #dbeafe;
+  --color-status-transit-dark: #1e3a8a;
 
   /* Sold: Green (final disposition) */
-  --color-status-sold: #10B981;
-  --color-status-sold-light: #DCFCE7;
+  --color-status-sold: #10b981;
+  --color-status-sold-light: #dcfce7;
   --color-status-sold-dark: #166534;
 
   /* Pending: Amber (awaiting placement) */
-  --color-status-pending: #F59E0B;
-  --color-status-pending-light: #FEF3C7;
-  --color-status-pending-dark: #92400E;
+  --color-status-pending: #f59e0b;
+  --color-status-pending-light: #fef3c7;
+  --color-status-pending-dark: #92400e;
 
   /* Returned: Red (removed from rotation) */
-  --color-status-returned: #EF4444;
-  --color-status-returned-light: #FEE2E2;
-  --color-status-returned-dark: #991B1B;
+  --color-status-returned: #ef4444;
+  --color-status-returned-light: #fee2e2;
+  --color-status-returned-dark: #991b1b;
 
   /* ========== CONSIGNMENT BADGE TOKENS ========== */
   /* In Gallery Badge */
-  --badge-gallery-bg: #FEF3C7;
-  --badge-gallery-text: #92400E;
-  --badge-gallery-border: #B8860B;
+  --badge-gallery-bg: #fef3c7;
+  --badge-gallery-text: #92400e;
+  --badge-gallery-border: #b8860b;
   --badge-gallery-height: 24px;
   --badge-gallery-padding: 4px 12px;
 
   /* In Transit Badge */
-  --badge-transit-bg: #DBEAFE;
-  --badge-transit-text: #1E3A8A;
-  --badge-transit-border: #3B82F6;
+  --badge-transit-bg: #dbeafe;
+  --badge-transit-text: #1e3a8a;
+  --badge-transit-border: #3b82f6;
 
   /* Sold Badge */
-  --badge-sold-bg: #DCFCE7;
+  --badge-sold-bg: #dcfce7;
   --badge-sold-text: #166534;
-  --badge-sold-border: #10B981;
+  --badge-sold-border: #10b981;
 
   /* Pending Badge */
-  --badge-pending-bg: #FEF3C7;
-  --badge-pending-text: #92400E;
-  --badge-pending-border: #F59E0B;
+  --badge-pending-bg: #fef3c7;
+  --badge-pending-text: #92400e;
+  --badge-pending-border: #f59e0b;
 
   /* Returned Badge */
-  --badge-returned-bg: #FEE2E2;
-  --badge-returned-text: #991B1B;
-  --badge-returned-border: #EF4444;
+  --badge-returned-bg: #fee2e2;
+  --badge-returned-text: #991b1b;
+  --badge-returned-border: #ef4444;
 
   /* ========== LOCATION CARD TOKENS ========== */
   /* Mobile card height: compact view for list */
@@ -92,10 +92,10 @@
 
   /* Timeline connecting line */
   --timeline-line-width: 2px;
-  --timeline-line-color: #E5E5E5;
+  --timeline-line-color: #e5e5e5;
 
   /* Dark mode timeline line */
-  --timeline-line-color-dark: #2D2D2D;
+  --timeline-line-color-dark: #2d2d2d;
 
   /* Vertical spacing between timeline events */
   --timeline-event-spacing: 16px;
@@ -134,12 +134,12 @@
   /* ========== ACTION BUTTON TOKENS ========== */
   /* Primary action (Assign, Save, Move) */
   --btn-primary-bg: var(--color-accent-primary);
-  --btn-primary-text: #FFFFFF;
+  --btn-primary-text: #ffffff;
   --btn-primary-padding: 12px 24px;
   --btn-primary-height: 44px;
 
   /* Secondary action (Cancel, Reset, Delete) */
-  --btn-secondary-bg: #F5F5F5;
+  --btn-secondary-bg: #f5f5f5;
   --btn-secondary-text: var(--color-text-primary);
   --btn-secondary-padding: 12px 24px;
   --btn-secondary-height: 44px;
@@ -197,38 +197,38 @@
 /* ========== DARK MODE OVERRIDES ========== */
 [data-theme="modern-dark"] {
   /* Dark mode status colors (ensure contrast ≥ 4.5:1) */
-  --color-status-gallery: #EAB308;
-  --color-status-gallery-light: #713F12;
-  --color-status-gallery-dark: #FDE68A;
+  --color-status-gallery: #eab308;
+  --color-status-gallery-light: #713f12;
+  --color-status-gallery-dark: #fde68a;
 
-  --color-status-transit: #60A5FA;
-  --color-status-transit-light: #1E3A8A;
-  --color-status-transit-dark: #93C5FD;
+  --color-status-transit: #60a5fa;
+  --color-status-transit-light: #1e3a8a;
+  --color-status-transit-dark: #93c5fd;
 
-  --color-status-sold: #34D399;
-  --color-status-sold-light: #064E3B;
-  --color-status-sold-dark: #86EFAC;
+  --color-status-sold: #34d399;
+  --color-status-sold-light: #064e3b;
+  --color-status-sold-dark: #86efac;
 
-  --color-status-returned: #F87171;
-  --color-status-returned-light: #7F1D1D;
-  --color-status-returned-dark: #FCA5A5;
+  --color-status-returned: #f87171;
+  --color-status-returned-light: #7f1d1d;
+  --color-status-returned-dark: #fca5a5;
 
   /* Dark mode badge adjustments */
-  --badge-gallery-bg: #713F12;
-  --badge-gallery-text: #FDE68A;
-  --badge-gallery-border: #EAB308;
+  --badge-gallery-bg: #713f12;
+  --badge-gallery-text: #fde68a;
+  --badge-gallery-border: #eab308;
 
-  --badge-transit-bg: #1E3A8A;
-  --badge-transit-text: #93C5FD;
-  --badge-transit-border: #60A5FA;
+  --badge-transit-bg: #1e3a8a;
+  --badge-transit-text: #93c5fd;
+  --badge-transit-border: #60a5fa;
 
-  --badge-sold-bg: #064E3B;
-  --badge-sold-text: #86EFAC;
-  --badge-sold-border: #34D399;
+  --badge-sold-bg: #064e3b;
+  --badge-sold-text: #86efac;
+  --badge-sold-border: #34d399;
 
-  --badge-returned-bg: #7F1D1D;
-  --badge-returned-text: #FCA5A5;
-  --badge-returned-border: #F87171;
+  --badge-returned-bg: #7f1d1d;
+  --badge-returned-text: #fca5a5;
+  --badge-returned-border: #f87171;
 
   /* Timeline line color for dark mode */
   --timeline-line-color: var(--timeline-line-color-dark);
@@ -239,16 +239,16 @@
 
 /* ========== WARM NEUTRAL PALETTE OVERRIDES ========== */
 [data-theme="warm-neutral"] {
-  --color-status-gallery: #8B7355;
-  --color-status-transit: #6B8E99;
-  --color-status-sold: #7BA873;
-  --color-status-pending: #A89968;
-  --color-status-returned: #A97B7B;
+  --color-status-gallery: #8b7355;
+  --color-status-transit: #6b8e99;
+  --color-status-sold: #7ba873;
+  --color-status-pending: #a89968;
+  --color-status-returned: #a97b7b;
 
   /* Adjust badge colors for warm palette */
-  --badge-gallery-bg: #E8DCC8;
-  --badge-gallery-text: #654A3F;
-  --badge-gallery-border: #8B7355;
+  --badge-gallery-bg: #e8dcc8;
+  --badge-gallery-text: #654a3f;
+  --badge-gallery-border: #8b7355;
 }
 
 /* ========== RESPONSIVE SCALING FOR TABLETS ========== */
@@ -347,7 +347,8 @@
 
 /* Animations */
 @keyframes badge-pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {

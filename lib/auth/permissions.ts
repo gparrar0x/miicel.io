@@ -15,10 +15,12 @@ export interface PermissionCheckResult {
  */
 export async function checkDashboardAccess(tenantSlug: string): Promise<PermissionCheckResult> {
   const supabase = createClient()
-  
+
   try {
-    const { data: { user } } = await supabase.auth.getUser()
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
     if (!user) {
       return { isSuperAdmin: false, isOwner: false, canAccessDashboard: false }
     }
@@ -35,7 +37,9 @@ export async function checkDashboardAccess(tenantSlug: string): Promise<Permissi
     }
 
     // Check if superadmin (via API call to avoid exposing env vars)
-    const { data: superAdminCheck } = await fetch('/api/auth/check-superadmin').then(r => r.json()).catch(() => ({ data: false }))
+    const { data: superAdminCheck } = await fetch('/api/auth/check-superadmin')
+      .then((r) => r.json())
+      .catch(() => ({ data: false }))
     const isSuperAdmin = !!superAdminCheck
 
     const isOwner = user.id === tenant.owner_id
@@ -47,4 +51,3 @@ export async function checkDashboardAccess(tenantSlug: string): Promise<Permissi
     return { isSuperAdmin: false, isOwner: false, canAccessDashboard: false }
   }
 }
-

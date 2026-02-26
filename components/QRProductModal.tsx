@@ -1,10 +1,10 @@
-"use client"
+'use client'
 
-import { useRef } from "react"
-import { QRCodeCanvas } from "qrcode.react"
-import { Product } from "@/lib/schemas/product"
-import { Download, Printer, QrCode } from "lucide-react"
-import { useTranslations } from "next-intl"
+import { Download, Printer, QrCode } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { QRCodeCanvas } from 'qrcode.react'
+import { useRef } from 'react'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -12,8 +12,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
+} from '@/components/ui/dialog'
+import type { Product } from '@/lib/schemas/product'
 
 interface QRProductModalProps {
   product: Product | null
@@ -60,10 +60,7 @@ export function QRProductModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent
-        className="sm:max-w-[500px]"
-        data-testid="qr-modal-container"
-      >
+      <DialogContent className="sm:max-w-[500px]" data-testid="qr-modal-container">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <QrCode className="size-5" />
@@ -74,10 +71,7 @@ export function QRProductModal({
 
         <div className="space-y-4">
           {/* Product name */}
-          <div
-            className="text-center font-medium text-lg"
-            data-testid="qr-modal-product-name"
-          >
+          <div className="text-center font-medium text-lg" data-testid="qr-modal-product-name">
             {product.name}
           </div>
 
@@ -87,12 +81,7 @@ export function QRProductModal({
             className="flex justify-center items-center bg-white p-6 rounded-lg border qr-code-print-area"
             data-testid={`qr-code-${product.id}`}
           >
-            <QRCodeCanvas
-              value={productUrl}
-              size={256}
-              level="H"
-              includeMargin={true}
-            />
+            <QRCodeCanvas value={productUrl} size={256} level="H" includeMargin={true} />
           </div>
 
           {/* URL Preview */}
@@ -126,11 +115,7 @@ export function QRProductModal({
             <Download className="mr-2 h-4 w-4" />
             {t('download')}
           </Button>
-          <Button
-            type="button"
-            onClick={onClose}
-            data-testid="qr-modal-close-button"
-          >
+          <Button type="button" onClick={onClose} data-testid="qr-modal-close-button">
             {tCommon('close')}
           </Button>
         </DialogFooter>

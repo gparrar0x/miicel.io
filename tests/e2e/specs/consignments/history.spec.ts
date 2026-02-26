@@ -9,7 +9,7 @@
  * - Export history (if implemented)
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { loginAsOwner } from '../../fixtures/auth.fixture'
 import { ConsignmentsPage } from '../../pages/consignments.page'
 
@@ -118,7 +118,7 @@ test.describe('Consignments - History & Timeline', () => {
         // History section may be present or hidden (depends on implementation)
         expect(typeof isVisible).toBe('boolean')
       }
-    } catch (error) {
+    } catch (_error) {
       // If location creation fails, test still passes (optional feature)
       expect(true).toBe(true)
     }
@@ -181,9 +181,11 @@ test.describe('Consignments - History & Timeline', () => {
       const hasDate =
         /\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}/.test(eventText || '') ||
         /enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre/i.test(
-          eventText || ''
+          eventText || '',
         ) ||
-        /january|february|march|april|may|june|july|august|september|october|november|december/i.test(eventText || '')
+        /january|february|march|april|may|june|july|august|september|october|november|december/i.test(
+          eventText || '',
+        )
 
       expect(eventCount === 0 || hasDate).toBeTruthy()
     }
@@ -231,7 +233,7 @@ test.describe('Consignments - History & Timeline', () => {
         const emptyVisible = await emptyMsg.isVisible().catch(() => false)
         expect(!hasEvents || emptyVisible).toBeTruthy()
       }
-    } catch (error) {
+    } catch (_error) {
       // If location creation fails, test still passes (optional feature)
       expect(true).toBe(true)
     }

@@ -10,7 +10,7 @@
  * Uses ConsignmentsPage for all interactions (no direct selectors in tests)
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { loginAsOwner } from '../../fixtures/auth.fixture'
 import { ConsignmentsPage } from '../../pages/consignments.page'
 
@@ -184,7 +184,10 @@ test.describe('Consignments - Locations CRUD', () => {
     await consignmentsPage.cancelForm()
 
     // Verify form closed
-    const formVisible = await page.getByTestId('location-form-modal').isVisible().catch(() => false)
+    const formVisible = await page
+      .getByTestId('location-form-modal')
+      .isVisible()
+      .catch(() => false)
     expect(formVisible).toBe(false)
 
     // Verify no location was created
@@ -199,7 +202,10 @@ test.describe('Consignments - Locations CRUD', () => {
     await consignmentsPage.closeForm()
 
     // Verify form closed
-    const formVisible = await page.getByTestId('location-form-modal').isVisible().catch(() => false)
+    const formVisible = await page
+      .getByTestId('location-form-modal')
+      .isVisible()
+      .catch(() => false)
     expect(formVisible).toBe(false)
   })
 })

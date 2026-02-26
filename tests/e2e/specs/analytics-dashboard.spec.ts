@@ -20,9 +20,9 @@
  * - <90s total run time
  */
 
-import { test, expect, Page } from '@playwright/test'
-import { AnalyticsDashboardPage } from '../pages/analytics-dashboard.page'
+import { expect, test } from '@playwright/test'
 import { loginAsOwner } from '../fixtures/auth.fixture'
+import { AnalyticsDashboardPage } from '../pages/analytics-dashboard.page'
 
 // Test tenant (with pre-seeded data)
 const TEST_TENANT = 'demo_galeria'
@@ -119,7 +119,7 @@ test.describe('Analytics Dashboard', () => {
         const products = await dashboardPage.getProductRows()
 
         let totalPercent = 0
-        products.forEach(p => {
+        products.forEach((p) => {
           const percent = parseFloat(p.percentage.replace(/\D/g, ''))
           totalPercent += percent
         })
@@ -155,7 +155,7 @@ test.describe('Analytics Dashboard', () => {
     test('should have unique category names', async () => {
       await test.step('Verify no duplicate categories', async () => {
         const categories = await dashboardPage.getCategoryRows()
-        const names = categories.map(c => c.name)
+        const names = categories.map((c) => c.name)
         const uniqueNames = new Set(names)
 
         expect(uniqueNames.size).toBe(names.length)
@@ -190,8 +190,12 @@ test.describe('Analytics Dashboard', () => {
         // Verify each row has data
         for (let i = 0; i < Math.min(count, 3); i++) {
           const row = rows.nth(i)
-          const methodName = await row.locator('[data-testid="payment-method-name-cell"]').textContent()
-          const amount = await row.locator('[data-testid="payment-method-amount-cell"]').textContent()
+          const methodName = await row
+            .locator('[data-testid="payment-method-name-cell"]')
+            .textContent()
+          const amount = await row
+            .locator('[data-testid="payment-method-amount-cell"]')
+            .textContent()
 
           expect(methodName).toBeTruthy()
           expect(amount).toBeTruthy()
@@ -286,10 +290,7 @@ test.describe('Analytics Dashboard', () => {
 
         const formatDate = (d: Date) => d.toISOString().split('T')[0]
 
-        await dashboardPage.setCustomDateRange(
-          formatDate(startDate),
-          formatDate(endDate)
-        )
+        await dashboardPage.setCustomDateRange(formatDate(startDate), formatDate(endDate))
 
         await dashboardPage.assertDashboardLoaded()
       })
@@ -309,9 +310,9 @@ test.describe('Analytics Dashboard', () => {
         await page.locator('[data-testid="cancel-date-range"]').click()
 
         // Popover should close
-        await expect(
-          page.locator('[data-testid="date-range-popover"]')
-        ).not.toBeVisible({ timeout: 1000 }).catch(() => {})
+        await expect(page.locator('[data-testid="date-range-popover"]'))
+          .not.toBeVisible({ timeout: 1000 })
+          .catch(() => {})
       })
     })
   })
@@ -381,12 +382,8 @@ test.describe('Analytics Dashboard', () => {
 
         // Metrics might be empty/zero or show empty state
         // Both are acceptable
-        expect(
-          await dashboardPage.emptyState.isVisible().catch(() => false)
-        ).toEqual(
-          metrics.totalSales === '' ||
-          metrics.totalSales === '0' ||
-          metrics.totalSales === '$ 0'
+        expect(await dashboardPage.emptyState.isVisible().catch(() => false)).toEqual(
+          metrics.totalSales === '' || metrics.totalSales === '0' || metrics.totalSales === '$ 0',
         )
       })
     })
@@ -395,7 +392,7 @@ test.describe('Analytics Dashboard', () => {
       await test.step('Monitor loading', async () => {
         // Intercept network and artificially slow it down
         await page.route('**/api/analytics/**', async (route) => {
-          await new Promise(resolve => setTimeout(resolve, 500))
+          await new Promise((resolve) => setTimeout(resolve, 500))
           await route.continue()
         })
 
@@ -553,7 +550,7 @@ test.describe('Analytics Dashboard', () => {
         const products = await dashboardPage.getProductRows()
 
         // If summary shows items sold, table should have products
-        const itemsCount = parseInt(metrics.itemsSold.replace(/\D/g, '') || '0')
+        const itemsCount = parseInt(metrics.itemsSold.replace(/\D/g, '') || '0', 10)
 
         if (itemsCount > 0) {
           expect(products.length).toBeGreaterThan(0)

@@ -1,25 +1,23 @@
 import { createServerClient } from '@supabase/ssr'
-import { createServiceRoleClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 
 export async function POST(request: Request) {
   try {
     const { email, password } = await request.json()
 
     if (!email || !password) {
-      return NextResponse.json(
-        { error: 'Email and password required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Email and password required' }, { status: 400 })
     }
 
     const cookieStore = await cookies()
 
     // Detect locale from cookie or referer
-    const locale = cookieStore.get('NEXT_LOCALE')?.value ||
-                   request.headers.get('referer')?.match(/\/(en|es)\//)?.[1] ||
-                   'es'
+    const locale =
+      cookieStore.get('NEXT_LOCALE')?.value ||
+      request.headers.get('referer')?.match(/\/(en|es)\//)?.[1] ||
+      'es'
 
     // Collect cookies to set in response
     const cookiesToSet: Array<{ name: string; value: string; options: any }> = []
@@ -39,7 +37,7 @@ export async function POST(request: Request) {
             cookiesToSet.push({ name, value: '', options })
           },
         },
-      }
+      },
     )
 
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -102,9 +100,6 @@ export async function POST(request: Request) {
     return res
   } catch (err: any) {
     console.error('Login error:', err)
-    return NextResponse.json(
-      { error: err.message || 'Login failed' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: err.message || 'Login failed' }, { status: 500 })
   }
 }

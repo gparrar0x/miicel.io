@@ -8,7 +8,7 @@
  * const result = await apiHelper.validateSlug('my-store')
  */
 
-import { APIRequestContext } from '@playwright/test'
+import type { APIRequestContext } from '@playwright/test'
 
 interface SlugValidationResponse {
   available: boolean
@@ -23,7 +23,10 @@ interface SignupResponse {
 }
 
 export class ApiHelper {
-  constructor(private context: APIRequestContext, private baseURL: string) {}
+  constructor(
+    private context: APIRequestContext,
+    private baseURL: string,
+  ) {}
 
   /**
    * Call the slug validation API
@@ -78,7 +81,11 @@ export class ApiHelper {
    * @param maxRetries - Maximum number of retries
    * @param delayMs - Delay between retries in milliseconds
    */
-  async waitForSlugAvailable(slug: string, maxRetries: number = 10, delayMs: number = 500): Promise<boolean> {
+  async waitForSlugAvailable(
+    slug: string,
+    maxRetries: number = 10,
+    delayMs: number = 500,
+  ): Promise<boolean> {
     for (let i = 0; i < maxRetries; i++) {
       if (await this.isSlugAvailable(slug)) {
         return true

@@ -7,9 +7,9 @@
  * Allows selecting location, status, and adding notes
  */
 
+import { Loader2, X } from 'lucide-react'
 import { useState } from 'react'
 import { ConsignmentStatus } from '@/lib/types/consignment'
-import { X, Loader2 } from 'lucide-react'
 
 interface Location {
   id: string

@@ -6,7 +6,7 @@
  * Created: 2025-11-16 (Issue #4)
  */
 
-export { GalleryCard } from './GalleryCard'
 export { DetailCard } from './DetailCard'
+export { GalleryCard } from './GalleryCard'
 export { MinimalCard } from './MinimalCard'
 export { ProductGrid } from './ProductGrid'

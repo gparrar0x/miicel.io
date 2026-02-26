@@ -57,7 +57,7 @@ export const optionalEmailSchema = z
 export const optionalPhoneSchema = z
   .string()
   .max(50)
-  .regex(/^[\d\s\+\-\(\)]+$/, 'Phone must contain only digits, spaces, +, -, (, )')
+  .regex(/^[\d\s+\-()]+$/, 'Phone must contain only digits, spaces, +, -, (, )')
   .nullable()
   .optional()
 

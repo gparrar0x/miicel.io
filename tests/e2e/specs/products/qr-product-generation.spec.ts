@@ -12,7 +12,7 @@
  * Uses loginAsOwner fixture for auth
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { loginAsOwner } from '../../fixtures/auth.fixture'
 import { QRModalPage } from '../../pages/qr-modal.page'
 
@@ -51,7 +51,7 @@ test.describe('QR Product Generation', () => {
     expect(qrButtonTestId).toBeTruthy()
 
     // Extract product ID from testId (format: "product-row-qr-button-{productId}")
-    const productId = qrButtonTestId!.replace('product-row-qr-button-', '')
+    const productId = qrButtonTestId?.replace('product-row-qr-button-', '')
 
     // Get product name from table
     const productName = await firstRow.locator('.font-medium').first().textContent()
@@ -81,7 +81,7 @@ test.describe('QR Product Generation', () => {
     const firstRow = page.locator('[data-testid="product-table-row"]').first()
     const qrButton = firstRow.locator('[data-testid^="product-row-qr-button-"]')
     const qrButtonTestId = await qrButton.getAttribute('data-testid')
-    const productId = qrButtonTestId!.replace('product-row-qr-button-', '')
+    const productId = qrButtonTestId?.replace('product-row-qr-button-', '')
 
     await qrModal.clickQrButton(productId)
     expect(await qrModal.isModalOpen()).toBe(true)
@@ -100,7 +100,7 @@ test.describe('QR Product Generation', () => {
     const firstRow = page.locator('[data-testid="product-table-row"]').first()
     const qrButton = firstRow.locator('[data-testid^="product-row-qr-button-"]')
     const qrButtonTestId = await qrButton.getAttribute('data-testid')
-    const productId = qrButtonTestId!.replace('product-row-qr-button-', '')
+    const productId = qrButtonTestId?.replace('product-row-qr-button-', '')
 
     await qrModal.clickQrButton(productId)
     expect(await qrModal.isModalOpen()).toBe(true)
@@ -122,10 +122,10 @@ test.describe('QR Product Generation', () => {
     const firstRow = page.locator('[data-testid="product-table-row"]').first()
     const qrButton = firstRow.locator('[data-testid^="product-row-qr-button-"]')
     const qrButtonTestId = await qrButton.getAttribute('data-testid')
-    const productId = qrButtonTestId!.replace('product-row-qr-button-', '')
+    const productId = qrButtonTestId?.replace('product-row-qr-button-', '')
 
     // Get product name for verification
-    const productName = await firstRow.locator('.font-medium').first().textContent()
+    const _productName = await firstRow.locator('.font-medium').first().textContent()
 
     await qrModal.clickQrButton(productId)
     expect(await qrModal.isModalOpen()).toBe(true)
@@ -162,10 +162,10 @@ test.describe('QR Product Generation', () => {
     const firstRow = page.locator('[data-testid="product-table-row"]').first()
     const qrButton = firstRow.locator('[data-testid^="product-row-qr-button-"]')
     const qrButtonTestId = await qrButton.getAttribute('data-testid')
-    const productId = qrButtonTestId!.replace('product-row-qr-button-', '')
+    const productId = qrButtonTestId?.replace('product-row-qr-button-', '')
 
     // Get product name
-    const productName = await firstRow.locator('.font-medium').first().textContent()
+    const _productName = await firstRow.locator('.font-medium').first().textContent()
 
     await qrModal.clickQrButton(productId)
     expect(await qrModal.isModalOpen()).toBe(true)
@@ -187,7 +187,7 @@ test.describe('QR Product Generation', () => {
     const firstRow = page.locator('[data-testid="product-table-row"]').first()
     const qrButton = firstRow.locator('[data-testid^="product-row-qr-button-"]')
     const qrButtonTestId = await qrButton.getAttribute('data-testid')
-    const productId = qrButtonTestId!.replace('product-row-qr-button-', '')
+    const productId = qrButtonTestId?.replace('product-row-qr-button-', '')
 
     await qrModal.clickQrButton(productId)
     expect(await qrModal.isModalOpen()).toBe(true)
@@ -221,9 +221,9 @@ test.describe('QR Product Generation', () => {
     // Open first product
     const firstRow = rows.nth(0)
     const firstQrButton = firstRow.locator('[data-testid^="product-row-qr-button-"]')
-    const firstProductId = (await firstQrButton.getAttribute('data-testid'))!.replace(
+    const firstProductId = (await firstQrButton.getAttribute('data-testid'))?.replace(
       'product-row-qr-button-',
-      ''
+      '',
     )
 
     await qrModal.clickQrButton(firstProductId)
@@ -237,9 +237,9 @@ test.describe('QR Product Generation', () => {
     if (rowCount > 1) {
       const secondRow = rows.nth(1)
       const secondQrButton = secondRow.locator('[data-testid^="product-row-qr-button-"]')
-      const secondProductId = (await secondQrButton.getAttribute('data-testid'))!.replace(
+      const secondProductId = (await secondQrButton.getAttribute('data-testid'))?.replace(
         'product-row-qr-button-',
-        ''
+        '',
       )
 
       await qrModal.clickQrButton(secondProductId)
@@ -263,7 +263,7 @@ test.describe('QR Product Generation', () => {
     const firstRow = page.locator('[data-testid="product-table-row"]').first()
     const qrButton = firstRow.locator('[data-testid^="product-row-qr-button-"]')
     const qrButtonTestId = await qrButton.getAttribute('data-testid')
-    const productId = qrButtonTestId!.replace('product-row-qr-button-', '')
+    const productId = qrButtonTestId?.replace('product-row-qr-button-', '')
 
     await qrModal.clickQrButton(productId)
     expect(await qrModal.isModalOpen()).toBe(true)

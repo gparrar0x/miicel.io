@@ -5,11 +5,11 @@
  * Uses MercadoPago SDK with tenant-specific encrypted tokens
  */
 
-import { NextResponse } from 'next/server'
-import { createServiceRoleClient } from '@/lib/supabase/server'
-import { decryptToken } from '@/lib/encryption'
 import { MercadoPagoConfig, Preference } from 'mercadopago'
+import { NextResponse } from 'next/server'
 import { z } from 'zod'
+import { decryptToken } from '@/lib/encryption'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 
 // Validation schema
 const checkoutRequestSchema = z.object({
@@ -20,18 +20,22 @@ const checkoutRequestSchema = z.object({
     notes: z.string().optional(),
   }),
   paymentMethod: z.enum(['cash', 'mercadopago']),
-  items: z.array(z.object({
-    productId: z.number(),
-    name: z.string(),
-    price: z.number(),
-    quantity: z.number(),
-    currency: z.string(),
-    image: z.string().optional(),
-    color: z.object({
-      id: z.number(),
+  items: z.array(
+    z.object({
+      productId: z.number(),
       name: z.string(),
-    }).optional(),
-  })),
+      price: z.number(),
+      quantity: z.number(),
+      currency: z.string(),
+      image: z.string().optional(),
+      color: z
+        .object({
+          id: z.number(),
+          name: z.string(),
+        })
+        .optional(),
+    }),
+  ),
   total: z.number(),
   currency: z.string(),
   tenantId: z.string(),
@@ -44,10 +48,7 @@ export async function POST(request: Request) {
     const validationResult = checkoutRequestSchema.safeParse(body)
 
     if (!validationResult.success) {
-      return NextResponse.json(
-        { error: validationResult.error.issues[0].message },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: validationResult.error.issues[0].message }, { status: 400 })
     }
 
     const { customer, paymentMethod, items, total, currency, tenantId } = validationResult.data
@@ -63,10 +64,7 @@ export async function POST(request: Request) {
       .maybeSingle()
 
     if (tenantError || !tenant) {
-      return NextResponse.json(
-        { error: 'Tenant not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Tenant not found' }, { status: 404 })
     }
 
     const tenant_id = tenant.id
@@ -114,7 +112,7 @@ export async function POST(request: Request) {
             details: customerError?.message || 'Unknown error',
             code: customerError?.code,
           },
-          { status: 500 }
+          { status: 500 },
         )
       }
 
@@ -127,7 +125,7 @@ export async function POST(request: Request) {
       .insert({
         tenant_id,
         customer_id: customerId,
-        items: items.map(item => ({
+        items: items.map((item) => ({
           product_id: item.productId,
           name: item.name,
           price: item.price,
@@ -152,7 +150,7 @@ export async function POST(request: Request) {
           details: orderError?.message || 'Unknown error',
           code: orderError?.code,
         },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
@@ -168,7 +166,7 @@ export async function POST(request: Request) {
       if (tenantTokenError || !tenantData || !tenantData.mp_access_token) {
         return NextResponse.json(
           { error: 'MercadoPago not configured for this tenant' },
-          { status: 400 }
+          { status: 400 },
         )
       }
 
@@ -184,7 +182,7 @@ export async function POST(request: Request) {
       const isProduction = !baseUrl.includes('localhost')
 
       const preferenceData: any = {
-        items: items.map((item, index) => ({
+        items: items.map((item, _index) => ({
           id: item.productId.toString(),
           title: item.name,
           unit_price: item.price,
@@ -235,8 +233,7 @@ export async function POST(request: Request) {
         error: 'Internal server error',
         details: errorMessage,
       },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
-

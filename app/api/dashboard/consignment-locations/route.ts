@@ -13,12 +13,8 @@
  */
 
 import { NextResponse } from 'next/server'
+import { createLocationSchema, listLocationsQuerySchema } from '@/lib/schemas/consignment'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
-import {
-  createLocationSchema,
-  listLocationsQuerySchema,
-  type CreateLocationInput,
-} from '@/lib/schemas/consignment'
 
 /**
  * GET /api/dashboard/consignment-locations
@@ -58,11 +54,11 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const tenantIdStr = searchParams.get('tenant_id')
 
-    if (!tenantIdStr || isNaN(parseInt(tenantIdStr))) {
+    if (!tenantIdStr || Number.isNaN(parseInt(tenantIdStr, 10))) {
       return NextResponse.json({ error: 'Valid tenant_id required' }, { status: 400 })
     }
 
-    const tenantId = parseInt(tenantIdStr)
+    const tenantId = parseInt(tenantIdStr, 10)
 
     // Validate query params (filter out null values)
     const queryValidation = listLocationsQuerySchema.safeParse({
@@ -76,7 +72,7 @@ export async function GET(request: Request) {
     if (!queryValidation.success) {
       return NextResponse.json(
         { error: 'Invalid query parameters', details: queryValidation.error.flatten() },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -182,7 +178,7 @@ export async function POST(request: Request) {
     const body = await request.json()
     const tenantId = body.tenant_id
 
-    if (!tenantId || isNaN(parseInt(tenantId))) {
+    if (!tenantId || Number.isNaN(parseInt(tenantId, 10))) {
       return NextResponse.json({ error: 'Valid tenant_id required' }, { status: 400 })
     }
 
@@ -192,7 +188,7 @@ export async function POST(request: Request) {
     if (!validation.success) {
       return NextResponse.json(
         { error: 'Validation failed', details: validation.error.flatten() },
-        { status: 400 }
+        { status: 400 },
       )
     }
 

@@ -13,8 +13,8 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { orderStatusUpdateSchema } from '@/lib/schemas/order'
+import { createClient } from '@/lib/supabase/server'
 
 /**
  * PATCH /api/orders/[id]/status - Update order status
@@ -36,32 +36,26 @@ import { orderStatusUpdateSchema } from '@/lib/schemas/order'
  *   order: Order
  * }
  */
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const supabase = await createClient()
 
     // Step 1: Verify authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized. Please log in.' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
     // Step 2: Await params and validate order ID
     const { id } = await params
-    const orderId = parseInt(id)
+    const orderId = parseInt(id, 10)
 
-    if (isNaN(orderId) || orderId <= 0) {
-      return NextResponse.json(
-        { error: 'Invalid order ID.' },
-        { status: 400 }
-      )
+    if (Number.isNaN(orderId) || orderId <= 0) {
+      return NextResponse.json({ error: 'Invalid order ID.' }, { status: 400 })
     }
 
     // Step 3: Parse and validate request body
@@ -69,10 +63,7 @@ export async function PATCH(
     const validationResult = orderStatusUpdateSchema.safeParse(body)
 
     if (!validationResult.success) {
-      return NextResponse.json(
-        { error: validationResult.error.issues[0].message },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: validationResult.error.issues[0].message }, { status: 400 })
     }
 
     const { status: newStatus } = validationResult.data
@@ -88,25 +79,22 @@ export async function PATCH(
       console.error('Error fetching order:', fetchError)
       return NextResponse.json(
         { error: 'Failed to fetch order. Please try again.' },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
     if (!order) {
-      return NextResponse.json(
-        { error: 'Order not found.' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Order not found.' }, { status: 404 })
     }
 
     // Step 5: Verify tenant ownership or superadmin access
     const userEmail = user.email?.toLowerCase().trim()
     const isSuperadmin = userEmail === 'gparrar@skywalking.dev'
-    
+
     if (!isSuperadmin && order.tenants.owner_id !== user.id) {
       return NextResponse.json(
         { error: `Forbidden. You do not own this order. User: ${userEmail}` },
-        { status: 403 }
+        { status: 403 },
       )
     }
 
@@ -119,9 +107,9 @@ export async function PATCH(
         {
           error: 'Cannot change status of delivered order.',
           current_status: currentStatus,
-          hint: 'Only cancellation is allowed for delivered orders.'
+          hint: 'Only cancellation is allowed for delivered orders.',
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -130,9 +118,9 @@ export async function PATCH(
       return NextResponse.json(
         {
           error: 'Cannot change status of cancelled order.',
-          current_status: currentStatus
+          current_status: currentStatus,
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -160,7 +148,7 @@ export async function PATCH(
       .from('orders')
       .update({
         status: newStatus,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', orderId)
       .select()
@@ -170,7 +158,7 @@ export async function PATCH(
       console.error('Error updating order status:', updateError)
       return NextResponse.json(
         { error: 'Failed to update order status. Please try again.' },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
@@ -179,7 +167,7 @@ export async function PATCH(
     console.error('Unexpected error in PATCH /api/orders/[id]/status:', error)
     return NextResponse.json(
       { error: 'Internal server error. Please try again later.' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

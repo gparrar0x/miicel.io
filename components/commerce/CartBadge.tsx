@@ -7,7 +7,7 @@
  * Syncs across all storefront pages via localStorage.
  */
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useCartStore } from '@/lib/stores/cartStore'
 
 export function CartBadge() {

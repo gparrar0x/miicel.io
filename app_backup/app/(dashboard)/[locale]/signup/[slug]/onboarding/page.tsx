@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, use, useEffect } from 'react'
+import { CheckCircle, Loader2, Upload } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import { OnboardingHeader } from '@/components/onboarding/OnboardingHeader'
-import { ColorPicker } from '@/components/onboarding/ColorPicker'
-import { ProductForm } from '@/components/onboarding/ProductForm'
-import { Upload, CheckCircle, Loader2 } from 'lucide-react'
+import { use, useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { ColorPicker } from '@/components/onboarding/ColorPicker'
+import { OnboardingHeader } from '@/components/onboarding/OnboardingHeader'
+import { ProductForm } from '@/components/onboarding/ProductForm'
+import { createClient } from '@/lib/supabase/client'
 
 interface Product {
   name: string
@@ -30,7 +30,7 @@ const STEPS = [
   { id: 2, title: 'Elige tus colores', description: 'Define la identidad visual' },
   { id: 3, title: 'Agrega productos', description: 'Carga tu catalogo inicial' },
   { id: 4, title: 'Vista previa', description: 'Revisa como se vera tu tienda' },
-  { id: 5, title: 'Activar tienda', description: 'Listo para vender' }
+  { id: 5, title: 'Activar tienda', description: 'Listo para vender' },
 ]
 
 export default function OnboardingPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -43,13 +43,15 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
   const [data, setData] = useState<OnboardingData>({
     primaryColor: '#3B82F6',
     secondaryColor: '#10B981',
-    products: []
+    products: [],
   })
 
   // Debug: Check session on mount
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
       if (session) {
         console.log('✅ Onboarding: Session found', session.user.id)
       } else {
@@ -84,7 +86,10 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
 
     try {
       // Get current session
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession()
 
       if (sessionError || !session) {
         console.error('Session error:', sessionError)
@@ -102,9 +107,9 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
 
       if (error) throw error
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('logos')
-        .getPublicUrl(uploadData.path)
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from('logos').getPublicUrl(uploadData.path)
 
       return publicUrl
     } catch (error) {
@@ -141,13 +146,13 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
       }
 
       // Format products for API
-      const formattedProducts = data.products.map(p => ({
+      const formattedProducts = data.products.map((p) => ({
         name: p.name,
         price: p.price,
         category: p.category || 'General',
         stock: p.stock,
         active: true,
-        image_url: p.imagePreview // Will be replaced by actual upload in future
+        image_url: p.imagePreview, // Will be replaced by actual upload in future
       }))
 
       console.log('📦 [PRODUCTS] Formatted products:', formattedProducts.length)
@@ -157,11 +162,11 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
           ...(logoUrl && { logo: logoUrl }), // Only include logo if it exists
           colors: {
             primary: data.primaryColor,
-            secondary: data.secondaryColor
+            secondary: data.secondaryColor,
           },
-          business_name: slug
+          business_name: slug,
         },
-        products: formattedProducts
+        products: formattedProducts,
       }
 
       console.log('📡 [API CALL] Sending PATCH to /api/onboarding/save with payload:', payload)
@@ -170,7 +175,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
       const res = await fetch('/api/onboarding/save', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       })
 
       console.log('📡 [API RESPONSE] Status:', res.status, res.statusText)
@@ -189,7 +194,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
       console.log('🔄 [REDIRECT] Redirecting to dashboard:', `/${slug}/dashboard`)
 
       // Wait a moment for database to propagate changes
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500))
 
       // Use router.push with timestamp to bypass cache
       // The middleware will check for _t param and use shorter cache TTL
@@ -241,12 +246,19 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
       />
 
       <div className="max-w-4xl mx-auto px-4 py-12">
-        <p className="text-gray-600 mb-8" data-testid={`onboarding-step${currentStep}-description`}>{STEPS[currentStep - 1].description}</p>
+        <p className="text-gray-600 mb-8" data-testid={`onboarding-step${currentStep}-description`}>
+          {STEPS[currentStep - 1].description}
+        </p>
 
         {/* Step 1: Logo Upload */}
         {currentStep === 1 && (
-          <div className="bg-white rounded-xl p-8 shadow-sm" data-testid="onboarding-step1-container">
-            <h1 className="text-2xl font-bold mb-6" data-testid="onboarding-step1-title">Sube tu logo</h1>
+          <div
+            className="bg-white rounded-xl p-8 shadow-sm"
+            data-testid="onboarding-step1-container"
+          >
+            <h1 className="text-2xl font-bold mb-6" data-testid="onboarding-step1-title">
+              Sube tu logo
+            </h1>
             <div className="max-w-md mx-auto">
               <label className="block">
                 <div className="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center hover:border-blue-500 transition-colors cursor-pointer">
@@ -265,9 +277,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
                       <Upload size={48} className="mx-auto text-gray-400" />
                       <div>
                         <p className="text-lg font-medium text-gray-900">Sube tu logo</p>
-                        <p className="text-sm text-gray-500 mt-1">
-                          JPG o PNG, max 2MB
-                        </p>
+                        <p className="text-sm text-gray-500 mt-1">JPG o PNG, max 2MB</p>
                       </div>
                     </div>
                   )}
@@ -289,8 +299,13 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
 
         {/* Step 2: Color Picker */}
         {currentStep === 2 && (
-          <div className="bg-white rounded-xl p-8 shadow-sm space-y-8" data-testid="onboarding-step2-container">
-            <h1 className="text-2xl font-bold mb-6" data-testid="onboarding-step2-title">Elige tus colores</h1>
+          <div
+            className="bg-white rounded-xl p-8 shadow-sm space-y-8"
+            data-testid="onboarding-step2-container"
+          >
+            <h1 className="text-2xl font-bold mb-6" data-testid="onboarding-step2-title">
+              Elige tus colores
+            </h1>
             <ColorPicker
               label="Color primario"
               value={data.primaryColor}
@@ -306,8 +321,13 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
 
         {/* Step 3: Add Products */}
         {currentStep === 3 && (
-          <div className="bg-white rounded-xl p-8 shadow-sm" data-testid="onboarding-step3-container">
-            <h1 className="text-2xl font-bold mb-6" data-testid="onboarding-step3-title">Agrega productos</h1>
+          <div
+            className="bg-white rounded-xl p-8 shadow-sm"
+            data-testid="onboarding-step3-container"
+          >
+            <h1 className="text-2xl font-bold mb-6" data-testid="onboarding-step3-title">
+              Agrega productos
+            </h1>
             <ProductForm
               products={data.products}
               onProductsChange={(products) => setData({ ...data, products })}
@@ -319,7 +339,9 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
         {currentStep === 4 && (
           <div className="space-y-6" data-testid="onboarding-step4-container">
             <div className="bg-white rounded-xl p-8 shadow-sm">
-              <h2 className="text-xl font-bold mb-6" data-testid="onboarding-step4-title">Vista previa de tu tienda</h2>
+              <h2 className="text-xl font-bold mb-6" data-testid="onboarding-step4-title">
+                Vista previa de tu tienda
+              </h2>
 
               {/* Mock storefront preview */}
               <div className="border rounded-lg overflow-hidden">
@@ -347,7 +369,11 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
                   <h3 className="font-bold text-lg mb-4">Productos</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {data.products.slice(0, 3).map((product, index) => (
-                      <div key={index} className="bg-white rounded-lg overflow-hidden shadow-sm" data-testid={`onboarding-preview-product-${index}`}>
+                      <div
+                        key={index}
+                        className="bg-white rounded-lg overflow-hidden shadow-sm"
+                        data-testid={`onboarding-preview-product-${index}`}
+                      >
                         {product.imagePreview && (
                           <img
                             src={product.imagePreview}
@@ -357,7 +383,12 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
                           />
                         )}
                         <div className="p-4">
-                          <h4 className="font-medium" data-testid={`onboarding-preview-product-name-${index}`}>{product.name}</h4>
+                          <h4
+                            className="font-medium"
+                            data-testid={`onboarding-preview-product-name-${index}`}
+                          >
+                            {product.name}
+                          </h4>
                           <p className="text-sm text-gray-600">{product.category}</p>
                           <div className="flex items-center justify-between mt-2">
                             <span className="font-bold text-lg">${product.price}</span>
@@ -386,11 +417,17 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
 
         {/* Step 5: Activate */}
         {currentStep === 5 && (
-          <div className="bg-white rounded-xl p-8 shadow-sm" data-testid="onboarding-step5-container">
+          <div
+            className="bg-white rounded-xl p-8 shadow-sm"
+            data-testid="onboarding-step5-container"
+          >
             <div className="max-w-md mx-auto text-center space-y-6">
               <CheckCircle size={64} className="mx-auto text-green-500" />
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2" data-testid="onboarding-step5-title">
+                <h2
+                  className="text-2xl font-bold text-gray-900 mb-2"
+                  data-testid="onboarding-step5-title"
+                >
                   Todo listo!
                 </h2>
                 <p className="text-gray-600" data-testid="onboarding-step5-description">
@@ -398,7 +435,10 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
                 </p>
               </div>
 
-              <div className="bg-gray-50 rounded-lg p-6 space-y-3 text-left" data-testid="onboarding-summary">
+              <div
+                className="bg-gray-50 rounded-lg p-6 space-y-3 text-left"
+                data-testid="onboarding-summary"
+              >
                 <h3 className="font-medium text-gray-900">Resumen:</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
@@ -424,11 +464,15 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Productos:</span>
-                    <span className="font-medium" data-testid="onboarding-summary-product-count">{data.products.length}</span>
+                    <span className="font-medium" data-testid="onboarding-summary-product-count">
+                      {data.products.length}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">URL:</span>
-                    <span className="font-medium" data-testid="onboarding-summary-url">tutienda.com/{slug}</span>
+                    <span className="font-medium" data-testid="onboarding-summary-url">
+                      tutienda.com/{slug}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -441,7 +485,11 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
               >
                 {loading ? (
                   <>
-                    <Loader2 size={20} className="animate-spin" data-testid="onboarding-activate-loading-spinner" />
+                    <Loader2
+                      size={20}
+                      className="animate-spin"
+                      data-testid="onboarding-activate-loading-spinner"
+                    />
                     Activando tienda...
                   </>
                 ) : (

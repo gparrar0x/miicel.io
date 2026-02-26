@@ -15,9 +15,10 @@
  * - suggestion?: string - alternative slug if taken (slug-2, slug-3, etc.)
  */
 
-import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { validateSlugRequestSchema, slugSchema } from '@/lib/schemas/order'
+import { NextResponse } from 'next/server'
+import { getClientIp, rateLimitExceededResponse, ratelimitLight } from '@/lib/rate-limit'
+import { slugSchema, validateSlugRequestSchema } from '@/lib/schemas/order'
 import type { Database } from '@/types/database.types'
 
 // Service role client for checking slug uniqueness
@@ -29,7 +30,7 @@ const supabaseAdmin = createClient<Database>(
       autoRefreshToken: false,
       persistSession: false,
     },
-  }
+  },
 )
 
 /**
@@ -57,16 +58,20 @@ async function generateSlugSuggestion(baseSlug: string): Promise<string | undefi
 }
 
 export async function POST(request: Request) {
+  // Rate limit: 20 req / 10 s per IP (UX slug polling)
+  const ip = getClientIp(request)
+  const { success, limit, remaining, reset } = await ratelimitLight.limit(ip)
+  if (!success) {
+    return rateLimitExceededResponse(limit, remaining, reset)
+  }
+
   try {
     // Parse and validate request body
     const body = await request.json()
     const validationResult = validateSlugRequestSchema.safeParse(body)
 
     if (!validationResult.success) {
-      return NextResponse.json(
-        { error: validationResult.error.issues[0].message },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: validationResult.error.issues[0].message }, { status: 400 })
     }
 
     const { slug } = validationResult.data
@@ -80,7 +85,7 @@ export async function POST(request: Request) {
           available: false,
           error: slugFormatResult.error.issues[0].message,
         },
-        { status: 200 } // 200 OK but validation failed
+        { status: 200 }, // 200 OK but validation failed
       )
     }
 
@@ -94,10 +99,7 @@ export async function POST(request: Request) {
     if (dbError && dbError.code !== 'PGRST116') {
       // PGRST116 = no rows returned (slug is available)
       console.error('Database error checking slug:', dbError)
-      return NextResponse.json(
-        { error: 'Failed to check slug availability' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Failed to check slug availability' }, { status: 500 })
     }
 
     // If slug exists, generate suggestion
@@ -118,7 +120,7 @@ export async function POST(request: Request) {
     console.error('Slug validation error:', error)
     return NextResponse.json(
       { error: 'Internal server error. Please try again later.' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

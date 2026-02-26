@@ -70,7 +70,11 @@ export default async function TestThemePage() {
               <li>✅ Tenant config loaded from API</li>
               <li>✅ CSS variables injected dynamically</li>
               <li>✅ TenantHeader renders with logo + banner</li>
-              <li>✅ Colors applied: Primary <span style={{ color: 'var(--color-primary)' }}>●</span> Secondary <span style={{ color: 'var(--color-secondary)' }}>●</span> Accent <span style={{ color: 'var(--color-accent)' }}>●</span></li>
+              <li>
+                ✅ Colors applied: Primary <span style={{ color: 'var(--color-primary)' }}>●</span>{' '}
+                Secondary <span style={{ color: 'var(--color-secondary)' }}>●</span> Accent{' '}
+                <span style={{ color: 'var(--color-accent)' }}>●</span>
+              </li>
             </ul>
 
             <div className="mt-6 p-4 rounded" style={{ backgroundColor: 'var(--color-bg-base)' }}>
@@ -87,19 +91,34 @@ export default async function TestThemePage() {
 
             {/* Color Samples */}
             <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="p-4 rounded" style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}>
+              <div
+                className="p-4 rounded"
+                style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
+              >
                 <p className="text-sm font-semibold">Primary</p>
                 <p className="text-xs font-mono">{config.colors.primary}</p>
               </div>
-              <div className="p-4 rounded" style={{ backgroundColor: 'var(--color-secondary)', color: 'white' }}>
+              <div
+                className="p-4 rounded"
+                style={{ backgroundColor: 'var(--color-secondary)', color: 'white' }}
+              >
                 <p className="text-sm font-semibold">Secondary</p>
                 <p className="text-xs font-mono">{config.colors.secondary}</p>
               </div>
-              <div className="p-4 rounded" style={{ backgroundColor: 'var(--color-accent)', color: 'white' }}>
+              <div
+                className="p-4 rounded"
+                style={{ backgroundColor: 'var(--color-accent)', color: 'white' }}
+              >
                 <p className="text-sm font-semibold">Accent</p>
                 <p className="text-xs font-mono">{config.colors.accent}</p>
               </div>
-              <div className="p-4 rounded border" style={{ backgroundColor: 'var(--color-bg-base)', color: 'var(--color-text-primary)' }}>
+              <div
+                className="p-4 rounded border"
+                style={{
+                  backgroundColor: 'var(--color-bg-base)',
+                  color: 'var(--color-text-primary)',
+                }}
+              >
                 <p className="text-sm font-semibold">Surface</p>
                 <p className="text-xs font-mono">{config.colors.surface}</p>
               </div>

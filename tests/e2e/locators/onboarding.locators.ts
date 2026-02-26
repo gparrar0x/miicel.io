@@ -73,9 +73,12 @@ export const OnboardingLocators = {
     previewLogo: '[data-testid="onboarding-preview-logo"]',
     previewProducts: '[data-testid="onboarding-preview-products"]',
     previewProduct: (index: number) => `[data-testid="onboarding-preview-product-${index}"]`,
-    previewProductImage: (index: number) => `[data-testid="onboarding-preview-product-image-${index}"]`,
-    previewProductName: (index: number) => `[data-testid="onboarding-preview-product-name-${index}"]`,
-    previewProductAddButton: (index: number) => `[data-testid="onboarding-preview-product-add-button-${index}"]`,
+    previewProductImage: (index: number) =>
+      `[data-testid="onboarding-preview-product-image-${index}"]`,
+    previewProductName: (index: number) =>
+      `[data-testid="onboarding-preview-product-name-${index}"]`,
+    previewProductAddButton: (index: number) =>
+      `[data-testid="onboarding-preview-product-add-button-${index}"]`,
   },
 
   // Step 5: Activation

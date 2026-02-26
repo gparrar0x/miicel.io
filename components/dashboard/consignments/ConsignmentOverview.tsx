@@ -7,8 +7,8 @@
  * Shows total works, locations, sales metrics
  */
 
-import { ConsignmentOverview as OverviewType } from '@/lib/types/consignment'
-import { Package, MapPin, DollarSign, TrendingUp, AlertCircle } from 'lucide-react'
+import { AlertCircle, DollarSign, MapPin, Package, TrendingUp } from 'lucide-react'
+import type { ConsignmentOverview as OverviewType } from '@/lib/types/consignment'
 
 interface ConsignmentOverviewProps {
   overview: OverviewType
@@ -61,7 +61,9 @@ export function ConsignmentOverview({ overview }: ConsignmentOverviewProps) {
           >
             <div className="flex items-center justify-between mb-2">
               <stat.icon className="h-5 w-5 text-[var(--color-text-secondary)]" />
-              <span className="text-2xl font-bold text-[var(--color-text-primary)]">{stat.value}</span>
+              <span className="text-2xl font-bold text-[var(--color-text-primary)]">
+                {stat.value}
+              </span>
             </div>
             <p className="text-sm text-[var(--color-text-secondary)]">{stat.label}</p>
           </div>
@@ -86,7 +88,9 @@ export function ConsignmentOverview({ overview }: ConsignmentOverviewProps) {
             </span>
           )}
         </div>
-        <p className="text-3xl font-bold text-[var(--color-text-primary)]">${overview.revenue_this_month.toLocaleString()}</p>
+        <p className="text-3xl font-bold text-[var(--color-text-primary)]">
+          ${overview.revenue_this_month.toLocaleString()}
+        </p>
         <p className="text-sm text-[var(--color-text-secondary)] mt-1">
           Mes anterior: ${overview.revenue_last_month.toLocaleString()}
         </p>
@@ -95,10 +99,14 @@ export function ConsignmentOverview({ overview }: ConsignmentOverviewProps) {
       {/* Top Location */}
       {overview.top_location_by_sales && (
         <div className="bg-[var(--color-bg-primary)] border border-[var(--color-border-subtle)] rounded-lg p-6">
-          <h3 className="font-semibold text-[var(--color-text-primary)] mb-3">Mejor Ubicación del Mes</h3>
+          <h3 className="font-semibold text-[var(--color-text-primary)] mb-3">
+            Mejor Ubicación del Mes
+          </h3>
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium text-[var(--color-text-primary)]">{overview.top_location_by_sales.location_name}</p>
+              <p className="font-medium text-[var(--color-text-primary)]">
+                {overview.top_location_by_sales.location_name}
+              </p>
               <p className="text-sm text-[var(--color-text-secondary)]">
                 ${overview.top_location_by_sales.revenue.toLocaleString()} en ventas
               </p>
@@ -117,7 +125,9 @@ export function ConsignmentOverview({ overview }: ConsignmentOverviewProps) {
           <div className="flex items-start gap-3">
             <AlertCircle className="h-5 w-5 text-[var(--color-warning)] mt-0.5" />
             <div>
-              <h4 className="font-semibold text-[var(--color-text-primary)]">Obra con Tiempo Prolongado</h4>
+              <h4 className="font-semibold text-[var(--color-text-primary)]">
+                Obra con Tiempo Prolongado
+              </h4>
               <p className="text-sm text-[var(--color-text-secondary)] mt-1">
                 <strong>{overview.longest_in_gallery.work_title}</strong> lleva{' '}
                 {overview.longest_in_gallery.days} días en{' '}

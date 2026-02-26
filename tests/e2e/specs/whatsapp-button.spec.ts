@@ -18,16 +18,15 @@
  * Template Coverage: Gallery, Detail, Minimal, Restaurant
  */
 
-import { test, expect } from '@playwright/test'
-import { TenantSettingsPage } from '../pages/tenant-settings.page'
-import { StorefrontWhatsAppPage } from '../pages/storefront-whatsapp.page'
-import { StorefrontPage } from '../pages/storefront.page'
+import { expect, test } from '@playwright/test'
 import { loginAsOwner } from '../fixtures/auth.fixture'
+import { StorefrontWhatsAppPage } from '../pages/storefront-whatsapp.page'
+import { TenantSettingsPage } from '../pages/tenant-settings.page'
 
 // Test configuration
-const TEST_TENANT_ID = 1 // Use existing test tenant or create one
+const _TEST_TENANT_ID = 1 // Use existing test tenant or create one
 const TEST_TENANT_SLUG = 'demo_galeria' // Use existing demo tenant
-const VALID_PHONE_NUMBER = '+55119876543210' // Brazil format
+const _VALID_PHONE_NUMBER = '+55119876543210' // Brazil format
 const VALID_PHONE_DISPLAY = '+55 11 98765-4321' // Display format
 const INVALID_PHONE = 'not-a-phone' // Invalid format
 

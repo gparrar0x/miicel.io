@@ -12,7 +12,7 @@
  * - Tests remain readable and business-focused
  */
 
-import { Page, expect } from '@playwright/test'
+import { expect, type Page } from '@playwright/test'
 import { SignupLocators, SlugValidationWaits } from '../locators/signup.locators'
 
 interface SignupFormData {
@@ -38,7 +38,7 @@ export class OnboardingPage {
 
   getSlugFromUrl(): string {
     const url = this.page.url()
-    const match = url.match(/\/signup\/([^\/]+)\/onboarding/)
+    const match = url.match(/\/signup\/([^/]+)\/onboarding/)
     return match ? match[1] : ''
   }
 }
@@ -168,7 +168,9 @@ export class SignupPage {
    *
    * @param fieldName - Name of the field ('email', 'password', 'businessName', 'slug')
    */
-  async getFieldErrorMessage(fieldName: 'email' | 'password' | 'businessName' | 'slug'): Promise<string | null> {
+  async getFieldErrorMessage(
+    fieldName: 'email' | 'password' | 'businessName' | 'slug',
+  ): Promise<string | null> {
     let errorSelector: string
 
     switch (fieldName) {
@@ -288,7 +290,10 @@ export class SignupPage {
    * @param fieldName - Field name
    * @param expectedMessage - Expected error text
    */
-  async hasValidationError(fieldName: 'email' | 'password' | 'businessName' | 'slug', expectedMessage: string): Promise<boolean> {
+  async hasValidationError(
+    fieldName: 'email' | 'password' | 'businessName' | 'slug',
+    expectedMessage: string,
+  ): Promise<boolean> {
     const errorMsg = await this.getFieldErrorMessage(fieldName)
     return errorMsg?.includes(expectedMessage) ?? false
   }
@@ -320,7 +325,7 @@ export class SignupPage {
    * @param message - Toast message text
    * @param type - Toast type ('success' or 'error')
    */
-  async waitForToast(message: string, type: 'success' | 'error' = 'success') {
+  async waitForToast(message: string, _type: 'success' | 'error' = 'success') {
     // Sonner toasts are rendered in the DOM with role="alert"
     const toast = this.page.locator(`role=alert:has-text("${message}")`)
     await expect(toast).toBeVisible({ timeout: 5000 })

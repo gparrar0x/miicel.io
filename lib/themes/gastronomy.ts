@@ -8,12 +8,12 @@
  */
 
 export const GASTRONOMY_THEME = {
-  primary: '#E63946',      // Red (appetite trigger)
-  accent: '#F4A261',       // Orange (warmth)
-  background: '#F8F9FA',   // Light gray
-  surface: '#FFFFFF',      // White
-  success: '#06D6A0',      // Green (fresh)
-  textPrimary: '#1F2937',  // Gray-800
+  primary: '#E63946', // Red (appetite trigger)
+  accent: '#F4A261', // Orange (warmth)
+  background: '#F8F9FA', // Light gray
+  surface: '#FFFFFF', // White
+  success: '#06D6A0', // Green (fresh)
+  textPrimary: '#1F2937', // Gray-800
   textSecondary: '#6B7280', // Gray-500
 }
 

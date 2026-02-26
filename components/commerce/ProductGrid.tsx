@@ -21,10 +21,7 @@ interface ProductGridProps {
 export function ProductGrid({ products, tenantId, currency }: ProductGridProps) {
   const addItem = useCartStore((state) => state.addItem)
 
-  const handleAddToCart = (
-    e: React.MouseEvent,
-    product: Product
-  ) => {
+  const handleAddToCart = (e: React.MouseEvent, product: Product) => {
     e.preventDefault() // Stop link navigation
     e.stopPropagation()
 
@@ -42,10 +39,7 @@ export function ProductGrid({ products, tenantId, currency }: ProductGridProps) 
 
   if (products.length === 0) {
     return (
-      <div
-        className="text-center py-16"
-        style={{ color: 'var(--color-text-secondary)' }}
-      >
+      <div className="text-center py-16" style={{ color: 'var(--color-text-secondary)' }}>
         <p className="text-lg">No hay productos disponibles</p>
       </div>
     )
@@ -75,9 +69,7 @@ export function ProductGrid({ products, tenantId, currency }: ProductGridProps) 
                   className="w-full h-full flex items-center justify-center"
                   style={{ backgroundColor: 'var(--color-bg-base)' }}
                 >
-                  <span style={{ color: 'var(--color-text-tertiary)' }}>
-                    Sin imagen
-                  </span>
+                  <span style={{ color: 'var(--color-text-tertiary)' }}>Sin imagen</span>
                 </div>
               )}
             </div>
@@ -97,10 +89,7 @@ export function ProductGrid({ products, tenantId, currency }: ProductGridProps) 
                   {product.description}
                 </p>
               )}
-              <p
-                className="text-xl font-bold"
-                style={{ color: 'var(--color-primary)' }}
-              >
+              <p className="text-xl font-bold" style={{ color: 'var(--color-primary)' }}>
                 ${product.price}
               </p>
             </div>

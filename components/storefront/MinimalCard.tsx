@@ -20,7 +20,7 @@
 'use client'
 
 import Image from 'next/image'
-import { Product } from '@/types/commerce'
+import type { Product } from '@/types/commerce'
 
 interface MinimalCardProps {
   product: Product
@@ -35,10 +35,7 @@ export function MinimalCard({ product, loading = false, onClick }: MinimalCardPr
   // Loading skeleton state
   if (loading) {
     return (
-      <div
-        data-testid="product-card-minimal"
-        className="group cursor-pointer animate-pulse"
-      >
+      <div data-testid="product-card-minimal" className="group cursor-pointer animate-pulse">
         <div
           className="bg-gray-200 rounded-lg mb-2"
           style={{
@@ -60,11 +57,7 @@ export function MinimalCard({ product, loading = false, onClick }: MinimalCardPr
   }).format(product.price)
 
   return (
-    <div
-      data-testid="product-card-minimal"
-      onClick={onClick}
-      className="group cursor-pointer"
-    >
+    <div data-testid="product-card-minimal" onClick={onClick} className="group cursor-pointer">
       {/* Product Image */}
       <div
         className="relative rounded-lg overflow-hidden bg-gray-100
@@ -102,10 +95,7 @@ export function MinimalCard({ product, loading = false, onClick }: MinimalCardPr
         </h3>
 
         {/* Price */}
-        <p
-          className="text-sm font-semibold"
-          style={{ color: 'var(--color-primary, #3B82F6)' }}
-        >
+        <p className="text-sm font-semibold" style={{ color: 'var(--color-primary, #3B82F6)' }}>
           {formattedPrice}
         </p>
 

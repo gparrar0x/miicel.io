@@ -11,8 +11,11 @@
  * await dashboard.filterByPreset('hoy')
  */
 
-import { Page, Locator, expect } from '@playwright/test'
-import { AnalyticsDashboardLocators, AnalyticsDashboardWaits } from '../locators/analytics-dashboard.locators'
+import { expect, type Locator, type Page } from '@playwright/test'
+import {
+  AnalyticsDashboardLocators,
+  AnalyticsDashboardWaits,
+} from '../locators/analytics-dashboard.locators'
 
 export interface SummaryMetrics {
   totalSales: string
@@ -96,7 +99,9 @@ export class AnalyticsDashboardPage {
   async assertDashboardLoaded() {
     await expect(this.dashboardContainer).toBeVisible()
     // Ensure loading spinner is gone
-    await expect(this.loadingSpinner).not.toBeVisible({ timeout: 1000 }).catch(() => {})
+    await expect(this.loadingSpinner)
+      .not.toBeVisible({ timeout: 1000 })
+      .catch(() => {})
   }
 
   /**
@@ -151,11 +156,13 @@ export class AnalyticsDashboardPage {
 
     // Ensure table has at least one row
     const rows = this.page.locator(AnalyticsDashboardLocators.topProductsRow)
-    await expect(rows).toHaveCount(0, { timeout: 100 }).catch(async () => {
-      // Table has rows, which is expected
-      const count = await rows.count()
-      expect(count).toBeGreaterThan(0)
-    })
+    await expect(rows)
+      .toHaveCount(0, { timeout: 100 })
+      .catch(async () => {
+        // Table has rows, which is expected
+        const count = await rows.count()
+        expect(count).toBeGreaterThan(0)
+      })
   }
 
   /**
@@ -173,7 +180,9 @@ export class AnalyticsDashboardPage {
       const row = rows.nth(i)
       const rank = await row.locator(AnalyticsDashboardLocators.productRankCell).textContent()
       const name = await row.locator(AnalyticsDashboardLocators.productNameCell).textContent()
-      const category = await row.locator(AnalyticsDashboardLocators.productCategoryCell).textContent()
+      const category = await row
+        .locator(AnalyticsDashboardLocators.productCategoryCell)
+        .textContent()
       const qty = await row.locator(AnalyticsDashboardLocators.productQtyCell).textContent()
       const revenue = await row.locator(AnalyticsDashboardLocators.productRevenueCell).textContent()
       const percent = await row.locator(AnalyticsDashboardLocators.productPercentCell).textContent()
@@ -214,9 +223,15 @@ export class AnalyticsDashboardPage {
     for (let i = 0; i < count; i++) {
       const row = rows.nth(i)
       const name = await row.locator(AnalyticsDashboardLocators.categoryNameCell).textContent()
-      const itemsSold = await row.locator(AnalyticsDashboardLocators.categoryItemsSoldCell).textContent()
-      const revenue = await row.locator(AnalyticsDashboardLocators.categoryRevenueCell).textContent()
-      const percent = await row.locator(AnalyticsDashboardLocators.categoryPercentCell).textContent()
+      const itemsSold = await row
+        .locator(AnalyticsDashboardLocators.categoryItemsSoldCell)
+        .textContent()
+      const revenue = await row
+        .locator(AnalyticsDashboardLocators.categoryRevenueCell)
+        .textContent()
+      const percent = await row
+        .locator(AnalyticsDashboardLocators.categoryPercentCell)
+        .textContent()
 
       categories.push({
         name: name?.trim() || '',
@@ -427,9 +442,7 @@ export class AnalyticsDashboardPage {
 
     if (categories.length === 0) return false
 
-    return categories.every(
-      cat => cat.name && cat.itemsSold && cat.revenue && cat.percentage
-    )
+    return categories.every((cat) => cat.name && cat.itemsSold && cat.revenue && cat.percentage)
   }
 
   /**
@@ -467,6 +480,6 @@ export class AnalyticsDashboardPage {
    * Get current date range from button text
    */
   async getActiveDateRange(): Promise<string> {
-    return await this.dateRangeButton.textContent() || ''
+    return (await this.dateRangeButton.textContent()) || ''
   }
 }

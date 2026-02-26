@@ -9,8 +9,8 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { createAssignmentSchema } from '@/lib/schemas/consignment'
+import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 
 type RouteParams = {
   params: Promise<{ id: string }>
@@ -37,9 +37,9 @@ type RouteParams = {
 export async function GET(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params
-    const locationId = parseInt(id)
+    const locationId = parseInt(id, 10)
 
-    if (isNaN(locationId)) {
+    if (Number.isNaN(locationId)) {
       return NextResponse.json({ error: 'Invalid location ID' }, { status: 400 })
     }
 
@@ -59,11 +59,11 @@ export async function GET(request: Request, { params }: RouteParams) {
     const { searchParams } = new URL(request.url)
     const tenantIdStr = searchParams.get('tenant_id')
 
-    if (!tenantIdStr || isNaN(parseInt(tenantIdStr))) {
+    if (!tenantIdStr || Number.isNaN(parseInt(tenantIdStr, 10))) {
       return NextResponse.json({ error: 'Valid tenant_id required' }, { status: 400 })
     }
 
-    const tenantId = parseInt(tenantIdStr)
+    const tenantId = parseInt(tenantIdStr, 10)
 
     // Verify tenant ownership
     const { data: tenant, error: tenantError } = await supabase
@@ -101,7 +101,7 @@ export async function GET(request: Request, { params }: RouteParams) {
           price,
           image_url
         )
-      `
+      `,
       )
       .eq('location_id', locationId)
       .eq('tenant_id', tenantId)
@@ -139,9 +139,9 @@ export async function GET(request: Request, { params }: RouteParams) {
 export async function POST(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params
-    const locationId = parseInt(id)
+    const locationId = parseInt(id, 10)
 
-    if (isNaN(locationId)) {
+    if (Number.isNaN(locationId)) {
       return NextResponse.json({ error: 'Invalid location ID' }, { status: 400 })
     }
 
@@ -161,7 +161,7 @@ export async function POST(request: Request, { params }: RouteParams) {
     const body = await request.json()
     const tenantId = body.tenant_id
 
-    if (!tenantId || isNaN(parseInt(tenantId))) {
+    if (!tenantId || Number.isNaN(parseInt(tenantId, 10))) {
       return NextResponse.json({ error: 'Valid tenant_id required' }, { status: 400 })
     }
 
@@ -171,7 +171,7 @@ export async function POST(request: Request, { params }: RouteParams) {
     if (!validation.success) {
       return NextResponse.json(
         { error: 'Validation failed', details: validation.error.flatten() },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -217,7 +217,10 @@ export async function POST(request: Request, { params }: RouteParams) {
       .maybeSingle()
 
     if (artworkError || !artwork) {
-      return NextResponse.json({ error: 'Artwork not found or not owned by tenant' }, { status: 404 })
+      return NextResponse.json(
+        { error: 'Artwork not found or not owned by tenant' },
+        { status: 404 },
+      )
     }
 
     // Check for existing active assignment (constraint enforced at DB level too)
@@ -233,7 +236,7 @@ export async function POST(request: Request, { params }: RouteParams) {
     if (existingAssignment) {
       return NextResponse.json(
         { error: 'Artwork already assigned to this location' },
-        { status: 409 }
+        { status: 409 },
       )
     }
 

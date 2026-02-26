@@ -1,16 +1,16 @@
 'use client'
 
-import { useState, Suspense, useEffect } from 'react'
+import { createBrowserClient } from '@supabase/ssr'
+import { LayoutDashboard, LogOut, Store } from 'lucide-react'
+import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { createBrowserClient } from '@supabase/ssr'
-import Link from 'next/link'
+import { Suspense, useEffect, useState } from 'react'
+import { MicelioLogo } from '@/components/icons/micelio-logo'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { MicelioLogo } from '@/components/icons/micelio-logo'
-import { LayoutDashboard, Store, LogOut } from 'lucide-react'
 
 interface Tenant {
   slug: string
@@ -27,15 +27,17 @@ function RootPage() {
 
   useEffect(() => {
     checkAuthAndFetchTenants()
-  }, [])
+  }, [checkAuthAndFetchTenants])
 
   async function checkAuthAndFetchTenants() {
     const supabase = createBrowserClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     )
 
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
     if (user) {
       // Check if superadmin
@@ -80,7 +82,7 @@ function RootPage() {
   async function handleLogout() {
     const supabase = createBrowserClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     )
     await supabase.auth.signOut()
     setIsSuperAdmin(false)
@@ -99,16 +101,15 @@ function RootPage() {
     return (
       <div className="flex min-h-screen flex-col bg-background" data-testid="landing-page">
         {/* Header */}
-        <header className="flex h-16 items-center justify-between border-b border-border bg-background px-6" data-testid="landing-header">
+        <header
+          className="flex h-16 items-center justify-between border-b border-border bg-background px-6"
+          data-testid="landing-header"
+        >
           <div className="flex items-center gap-3">
             <MicelioLogo className="h-8 w-8 text-foreground" />
             <span className="text-lg font-semibold tracking-tight text-foreground">Miicel.io</span>
           </div>
-          <Button
-            variant="outline"
-            onClick={handleLogout}
-            data-testid="button-sign-out"
-          >
+          <Button variant="outline" onClick={handleLogout} data-testid="button-sign-out">
             <LogOut className="mr-2 h-4 w-4" />
             Sign Out
           </Button>
@@ -156,11 +157,7 @@ function RootPage() {
                       </div>
 
                       <div className="flex gap-3">
-                        <Button
-                          variant="outline"
-                          className="flex-1"
-                          asChild
-                        >
+                        <Button variant="outline" className="flex-1" asChild>
                           <Link
                             href={`/es/${tenant.slug}/dashboard`}
                             data-testid={`tenant-dashboard-link-${tenant.slug}`}
@@ -169,10 +166,7 @@ function RootPage() {
                             Dashboard
                           </Link>
                         </Button>
-                        <Button
-                          className="flex-1"
-                          asChild
-                        >
+                        <Button className="flex-1" asChild>
                           <Link
                             href={`/es/${tenant.slug}`}
                             data-testid={`tenant-store-link-${tenant.slug}`}
@@ -241,7 +235,10 @@ function LoginForm() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       {/* Header */}
-      <header className="flex h-16 items-center border-b border-border px-6" data-testid="login-header">
+      <header
+        className="flex h-16 items-center border-b border-border px-6"
+        data-testid="login-header"
+      >
         <div className="flex items-center gap-3">
           <MicelioLogo className="h-8 w-8 text-foreground" />
           <span className="text-lg font-semibold tracking-tight text-foreground">Miicel.io</span>
@@ -324,11 +321,13 @@ function LoginForm() {
 
 export default function HomePage() {
   return (
-    <Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-foreground" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-background">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-foreground" />
+        </div>
+      }
+    >
       <RootPage />
     </Suspense>
   )

@@ -1,7 +1,20 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { ImageIcon, Package, DollarSign, Layers, GripVertical, Upload, Loader2, Plus, Trash2, Pencil } from "lucide-react"
+import {
+  DollarSign,
+  GripVertical,
+  Layers,
+  Loader2,
+  Package,
+  Pencil,
+  Plus,
+  Trash2,
+  Upload,
+} from 'lucide-react'
+import Image from 'next/image'
+import { useTranslations } from 'next-intl'
+import * as React from 'react'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -9,16 +22,19 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Product } from "@/lib/schemas/product"
-import { useTranslations } from "next-intl"
-import Image from "next/image"
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
+import { Textarea } from '@/components/ui/textarea'
+import type { Product } from '@/lib/schemas/product'
 
 const AVAILABLE_BADGES = ['popular', 'new', 'sale'] as const
 
@@ -53,13 +69,13 @@ export function ProductEditModal({
   const tProducts = useTranslations('Products')
   const tCommon = useTranslations('Common')
 
-  const [formData, setFormData] = React.useState<Omit<Product, "id">>({
-    name: "",
-    description: "",
+  const [formData, setFormData] = React.useState<Omit<Product, 'id'>>({
+    name: '',
+    description: '',
     price: 0,
-    category: "",
+    category: '',
     stock: 0,
-    image_url: "",
+    image_url: '',
     active: true,
     display_order: 0,
     metadata: { badges: [] },
@@ -75,11 +91,11 @@ export function ProductEditModal({
     if (product) {
       setFormData({
         name: product.name,
-        description: product.description || "",
+        description: product.description || '',
         price: product.price,
         category: product.category,
         stock: product.stock ?? 0,
-        image_url: product.image_url || "",
+        image_url: product.image_url || '',
         active: product.active,
         display_order: product.display_order,
         metadata: product.metadata || { badges: [] },
@@ -91,12 +107,12 @@ export function ProductEditModal({
     } else {
       // Reset form for new product
       setFormData({
-        name: "",
-        description: "",
+        name: '',
+        description: '',
         price: 0,
-        category: "",
+        category: '',
         stock: 0,
-        image_url: "",
+        image_url: '',
         active: true,
         display_order: 0,
         metadata: { badges: [] },
@@ -108,9 +124,12 @@ export function ProductEditModal({
     }
   }, [product])
 
-  const handleChange = (field: keyof Omit<Product, "id">, value: string | number | boolean | null) => {
+  const handleChange = (
+    field: keyof Omit<Product, 'id'>,
+    value: string | number | boolean | null,
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
-    if (field === "image_url" && typeof value === "string") {
+    if (field === 'image_url' && typeof value === 'string') {
       setImagePreview(value || null)
     }
   }
@@ -129,12 +148,12 @@ export function ProductEditModal({
 
   const toggleBadge = (badge: string) => {
     const newBadges = selectedBadges.includes(badge)
-      ? selectedBadges.filter(b => b !== badge)
+      ? selectedBadges.filter((b) => b !== badge)
       : [...selectedBadges, badge]
     setSelectedBadges(newBadges)
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      metadata: { ...(prev.metadata || {}), badges: newBadges }
+      metadata: { ...(prev.metadata || {}), badges: newBadges },
     }))
   }
 
@@ -148,18 +167,18 @@ export function ProductEditModal({
     }
     const newSizes = [...sizes, newSize]
     setSizes(newSizes)
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      metadata: { ...(prev.metadata || {}), sizes: newSizes }
+      metadata: { ...(prev.metadata || {}), sizes: newSizes },
     }))
   }
 
   const removeSize = (index: number) => {
     const newSizes = sizes.filter((_, i) => i !== index)
     setSizes(newSizes)
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      metadata: { ...(prev.metadata || {}), sizes: newSizes }
+      metadata: { ...(prev.metadata || {}), sizes: newSizes },
     }))
   }
 
@@ -171,18 +190,21 @@ export function ProductEditModal({
       return size
     })
     setSizes(newSizes)
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      metadata: { ...(prev.metadata || {}), sizes: newSizes }
+      metadata: { ...(prev.metadata || {}), sizes: newSizes },
     }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await onSave({
-      ...formData,
-      id: product?.id,
-    }, imageFile)
+    await onSave(
+      {
+        ...formData,
+        id: product?.id,
+      },
+      imageFile,
+    )
     onOpenChange(false)
   }
 
@@ -206,12 +228,7 @@ export function ProductEditModal({
                 <Label className="text-sm font-medium mb-2 block">{t('image')}</Label>
                 {imagePreview ? (
                   <div className="relative w-full h-48 rounded-lg overflow-hidden bg-muted/30">
-                    <Image
-                      src={imagePreview}
-                      alt="Preview"
-                      fill
-                      className="object-cover"
-                    />
+                    <Image src={imagePreview} alt="Preview" fill className="object-cover" />
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
@@ -253,7 +270,7 @@ export function ProductEditModal({
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => handleChange("name", e.target.value)}
+                  onChange={(e) => handleChange('name', e.target.value)}
                   placeholder={t('namePlaceholder')}
                   required
                   data-testid="product-form-name"
@@ -266,7 +283,10 @@ export function ProductEditModal({
                   {tProducts('category')}
                 </Label>
                 {categories.length > 0 ? (
-                  <Select value={formData.category} onValueChange={(value) => handleChange("category", value)}>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) => handleChange('category', value)}
+                  >
                     <SelectTrigger className="w-full" data-testid="product-form-category">
                       <SelectValue placeholder={t('categoryPlaceholder')} />
                     </SelectTrigger>
@@ -282,7 +302,7 @@ export function ProductEditModal({
                   <Input
                     id="category"
                     value={formData.category}
-                    onChange={(e) => handleChange("category", e.target.value)}
+                    onChange={(e) => handleChange('category', e.target.value)}
                     placeholder={t('categoryPlaceholder')}
                     required
                     data-testid="product-form-category"
@@ -300,8 +320,8 @@ export function ProductEditModal({
                 </Label>
                 <Textarea
                   id="description"
-                  value={formData.description || ""}
-                  onChange={(e) => handleChange("description", e.target.value)}
+                  value={formData.description || ''}
+                  onChange={(e) => handleChange('description', e.target.value)}
                   placeholder={t('descPlaceholder')}
                   className="min-h-[80px] resize-none"
                   data-testid="product-form-description"
@@ -321,7 +341,7 @@ export function ProductEditModal({
                     min="0"
                     step="0.01"
                     value={formData.price}
-                    onChange={(e) => handleChange("price", Number.parseFloat(e.target.value) || 0)}
+                    onChange={(e) => handleChange('price', Number.parseFloat(e.target.value) || 0)}
                     placeholder="0.00"
                     required
                     data-testid="product-form-price"
@@ -337,7 +357,9 @@ export function ProductEditModal({
                     type="number"
                     min="0"
                     value={formData.stock ?? 0}
-                    onChange={(e) => handleChange("stock", Number.parseInt(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handleChange('stock', Number.parseInt(e.target.value, 10) || 0)
+                    }
                     placeholder="0"
                     data-testid="product-form-stock"
                   />
@@ -346,7 +368,10 @@ export function ProductEditModal({
 
               {/* Display Order */}
               <div className="space-y-2">
-                <Label htmlFor="display_order" className="text-sm font-medium flex items-center gap-1.5">
+                <Label
+                  htmlFor="display_order"
+                  className="text-sm font-medium flex items-center gap-1.5"
+                >
                   <GripVertical className="size-3.5" />
                   {t('displayOrder')}
                 </Label>
@@ -355,7 +380,9 @@ export function ProductEditModal({
                   type="number"
                   min="0"
                   value={formData.display_order}
-                  onChange={(e) => handleChange("display_order", Number.parseInt(e.target.value) || 0)}
+                  onChange={(e) =>
+                    handleChange('display_order', Number.parseInt(e.target.value, 10) || 0)
+                  }
                   placeholder="0"
                   data-testid="product-form-display-order"
                 />
@@ -412,7 +439,10 @@ export function ProductEditModal({
                     <span></span>
                   </div>
                   {sizes.map((size, index) => (
-                    <div key={size.id} className="grid grid-cols-[1fr_100px_80px_80px_32px] gap-2 items-center">
+                    <div
+                      key={size.id}
+                      className="grid grid-cols-[1fr_100px_80px_80px_32px] gap-2 items-center"
+                    >
                       <Input
                         value={size.label}
                         onChange={(e) => updateSize(index, 'label', e.target.value)}
@@ -432,7 +462,9 @@ export function ProductEditModal({
                         min="0"
                         step="0.01"
                         value={size.price}
-                        onChange={(e) => updateSize(index, 'price', Number.parseFloat(e.target.value) || 0)}
+                        onChange={(e) =>
+                          updateSize(index, 'price', Number.parseFloat(e.target.value) || 0)
+                        }
                         className="h-9"
                         data-testid={`size-price-${index}`}
                       />
@@ -440,7 +472,9 @@ export function ProductEditModal({
                         type="number"
                         min="0"
                         value={size.stock}
-                        onChange={(e) => updateSize(index, 'stock', Number.parseInt(e.target.value) || 0)}
+                        onChange={(e) =>
+                          updateSize(index, 'stock', Number.parseInt(e.target.value, 10) || 0)
+                        }
                         className="h-9"
                         data-testid={`size-stock-${index}`}
                       />
@@ -479,7 +513,7 @@ export function ProductEditModal({
             <Switch
               id="active"
               checked={formData.active}
-              onCheckedChange={(checked) => handleChange("active", checked)}
+              onCheckedChange={(checked) => handleChange('active', checked)}
               data-testid="product-active-checkbox"
             />
           </div>

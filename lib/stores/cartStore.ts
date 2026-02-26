@@ -7,7 +7,7 @@
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { CartStore, CartItem } from '@/types/commerce'
+import type { CartStore } from '@/types/commerce'
 
 export const useCartStore = create<CartStore>()(
   persist(
@@ -17,9 +17,7 @@ export const useCartStore = create<CartStore>()(
       addItem: (newItem) => {
         const items = get().items
         const existingIndex = items.findIndex(
-          (item) =>
-            item.productId === newItem.productId &&
-            item.color?.id === newItem.color?.id
+          (item) => item.productId === newItem.productId && item.color?.id === newItem.color?.id,
         )
 
         if (existingIndex > -1) {
@@ -39,10 +37,7 @@ export const useCartStore = create<CartStore>()(
               ...items,
               {
                 ...newItem,
-                quantity: Math.min(
-                  newItem.quantity ?? 1,
-                  newItem.maxQuantity
-                ),
+                quantity: Math.min(newItem.quantity ?? 1, newItem.maxQuantity),
               },
             ],
           })
@@ -52,8 +47,7 @@ export const useCartStore = create<CartStore>()(
       removeItem: (productId, colorId) => {
         set({
           items: get().items.filter(
-            (item) =>
-              !(item.productId === productId && item.color?.id === colorId)
+            (item) => !(item.productId === productId && item.color?.id === colorId),
           ),
         })
       },
@@ -61,8 +55,7 @@ export const useCartStore = create<CartStore>()(
       updateQuantity: (productId, colorId, quantity) => {
         const items = get().items
         const index = items.findIndex(
-          (item) =>
-            item.productId === productId && item.color?.id === colorId
+          (item) => item.productId === productId && item.color?.id === colorId,
         )
         if (index === -1) return
 
@@ -91,16 +84,13 @@ export const useCartStore = create<CartStore>()(
       },
 
       getTotalPrice: () => {
-        return get().items.reduce(
-          (sum, item) => sum + item.price * item.quantity,
-          0
-        )
+        return get().items.reduce((sum, item) => sum + item.price * item.quantity, 0)
       },
     }),
     {
       name: 'sw-cart-storage', // localStorage key
       // Only persist items array
       partialize: (state) => ({ items: state.items }),
-    }
-  )
+    },
+  ),
 )

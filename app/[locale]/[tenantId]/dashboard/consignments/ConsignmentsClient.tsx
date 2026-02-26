@@ -7,15 +7,18 @@
  * Handles client-side interactivity
  */
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useConsignments } from '@/lib/hooks/useConsignments'
-import { useConsignmentLocations } from '@/lib/hooks/useConsignmentLocations'
-import { ConsignmentOverview } from '@/components/dashboard/consignments/ConsignmentOverview'
-import { LocationsList, LocationsListSkeleton } from '@/components/dashboard/consignments/LocationsList'
-import { LocationForm } from '@/components/dashboard/consignments/LocationForm'
-import { ConsignmentLocation, CreateLocationRequest } from '@/lib/types/consignment'
+import { useState } from 'react'
 import { toast } from 'sonner'
+import { ConsignmentOverview } from '@/components/dashboard/consignments/ConsignmentOverview'
+import { LocationForm } from '@/components/dashboard/consignments/LocationForm'
+import {
+  LocationsList,
+  LocationsListSkeleton,
+} from '@/components/dashboard/consignments/LocationsList'
+import { useConsignmentLocations } from '@/lib/hooks/useConsignmentLocations'
+import { useConsignments } from '@/lib/hooks/useConsignments'
+import type { ConsignmentLocation, CreateLocationRequest } from '@/lib/types/consignment'
 
 interface ConsignmentsClientProps {
   tenantId: number
@@ -59,19 +62,15 @@ export function ConsignmentsClient({ tenantId, tenantSlug, locale }: Consignment
   }
 
   const handleSave = async (data: CreateLocationRequest) => {
-    try {
-      if (editingLocation) {
-        await updateLocation(editingLocation.id, data)
-        toast.success('Ubicación actualizada')
-      } else {
-        await createLocation(data)
-        toast.success('Ubicación creada')
-      }
-      setIsFormOpen(false)
-      setEditingLocation(null)
-    } catch (error) {
-      throw error // Let LocationForm handle the error display
+    if (editingLocation) {
+      await updateLocation(editingLocation.id, data)
+      toast.success('Ubicación actualizada')
+    } else {
+      await createLocation(data)
+      toast.success('Ubicación creada')
     }
+    setIsFormOpen(false)
+    setEditingLocation(null)
   }
 
   const handleLocationSelect = (locationId: string) => {
@@ -114,7 +113,9 @@ export function ConsignmentsClient({ tenantId, tenantSlug, locale }: Consignment
     <div className="space-y-8" data-testid="consignments-page">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">Gestión de Consignaciones</h1>
+        <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">
+          Gestión de Consignaciones
+        </h1>
         <p className="text-[var(--color-text-secondary)] mt-2">
           Administra tus obras en diferentes ubicaciones y monitorea su rendimiento
         </p>

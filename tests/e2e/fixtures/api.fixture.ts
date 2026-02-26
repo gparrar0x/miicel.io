@@ -11,8 +11,8 @@
  * })
  */
 
-import { test as dbTest } from './database.fixture'
 import { ApiHelper } from '../helpers/api.helper'
+import { test as dbTest } from './database.fixture'
 
 export const test = dbTest.extend<{
   apiHelper: ApiHelper

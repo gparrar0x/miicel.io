@@ -34,7 +34,8 @@ export function FloatingCartButton({
           size="lg"
           style={{
             background: `linear-gradient(to right, var(--color-primary), color-mix(in srgb, var(--color-primary) 85%, black))`,
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 30px color-mix(in srgb, var(--color-primary) 20%, transparent)'
+            boxShadow:
+              '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 30px color-mix(in srgb, var(--color-primary) 20%, transparent)',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.background = `linear-gradient(to right, color-mix(in srgb, var(--color-primary) 85%, black), color-mix(in srgb, var(--color-primary) 70%, black))`
@@ -47,7 +48,10 @@ export function FloatingCartButton({
             <div className="flex items-center gap-3">
               <div className="relative">
                 <ShoppingBag className="w-6 h-6" />
-                <span className="absolute -top-2 -right-2 bg-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center" style={{ color: 'var(--color-primary)' }}>
+                <span
+                  className="absolute -top-2 -right-2 bg-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
+                  style={{ color: 'var(--color-primary)' }}
+                >
                   {itemCount}
                 </span>
               </div>

@@ -5,8 +5,8 @@
  * Used on dashboard overview page
  */
 
-import { useState, useCallback, useEffect } from 'react'
-import { ConsignmentOverview, ConsignmentError } from '@/lib/types/consignment'
+import { useCallback, useEffect, useState } from 'react'
+import type { ConsignmentError, ConsignmentOverview } from '@/lib/types/consignment'
 
 interface UseConsignmentsReturn {
   overview: ConsignmentOverview | null
@@ -24,9 +24,7 @@ export function useConsignments(tenantId: number): UseConsignmentsReturn {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch(
-        `/api/dashboard/consignments/overview?tenant_id=${tenantId}`
-      )
+      const res = await fetch(`/api/dashboard/consignments/overview?tenant_id=${tenantId}`)
 
       if (!res.ok) {
         const errorData = await res.json()

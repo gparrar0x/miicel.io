@@ -18,7 +18,7 @@
  * ```
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 interface FlagContext {
   tenantId?: number
@@ -36,10 +36,7 @@ interface UseFeatureFlagReturn {
 const clientCache = new Map<string, { enabled: boolean; expires: number }>()
 const CLIENT_CACHE_TTL_MS = 30_000 // 30 seconds
 
-export function useFeatureFlag(
-  key: string,
-  context: FlagContext = {}
-): UseFeatureFlagReturn {
+export function useFeatureFlag(key: string, context: FlagContext = {}): UseFeatureFlagReturn {
   const [enabled, setEnabled] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -105,7 +102,7 @@ export function useFeatureFlag(
  */
 export async function prefetchFlags(
   keys: string[],
-  context: FlagContext = {}
+  context: FlagContext = {},
 ): Promise<Record<string, boolean>> {
   const params = new URLSearchParams()
   keys.forEach((k) => params.append('keys', k))

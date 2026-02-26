@@ -15,16 +15,12 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
-import { resolveTheme, type TenantTemplate, type ThemeOverrides } from '@/types/theme'
+import { createClient } from '@/lib/supabase/server'
 
 const slugParamSchema = z.string().regex(/^[a-z0-9-]+$/, 'Invalid slug format')
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ slug: string }> }
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     // Await params (Next.js 16 requirement)
     const { slug: rawSlug } = await params
@@ -34,7 +30,7 @@ export async function GET(
     if (!validationResult.success) {
       return NextResponse.json(
         { error: 'Invalid slug format. Use lowercase alphanumeric with hyphens.' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -52,17 +48,11 @@ export async function GET(
 
     if (error) {
       console.error('Supabase error fetching tenant:', error)
-      return NextResponse.json(
-        { error: 'Database error' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Database error' }, { status: 500 })
     }
 
     if (!tenant) {
-      return NextResponse.json(
-        { error: 'Tenant not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Tenant not found' }, { status: 404 })
     }
 
     // Parse config JSONB (type assertion safe due to view constraints)
@@ -104,9 +94,6 @@ export async function GET(
     })
   } catch (error) {
     console.error('Tenant config error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

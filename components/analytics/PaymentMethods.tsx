@@ -1,7 +1,14 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
 import { Download } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 interface PaymentMethod {
   method: string
@@ -82,7 +89,9 @@ export function PaymentMethods({ data, onExport }: PaymentMethodsProps) {
                     {getMethodLabel(method.method)}
                   </TableCell>
                   <TableCell className="text-right">{method.transaction_count} trans</TableCell>
-                  <TableCell className="text-right">{formatCurrency(method.total_amount)}</TableCell>
+                  <TableCell className="text-right">
+                    {formatCurrency(method.total_amount)}
+                  </TableCell>
                   <TableCell className="text-right">{method.percentage.toFixed(1)}%</TableCell>
                 </TableRow>
               ))}

@@ -6,10 +6,10 @@
 
 'use client'
 
-import { useEffect, useState } from 'react'
+import { ArrowLeft, CheckCircle, CreditCard, MessageCircle, Package, User } from 'lucide-react'
 import { useParams, useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { Link } from '@/i18n/routing'
-import { CheckCircle, Package, User, CreditCard, ArrowLeft, MessageCircle } from 'lucide-react'
 
 interface OrderData {
   orderId: string
@@ -41,9 +41,9 @@ export default function CheckoutSuccessPage() {
   const paymentId = searchParams?.get('payment_id') || collectionId
   const externalReference = searchParams?.get('external_reference')
   const mpStatus = searchParams?.get('status') || searchParams?.get('collection_status')
-  const paymentType = searchParams?.get('payment_type')
-  const merchantOrderId = searchParams?.get('merchant_order_id')
-  const preferenceId = searchParams?.get('preference_id')
+  const _paymentType = searchParams?.get('payment_type')
+  const _merchantOrderId = searchParams?.get('merchant_order_id')
+  const _preferenceId = searchParams?.get('preference_id')
 
   // Fallback to legacy orderId param for backwards compatibility
   const orderId = externalReference || searchParams?.get('orderId')
@@ -61,8 +61,8 @@ export default function CheckoutSuccessPage() {
 
     // Fetch order details
     fetch(`/api/orders/${orderId}`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (data.error) {
           setError(data.error)
         } else {
@@ -70,7 +70,7 @@ export default function CheckoutSuccessPage() {
         }
         setLoading(false)
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Failed to fetch order:', err)
         setError('Failed to load order details')
         setLoading(false)
@@ -91,7 +91,10 @@ export default function CheckoutSuccessPage() {
   if (error || !orderData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-        <div className="bg-white rounded-lg p-8 max-w-md w-full text-center" data-testid="checkout-success-error">
+        <div
+          className="bg-white rounded-lg p-8 max-w-md w-full text-center"
+          data-testid="checkout-success-error"
+        >
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-2xl">⚠️</span>
           </div>
@@ -114,7 +117,10 @@ export default function CheckoutSuccessPage() {
     <div className="min-h-screen bg-gray-50 py-12 px-4" data-testid="checkout-success-page">
       <div className="max-w-3xl mx-auto">
         {/* Success Header */}
-        <div className="bg-white rounded-lg p-8 mb-6 text-center" data-testid="checkout-success-header">
+        <div
+          className="bg-white rounded-lg p-8 mb-6 text-center"
+          data-testid="checkout-success-header"
+        >
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-12 h-12 text-green-600" />
           </div>
@@ -133,7 +139,10 @@ export default function CheckoutSuccessPage() {
             {paymentId && (
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 rounded-lg">
                 <span className="text-sm text-green-600">Payment:</span>
-                <span className="font-mono font-semibold text-green-700" data-testid="checkout-success-payment-id">
+                <span
+                  className="font-mono font-semibold text-green-700"
+                  data-testid="checkout-success-payment-id"
+                >
                   {paymentId}
                 </span>
               </div>
@@ -141,7 +150,10 @@ export default function CheckoutSuccessPage() {
             {mpStatus && (
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-lg">
                 <span className="text-sm text-blue-600">Status:</span>
-                <span className="font-semibold text-blue-700 capitalize" data-testid="checkout-success-payment-status">
+                <span
+                  className="font-semibold text-blue-700 capitalize"
+                  data-testid="checkout-success-payment-status"
+                >
                   {mpStatus}
                 </span>
               </div>
@@ -158,19 +170,28 @@ export default function CheckoutSuccessPage() {
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-600">Name:</span>
-              <span className="font-medium text-gray-900" data-testid="checkout-success-customer-name">
+              <span
+                className="font-medium text-gray-900"
+                data-testid="checkout-success-customer-name"
+              >
                 {orderData.customer.name}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Email:</span>
-              <span className="font-medium text-gray-900" data-testid="checkout-success-customer-email">
+              <span
+                className="font-medium text-gray-900"
+                data-testid="checkout-success-customer-email"
+              >
                 {orderData.customer.email}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Phone:</span>
-              <span className="font-medium text-gray-900" data-testid="checkout-success-customer-phone">
+              <span
+                className="font-medium text-gray-900"
+                data-testid="checkout-success-customer-phone"
+              >
                 {orderData.customer.phone}
               </span>
             </div>
@@ -243,36 +264,42 @@ export default function CheckoutSuccessPage() {
             Print Order
           </button>
           {/* WhatsApp Button - Only show when order is paid and tenant has WhatsApp configured */}
-          {orderData.status === 'paid' && orderData.tenantWhatsapp && (() => {
-            // Build WhatsApp message with order details
-            const whatsappMessage = `Hola! Mi pedido es:\n\n` +
-              `*Pedido #${orderData.orderId}*\n\n` +
-              `*Cliente:* ${orderData.customer.name}\n` +
-              `*Email:* ${orderData.customer.email}\n` +
-              `*Teléfono:* ${orderData.customer.phone}\n\n` +
-              `*DETALLE DEL PEDIDO:*\n` +
-              orderData.items.map(item => 
-                `- ${item.name} (x${item.quantity}): ${item.currency} ${(item.price * item.quantity).toFixed(2)}`
-              ).join('\n') +
-              `\n\n*TOTAL: ${orderData.currency} ${orderData.total.toFixed(2)}*`
-            
-            // Clean phone number (remove spaces, dashes, etc.)
-            const cleanPhone = orderData.tenantWhatsapp.replace(/\D/g, '')
-            const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(whatsappMessage)}`
-            
-            return (
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 inline-flex items-center justify-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
-                data-testid="checkout-success-whatsapp"
-              >
-                <MessageCircle className="w-5 h-5 mr-2" />
-                Enviar por WhatsApp
-              </a>
-            )
-          })()}
+          {orderData.status === 'paid' &&
+            orderData.tenantWhatsapp &&
+            (() => {
+              // Build WhatsApp message with order details
+              const whatsappMessage =
+                `Hola! Mi pedido es:\n\n` +
+                `*Pedido #${orderData.orderId}*\n\n` +
+                `*Cliente:* ${orderData.customer.name}\n` +
+                `*Email:* ${orderData.customer.email}\n` +
+                `*Teléfono:* ${orderData.customer.phone}\n\n` +
+                `*DETALLE DEL PEDIDO:*\n` +
+                orderData.items
+                  .map(
+                    (item) =>
+                      `- ${item.name} (x${item.quantity}): ${item.currency} ${(item.price * item.quantity).toFixed(2)}`,
+                  )
+                  .join('\n') +
+                `\n\n*TOTAL: ${orderData.currency} ${orderData.total.toFixed(2)}*`
+
+              // Clean phone number (remove spaces, dashes, etc.)
+              const cleanPhone = orderData.tenantWhatsapp.replace(/\D/g, '')
+              const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(whatsappMessage)}`
+
+              return (
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 inline-flex items-center justify-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                  data-testid="checkout-success-whatsapp"
+                >
+                  <MessageCircle className="w-5 h-5 mr-2" />
+                  Enviar por WhatsApp
+                </a>
+              )
+            })()}
         </div>
 
         {/* Next Steps */}

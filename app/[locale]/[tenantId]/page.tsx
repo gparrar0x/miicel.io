@@ -4,21 +4,21 @@
  * Route: /[tenantId]
  */
 
-import { notFound } from 'next/navigation'
-import Link from 'next/link'
 import type { Metadata } from 'next'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { CartBadge } from '@/components/commerce/CartBadge'
+import { ProductGrid as ProductGridLegacy } from '@/components/commerce/ProductGrid'
 import { TenantHeader } from '@/components/commerce/TenantHeader'
 import { ThemeProvider } from '@/components/commerce/ThemeProvider'
-import { ProductGrid as ProductGridLegacy } from '@/components/commerce/ProductGrid'
+import { DashboardAccessButton } from '@/components/DashboardAccessButton'
 import { GalleryGrid } from '@/components/gallery-v2/GalleryGrid'
 import { GalleryHeader } from '@/components/gallery-v2/GalleryHeader'
-import { CartBadge } from '@/components/commerce/CartBadge'
 import { GastronomyLayout } from '@/components/gastronomy/layouts/GastronomyLayout'
-import { WhatsAppButton } from '@/components/storefront/WhatsAppButton'
-import { tenantConfigResponseSchema, type TenantConfigResponse } from '@/lib/schemas/order'
-import { createClient } from '@/lib/supabase/server'
 import { GalleryGridWrapper } from '@/components/storefront/GalleryGridWrapper'
-import { DashboardAccessButton } from '@/components/DashboardAccessButton'
+import { WhatsAppButton } from '@/components/storefront/WhatsAppButton'
+import { type TenantConfigResponse, tenantConfigResponseSchema } from '@/lib/schemas/order'
+import { createClient } from '@/lib/supabase/server'
 
 interface PageProps {
   params: Promise<{ locale: string; tenantId: string }>
@@ -29,7 +29,7 @@ async function getTenantConfig(tenantId: string): Promise<TenantConfigResponse |
   const supabase = await createClient()
 
   try {
-    // @ts-ignore - whatsapp_number not in generated types yet
+    // @ts-expect-error - whatsapp_number not in generated types yet
     const { data: tenant, error } = await supabase
       .from('tenants')
       .select('config, template, whatsapp_number')
@@ -41,7 +41,7 @@ async function getTenantConfig(tenantId: string): Promise<TenantConfigResponse |
       return null
     }
 
-    // @ts-ignore - tenant type affected by whatsapp_number query
+    // @ts-expect-error - tenant type affected by whatsapp_number query
     const config = (tenant.config as any) || {}
 
     console.log(`[getTenantConfig] Raw config from DB:`, JSON.stringify(config, null, 2))
@@ -89,11 +89,7 @@ async function getTenantConfig(tenantId: string): Promise<TenantConfigResponse |
 async function getProducts(tenantId: string, category?: string, search?: string) {
   const supabase = await createClient()
 
-  const { data: tenant } = await supabase
-    .from('tenants')
-    .select('id')
-    .eq('slug', tenantId)
-    .single()
+  const { data: tenant } = await supabase.from('tenants').select('id').eq('slug', tenantId).single()
 
   if (!tenant) return []
 
@@ -119,7 +115,7 @@ async function getProducts(tenantId: string, category?: string, search?: string)
     return []
   }
 
-  return (data || []).map(p => ({
+  return (data || []).map((p) => ({
     id: String(p.id),
     name: p.name,
     description: p.description,
@@ -142,11 +138,7 @@ async function getProducts(tenantId: string, category?: string, search?: string)
 async function getCategories(tenantId: string) {
   const supabase = await createClient()
 
-  const { data: tenant } = await supabase
-    .from('tenants')
-    .select('id')
-    .eq('slug', tenantId)
-    .single()
+  const { data: tenant } = await supabase.from('tenants').select('id').eq('slug', tenantId).single()
 
   if (!tenant) return []
 
@@ -196,8 +188,8 @@ export async function generateMetadata({
       images: config.logoUrl
         ? [{ url: config.logoUrl, width: 200, height: 200 }]
         : config.bannerUrl
-        ? [{ url: config.bannerUrl, width: 1200, height: 630 }]
-        : [],
+          ? [{ url: config.bannerUrl, width: 1200, height: 630 }]
+          : [],
     },
     alternates: {
       canonical: baseUrl,
@@ -230,13 +222,23 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
 
   if (config.template === 'gastronomy') {
     console.log(`[${tenantId}] ✓ RENDERING GASTRONOMY LAYOUT`)
-    
+
     const getCategoryIcon = (category: string): string => {
       const iconMap: Record<string, string> = {
-        'PANCHOS': '🌭', 'COMBOS': '🍔', 'BEBIDAS': '🥤', 'CERVEZA': '🍺',
-        'AREPAS': '🫓', 'CACHAPAS': '🥞', 'CLÁSICOS': '🍴', 'SANDWICH': '🥪',
-        'HOT DOGS': '🌭', 'HAMBURGUESAS': '🍔', 'PIZZAS': '🍕', 'ENSALADAS': '🥗',
-        'POSTRES': '🍰', 'CAFE': '☕',
+        PANCHOS: '🌭',
+        COMBOS: '🍔',
+        BEBIDAS: '🥤',
+        CERVEZA: '🍺',
+        AREPAS: '🫓',
+        CACHAPAS: '🥞',
+        CLÁSICOS: '🍴',
+        SANDWICH: '🥪',
+        'HOT DOGS': '🌭',
+        HAMBURGUESAS: '🍔',
+        PIZZAS: '🍕',
+        ENSALADAS: '🥗',
+        POSTRES: '🍰',
+        CAFE: '☕',
       }
       return iconMap[category.toUpperCase()] || '🍽️'
     }
@@ -246,7 +248,7 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
       slug: cat,
       name: cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase(),
       icon: getCategoryIcon(cat),
-      productCount: products.filter(p => p.category === cat).length,
+      productCount: products.filter((p) => p.category === cat).length,
     }))
 
     return (
@@ -274,7 +276,7 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
   if (config.template === 'gallery') {
     console.log(`[${tenantId}] ✓ RENDERING GALLERY LAYOUT`)
     // Transform products to Artwork format for new GalleryGrid
-    const artworks = products.map(p => {
+    const artworks = products.map((p) => {
       // Check if product has custom sizes in metadata
       const metadataSizes = (p as any).metadata?.sizes
 
@@ -286,22 +288,22 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
           dimensions: '30 × 40 cm',
           price: p.price,
           stock: 0, // Disabled - requires explicit metadata.sizes configuration
-          label: 'Small'
+          label: 'Small',
         },
         {
           id: 'medium',
           dimensions: '50 × 70 cm',
           price: Math.round(p.price * 1.5),
           stock: 0, // Disabled - requires explicit metadata.sizes configuration
-          label: 'Medium'
+          label: 'Medium',
         },
         {
           id: 'large',
           dimensions: '100 × 140 cm',
           price: Math.round(p.price * 2.5),
           stock: 0, // Disabled - requires explicit metadata.sizes configuration
-          label: 'Large'
-        }
+          label: 'Large',
+        },
       ]
 
       return {
@@ -316,7 +318,7 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
         price: p.price,
         currency: config.currency,
         sizes: metadataSizes || defaultSizes,
-        isLimitedEdition: p.isLimited || false
+        isLimitedEdition: p.isLimited || false,
       }
     })
 
@@ -325,7 +327,7 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
         <main className="min-h-screen bg-white text-black">
           <GalleryHeader config={config} tenantId={tenantId} />
           <div className="container mx-auto px-4 py-8">
-             <GalleryGrid artworks={artworks} collections={categories} tenantId={tenantId} />
+            <GalleryGrid artworks={artworks} collections={categories} tenantId={tenantId} />
           </div>
         </main>
         <WhatsAppButton phoneNumber={config.whatsappNumber || null} />
@@ -383,12 +385,7 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
           className="fixed bottom-8 right-8 w-16 h-16 bg-black text-white flex items-center justify-center z-50 shadow-[4px_4px_0px_0px_rgba(255,255,255,1),8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1),10px_10px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
           data-testid="cart-floating-button"
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="square"
               strokeLinejoin="miter"

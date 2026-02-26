@@ -1,16 +1,22 @@
-import { Card, CardContent } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
-import type { LucideIcon } from "lucide-react"
+import type { LucideIcon } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 
 interface StatCardProps {
   title: string
   value: string
   change?: string
-  changeType?: "positive" | "negative" | "neutral"
+  changeType?: 'positive' | 'negative' | 'neutral'
   icon: LucideIcon
 }
 
-export function StatCard({ title, value, change, changeType = "neutral", icon: Icon }: StatCardProps) {
+export function StatCard({
+  title,
+  value,
+  change,
+  changeType = 'neutral',
+  icon: Icon,
+}: StatCardProps) {
   return (
     <Card className="border-border">
       <CardContent className="p-6">
@@ -21,10 +27,10 @@ export function StatCard({ title, value, change, changeType = "neutral", icon: I
             {change && (
               <p
                 className={cn(
-                  "text-sm font-medium",
-                  changeType === "positive" && "text-foreground",
-                  changeType === "negative" && "text-muted-foreground",
-                  changeType === "neutral" && "text-muted-foreground",
+                  'text-sm font-medium',
+                  changeType === 'positive' && 'text-foreground',
+                  changeType === 'negative' && 'text-muted-foreground',
+                  changeType === 'neutral' && 'text-muted-foreground',
                 )}
               >
                 {change}

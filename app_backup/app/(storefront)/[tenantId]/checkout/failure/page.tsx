@@ -6,9 +6,9 @@
 
 'use client'
 
+import { ArrowLeft, RotateCcw, XCircle } from 'lucide-react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { Link } from '@/i18n/routing'
-import { XCircle, ArrowLeft, RotateCcw } from 'lucide-react'
 
 export default function CheckoutFailurePage() {
   const params = useParams()
@@ -18,7 +18,7 @@ export default function CheckoutFailurePage() {
   // MercadoPago returns: payment_id, status, external_reference (orderId)
   const paymentId = searchParams?.get('payment_id')
   const externalReference = searchParams?.get('external_reference')
-  const mpStatus = searchParams?.get('status')
+  const _mpStatus = searchParams?.get('status')
 
   // Fallback to legacy params
   const orderId = externalReference || searchParams?.get('orderId')
@@ -39,7 +39,10 @@ export default function CheckoutFailurePage() {
 
         {/* Error Message */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-3" data-testid="checkout-failure-title">
+          <h1
+            className="text-2xl font-bold text-gray-900 mb-3"
+            data-testid="checkout-failure-title"
+          >
             Payment Failed
           </h1>
           <p className="text-gray-600 mb-2" data-testid="checkout-failure-message">
@@ -56,10 +59,7 @@ export default function CheckoutFailurePage() {
             )}
             {paymentId && (
               <p className="text-sm text-gray-500">
-                Payment ID:{' '}
-                <span className="font-mono font-medium">
-                  {paymentId}
-                </span>
+                Payment ID: <span className="font-mono font-medium">{paymentId}</span>
               </p>
             )}
           </div>

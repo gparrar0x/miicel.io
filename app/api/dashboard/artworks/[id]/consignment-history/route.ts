@@ -43,9 +43,9 @@ type RouteParams = {
 export async function GET(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params
-    const workId = parseInt(id)
+    const workId = parseInt(id, 10)
 
-    if (isNaN(workId)) {
+    if (Number.isNaN(workId)) {
       return NextResponse.json({ error: 'Invalid artwork ID' }, { status: 400 })
     }
 
@@ -65,11 +65,11 @@ export async function GET(request: Request, { params }: RouteParams) {
     const { searchParams } = new URL(request.url)
     const tenantIdStr = searchParams.get('tenant_id')
 
-    if (!tenantIdStr || isNaN(parseInt(tenantIdStr))) {
+    if (!tenantIdStr || Number.isNaN(parseInt(tenantIdStr, 10))) {
       return NextResponse.json({ error: 'Valid tenant_id required' }, { status: 400 })
     }
 
-    const tenantId = parseInt(tenantIdStr)
+    const tenantId = parseInt(tenantIdStr, 10)
 
     // Verify tenant ownership
     const { data: tenant, error: tenantError } = await supabase
@@ -96,7 +96,10 @@ export async function GET(request: Request, { params }: RouteParams) {
       .maybeSingle()
 
     if (workError || !work) {
-      return NextResponse.json({ error: 'Artwork not found or not owned by tenant' }, { status: 404 })
+      return NextResponse.json(
+        { error: 'Artwork not found or not owned by tenant' },
+        { status: 404 },
+      )
     }
 
     // Fetch all assignments (active + historical)
@@ -132,12 +135,14 @@ export async function GET(request: Request, { params }: RouteParams) {
         if (assignment.unassigned_date) {
           const unassignedDate = new Date(assignment.unassigned_date)
           daysAtLocation = Math.floor(
-            (unassignedDate.getTime() - assignedDate.getTime()) / (1000 * 60 * 60 * 24)
+            (unassignedDate.getTime() - assignedDate.getTime()) / (1000 * 60 * 60 * 24),
           )
         } else {
           // Still active, calculate days since assignment
           const now = new Date()
-          daysAtLocation = Math.floor((now.getTime() - assignedDate.getTime()) / (1000 * 60 * 60 * 24))
+          daysAtLocation = Math.floor(
+            (now.getTime() - assignedDate.getTime()) / (1000 * 60 * 60 * 24),
+          )
         }
 
         return {
@@ -163,7 +168,10 @@ export async function GET(request: Request, { params }: RouteParams) {
       assignments: enrichedAssignments,
     })
   } catch (error) {
-    console.error('Unexpected error in GET /api/dashboard/artworks/[id]/consignment-history:', error)
+    console.error(
+      'Unexpected error in GET /api/dashboard/artworks/[id]/consignment-history:',
+      error,
+    )
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

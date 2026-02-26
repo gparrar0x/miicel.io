@@ -7,8 +7,8 @@
  * Fetches available products from tenant and allows selection
  */
 
-import { useState, useEffect } from 'react'
-import { X, Loader2, Search, Package, Check } from 'lucide-react'
+import { Check, Loader2, Package, Search, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 interface Product {
   id: number
@@ -54,7 +54,7 @@ export function SelectProductModal({
     if (isOpen) {
       fetchProducts()
     }
-  }, [isOpen, tenantId])
+  }, [isOpen, fetchProducts])
 
   const fetchProducts = async () => {
     setLoading(true)
@@ -73,7 +73,7 @@ export function SelectProductModal({
   }
 
   const filteredProducts = products.filter((p) =>
-    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+    p.name.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
   const handleSubmit = async () => {
@@ -169,8 +169,12 @@ export function SelectProductModal({
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-[var(--color-text-primary)] truncate">{product.name}</p>
-                    <p className="text-sm text-[var(--color-text-secondary)]">${product.price?.toLocaleString() || 0}</p>
+                    <p className="font-medium text-[var(--color-text-primary)] truncate">
+                      {product.name}
+                    </p>
+                    <p className="text-sm text-[var(--color-text-secondary)]">
+                      ${product.price?.toLocaleString() || 0}
+                    </p>
                   </div>
                   {selectedProduct?.id === product.id && (
                     <div className="w-5 h-5 bg-[var(--color-accent-primary)] rounded-full flex items-center justify-center">
@@ -193,7 +197,9 @@ export function SelectProductModal({
 
             {/* Status Select */}
             <div>
-              <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">Estado</label>
+              <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">
+                Estado
+              </label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
@@ -210,7 +216,9 @@ export function SelectProductModal({
 
             {/* Notes */}
             <div>
-              <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">Notas (opcional)</label>
+              <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">
+                Notas (opcional)
+              </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}

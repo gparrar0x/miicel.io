@@ -1,8 +1,13 @@
 'use client'
 
+import { ArrowLeft, CreditCard, Loader2, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react'
+import { useParams } from 'next/navigation'
 import { useState } from 'react'
-import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft, CreditCard, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
 import {
   Sheet,
   SheetContent,
@@ -10,13 +15,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import { Separator } from '@/components/ui/separator'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { CartItem } from '@/types/commerce'
-import { useParams } from 'next/navigation'
-import { toast } from 'sonner'
+import type { CartItem } from '@/types/commerce'
 
 interface CartSheetProps {
   open: boolean
@@ -116,7 +116,7 @@ export function CartSheet({
             email: formData.email,
             notes: formData.notes,
           },
-          items: items.map(item => ({
+          items: items.map((item) => ({
             productId: Number(item.productId),
             name: item.name,
             price: Number(item.price),
@@ -184,8 +184,13 @@ export function CartSheet({
         {isSubmitting && (
           <div className="absolute inset-0 bg-white/90 flex items-center justify-center z-50 rounded-lg">
             <div className="flex flex-col items-center gap-3">
-              <Loader2 className="h-10 w-10 animate-spin" style={{ color: 'var(--color-primary)' }} />
-              <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">Redirigiendo a MercadoPago...</p>
+              <Loader2
+                className="h-10 w-10 animate-spin"
+                style={{ color: 'var(--color-primary)' }}
+              />
+              <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">
+                Redirigiendo a MercadoPago...
+              </p>
             </div>
           </div>
         )}
@@ -193,7 +198,13 @@ export function CartSheet({
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2 text-2xl text-gray-900 dark:text-white">
             {checkoutStep === 'checkout' && (
-              <Button variant="ghost" size="icon" className="mr-2" onClick={handleBackToCart} disabled={isSubmitting}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="mr-2"
+                onClick={handleBackToCart}
+                disabled={isSubmitting}
+              >
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             )}
@@ -214,23 +225,33 @@ export function CartSheet({
                 <div className="flex flex-col items-center justify-center h-full text-center gap-4">
                   <ShoppingBag className="w-16 h-16 text-gray-300 dark:text-gray-700" />
                   <p className="text-gray-500 dark:text-gray-400 text-lg">Tu carrito está vacío</p>
-                  <p className="text-gray-400 dark:text-gray-500 text-sm">Agrega productos del menú para comenzar</p>
+                  <p className="text-gray-400 dark:text-gray-500 text-sm">
+                    Agrega productos del menú para comenzar
+                  </p>
                 </div>
               ) : (
                 items.map((item) => (
-                  <div key={item.productId} className="flex gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                  <div
+                    key={item.productId}
+                    className="flex gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl"
+                  >
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{item.name}</h3>
-                      <p className="font-bold" style={{ color: 'var(--color-primary)' }}>{formatPrice(item.price * item.quantity)}</p>
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+                        {item.name}
+                      </h3>
+                      <p className="font-bold" style={{ color: 'var(--color-primary)' }}>
+                        {formatPrice(item.price * item.quantity)}
+                      </p>
                     </div>
-                      <div className="flex flex-col items-end gap-2">
+                    <div className="flex flex-col items-end gap-2">
                       <div className="flex items-center gap-2 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                         <Button
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8"
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.background = 'color-mix(in srgb, var(--color-primary) 10%, white)'
+                            e.currentTarget.style.background =
+                              'color-mix(in srgb, var(--color-primary) 10%, white)'
                             e.currentTarget.style.color = 'var(--color-primary)'
                           }}
                           onMouseLeave={(e) => {
@@ -240,7 +261,7 @@ export function CartSheet({
                           onClick={() => {
                             // Using null for colorId since Restaurant items typically don't have colors
                             // or adapting to existing store signature
-                            const colorId = item.color?.id // Pass existing colorId if any
+                            const _colorId = item.color?.id // Pass existing colorId if any
                             if (item.quantity === 1) {
                               onRemoveItem(item.productId)
                             } else {
@@ -250,13 +271,16 @@ export function CartSheet({
                         >
                           <Minus className="w-4 h-4" />
                         </Button>
-                        <span className="w-8 text-center font-semibold text-gray-900 dark:text-white">{item.quantity}</span>
+                        <span className="w-8 text-center font-semibold text-gray-900 dark:text-white">
+                          {item.quantity}
+                        </span>
                         <Button
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8"
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.background = 'color-mix(in srgb, var(--color-primary) 10%, white)'
+                            e.currentTarget.style.background =
+                              'color-mix(in srgb, var(--color-primary) 10%, white)'
                             e.currentTarget.style.color = 'var(--color-primary)'
                           }}
                           onMouseLeave={(e) => {
@@ -288,19 +312,23 @@ export function CartSheet({
                 <div className="space-y-4">
                   <div className="flex justify-between items-center text-lg">
                     <span className="font-semibold text-gray-700 dark:text-gray-300">Subtotal</span>
-                    <span className="font-bold text-gray-900 dark:text-white">{formatPrice(totalPrice)}</span>
+                    <span className="font-bold text-gray-900 dark:text-white">
+                      {formatPrice(totalPrice)}
+                    </span>
                   </div>
                   <Separator />
                   <div className="flex justify-between items-center text-xl">
                     <span className="font-bold text-gray-900 dark:text-white">Total</span>
-                    <span className="font-bold" style={{ color: 'var(--color-primary)' }}>{formatPrice(totalPrice)}</span>
+                    <span className="font-bold" style={{ color: 'var(--color-primary)' }}>
+                      {formatPrice(totalPrice)}
+                    </span>
                   </div>
                   <Button
                     data-testid="cart-checkout-button"
                     className="w-full text-white font-bold py-6 rounded-xl"
                     size="lg"
                     style={{
-                      background: `linear-gradient(to right, var(--color-primary), color-mix(in srgb, var(--color-primary) 85%, black))`
+                      background: `linear-gradient(to right, var(--color-primary), color-mix(in srgb, var(--color-primary) 85%, black))`,
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.background = `linear-gradient(to right, color-mix(in srgb, var(--color-primary) 85%, black), color-mix(in srgb, var(--color-primary) 70%, black))`
@@ -320,7 +348,10 @@ export function CartSheet({
           <>
             <div className="mt-8 flex flex-col gap-6 h-[calc(100vh-250px)] overflow-y-auto px-6">
               <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-base font-semibold text-gray-900 dark:text-white">
+                <Label
+                  htmlFor="fullName"
+                  className="text-base font-semibold text-gray-900 dark:text-white"
+                >
                   Nombre Completo <span className="text-red-500">*</span>
                 </Label>
                 <Input
@@ -339,7 +370,10 @@ export function CartSheet({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-base font-semibold text-gray-900 dark:text-white">
+                <Label
+                  htmlFor="email"
+                  className="text-base font-semibold text-gray-900 dark:text-white"
+                >
                   Email <span className="text-red-500">*</span>
                 </Label>
                 <Input
@@ -359,7 +393,10 @@ export function CartSheet({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone" className="text-base font-semibold text-gray-900 dark:text-white">
+                <Label
+                  htmlFor="phone"
+                  className="text-base font-semibold text-gray-900 dark:text-white"
+                >
                   Teléfono <span className="text-red-500">*</span>
                 </Label>
                 <Input
@@ -413,8 +450,12 @@ export function CartSheet({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="notes" className="text-base font-semibold text-gray-900 dark:text-white">
-                  Observaciones <span className="text-gray-400 dark:text-gray-600 text-sm">(opcional)</span>
+                <Label
+                  htmlFor="notes"
+                  className="text-base font-semibold text-gray-900 dark:text-white"
+                >
+                  Observaciones{' '}
+                  <span className="text-gray-400 dark:text-gray-600 text-sm">(opcional)</span>
                 </Label>
                 <Textarea
                   id="notes"
@@ -428,18 +469,25 @@ export function CartSheet({
                 />
               </div>
 
-              <div className="rounded-xl p-4 dark:bg-gray-800 dark:border-gray-700" style={{
-                background: 'color-mix(in srgb, var(--color-primary) 8%, white)',
-                border: '1px solid color-mix(in srgb, var(--color-primary) 20%, white)'
-              }}>
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Resumen del Pedido</h3>
+              <div
+                className="rounded-xl p-4 dark:bg-gray-800 dark:border-gray-700"
+                style={{
+                  background: 'color-mix(in srgb, var(--color-primary) 8%, white)',
+                  border: '1px solid color-mix(in srgb, var(--color-primary) 20%, white)',
+                }}
+              >
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
+                  Resumen del Pedido
+                </h3>
                 <div className="space-y-2">
                   {items.map((item) => (
                     <div key={item.productId} className="flex justify-between text-sm">
                       <span className="text-gray-600 dark:text-gray-400">
                         {item.quantity}x {item.name}
                       </span>
-                      <span className="font-semibold text-gray-900 dark:text-white">{formatPrice(item.price * item.quantity)}</span>
+                      <span className="font-semibold text-gray-900 dark:text-white">
+                        {formatPrice(item.price * item.quantity)}
+                      </span>
                     </div>
                   ))}
                   <Separator className="my-2" />
@@ -457,7 +505,7 @@ export function CartSheet({
                 className="w-full text-white font-bold py-6 rounded-xl"
                 size="lg"
                 style={{
-                  background: `linear-gradient(to right, var(--color-primary), color-mix(in srgb, var(--color-primary) 85%, black))`
+                  background: `linear-gradient(to right, var(--color-primary), color-mix(in srgb, var(--color-primary) 85%, black))`,
                 }}
                 onMouseEnter={(e) => {
                   if (!isSubmitting) {
@@ -491,4 +539,3 @@ export function CartSheet({
     </Sheet>
   )
 }
-

@@ -1,16 +1,16 @@
 'use client'
 
-import { useCartStore } from '@/lib/store/cart'
-import { X, Trash2 } from 'lucide-react'
-import { CheckoutModal } from './CheckoutModal'
+import { Trash2, X } from 'lucide-react'
 import { useState } from 'react'
+import { useCartStore } from '@/lib/store/cart'
+import { CheckoutModal } from './CheckoutModal'
 
 export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [checkoutOpen, setCheckoutOpen] = useState(false)
-  const items = useCartStore(state => state.items)
-  const removeItem = useCartStore(state => state.removeItem)
-  const updateQuantity = useCartStore(state => state.updateQuantity)
-  const getTotal = useCartStore(state => state.getTotal)
+  const items = useCartStore((state) => state.items)
+  const removeItem = useCartStore((state) => state.removeItem)
+  const updateQuantity = useCartStore((state) => state.updateQuantity)
+  const getTotal = useCartStore((state) => state.getTotal)
 
   if (!open) return null
 
@@ -36,10 +36,14 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
           {items.length === 0 ? (
             <p className="text-center text-gray-500 mt-8">Tu carrito está vacío</p>
           ) : (
-            items.map(item => (
+            items.map((item) => (
               <div key={item.product_id} className="flex gap-4 mb-4 border-b pb-4">
                 {item.image_url && (
-                  <img src={item.image_url} alt={item.name} className="w-16 h-16 object-cover rounded" />
+                  <img
+                    src={item.image_url}
+                    alt={item.name}
+                    className="w-16 h-16 object-cover rounded"
+                  />
                 )}
                 <div className="flex-1">
                   <h3 className="font-medium">{item.name}</h3>
@@ -52,7 +56,9 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
                     >
                       -
                     </button>
-                    <span className="mx-2" aria-label={`Cantidad: ${item.quantity}`}>{item.quantity}</span>
+                    <span className="mx-2" aria-label={`Cantidad: ${item.quantity}`}>
+                      {item.quantity}
+                    </span>
                     <button
                       onClick={() => updateQuantity(item.product_id, item.quantity + 1)}
                       className="px-2 py-1 border rounded"

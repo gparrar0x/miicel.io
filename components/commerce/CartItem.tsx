@@ -7,9 +7,9 @@
 'use client'
 
 import Image from 'next/image'
-import { QuantityControl } from './QuantityControl'
 import { useCartStore } from '@/lib/stores/cartStore'
 import type { CartItem as CartItemType } from '@/types/commerce'
+import { QuantityControl } from './QuantityControl'
 
 interface CartItemProps {
   item: CartItemType
@@ -82,12 +82,7 @@ export function CartItem({ item }: CartItemProps) {
             data-testid={`cart-item-${item.productId}-delete`}
             className="text-gray-400 hover:text-red-600 transition-colors p-1"
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -117,10 +112,7 @@ export function CartItem({ item }: CartItemProps) {
               {item.currency} {itemTotal.toFixed(2)}
             </p>
             {item.quantity > 1 && (
-              <p
-                className="text-xs"
-                style={{ color: 'var(--color-text-tertiary)' }}
-              >
+              <p className="text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
                 {item.currency} {item.price.toFixed(2)} each
               </p>
             )}

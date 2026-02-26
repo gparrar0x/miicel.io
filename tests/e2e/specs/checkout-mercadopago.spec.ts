@@ -9,7 +9,7 @@
  * Mocks MP sandbox redirects; does not test real MP integration.
  */
 
-import { test, expect, Page, BrowserContext, Route } from '@playwright/test'
+import { type BrowserContext, expect, type Page, type Route, test } from '@playwright/test'
 
 test.describe('MercadoPago Checkout - Happy Paths', () => {
   const TEST_TENANT = process.env.TEST_TENANT_SLUG || 'demo_galeria'
@@ -25,7 +25,13 @@ test.describe('MercadoPago Checkout - Happy Paths', () => {
     await page.goto(getBaseUrl(page))
   })
 
-  test('should complete checkout with valid MercadoPago form data', async ({ page, context }: { page: Page; context: BrowserContext }) => {
+  test('should complete checkout with valid MercadoPago form data', async ({
+    page,
+    context,
+  }: {
+    page: Page
+    context: BrowserContext
+  }) => {
     // Mock the API response for MercadoPago checkout
     await page.route('/api/checkout/create-preference', async (route: Route) => {
       await route.fulfill({

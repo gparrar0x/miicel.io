@@ -36,10 +36,7 @@ export async function GET() {
 
     if (error) {
       console.error('Error fetching tenants:', error)
-      return NextResponse.json(
-        { error: 'Failed to fetch tenants' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Failed to fetch tenants' }, { status: 500 })
     }
 
     // Map to required format
@@ -57,9 +54,6 @@ export async function GET() {
     return NextResponse.json(result)
   } catch (error) {
     console.error('Unexpected error in GET /api/tenants/list:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

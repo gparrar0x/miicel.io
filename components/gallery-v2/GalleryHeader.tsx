@@ -1,13 +1,13 @@
-"use client"
+'use client'
 
-import Link from "next/link"
-import { ShoppingBag, Menu } from "lucide-react"
-import { useCartStore } from "@/lib/stores/cartStore"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { CartSheet } from "./CartSheet"
-import { useState, useEffect } from "react"
-import { type TenantConfigResponse } from "@/lib/schemas/order"
+import { Menu, ShoppingBag } from 'lucide-react'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import type { TenantConfigResponse } from '@/lib/schemas/order'
+import { useCartStore } from '@/lib/stores/cartStore'
+import { CartSheet } from './CartSheet'
 
 interface GalleryHeaderProps {
   config: TenantConfigResponse
@@ -18,7 +18,7 @@ export function GalleryHeader({ config, tenantId }: GalleryHeaderProps) {
   const { getTotalItems } = useCartStore()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isCartOpen, setIsCartOpen] = useState(false)
-  
+
   // Hydration check
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
@@ -31,14 +31,25 @@ export function GalleryHeader({ config, tenantId }: GalleryHeaderProps) {
         <div className="flex items-center gap-4">
           <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden text-black hover:bg-gray-100">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden text-black hover:bg-gray-100"
+              >
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] sm:w-[400px] bg-white text-black border-r border-gray-200">
+            <SheetContent
+              side="left"
+              className="w-[300px] sm:w-[400px] bg-white text-black border-r border-gray-200"
+            >
               <nav className="flex flex-col gap-4 mt-8">
-                <Link href={`/${tenantId}`} className="text-lg font-medium hover:text-gray-600" onClick={() => setIsMenuOpen(false)}>
+                <Link
+                  href={`/${tenantId}`}
+                  className="text-lg font-medium hover:text-gray-600"
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   Gallery
                 </Link>
                 {/* Placeholders for future pages */}
@@ -59,27 +70,29 @@ export function GalleryHeader({ config, tenantId }: GalleryHeaderProps) {
               </nav>
             </SheetContent>
           </Sheet>
-          <Link href={`/${tenantId}`} className="text-xl font-serif font-bold tracking-tight uppercase">
+          <Link
+            href={`/${tenantId}`}
+            className="text-xl font-serif font-bold tracking-tight uppercase"
+          >
             {config.businessName}
           </Link>
         </div>
 
         <nav className="hidden md:flex items-center gap-6">
-          <Link href={`/${tenantId}`} className="text-sm font-medium hover:text-gray-600 transition-colors">
+          <Link
+            href={`/${tenantId}`}
+            className="text-sm font-medium hover:text-gray-600 transition-colors"
+          >
             Gallery
           </Link>
-          <span className="text-sm font-medium text-gray-400 cursor-not-allowed">
-            Collections
-          </span>
-          <span className="text-sm font-medium text-gray-400 cursor-not-allowed">
-            About
-          </span>
+          <span className="text-sm font-medium text-gray-400 cursor-not-allowed">Collections</span>
+          <span className="text-sm font-medium text-gray-400 cursor-not-allowed">About</span>
         </nav>
 
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="relative h-12 w-12 text-black hover:bg-gray-100 hover:text-black" 
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative h-12 w-12 text-black hover:bg-gray-100 hover:text-black"
           onClick={() => setIsCartOpen(true)}
         >
           <ShoppingBag className="h-6 w-6" />

@@ -18,8 +18,9 @@
  * - Password meets minimum requirements (8 chars)
  */
 
-import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { NextResponse } from 'next/server'
+import { getClientIp, rateLimitExceededResponse, ratelimitSignup } from '@/lib/rate-limit'
 import { signupRequestSchema } from '@/lib/schemas/order'
 import type { Database } from '@/types/database.types'
 
@@ -32,20 +33,24 @@ const supabaseAdmin = createClient<Database>(
       autoRefreshToken: false,
       persistSession: false,
     },
-  }
+  },
 )
 
 export async function POST(request: Request) {
+  // Rate limit: 5 req / 60 s per IP (account creation)
+  const ip = getClientIp(request)
+  const { success, limit, remaining, reset } = await ratelimitSignup.limit(ip)
+  if (!success) {
+    return rateLimitExceededResponse(limit, remaining, reset)
+  }
+
   try {
     // Parse and validate request body
     const body = await request.json()
     const validationResult = signupRequestSchema.safeParse(body)
 
     if (!validationResult.success) {
-      return NextResponse.json(
-        { error: validationResult.error.issues[0].message },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: validationResult.error.issues[0].message }, { status: 400 })
     }
 
     const { email, password, businessName, slug } = validationResult.data
@@ -60,7 +65,7 @@ export async function POST(request: Request) {
     if (existingTenant) {
       return NextResponse.json(
         { error: 'Slug already taken. Please choose a different one.' },
-        { status: 409 }
+        { status: 409 },
       )
     }
 
@@ -75,7 +80,7 @@ export async function POST(request: Request) {
       console.error('Auth creation failed:', authError)
       return NextResponse.json(
         { error: authError?.message || 'Failed to create user account' },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
@@ -116,21 +121,19 @@ export async function POST(request: Request) {
 
       return NextResponse.json(
         { error: 'Failed to create tenant. Please try again.' },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
     // Step 4: Create owner record in public.users
-    const { error: userError } = await supabaseAdmin
-      .from('users')
-      .insert({
-        tenant_id: tenantData.id,
-        email,
-        role: 'owner',
-        name: businessName,
-        auth_user_id: userId,
-        is_active: true,
-      })
+    const { error: userError } = await supabaseAdmin.from('users').insert({
+      tenant_id: tenantData.id,
+      email,
+      role: 'owner',
+      name: businessName,
+      auth_user_id: userId,
+      is_active: true,
+    })
 
     if (userError) {
       console.error('User record creation failed:', userError)
@@ -144,13 +147,13 @@ export async function POST(request: Request) {
         userId,
         tenantSlug: tenantData.slug,
       },
-      { status: 201 }
+      { status: 201 },
     )
   } catch (error) {
     console.error('Signup error:', error)
     return NextResponse.json(
       { error: 'Internal server error. Please try again later.' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

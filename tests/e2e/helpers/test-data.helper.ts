@@ -102,12 +102,7 @@ export function validateTestData(data: TestData): { valid: boolean; errors: stri
  */
 export const InvalidTestData = {
   // Invalid emails
-  invalidEmails: [
-    'notanemail',
-    'missing@domain',
-    '@nodomain.com',
-    'spaces in@email.com',
-  ],
+  invalidEmails: ['notanemail', 'missing@domain', '@nodomain.com', 'spaces in@email.com'],
 
   // Weak passwords
   weakPasswords: [

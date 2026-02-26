@@ -1,5 +1,5 @@
+import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { notFound, redirect } from 'next/navigation'
 import { NewLocationClient } from './NewLocationClient'
 
 interface PageProps {
@@ -16,8 +16,8 @@ export default async function NewLocationPage({ params }: PageProps) {
   const supabase = await createClient()
 
   // Get tenant
-  const numericId = parseInt(tenantId)
-  const isNumeric = !isNaN(numericId)
+  const numericId = parseInt(tenantId, 10)
+  const isNumeric = !Number.isNaN(numericId)
 
   const { data: tenant } = await supabase
     .from('tenants')

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;600&display=swap");
 @import "tailwindcss";
 @import "../styles/tokens.css";
 
@@ -9,19 +9,19 @@
 
 :root {
   /* Base Colors - Stark Monochrome */
-  --background: #FFFFFF;
+  --background: #ffffff;
   --foreground: #000000;
 
   /* Editorial Palette */
-  --color-paper: #F4F4F0;
+  --color-paper: #f4f4f0;
   /* Warm off-white for "paper" feel */
   --color-ink: #111111;
   /* Rich black */
 
   /* Electric Accents */
-  --color-electric-blue: #0047FF;
-  --color-acid-green: #CCFF00;
-  --color-hyper-purple: #8C52FF;
+  --color-electric-blue: #0047ff;
+  --color-acid-green: #ccff00;
+  --color-hyper-purple: #8c52ff;
 
   /* Tenant Theming Defaults (Overridden by ThemeProvider) */
   --color-primary: var(--color-electric-blue);
@@ -30,8 +30,8 @@
 
   /* Surfaces */
   --color-bg-base: var(--background);
-  --color-bg-elevated: #FFFFFF;
-  --color-bg-subtle: #F5F5F5;
+  --color-bg-elevated: #ffffff;
+  --color-bg-subtle: #f5f5f5;
 
   /* Text */
   --color-text-primary: var(--color-ink);
@@ -39,13 +39,13 @@
   --color-text-tertiary: #999999;
 
   /* Borders */
-  --color-border: #E5E5E5;
+  --color-border: #e5e5e5;
   --color-border-strong: #000000;
 
   /* Typography */
-  --font-display: 'Cinzel', serif;
-  --font-body: 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: "Cinzel", serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
 
   /* Spacing & Layout */
   --spacing-unit: 4px;
@@ -85,16 +85,16 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #050505;
-    --foreground: #FFFFFF;
-    --color-paper: #0A0A0A;
-    --color-ink: #FFFFFF;
+    --foreground: #ffffff;
+    --color-paper: #0a0a0a;
+    --color-ink: #ffffff;
     --color-bg-base: #000000;
     --color-bg-elevated: #111111;
-    --color-bg-subtle: #1A1A1A;
-    --color-text-primary: #FFFFFF;
-    --color-text-secondary: #A1A1A1;
+    --color-bg-subtle: #1a1a1a;
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #a1a1a1;
     --color-border: #333333;
-    --color-border-strong: #FFFFFF;
+    --color-border-strong: #ffffff;
   }
 }
 
@@ -118,7 +118,10 @@ body {
 
 /* Custom Cursor */
 .cursor-view {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="30" style="font-size: 12px; font-family: monospace; font-weight: bold; fill: black; background: white;"><rect width="100%" height="100%" fill="white" stroke="black"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">VIEW</text></svg>') 50 15, auto;
+  cursor:
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="30" style="font-size: 12px; font-family: monospace; font-weight: bold; fill: black; background: white;"><rect width="100%" height="100%" fill="white" stroke="black"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">VIEW</text></svg>')
+    50 15,
+    auto;
 }
 
 /* Noise Texture Overlay */

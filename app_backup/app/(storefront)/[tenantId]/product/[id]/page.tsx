@@ -9,17 +9,14 @@
  */
 
 import { notFound } from 'next/navigation'
+import { ProductImageCarousel } from '@/components/commerce/ProductImageCarousel'
 import { TenantHeader } from '@/components/commerce/TenantHeader'
 import { ThemeProvider } from '@/components/commerce/ThemeProvider'
-import { ProductImageCarousel } from '@/components/commerce/ProductImageCarousel'
-import { ColorSelector } from '@/components/commerce/ColorSelector'
-import { QuantityControl } from '@/components/commerce/QuantityControl'
-import { AddToCartButton } from '@/components/commerce/AddToCartButton'
-import { ProductClient } from './ProductClient'
 import { ArtworkDetail } from '@/components/gallery-v2/ArtworkDetail'
 import { tenantConfigResponseSchema } from '@/lib/schemas/order'
 import { createClient } from '@/lib/supabase/server'
 import type { Product, ProductColor } from '@/types/commerce'
+import { ProductClient } from './ProductClient'
 
 interface PageProps {
   params: Promise<{ tenantId: string; id: string }>
@@ -81,10 +78,7 @@ async function getProduct(id: string): Promise<Product | null> {
 
 export default async function ProductPage({ params }: PageProps) {
   const { tenantId, id } = await params
-  const [config, product] = await Promise.all([
-    getTenantConfig(tenantId),
-    getProduct(id),
-  ])
+  const [config, product] = await Promise.all([getTenantConfig(tenantId), getProduct(id)])
 
   if (!config || !product) {
     notFound()
@@ -111,14 +105,16 @@ export default async function ProductPage({ params }: PageProps) {
       image: product.images[0] || '/placeholder.svg',
       price: product.price,
       currency: product.currency,
-      sizes: [{
-        id: 'default',
-        dimensions: 'Standard',
-        price: product.price,
-        stock: product.stock,
-        label: 'Standard'
-      }],
-      isLimitedEdition: product.isLimited || false
+      sizes: [
+        {
+          id: 'default',
+          dimensions: 'Standard',
+          price: product.price,
+          stock: product.stock,
+          label: 'Standard',
+        },
+      ],
+      isLimitedEdition: product.isLimited || false,
     }
 
     return (
@@ -191,9 +187,7 @@ export default async function ProductPage({ params }: PageProps) {
                     data-testid={`product-${product.id}-stock`}
                   >
                     {product.stock > 0 ? (
-                      <span className="text-green-600">
-                        In stock ({product.stock} available)
-                      </span>
+                      <span className="text-green-600">In stock ({product.stock} available)</span>
                     ) : (
                       <span className="text-red-600">Out of stock</span>
                     )}
@@ -201,10 +195,7 @@ export default async function ProductPage({ params }: PageProps) {
                 )}
 
                 {/* Client-side interactive components */}
-                <ProductClient
-                  product={product}
-                  maxQuantity={Math.min(product.stock, 99)}
-                />
+                <ProductClient product={product} maxQuantity={Math.min(product.stock, 99)} />
               </div>
             </div>
           </div>

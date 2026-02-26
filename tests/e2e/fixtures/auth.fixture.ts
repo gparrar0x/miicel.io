@@ -1,4 +1,4 @@
-import { Page, expect } from '@playwright/test'
+import type { Page } from '@playwright/test'
 
 /**
  * Auth fixture helpers for E2E tests
@@ -23,7 +23,7 @@ const TEST_USERS = {
  * @param page - Playwright page object
  * @param tenantSlug - Tenant slug for redirect (default: demo_galeria)
  */
-export async function loginAsOwner(page: Page, tenantSlug: string = 'demo_galeria') {
+export async function loginAsOwner(page: Page, _tenantSlug: string = 'demo_galeria') {
   // Navigate to login page
   await page.goto('/es/login')
 
@@ -35,7 +35,7 @@ export async function loginAsOwner(page: Page, tenantSlug: string = 'demo_galeri
   await page.getByTestId('login-submit-button').click()
 
   // Wait for redirect away from /login (successful login redirects to tenant dashboard or root)
-  await page.waitForURL(url => !url.pathname.includes('/login'), { timeout: 10000 })
+  await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 10000 })
 
   // Wait for page to stabilize
   await page.waitForLoadState('networkidle')
@@ -48,7 +48,7 @@ export async function loginAsOwner(page: Page, tenantSlug: string = 'demo_galeri
  * @param page - Playwright page object
  * @param tenantSlug - Tenant slug for redirect (default: demo_galeria)
  */
-export async function loginAsNonOwner(page: Page, tenantSlug: string = 'demo_galeria') {
+export async function loginAsNonOwner(page: Page, _tenantSlug: string = 'demo_galeria') {
   // Navigate to login page
   await page.goto('/es/login')
 
@@ -60,7 +60,7 @@ export async function loginAsNonOwner(page: Page, tenantSlug: string = 'demo_gal
   await page.getByTestId('login-submit-button').click()
 
   // Wait for redirect away from /login
-  await page.waitForURL(url => !url.pathname.includes('/login'), { timeout: 10000 })
+  await page.waitForURL((url) => !url.pathname.includes('/login'), { timeout: 10000 })
 
   // Wait for page to stabilize
   await page.waitForLoadState('networkidle')
@@ -96,7 +96,7 @@ export async function logout(page: Page) {
 export async function getCurrentUser(page: Page) {
   // Check if user is authenticated by looking for auth cookies
   const cookies = await page.context().cookies()
-  const hasAuthCookie = cookies.some(c => c.name.includes('sb-') && c.name.includes('auth-token'))
+  const hasAuthCookie = cookies.some((c) => c.name.includes('sb-') && c.name.includes('auth-token'))
 
   return hasAuthCookie ? { authenticated: true } : null
 }

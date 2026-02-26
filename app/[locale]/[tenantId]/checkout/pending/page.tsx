@@ -6,9 +6,9 @@
 
 'use client'
 
+import { AlertCircle, ArrowLeft, Clock } from 'lucide-react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { Link } from '@/i18n/routing'
-import { Clock, ArrowLeft, AlertCircle } from 'lucide-react'
 
 export default function CheckoutPendingPage() {
   const params = useParams()
@@ -27,7 +27,10 @@ export default function CheckoutPendingPage() {
 
         {/* Pending Message */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-3" data-testid="checkout-pending-title">
+          <h1
+            className="text-2xl font-bold text-gray-900 mb-3"
+            data-testid="checkout-pending-title"
+          >
             Payment Pending
           </h1>
           <p className="text-gray-600 mb-2" data-testid="checkout-pending-message">
@@ -43,10 +46,7 @@ export default function CheckoutPendingPage() {
           )}
           {paymentId && (
             <p className="text-sm text-gray-500">
-              Payment ID:{' '}
-              <span className="font-mono font-medium">
-                {paymentId}
-              </span>
+              Payment ID: <span className="font-mono font-medium">{paymentId}</span>
             </p>
           )}
         </div>

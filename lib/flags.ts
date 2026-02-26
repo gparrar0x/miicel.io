@@ -38,7 +38,7 @@ const CACHE_TTL_MS = 60_000 // 1 minute
 export interface FeatureFlagRules {
   tenants?: number[]
   users?: string[]
-  templates?: string[]  // e.g., ['gallery', 'gastronomy']
+  templates?: string[] // e.g., ['gallery', 'gastronomy']
   percentage?: number
   environments?: string[]
 }
@@ -55,7 +55,7 @@ export interface FeatureFlag {
 
 export interface FlagContext {
   tenantId?: number
-  tenantTemplate?: string  // 'gallery' | 'gastronomy' | etc
+  tenantTemplate?: string // 'gallery' | 'gastronomy' | etc
   userId?: string
   environment?: string
 }
@@ -71,10 +71,7 @@ export interface FlagContext {
  * 5. If rules.percentage exists, deterministic hash check
  * 6. If no targeting rules, flag is enabled for all
  */
-export async function isEnabled(
-  key: string,
-  context: FlagContext = {}
-): Promise<boolean> {
+export async function isEnabled(key: string, context: FlagContext = {}): Promise<boolean> {
   const flag = await getFlag(key)
 
   if (!flag || !flag.enabled) {
@@ -149,11 +146,7 @@ export async function getFlag(key: string): Promise<FeatureFlag | null> {
 
   // Fetch from DB
   const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('feature_flags')
-    .select('*')
-    .eq('key', key)
-    .single()
+  const { data, error } = await supabase.from('feature_flags').select('*').eq('key', key).single()
 
   if (error || !data) {
     return null
@@ -172,10 +165,7 @@ export async function getFlag(key: string): Promise<FeatureFlag | null> {
  */
 export async function getAllFlags(): Promise<FeatureFlag[]> {
   const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('feature_flags')
-    .select('*')
-    .order('key')
+  const { data, error } = await supabase.from('feature_flags').select('*').order('key')
 
   if (error) {
     console.error('[flags] Failed to fetch flags:', error)

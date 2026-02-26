@@ -1,6 +1,6 @@
-import * as React from 'react'
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
+import type * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -9,15 +9,15 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] border-2 border-[var(--btn-primary-border)] hover:bg-[var(--btn-primary-hover-bg)] shadow-[var(--btn-primary-shadow)]',
+        default:
+          'bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] border-2 border-[var(--btn-primary-border)] hover:bg-[var(--btn-primary-hover-bg)] shadow-[var(--btn-primary-shadow)]',
         destructive:
           'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
         outline:
           'bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-text)] border-2 border-[var(--btn-secondary-border)] hover:bg-[var(--btn-secondary-hover-bg)] shadow-[var(--btn-secondary-shadow)]',
         secondary:
           'bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-text)] border-2 border-[var(--btn-secondary-border)] hover:bg-[var(--btn-secondary-hover-bg)] shadow-[var(--btn-secondary-shadow)]',
-        ghost:
-          'hover:bg-[var(--color-bg-secondary)] hover:text-[var(--color-text-primary)]',
+        ghost: 'hover:bg-[var(--color-bg-secondary)] hover:text-[var(--color-text-primary)]',
         link: 'text-[var(--color-text-primary)] underline-offset-4 hover:underline',
       },
       size: {
@@ -58,4 +58,3 @@ function Button({
 }
 
 export { Button, buttonVariants }
-

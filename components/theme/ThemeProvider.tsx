@@ -32,7 +32,7 @@
 
 'use client'
 
-import { createContext, useContext, ReactNode, useMemo } from 'react'
+import { createContext, type ReactNode, useContext, useMemo } from 'react'
 import type { ResolvedTheme, SpacingMode } from '@/types/theme'
 
 const ThemeContext = createContext<ResolvedTheme | null>(null)

@@ -15,10 +15,10 @@
 
 import { useState } from 'react'
 import { useCartStore } from '@/lib/stores/cartStore'
-import { ImageGallery } from './ImageGallery'
-import { ProductInfo } from './ProductInfo'
-import { OptionsSelector } from './OptionsSelector'
 import { AddToCartSticky } from './AddToCartSticky'
+import { ImageGallery } from './ImageGallery'
+import { OptionsSelector } from './OptionsSelector'
+import { ProductInfo } from './ProductInfo'
 
 interface ImageData {
   id: string
@@ -73,9 +73,7 @@ export function ProductDetailWrapper({
   const [isAdding, setIsAdding] = useState(false)
   const addToCart = useCartStore((state) => state.addItem)
 
-  const selectedOption = product.options.find(
-    (opt) => opt.id === selectedOptionId
-  )
+  const selectedOption = product.options.find((opt) => opt.id === selectedOptionId)
 
   const handleAddToCart = async () => {
     if (!selectedOption) return

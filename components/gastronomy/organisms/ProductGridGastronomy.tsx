@@ -10,8 +10,8 @@
 
 'use client'
 
-import { Product } from '@/types/commerce'
-import { BadgeType } from '@/lib/themes/gastronomy'
+import type { BadgeType } from '@/lib/themes/gastronomy'
+import type { Product } from '@/types/commerce'
 import { ProductCardGastronomy } from '../molecules/ProductCardGastronomy'
 
 interface ProductGridGastronomyProps {
@@ -33,7 +33,10 @@ function getProductBadges(product: Product): BadgeType[] {
   if (product.name.toLowerCase().includes('nuevo')) badges.push('nuevo')
   if (product.name.toLowerCase().includes('promo')) badges.push('promo')
   if (product.name.toLowerCase().includes('picante')) badges.push('spicy-hot')
-  if (product.name.toLowerCase().includes('veggie') || product.name.toLowerCase().includes('vegetariano')) {
+  if (
+    product.name.toLowerCase().includes('veggie') ||
+    product.name.toLowerCase().includes('vegetariano')
+  ) {
     badges.push('veggie')
   }
   if (product.name.toLowerCase().includes('vegano')) badges.push('vegan')
@@ -60,10 +63,7 @@ export function ProductGridGastronomy({
   }
 
   return (
-    <div
-      data-testid="product-grid-gastronomy"
-      className={`py-1 ${className}`}
-    >
+    <div data-testid="product-grid-gastronomy" className={`py-1 ${className}`}>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
         {products.map((product) => (
           <ProductCardGastronomy

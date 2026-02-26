@@ -26,10 +26,10 @@ type RouteParams = {
 export async function DELETE(request: Request, { params }: RouteParams) {
   try {
     const { id, artworkId } = await params
-    const locationId = parseInt(id)
-    const workId = parseInt(artworkId)
+    const locationId = parseInt(id, 10)
+    const workId = parseInt(artworkId, 10)
 
-    if (isNaN(locationId) || isNaN(workId)) {
+    if (Number.isNaN(locationId) || Number.isNaN(workId)) {
       return NextResponse.json({ error: 'Invalid location or artwork ID' }, { status: 400 })
     }
 
@@ -49,11 +49,11 @@ export async function DELETE(request: Request, { params }: RouteParams) {
     const { searchParams } = new URL(request.url)
     const tenantIdStr = searchParams.get('tenant_id')
 
-    if (!tenantIdStr || isNaN(parseInt(tenantIdStr))) {
+    if (!tenantIdStr || Number.isNaN(parseInt(tenantIdStr, 10))) {
       return NextResponse.json({ error: 'Valid tenant_id required' }, { status: 400 })
     }
 
-    const tenantId = parseInt(tenantIdStr)
+    const tenantId = parseInt(tenantIdStr, 10)
 
     // Verify tenant ownership
     const { data: tenant, error: tenantError } = await supabase

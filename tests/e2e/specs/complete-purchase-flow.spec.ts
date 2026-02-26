@@ -12,7 +12,7 @@
  * Uses data-testid selectors per TEST_ID_CONTRACT.md
  */
 
-import { test, expect, Page, Route } from '@playwright/test'
+import { expect, type Page, type Route, test } from '@playwright/test'
 
 test.describe('Complete Purchase Flow - Happy Path', () => {
   const TEST_TENANT = 'demo_galeria'
@@ -31,16 +31,16 @@ test.describe('Complete Purchase Flow - Happy Path', () => {
       email: 'buyer@test.com',
       phone: '5491155667788',
     },
-    items: [
-      { name: 'Producto Test', quantity: 1, price: 1500.0, currency: 'ARS' },
-    ],
+    items: [{ name: 'Producto Test', quantity: 1, price: 1500.0, currency: 'ARS' }],
     total: 1500.0,
     currency: 'ARS',
     paymentMethod: 'mercadopago',
     status: 'paid', // Important: enables WhatsApp button
   }
 
-  test('should complete full purchase journey: catalog → cart → checkout → MP → success → WhatsApp', async ({ page }) => {
+  test('should complete full purchase journey: catalog → cart → checkout → MP → success → WhatsApp', async ({
+    page,
+  }) => {
     // ========================================
     // STEP 1: Browse Catalog
     // ========================================
@@ -153,7 +153,9 @@ test.describe('Complete Purchase Flow - Happy Path', () => {
 
     // Verify customer info
     await expect(page.getByTestId('checkout-success-customer-name')).toContainText('Test Buyer')
-    await expect(page.getByTestId('checkout-success-customer-email')).toContainText('buyer@test.com')
+    await expect(page.getByTestId('checkout-success-customer-email')).toContainText(
+      'buyer@test.com',
+    )
 
     // Verify order items
     await expect(page.getByTestId('checkout-success-item-0')).toBeVisible()
@@ -193,7 +195,9 @@ test.describe('Complete Purchase Flow - Happy Path', () => {
     })
 
     // Simulate MercadoPago callback URL with all params
-    await page.goto(`${getBaseUrl(page)}/checkout/success?collection_id=123456&collection_status=approved&payment_id=123456&status=approved&external_reference=88888&payment_type=credit_card&merchant_order_id=789&preference_id=pref-xyz`)
+    await page.goto(
+      `${getBaseUrl(page)}/checkout/success?collection_id=123456&collection_status=approved&payment_id=123456&status=approved&external_reference=88888&payment_type=credit_card&merchant_order_id=789&preference_id=pref-xyz`,
+    )
 
     await page.waitForLoadState('networkidle')
 
@@ -205,7 +209,9 @@ test.describe('Complete Purchase Flow - Happy Path', () => {
     await expect(page.getByTestId('checkout-success-payment-status')).toContainText('approved')
   })
 
-  test('should handle cash payment flow without WhatsApp button until confirmed', async ({ page }) => {
+  test('should handle cash payment flow without WhatsApp button until confirmed', async ({
+    page,
+  }) => {
     // Mock order with pending status (cash payment)
     await page.route('/api/orders/77777', async (route: Route) => {
       await route.fulfill({

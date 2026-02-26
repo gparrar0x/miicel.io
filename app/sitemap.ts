@@ -1,4 +1,4 @@
-import { MetadataRoute } from 'next'
+import type { MetadataRoute } from 'next'
 import { createClient } from '@/lib/supabase/server'
 
 const BASE_URL = 'https://miicel.io'
@@ -62,7 +62,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .limit(100)
 
       if (products && products.length > 0) {
-        products.forEach(product => {
+        products.forEach((product) => {
           routes.push({
             url: `${BASE_URL}/${locale}/${tenant.slug}/products/p/${product.id}`,
             lastModified: new Date(product.updated_at || Date.now()),

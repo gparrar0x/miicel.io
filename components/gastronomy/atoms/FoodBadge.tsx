@@ -10,7 +10,7 @@
 
 'use client'
 
-import { BadgeType, BADGE_CONFIG } from '@/lib/themes/gastronomy'
+import { BADGE_CONFIG, type BadgeType } from '@/lib/themes/gastronomy'
 
 interface FoodBadgeProps {
   type: BadgeType
@@ -33,7 +33,9 @@ export function FoodBadge({ type, className = '' }: FoodBadgeProps) {
         color: config.text,
       }}
     >
-      <span className="text-sm" aria-hidden="true">{config.icon}</span>
+      <span className="text-sm" aria-hidden="true">
+        {config.icon}
+      </span>
       <span>{config.label}</span>
     </span>
   )

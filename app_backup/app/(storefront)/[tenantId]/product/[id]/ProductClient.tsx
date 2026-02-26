@@ -8,9 +8,9 @@
 'use client'
 
 import { useState } from 'react'
+import { AddToCartButton } from '@/components/commerce/AddToCartButton'
 import { ColorSelector } from '@/components/commerce/ColorSelector'
 import { QuantityControl } from '@/components/commerce/QuantityControl'
-import { AddToCartButton } from '@/components/commerce/AddToCartButton'
 import type { Product } from '@/types/commerce'
 
 interface ProductClientProps {
@@ -19,9 +19,7 @@ interface ProductClientProps {
 }
 
 export function ProductClient({ product, maxQuantity }: ProductClientProps) {
-  const [selectedColorId, setSelectedColorId] = useState<string | undefined>(
-    product.colors[0]?.id
-  )
+  const [selectedColorId, setSelectedColorId] = useState<string | undefined>(product.colors[0]?.id)
   const [quantity, setQuantity] = useState(1)
 
   const selectedColor = product.colors.find((c) => c.id === selectedColorId)
@@ -66,7 +64,10 @@ export function ProductClient({ product, maxQuantity }: ProductClientProps) {
       />
 
       {isOutOfStock && (
-        <p className="text-sm text-red-600" data-testid={`product-${product.id}-out-of-stock-message`}>
+        <p
+          className="text-sm text-red-600"
+          data-testid={`product-${product.id}-out-of-stock-message`}
+        >
           This product is currently out of stock.
         </p>
       )}

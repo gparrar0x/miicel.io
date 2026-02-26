@@ -16,15 +16,17 @@
  * Automatically cleans up tenant, user, products, and uploaded files after test.
  */
 
-import { test, expect } from '../fixtures/database.fixture'
-import { SignupPage } from '../pages/signup.page'
-import { OnboardingWizardPage, type ProductData } from '../pages/onboarding.page'
+import * as path from 'node:path'
+import { expect, test } from '../fixtures/database.fixture'
 import { generateTestData } from '../helpers/test-data.helper'
-import * as path from 'path'
+import { OnboardingWizardPage, type ProductData } from '../pages/onboarding.page'
+import { SignupPage } from '../pages/signup.page'
 
 test.describe('Complete Signup & Onboarding Flow - Happy Path', () => {
-
-  test('should complete full journey: signup → onboarding → active storefront', async ({ page, dbCleanup }) => {
+  test('should complete full journey: signup → onboarding → active storefront', async ({
+    page,
+    dbCleanup,
+  }) => {
     // ========================================================================
     // STEP 1: SIGNUP
     // ========================================================================
@@ -38,20 +40,20 @@ test.describe('Complete Signup & Onboarding Flow - Happy Path', () => {
         name: 'Producto Test 1',
         price: 99.99,
         category: 'Electronica',
-        stock: 10
+        stock: 10,
       },
       {
         name: 'Producto Test 2',
-        price: 49.50,
+        price: 49.5,
         category: 'Ropa',
-        stock: 25
+        stock: 25,
       },
       {
         name: 'Producto Test 3',
-        price: 149.00,
+        price: 149.0,
         category: 'Hogar',
-        stock: 5
-      }
+        stock: 5,
+      },
     ]
 
     // ACT: Navigate to signup and complete registration
@@ -88,7 +90,7 @@ test.describe('Complete Signup & Onboarding Flow - Happy Path', () => {
     // Complete all 5 steps of onboarding
     const storefrontPage = await wizard.completeOnboarding({
       logoPath: testLogoPath,
-      products: testProducts
+      products: testProducts,
     })
 
     console.log('✅ Onboarding complete!')
@@ -118,7 +120,7 @@ test.describe('Complete Signup & Onboarding Flow - Happy Path', () => {
     // Clean up tenant, user, and all related data
     await dbCleanup({
       tenantSlug: testData.slug,
-      userEmail: testData.email
+      userEmail: testData.email,
     })
 
     console.log('✅ Cleanup complete!')
@@ -133,8 +135,8 @@ test.describe('Complete Signup & Onboarding Flow - Happy Path', () => {
         name: 'Producto Sin Logo',
         price: 29.99,
         category: 'Test',
-        stock: 100
-      }
+        stock: 100,
+      },
     ]
 
     // ACT: Signup
@@ -171,8 +173,7 @@ test.describe('Complete Signup & Onboarding Flow - Happy Path', () => {
     // CLEANUP
     await dbCleanup({
       tenantSlug: testData.slug,
-      userEmail: testData.email
+      userEmail: testData.email,
     })
   })
-
 })

@@ -12,7 +12,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 interface QuickAddButtonProps {
   productId: string
@@ -21,7 +21,12 @@ interface QuickAddButtonProps {
   disabled?: boolean
 }
 
-export function QuickAddButton({ productId, onClick, className = '', disabled = false }: QuickAddButtonProps) {
+export function QuickAddButton({
+  productId,
+  onClick,
+  className = '',
+  disabled = false,
+}: QuickAddButtonProps) {
   const [loading, setLoading] = useState(false)
   const [added, setAdded] = useState(false)
 
@@ -55,11 +60,12 @@ export function QuickAddButton({ productId, onClick, className = '', disabled = 
         px-4 py-2 rounded-lg font-medium text-sm
         min-h-[48px]
         transition-all duration-200
-        ${loading || disabled
-          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-          : added
-            ? 'bg-green-500 text-white'
-            : 'bg-green-600 text-white hover:bg-green-700 active:scale-95'
+        ${
+          loading || disabled
+            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            : added
+              ? 'bg-green-500 text-white'
+              : 'bg-green-600 text-white hover:bg-green-700 active:scale-95'
         }
         ${className}
       `}

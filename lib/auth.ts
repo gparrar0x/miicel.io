@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 export function isSuperAdmin(email: string | null | undefined): boolean {
   if (!email) return false
 
-  const superAdmins = process.env.SUPER_ADMINS?.split(',').map(e => e.trim()) || []
+  const superAdmins = process.env.SUPER_ADMINS?.split(',').map((e) => e.trim()) || []
   return superAdmins.includes(email)
 }
 
@@ -20,10 +20,13 @@ export async function getServerSession() {
           return cookieStore.get(name)?.value
         },
       },
-    }
+    },
   )
 
-  const { data: { session }, error } = await supabase.auth.getSession()
+  const {
+    data: { session },
+    error,
+  } = await supabase.auth.getSession()
 
   return { session, error }
 }

@@ -10,7 +10,7 @@
  * Tests read-only operations (no data creation needed)
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { loginAsOwner } from '../../fixtures/auth.fixture'
 
 test.describe('Admin Orders Management - Happy Path', () => {

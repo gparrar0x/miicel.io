@@ -14,7 +14,7 @@ export const whatsappNumberSchema = z
   .string()
   .regex(
     /^\+?[1-9]\d{1,14}$/,
-    'WhatsApp number must be in international format (e.g., +1234567890)'
+    'WhatsApp number must be in international format (e.g., +1234567890)',
   )
   .max(20, 'WhatsApp number cannot exceed 20 characters')
   .nullable()

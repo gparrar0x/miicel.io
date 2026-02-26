@@ -1,10 +1,10 @@
 'use client'
 
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Image as ImageIcon, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { productSchema, type ProductFormData } from '@/lib/schemas/onboarding'
-import { Plus, Trash2, Image as ImageIcon } from 'lucide-react'
+import { type ProductFormData, productSchema } from '@/lib/schemas/onboarding'
 
 interface Product extends Omit<ProductFormData, 'image'> {
   imagePreview?: string
@@ -23,9 +23,9 @@ export function ProductForm({ products, onProductsChange }: ProductFormProps) {
     handleSubmit,
     reset,
     watch,
-    formState: { errors }
+    formState: { errors },
   } = useForm<ProductFormData>({
-    resolver: zodResolver(productSchema)
+    resolver: zodResolver(productSchema),
   })
 
   const imageFile = watch('image')
@@ -49,7 +49,7 @@ export function ProductForm({ products, onProductsChange }: ProductFormProps) {
       price: Number(data.price),
       category: data.category,
       stock: Number(data.stock),
-      imagePreview: file ? URL.createObjectURL(file) : undefined
+      imagePreview: file ? URL.createObjectURL(file) : undefined,
     }
 
     if (editingIndex !== null) {
@@ -74,7 +74,7 @@ export function ProductForm({ products, onProductsChange }: ProductFormProps) {
       name: product.name,
       price: Number(product.price),
       category: product.category,
-      stock: Number(product.stock)
+      stock: Number(product.stock),
     })
     setEditingIndex(index)
   }
@@ -100,7 +100,12 @@ export function ProductForm({ products, onProductsChange }: ProductFormProps) {
                   />
                 )}
                 <div className="flex-1">
-                  <h4 className="font-medium text-gray-900" data-testid={`onboarding-product-name-${index}`}>{product.name}</h4>
+                  <h4
+                    className="font-medium text-gray-900"
+                    data-testid={`onboarding-product-name-${index}`}
+                  >
+                    {product.name}
+                  </h4>
                   <p className="text-sm text-gray-600">
                     ${product.price} · {product.category} · Stock: {product.stock}
                   </p>
@@ -130,7 +135,10 @@ export function ProductForm({ products, onProductsChange }: ProductFormProps) {
       )}
 
       {/* Add product form */}
-      <form onSubmit={handleSubmit(onAddProduct)} className="space-y-4 p-6 border-2 border-dashed border-gray-300 rounded-lg">
+      <form
+        onSubmit={handleSubmit(onAddProduct)}
+        className="space-y-4 p-6 border-2 border-dashed border-gray-300 rounded-lg"
+      >
         <h3 className="font-medium text-gray-900">
           {editingIndex !== null ? 'Editar producto' : 'Agregar nuevo producto'}
         </h3>
@@ -147,16 +155,12 @@ export function ProductForm({ products, onProductsChange }: ProductFormProps) {
               placeholder="Ej: Remera negra"
               data-testid="onboarding-product-name-input"
             />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-            )}
+            {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
           </div>
 
           {/* Price */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Precio
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Precio</label>
             <input
               {...register('price', { valueAsNumber: true })}
               type="number"
@@ -165,16 +169,12 @@ export function ProductForm({ products, onProductsChange }: ProductFormProps) {
               placeholder="0.00"
               data-testid="onboarding-product-price-input"
             />
-            {errors.price && (
-              <p className="mt-1 text-sm text-red-600">{errors.price.message}</p>
-            )}
+            {errors.price && <p className="mt-1 text-sm text-red-600">{errors.price.message}</p>}
           </div>
 
           {/* Category */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Categoria
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
             <input
               {...register('category')}
               className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -188,9 +188,7 @@ export function ProductForm({ products, onProductsChange }: ProductFormProps) {
 
           {/* Stock */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Stock inicial
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Stock inicial</label>
             <input
               {...register('stock', { valueAsNumber: true })}
               type="number"
@@ -198,9 +196,7 @@ export function ProductForm({ products, onProductsChange }: ProductFormProps) {
               placeholder="0"
               data-testid="onboarding-product-stock-input"
             />
-            {errors.stock && (
-              <p className="mt-1 text-sm text-red-600">{errors.stock.message}</p>
-            )}
+            {errors.stock && <p className="mt-1 text-sm text-red-600">{errors.stock.message}</p>}
           </div>
         </div>
 
@@ -213,7 +209,7 @@ export function ProductForm({ products, onProductsChange }: ProductFormProps) {
             <label className="flex-1 flex items-center justify-center gap-2 px-4 py-8 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
               <ImageIcon size={24} className="text-gray-400" />
               <span className="text-sm text-gray-600">
-                {getImageFile() ? getImageFile()!.name : 'Click para subir imagen'}
+                {getImageFile() ? getImageFile()?.name : 'Click para subir imagen'}
               </span>
               <input
                 {...register('image')}

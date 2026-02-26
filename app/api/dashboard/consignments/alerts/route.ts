@@ -55,14 +55,14 @@ export async function GET(request: Request) {
     const tenantIdStr = searchParams.get('tenant_id')
     const minDaysStr = searchParams.get('min_days') || '60'
 
-    if (!tenantIdStr || isNaN(parseInt(tenantIdStr))) {
+    if (!tenantIdStr || Number.isNaN(parseInt(tenantIdStr, 10))) {
       return NextResponse.json({ error: 'Valid tenant_id required' }, { status: 400 })
     }
 
-    const tenantId = parseInt(tenantIdStr)
-    const minDays = parseInt(minDaysStr)
+    const tenantId = parseInt(tenantIdStr, 10)
+    const minDays = parseInt(minDaysStr, 10)
 
-    if (isNaN(minDays) || minDays < 1) {
+    if (Number.isNaN(minDays) || minDays < 1) {
       return NextResponse.json({ error: 'min_days must be >= 1' }, { status: 400 })
     }
 
@@ -106,7 +106,7 @@ export async function GET(request: Request) {
           name,
           city
         )
-      `
+      `,
       )
       .eq('tenant_id', tenantId)
       .eq('status', 'in_gallery')
@@ -124,7 +124,9 @@ export async function GET(request: Request) {
     const items =
       assignments?.map((assignment: any) => {
         const assignedDate = new Date(assignment.assigned_date)
-        const daysInGallery = Math.floor((now.getTime() - assignedDate.getTime()) / (1000 * 60 * 60 * 24))
+        const daysInGallery = Math.floor(
+          (now.getTime() - assignedDate.getTime()) / (1000 * 60 * 60 * 24),
+        )
 
         return {
           assignment_id: assignment.id,

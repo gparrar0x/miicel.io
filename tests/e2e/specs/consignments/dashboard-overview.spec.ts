@@ -9,7 +9,7 @@
  * - Quick action buttons
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { loginAsOwner } from '../../fixtures/auth.fixture'
 import { ConsignmentsPage } from '../../pages/consignments.page'
 

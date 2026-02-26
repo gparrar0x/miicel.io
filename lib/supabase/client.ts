@@ -1,30 +1,11 @@
 /**
- * Supabase Client for Client Components
+ * Supabase browser client — typed wrapper over @skywalking/core.
  *
- * Use this in Client Components (with 'use client' directive)
- * Automatically handles cookies and session management
- *
- * @example
- * ```tsx
- * 'use client'
- * import { createClient } from '@/lib/supabase/client'
- *
- * export default function MyComponent() {
- *   const supabase = createClient()
- *
- *   async function fetchData() {
- *     const { data } = await supabase.from('products').select('*')
- *   }
- * }
- * ```
+ * Use in Client Components ('use client') only.
  */
-
-import { createBrowserClient } from '@supabase/ssr'
+import { createClient as _createClient } from '@skywalking/core/supabase/client'
 import type { Database } from '@/types/database.types'
 
 export function createClient() {
-  return createBrowserClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  return _createClient<Database>()
 }

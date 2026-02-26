@@ -5,8 +5,8 @@
  * Used on artwork detail pages to show timeline
  */
 
-import { useState, useCallback, useEffect } from 'react'
-import { MovementTimeline, ConsignmentError } from '@/lib/types/consignment'
+import { useCallback, useEffect, useState } from 'react'
+import type { ConsignmentError, MovementTimeline } from '@/lib/types/consignment'
 
 interface UseArtworkHistoryReturn {
   movements: MovementTimeline[]
@@ -15,9 +15,7 @@ interface UseArtworkHistoryReturn {
   refetch: () => Promise<void>
 }
 
-export function useArtworkHistory(
-  artworkId: number | null
-): UseArtworkHistoryReturn {
+export function useArtworkHistory(artworkId: number | null): UseArtworkHistoryReturn {
   const [movements, setMovements] = useState<MovementTimeline[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<ConsignmentError | null>(null)
@@ -32,9 +30,7 @@ export function useArtworkHistory(
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch(
-        `/api/dashboard/artworks/${artworkId}/consignment-history`
-      )
+      const res = await fetch(`/api/dashboard/artworks/${artworkId}/consignment-history`)
 
       if (!res.ok) {
         const errorData = await res.json()

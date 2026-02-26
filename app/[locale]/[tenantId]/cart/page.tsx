@@ -9,11 +9,11 @@
 
 import { notFound } from 'next/navigation'
 import { TenantHeader } from '@/components/commerce/TenantHeader'
-import { GalleryHeader } from '@/components/gallery-v2/GalleryHeader'
-import { CartClientGallery } from '@/components/gallery-v2/CartClientGallery'
 import { ThemeProvider } from '@/components/commerce/ThemeProvider'
-import { CartClient } from './CartClient'
+import { CartClientGallery } from '@/components/gallery-v2/CartClientGallery'
+import { GalleryHeader } from '@/components/gallery-v2/GalleryHeader'
 import { tenantConfigResponseSchema } from '@/lib/schemas/order'
+import { CartClient } from './CartClient'
 
 interface PageProps {
   params: Promise<{ tenantId: string }>

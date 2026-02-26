@@ -19,14 +19,14 @@ const DEFAULT_PRESETS = [
   '#14B8A6', // Teal
   '#F97316', // Orange
   '#6366F1', // Indigo
-  '#84CC16'  // Lime
+  '#84CC16', // Lime
 ]
 
 export function ColorPicker({
   label,
   value,
   onChange,
-  presetColors = DEFAULT_PRESETS
+  presetColors = DEFAULT_PRESETS,
 }: ColorPickerProps) {
   const [customColor, setCustomColor] = useState(value)
 
@@ -69,7 +69,11 @@ export function ColorPicker({
           value={customColor}
           onChange={handleCustomChange}
           className="w-16 h-12 rounded-lg cursor-pointer border border-gray-300"
-          data-testid={label.includes('primario') ? 'onboarding-primary-color-input' : 'onboarding-secondary-color-input'}
+          data-testid={
+            label.includes('primario')
+              ? 'onboarding-primary-color-input'
+              : 'onboarding-secondary-color-input'
+          }
         />
         <input
           type="text"
@@ -82,11 +86,11 @@ export function ColorPicker({
       </div>
 
       {/* Preview */}
-      <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg" data-testid="onboarding-color-preview">
-        <div
-          className="w-16 h-16 rounded-lg shadow-md"
-          style={{ backgroundColor: value }}
-        />
+      <div
+        className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg"
+        data-testid="onboarding-color-preview"
+      >
+        <div className="w-16 h-16 rounded-lg shadow-md" style={{ backgroundColor: value }} />
         <div>
           <p className="text-sm font-medium text-gray-700">Vista previa</p>
           <p className="text-xs text-gray-500">{value.toUpperCase()}</p>

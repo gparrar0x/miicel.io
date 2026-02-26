@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
  * Fix MangoBajito Product Image URLs
- * 
+ *
  * This script updates the image_url for all MangoBajito products
  * to point to the correct public folder images.
- * 
+ *
  * Usage:
  *   node scripts/fix-mangobajito-images.js
- * 
+ *
  * Requires:
  *   - NEXT_PUBLIC_SUPABASE_URL env var
  *   - SUPABASE_SERVICE_ROLE_KEY env var
@@ -89,31 +89,30 @@ async function fixMangoBajitoImages() {
     }
 
     console.log(`\n✅ Successfully updated ${updatedCount}/${products.length} products`)
-    
+
     // 4. Verify the images exist in public folder
     console.log('\n📁 Checking if image files exist:')
-    const fs = require('fs')
-    const path = require('path')
+    const fs = require('node:fs')
+    const path = require('node:path')
     const publicDir = path.join(__dirname, '..', 'public', 'tenants', 'mangobajito')
-    
-    let missingFiles = []
+
+    const missingFiles = []
     for (const product of products) {
       const filename = `product_${product.id}.webp`
       const filepath = path.join(publicDir, filename)
-      
+
       if (!fs.existsSync(filepath)) {
         missingFiles.push(filename)
         console.log(`  ⚠️  Missing: ${filename}`)
       }
     }
-    
+
     if (missingFiles.length === 0) {
       console.log('  ✓ All image files exist')
     } else {
       console.log(`\n⚠️  ${missingFiles.length} image files are missing`)
       console.log('  These products will still show broken images until files are added.')
     }
-
   } catch (error) {
     console.error('\n❌ Error:', error.message)
     process.exit(1)
@@ -122,4 +121,3 @@ async function fixMangoBajitoImages() {
 
 // Run the fix
 fixMangoBajitoImages()
-

@@ -16,9 +16,9 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { updateThemeSchema } from '@/lib/schemas/theme'
 import { z } from 'zod'
+import { updateThemeSchema } from '@/lib/schemas/theme'
+import { createClient } from '@/lib/supabase/server'
 import type { Json } from '@/types/database.types'
 
 const slugParamSchema = z.string().regex(/^[a-z0-9-]+$/, 'Invalid slug format')
@@ -35,10 +35,7 @@ const slugParamSchema = z.string().regex(/^[a-z0-9-]+$/, 'Invalid slug format')
  *   "overrides": { "gridCols": 3, ... }
  * }
  */
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ slug: string }> }
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const supabase = await createClient()
 
@@ -59,7 +56,7 @@ export async function GET(
     if (!validationResult.success) {
       return NextResponse.json(
         { error: 'Invalid slug format. Use lowercase alphanumeric with hyphens.' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -108,10 +105,7 @@ export async function GET(
  *
  * At least one field required. Partial updates allowed for overrides.
  */
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ slug: string }> }
-) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     const supabase = await createClient()
 
@@ -132,7 +126,7 @@ export async function PATCH(
     if (!slugValidation.success) {
       return NextResponse.json(
         { error: 'Invalid slug format. Use lowercase alphanumeric with hyphens.' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -143,10 +137,7 @@ export async function PATCH(
     const bodyValidation = updateThemeSchema.safeParse(body)
 
     if (!bodyValidation.success) {
-      return NextResponse.json(
-        { error: bodyValidation.error.issues[0].message },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: bodyValidation.error.issues[0].message }, { status: 400 })
     }
 
     const { template, overrides } = bodyValidation.data
@@ -176,7 +167,7 @@ export async function PATCH(
     if (userRole !== 'OWNER') {
       return NextResponse.json(
         { error: 'Forbidden. Only tenant owners can update theme configuration.' },
-        { status: 403 }
+        { status: 403 },
       )
     }
 
@@ -196,7 +187,7 @@ export async function PATCH(
     if (overrides !== undefined) {
       // Merge with existing overrides (partial update)
       updateData.theme_overrides = {
-        ...(tenant.theme_overrides as Record<string, unknown> || {}),
+        ...((tenant.theme_overrides as Record<string, unknown>) || {}),
         ...overrides,
       } as Json
     }
@@ -214,7 +205,7 @@ export async function PATCH(
       // DB trigger validation errors will appear here
       return NextResponse.json(
         { error: updateError.message || 'Failed to update theme configuration' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 

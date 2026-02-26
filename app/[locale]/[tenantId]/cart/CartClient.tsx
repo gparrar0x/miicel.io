@@ -7,10 +7,10 @@
 'use client'
 
 import { useState } from 'react'
+import { CheckoutModal } from '@/components/CheckoutModal'
+import { CartItem } from '@/components/commerce/CartItem'
 import { Link } from '@/i18n/routing'
 import { useCartStore } from '@/lib/stores/cartStore'
-import { CartItem } from '@/components/commerce/CartItem'
-import { CheckoutModal } from '@/components/CheckoutModal'
 
 export function CartClient() {
   const { items, getTotalItems, getTotalPrice, clearCart } = useCartStore()
@@ -40,16 +40,10 @@ export function CartClient() {
           />
         </svg>
 
-        <h2
-          className="text-xl font-semibold mb-2"
-          style={{ color: 'var(--color-text-primary)' }}
-        >
+        <h2 className="text-xl font-semibold mb-2" style={{ color: 'var(--color-text-primary)' }}>
           Your cart is empty
         </h2>
-        <p
-          className="mb-6"
-          style={{ color: 'var(--color-text-secondary)' }}
-        >
+        <p className="mb-6" style={{ color: 'var(--color-text-secondary)' }}>
           Add some products to get started
         </p>
 
@@ -73,10 +67,7 @@ export function CartClient() {
       {/* Cart Items - Left side (2/3 on desktop) */}
       <div className="lg:col-span-2 space-y-4" data-testid="cart-items-list">
         {items.map((item) => (
-          <CartItem
-            key={`${item.productId}-${item.color?.id || 'default'}`}
-            item={item}
-          />
+          <CartItem key={`${item.productId}-${item.color?.id || 'default'}`} item={item} />
         ))}
 
         <button
@@ -90,18 +81,12 @@ export function CartClient() {
       </div>
 
       {/* Summary Sidebar - Right side (1/3 on desktop) */}
-      <div
-        className="lg:col-span-1"
-        data-testid="cart-summary"
-      >
+      <div className="lg:col-span-1" data-testid="cart-summary">
         <div
           className="sticky top-8 p-6 rounded-lg space-y-4"
           style={{ backgroundColor: 'var(--color-bg-elevated)' }}
         >
-          <h2
-            className="text-xl font-bold"
-            style={{ color: 'var(--color-text-primary)' }}
-          >
+          <h2 className="text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
             Order Summary
           </h2>
 
@@ -120,21 +105,14 @@ export function CartClient() {
             </div>
 
             <div className="flex justify-between">
-              <span style={{ color: 'var(--color-text-secondary)' }}>
-                Shipping
-              </span>
-              <span style={{ color: 'var(--color-text-tertiary)' }}>
-                Calculated at checkout
-              </span>
+              <span style={{ color: 'var(--color-text-secondary)' }}>Shipping</span>
+              <span style={{ color: 'var(--color-text-tertiary)' }}>Calculated at checkout</span>
             </div>
           </div>
 
           <div className="flex justify-between text-lg font-bold">
             <span style={{ color: 'var(--color-text-primary)' }}>Total</span>
-            <span
-              style={{ color: 'var(--color-primary)' }}
-              data-testid="cart-total"
-            >
+            <span style={{ color: 'var(--color-primary)' }} data-testid="cart-total">
               {currency} {totalPrice.toFixed(2)}
             </span>
           </div>
@@ -160,10 +138,7 @@ export function CartClient() {
         </div>
       </div>
 
-      <CheckoutModal
-        open={checkoutOpen}
-        onClose={() => setCheckoutOpen(false)}
-      />
+      <CheckoutModal open={checkoutOpen} onClose={() => setCheckoutOpen(false)} />
     </div>
   )
 }

@@ -14,33 +14,35 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import {
-  getTopProducts,
-  getTopCategories,
+  getDiscounts,
   getPaymentMethods,
-  getDiscounts
+  getTopCategories,
+  getTopProducts,
 } from '@/lib/analytics/queries'
+import { createClient } from '@/lib/supabase/server'
 
 /**
  * Convert array of objects to CSV string
  */
 function arrayToCSV(data: any[], headers: string[]): string {
   if (data.length === 0) {
-    return headers.join(',') + '\n'
+    return `${headers.join(',')}\n`
   }
 
-  const rows = data.map(row => {
-    return headers.map(header => {
-      const value = row[header]
-      // Escape quotes and wrap in quotes if contains comma
-      if (value === null || value === undefined) return ''
-      const stringValue = String(value)
-      if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
-        return `"${stringValue.replace(/"/g, '""')}"`
-      }
-      return stringValue
-    }).join(',')
+  const rows = data.map((row) => {
+    return headers
+      .map((header) => {
+        const value = row[header]
+        // Escape quotes and wrap in quotes if contains comma
+        if (value === null || value === undefined) return ''
+        const stringValue = String(value)
+        if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+          return `"${stringValue.replace(/"/g, '""')}"`
+        }
+        return stringValue
+      })
+      .join(',')
   })
 
   return [headers.join(','), ...rows].join('\n')
@@ -72,7 +74,7 @@ export async function GET(request: Request) {
     if (!type) {
       return NextResponse.json(
         { error: 'type is required (products, categories, payments, discounts)' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -80,22 +82,16 @@ export async function GET(request: Request) {
     if (!validTypes.includes(type)) {
       return NextResponse.json(
         { error: `type must be one of: ${validTypes.join(', ')}` },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
     if (!tenantIdParam) {
-      return NextResponse.json(
-        { error: 'tenant_id is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'tenant_id is required' }, { status: 400 })
     }
 
     if (!dateFrom || !dateTo) {
-      return NextResponse.json(
-        { error: 'date_from and date_to are required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'date_from and date_to are required' }, { status: 400 })
     }
 
     // Validate date format
@@ -103,20 +99,20 @@ export async function GET(request: Request) {
     if (!dateRegex.test(dateFrom) || !dateRegex.test(dateTo)) {
       return NextResponse.json(
         { error: 'date_from and date_to must be in YYYY-MM-DD format' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
     const supabase = await createClient()
 
     // Step 2: Verify user is authenticated
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized. Please log in.' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
     // Step 3: Resolve tenant - accept both numeric ID and slug
@@ -124,23 +120,20 @@ export async function GET(request: Request) {
     const { data: tenant, error: tenantError } = await supabase
       .from('tenants')
       .select('id, owner_id')
-      .eq(isNaN(numericId) ? 'slug' : 'id', isNaN(numericId) ? tenantIdParam : numericId)
+      .eq(
+        Number.isNaN(numericId) ? 'slug' : 'id',
+        Number.isNaN(numericId) ? tenantIdParam : numericId,
+      )
       .maybeSingle()
 
     if (tenantError || !tenant) {
-      return NextResponse.json(
-        { error: 'Tenant not found.' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
     }
 
     const isSuperadmin = user.email?.toLowerCase().trim() === 'gparrar@skywalking.dev'
 
     if (!isSuperadmin && tenant.owner_id !== user.id) {
-      return NextResponse.json(
-        { error: 'Forbidden. You do not own this tenant.' },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
     }
 
     // Step 4: Fetch data based on type
@@ -181,17 +174,14 @@ export async function GET(request: Request) {
           'discount_code',
           'usage_count',
           'total_discount_amount',
-          'avg_discount_percentage'
+          'avg_discount_percentage',
         ])
         filename = `analytics-discounts-${dateFrom}-${dateTo}.csv`
         break
       }
 
       default:
-        return NextResponse.json(
-          { error: 'Invalid type parameter' },
-          { status: 400 }
-        )
+        return NextResponse.json({ error: 'Invalid type parameter' }, { status: 400 })
     }
 
     // Step 5: Return CSV file
@@ -200,14 +190,14 @@ export async function GET(request: Request) {
       headers: {
         'Content-Type': 'text/csv',
         'Content-Disposition': `attachment; filename="${filename}"`,
-        'Cache-Control': 'no-cache'
-      }
+        'Cache-Control': 'no-cache',
+      },
     })
   } catch (error) {
     console.error('Unexpected error in GET /api/analytics/export:', error)
     return NextResponse.json(
       { error: 'Internal server error. Please try again later.' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

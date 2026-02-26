@@ -8,11 +8,11 @@
  * Tests critical security boundaries
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { loginAsOwner } from '../../fixtures/auth.fixture'
 
 test.describe('Cross-Tenant Isolation - Security', () => {
-  const TENANT_A = 'demo_galeria'    // Demo tenant ID 1
+  const TENANT_A = 'demo_galeria' // Demo tenant ID 1
   const TENANT_B = 'demo_restaurant' // Demo tenant ID 2
 
   test('should prevent catalog data leakage between tenants', async ({ page }) => {
@@ -59,7 +59,7 @@ test.describe('Cross-Tenant Isolation - Security', () => {
 
     // Try to access tenant B admin panel
     await page.goto(`http://localhost:3000/es/${TENANT_B}/dashboard/products`, {
-      waitUntil: 'domcontentloaded'
+      waitUntil: 'domcontentloaded',
     })
 
     // Should be redirected away or show access denied

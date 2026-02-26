@@ -1,7 +1,7 @@
-import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
+import { Flags, isEnabled } from '@/lib/flags'
+import { createClient } from '@/lib/supabase/server'
 import { ConsignmentsClient } from './ConsignmentsClient'
-import { isEnabled, Flags } from '@/lib/flags'
 
 interface PageProps {
   params: Promise<{ locale: string; tenantId: string }>
@@ -19,8 +19,8 @@ export default async function ConsignmentsPage({ params }: PageProps) {
   const supabase = await createClient()
 
   // Get tenant - try by ID first, then by slug
-  const numericId = parseInt(tenantId)
-  const isNumeric = !isNaN(numericId)
+  const numericId = parseInt(tenantId, 10)
+  const isNumeric = !Number.isNaN(numericId)
 
   const { data: tenant } = await supabase
     .from('tenants')
@@ -35,7 +35,7 @@ export default async function ConsignmentsPage({ params }: PageProps) {
   // Check feature flag - redirect if not enabled for this tenant
   const canAccessConsignments = await isEnabled(Flags.CONSIGNMENTS, {
     tenantId: tenant.id,
-    tenantTemplate: tenant.template
+    tenantTemplate: tenant.template,
   })
 
   if (!canAccessConsignments) {

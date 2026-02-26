@@ -7,21 +7,21 @@
 
 // Re-export theme types for convenience
 export type {
-  TenantTemplate,
   CardVariant,
-  SpacingMode,
   ImageAspectRatio,
+  ResolvedTheme,
+  SpacingMode,
+  TenantTemplate,
   ThemeColors,
   ThemeOverrides,
-  ResolvedTheme,
 } from './theme'
 
 export {
-  TEMPLATE_DEFAULTS,
   DEFAULT_COLORS,
   isValidTemplate,
   isValidThemeOverrides,
   resolveTheme,
+  TEMPLATE_DEFAULTS,
 } from './theme'
 
 /**

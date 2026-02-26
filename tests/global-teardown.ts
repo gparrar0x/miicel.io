@@ -1,5 +1,5 @@
-import { cleanupTestData } from './e2e/fixtures/seed-test-data'
 import type { FullConfig } from '@playwright/test'
+import { cleanupTestData } from './e2e/fixtures/seed-test-data'
 
 /**
  * Global teardown for Playwright tests
@@ -9,7 +9,7 @@ import type { FullConfig } from '@playwright/test'
  * - Clean up test data from database
  * - Reset test environment
  */
-async function globalTeardown(config: FullConfig) {
+async function globalTeardown(_config: FullConfig) {
   console.log('\n')
   console.log('════════════════════════════════════════════════════════')
   console.log('  PLAYWRIGHT GLOBAL TEARDOWN')

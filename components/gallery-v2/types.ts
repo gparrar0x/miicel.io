@@ -18,4 +18,3 @@ export interface Artwork {
   }[]
   isLimitedEdition: boolean
 }
-

@@ -13,8 +13,8 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { productUpdateSchema } from '@/lib/schemas/order'
+import { createClient } from '@/lib/supabase/server'
 
 /**
  * GET /api/products/[id] - Get product details
@@ -24,20 +24,14 @@ import { productUpdateSchema } from '@/lib/schemas/order'
  *
  * Cache: 2 minutes (products change less frequently than tenant config)
  */
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const supabase = await createClient()
     const { id } = await params
-    const productId = parseInt(id)
+    const productId = parseInt(id, 10)
 
-    if (isNaN(productId)) {
-      return NextResponse.json(
-        { error: 'Invalid product ID.' },
-        { status: 400 }
-      )
+    if (Number.isNaN(productId)) {
+      return NextResponse.json({ error: 'Invalid product ID.' }, { status: 400 })
     }
 
     // Query product with tenant info for currency
@@ -50,17 +44,11 @@ export async function GET(
 
     if (error) {
       console.error('Error fetching product:', error)
-      return NextResponse.json(
-        { error: 'Failed to fetch product.' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Failed to fetch product.' }, { status: 500 })
     }
 
     if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found.' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Product not found.' }, { status: 404 })
     }
 
     // Build response matching frontend Product interface
@@ -84,10 +72,7 @@ export async function GET(
     })
   } catch (error) {
     console.error('Unexpected error in GET /api/products/[id]:', error)
-    return NextResponse.json(
-      { error: 'Internal server error.' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error.' }, { status: 500 })
   }
 }
 
@@ -109,10 +94,7 @@ export async function GET(
  * - User must be authenticated
  * - User must own the tenant that owns this product
  */
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const supabase = await createClient()
 
@@ -123,21 +105,15 @@ export async function PATCH(
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized. Please log in.' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
     // Step 2: Parse product ID
     const { id } = await params
-    const productId = parseInt(id)
+    const productId = parseInt(id, 10)
 
-    if (isNaN(productId)) {
-      return NextResponse.json(
-        { error: 'Invalid product ID.' },
-        { status: 400 }
-      )
+    if (Number.isNaN(productId)) {
+      return NextResponse.json({ error: 'Invalid product ID.' }, { status: 400 })
     }
 
     // Step 3: Parse and validate request body
@@ -145,10 +121,7 @@ export async function PATCH(
     const validationResult = productUpdateSchema.safeParse(body)
 
     if (!validationResult.success) {
-      return NextResponse.json(
-        { error: validationResult.error.issues[0].message },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: validationResult.error.issues[0].message }, { status: 400 })
     }
 
     const updateData = validationResult.data
@@ -164,15 +137,12 @@ export async function PATCH(
       console.error('Error fetching product:', fetchError)
       return NextResponse.json(
         { error: 'Failed to fetch product. Please try again.' },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
     if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found.' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Product not found.' }, { status: 404 })
     }
 
     // Type assertion for nested relation
@@ -182,7 +152,7 @@ export async function PATCH(
     if (!isSuperadmin && tenants.owner_id !== user.id) {
       return NextResponse.json(
         { error: 'Forbidden. You do not own this product.' },
-        { status: 403 }
+        { status: 403 },
       )
     }
 
@@ -201,7 +171,7 @@ export async function PATCH(
       console.error('Error updating product:', updateError)
       return NextResponse.json(
         { error: 'Failed to update product. Please try again.' },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
@@ -210,7 +180,7 @@ export async function PATCH(
     console.error('Unexpected error in PATCH /api/products/[id]:', error)
     return NextResponse.json(
       { error: 'Internal server error. Please try again later.' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -225,10 +195,7 @@ export async function PATCH(
  * - User must be authenticated
  * - User must own the tenant that owns this product
  */
-export async function DELETE(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const supabase = await createClient()
 
@@ -239,21 +206,15 @@ export async function DELETE(
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized. Please log in.' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
     // Step 2: Parse product ID
     const { id } = await params
-    const productId = parseInt(id)
+    const productId = parseInt(id, 10)
 
-    if (isNaN(productId)) {
-      return NextResponse.json(
-        { error: 'Invalid product ID.' },
-        { status: 400 }
-      )
+    if (Number.isNaN(productId)) {
+      return NextResponse.json({ error: 'Invalid product ID.' }, { status: 400 })
     }
 
     // Step 3: Verify product exists and user owns it
@@ -267,15 +228,12 @@ export async function DELETE(
       console.error('Error fetching product:', fetchError)
       return NextResponse.json(
         { error: 'Failed to fetch product. Please try again.' },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
     if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found.' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Product not found.' }, { status: 404 })
     }
 
     // Type assertion for nested relation
@@ -285,7 +243,7 @@ export async function DELETE(
     if (!isSuperadmin && tenants.owner_id !== user.id) {
       return NextResponse.json(
         { error: 'Forbidden. You do not own this product.' },
-        { status: 403 }
+        { status: 403 },
       )
     }
 
@@ -304,7 +262,7 @@ export async function DELETE(
       console.error('Error deleting product:', deleteError)
       return NextResponse.json(
         { error: 'Failed to delete product. Please try again.' },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
@@ -316,7 +274,7 @@ export async function DELETE(
     console.error('Unexpected error in DELETE /api/products/[id]:', error)
     return NextResponse.json(
       { error: 'Internal server error. Please try again later.' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

@@ -9,14 +9,10 @@
  * - Responsive grid columns (1/2/3)
  */
 
-import { Page, Locator, expect } from '@playwright/test'
+import type { Locator } from '@playwright/test'
 import { StorefrontPage } from './storefront.page'
 
 export class StorefrontGalleryPage extends StorefrontPage {
-  constructor(page: Page) {
-    super(page)
-  }
-
   /**
    * Get first Quick View button
    */
@@ -110,9 +106,18 @@ export class StorefrontGalleryPage extends StorefrontPage {
 
     return {
       hasCard: await card.isVisible(),
-      hasImage: await card.locator('[data-testid="card-image"]').isVisible().catch(() => false),
-      hasTitle: await card.locator('[data-testid="card-title"]').isVisible().catch(() => false),
-      hasPrice: await card.locator('[data-testid="card-price"]').isVisible().catch(() => false),
+      hasImage: await card
+        .locator('[data-testid="card-image"]')
+        .isVisible()
+        .catch(() => false),
+      hasTitle: await card
+        .locator('[data-testid="card-title"]')
+        .isVisible()
+        .catch(() => false),
+      hasPrice: await card
+        .locator('[data-testid="card-price"]')
+        .isVisible()
+        .catch(() => false),
       hasQuickView: await card
         .locator('[data-testid="action-quickview"]')
         .isVisible()
@@ -153,7 +158,10 @@ export class StorefrontGalleryPage extends StorefrontPage {
 
       const classList = Array.from(grid.classList)
       const colClass = classList.find(
-        (cls) => cls.includes('grid-cols-') || cls.includes('sm:grid-cols-') || cls.includes('md:grid-cols-')
+        (cls) =>
+          cls.includes('grid-cols-') ||
+          cls.includes('sm:grid-cols-') ||
+          cls.includes('md:grid-cols-'),
       )
 
       // Check display mode
@@ -206,7 +214,9 @@ export class StorefrontGalleryPage extends StorefrontPage {
    */
   async measureLoadTime(): Promise<number> {
     return await this.page.evaluate(() => {
-      const navTiming = window.performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+      const navTiming = window.performance.getEntriesByType(
+        'navigation',
+      )[0] as PerformanceNavigationTiming
       if (!navTiming) return 0
       return navTiming.loadEventEnd - navTiming.fetchStart
     })

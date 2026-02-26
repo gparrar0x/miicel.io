@@ -10,8 +10,8 @@
 import { notFound } from 'next/navigation'
 import { TenantHeader } from '@/components/commerce/TenantHeader'
 import { ThemeProvider } from '@/components/commerce/ThemeProvider'
-import { CartClient } from './CartClient'
 import { tenantConfigResponseSchema } from '@/lib/schemas/order'
+import { CartClient } from './CartClient'
 
 interface PageProps {
   params: Promise<{ tenantId: string }>

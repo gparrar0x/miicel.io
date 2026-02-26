@@ -11,12 +11,12 @@ const config: Config = {
     extend: {
       colors: {
         // Miicel Design System
-        'mii': {
+        mii: {
           // Core
-          'white': '#FFFFFF',
-          'black': '#1A1A1A',
+          white: '#FFFFFF',
+          black: '#1A1A1A',
           // Primary action
-          'blue': '#2563EB',
+          blue: '#2563EB',
           'blue-hover': '#1D4ED8',
           // Grays
           'gray-50': '#F9FAFB',
@@ -27,9 +27,9 @@ const config: Config = {
           'gray-700': '#374151',
           'gray-900': '#111827',
           // Status
-          'success': '#10B981',
-          'error': '#EF4444',
-          'warning': '#F59E0B',
+          success: '#10B981',
+          error: '#EF4444',
+          warning: '#F59E0B',
         },
         // Legacy (keep for storefront compatibility)
         gallery: {
@@ -37,16 +37,16 @@ const config: Config = {
           white: '#FFFFFF',
           gold: '#B8860B',
           'gold-hover': '#9A7209',
-        }
+        },
       },
       boxShadow: {
         // Miicel shadows
-        'mii': '0 1px 3px rgba(0, 0, 0, 0.1)',
+        mii: '0 1px 3px rgba(0, 0, 0, 0.1)',
         'mii-md': '0 4px 6px rgba(0, 0, 0, 0.1)',
         'mii-lg': '0 10px 15px rgba(0, 0, 0, 0.1)',
       },
       borderRadius: {
-        'mii': '8px',
+        mii: '8px',
         'mii-sm': '4px',
       },
       fontFamily: {
@@ -71,7 +71,7 @@ const config: Config = {
       },
       width: {
         'mii-sidebar': '200px',
-      }
+      },
     },
   },
   plugins: [],

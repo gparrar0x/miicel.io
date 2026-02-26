@@ -15,10 +15,10 @@
 'use client'
 
 import { useMemo } from 'react'
-import { ThemeProvider } from '@/components/theme/ThemeProvider'
 import { ProductGrid } from '@/components/storefront/ProductGrid'
-import { Product } from '@/types/commerce'
-import { resolveTheme, TenantTemplate } from '@/types/theme'
+import { ThemeProvider } from '@/components/theme/ThemeProvider'
+import type { Product } from '@/types/commerce'
+import { resolveTheme, type TenantTemplate } from '@/types/theme'
 
 interface ThemePreviewProps {
   formData: {
@@ -104,7 +104,7 @@ export function ThemePreview({ formData }: ThemePreviewProps) {
           accent: formData.accentColor,
         },
       },
-      {} // No config colors in preview
+      {}, // No config colors in preview
     )
   }, [formData])
 

@@ -5,7 +5,7 @@
  * Sprint: MII_1-2.5 (SEO Richness)
  */
 
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   robots: {
@@ -14,10 +14,6 @@ export const metadata: Metadata = {
   },
 }
 
-export default function CheckoutLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function CheckoutLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }

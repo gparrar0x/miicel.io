@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
 import { Plus } from 'lucide-react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import type { BadgeType } from '@/lib/themes/gastronomy'
 import { cn } from '@/lib/utils'
-import { Product } from '@/types/commerce'
-import { BadgeType } from '@/lib/themes/gastronomy'
+import type { Product } from '@/types/commerce'
 
 interface ProductCardGastronomyProps {
   product: Product
@@ -103,7 +103,7 @@ export function ProductCardGastronomy({
               isAdding && 'scale-90',
             )}
             style={{
-              background: `linear-gradient(to right, var(--color-primary), color-mix(in srgb, var(--color-primary) 85%, black))`
+              background: `linear-gradient(to right, var(--color-primary), color-mix(in srgb, var(--color-primary) 85%, black))`,
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = `linear-gradient(to right, color-mix(in srgb, var(--color-primary) 85%, black), color-mix(in srgb, var(--color-primary) 70%, black))`
@@ -112,12 +112,7 @@ export function ProductCardGastronomy({
               e.currentTarget.style.background = `linear-gradient(to right, var(--color-primary), color-mix(in srgb, var(--color-primary) 85%, black))`
             }}
           >
-            <Plus
-              className={cn(
-                'w-5 h-5 mr-1 transition-transform',
-                isAdding && 'rotate-90',
-              )}
-            />
+            <Plus className={cn('w-5 h-5 mr-1 transition-transform', isAdding && 'rotate-90')} />
             Agregar
           </Button>
         </div>

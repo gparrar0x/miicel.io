@@ -16,21 +16,21 @@ dotenv.config({ path: '.env' })
  * - Automatic retries for flaky tests
  */
 
-  // Shared configuration for all projects
-  const sharedConfig = {
-    // Screenshot on failure
-    screenshot: 'only-on-failure' as const,
+// Shared configuration for all projects
+const sharedConfig = {
+  // Screenshot on failure
+  screenshot: 'only-on-failure' as const,
 
-    // Video on failure
-    video: 'retain-on-failure' as const,
+  // Video on failure
+  video: 'retain-on-failure' as const,
 
-    // Trace on failure
-    trace: 'on-first-retry' as const,
+  // Trace on failure
+  trace: 'on-first-retry' as const,
 
-    // Network timeout (increased for MercadoPago sandbox)
-    navigationTimeout: 60000,
-    actionTimeout: 15000,
-  }
+  // Network timeout (increased for MercadoPago sandbox)
+  navigationTimeout: 60000,
+  actionTimeout: 15000,
+}
 
 export default defineConfig({
   testDir: './tests/e2e/specs',

@@ -7,7 +7,7 @@
 
 const { createClient } = require('@supabase/supabase-js')
 const dotenv = require('dotenv')
-const path = require('path')
+const path = require('node:path')
 
 // Load environment variables from .env.local
 dotenv.config({ path: path.join(__dirname, '..', '.env.local') })
@@ -24,8 +24,8 @@ if (!supabaseUrl || !supabaseServiceRoleKey) {
 const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
   auth: {
     autoRefreshToken: false,
-    persistSession: false
-  }
+    persistSession: false,
+  },
 })
 
 async function cleanDatabase() {
@@ -48,18 +48,15 @@ async function cleanDatabase() {
     }
 
     console.log(`📋 Found ${tenants.length} tenant(s) to delete:`)
-    tenants.forEach(t => console.log(`   - ${t.slug} (ID: ${t.id})`))
+    tenants.forEach((t) => console.log(`   - ${t.slug} (ID: ${t.id})`))
     console.log()
 
-    const tenantIds = tenants.map(t => t.id)
-    const ownerIds = tenants.map(t => t.owner_id).filter(Boolean)
+    const tenantIds = tenants.map((t) => t.id)
+    const ownerIds = tenants.map((t) => t.owner_id).filter(Boolean)
 
     // Delete orders (cascade will handle order_items)
     console.log('🗑️  Deleting test orders...')
-    const { error: ordersError } = await supabase
-      .from('orders')
-      .delete()
-      .in('tenant_id', tenantIds)
+    const { error: ordersError } = await supabase.from('orders').delete().in('tenant_id', tenantIds)
 
     if (ordersError) {
       console.error('⚠️  Error deleting orders:', ordersError.message)
@@ -95,10 +92,7 @@ async function cleanDatabase() {
 
     // Delete tenants
     console.log('🗑️  Deleting tenants...')
-    const { error: deleteError } = await supabase
-      .from('tenants')
-      .delete()
-      .neq('id', 1)
+    const { error: deleteError } = await supabase.from('tenants').delete().neq('id', 1)
 
     if (deleteError) {
       throw new Error(`Failed to delete tenants: ${deleteError.message}`)
@@ -119,7 +113,7 @@ async function cleanDatabase() {
           } else if (userError.message && !userError.message.includes('not found')) {
             console.error(`   ⚠️  Error deleting user ${userId}:`, userError.message)
           }
-        } catch (err) {
+        } catch (_err) {
           // Ignore errors for users that don't exist
         }
       }
@@ -135,7 +129,6 @@ async function cleanDatabase() {
     console.log('✅ Database cleaned successfully!')
     console.log(`   • Tenants deleted: ${tenants.length}`)
     console.log('   • Only tenant #1 remains')
-
   } catch (error) {
     console.error('\n❌ Error cleaning database:', error.message)
     process.exit(1)
