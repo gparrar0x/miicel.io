@@ -7,10 +7,10 @@
  * Shows chronological history with dates and status changes
  */
 
-import { MovementTimeline } from '@/lib/types/consignment'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { MapPin, Package, CheckCircle, RotateCcw } from 'lucide-react'
+import { CheckCircle, MapPin, Package, RotateCcw } from 'lucide-react'
+import type { MovementTimeline } from '@/lib/types/consignment'
 
 interface ArtworkConsignmentHistoryProps {
   movements: MovementTimeline[]
@@ -54,17 +54,11 @@ export function ArtworkConsignmentHistory({
               <div
                 className={`
                   w-3 h-3 rounded-full border-2
-                  ${
-                    isLatest
-                      ? 'bg-blue-600 border-blue-600'
-                      : 'bg-white border-gray-300'
-                  }
+                  ${isLatest ? 'bg-blue-600 border-blue-600' : 'bg-white border-gray-300'}
                 `}
                 data-testid={`timeline-dot-${idx}`}
               />
-              {idx < movements.length - 1 && (
-                <div className="w-0.5 h-12 bg-gray-200 mt-2" />
-              )}
+              {idx < movements.length - 1 && <div className="w-0.5 h-12 bg-gray-200 mt-2" />}
             </div>
 
             {/* Event Content */}
@@ -72,9 +66,7 @@ export function ArtworkConsignmentHistory({
               <div className="flex items-start justify-between mb-1">
                 <div className="flex items-center gap-2">
                   <Icon className="h-4 w-4 text-gray-600" />
-                  <p className="font-medium text-gray-900">
-                    {getMovementLabel(movement)}
-                  </p>
+                  <p className="font-medium text-gray-900">{getMovementLabel(movement)}</p>
                 </div>
                 <time className="text-xs text-gray-500">
                   {format(new Date(movement.moved_at), 'PPP', { locale: es })}
@@ -91,9 +83,7 @@ export function ArtworkConsignmentHistory({
                   </p>
 
                   {movement.notes && (
-                    <p className="text-sm text-gray-600 ml-6 mt-2 italic">
-                      "{movement.notes}"
-                    </p>
+                    <p className="text-sm text-gray-600 ml-6 mt-2 italic">"{movement.notes}"</p>
                   )}
                 </>
               )}

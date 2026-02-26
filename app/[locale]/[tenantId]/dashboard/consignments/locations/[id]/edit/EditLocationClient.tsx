@@ -6,12 +6,12 @@
  * Edit form for existing consignment location
  */
 
-import { useRouter } from 'next/navigation'
-import { useConsignmentLocations } from '@/lib/hooks/useConsignmentLocations'
-import { LocationForm } from '@/components/dashboard/consignments/LocationForm'
-import { ConsignmentLocation, CreateLocationRequest } from '@/lib/types/consignment'
-import { toast } from 'sonner'
 import { ArrowLeft } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+import { LocationForm } from '@/components/dashboard/consignments/LocationForm'
+import { useConsignmentLocations } from '@/lib/hooks/useConsignmentLocations'
+import type { ConsignmentLocation, CreateLocationRequest } from '@/lib/types/consignment'
 
 interface EditLocationClientProps {
   tenantId: number
@@ -32,13 +32,9 @@ export function EditLocationClient({
   const { updateLocation } = useConsignmentLocations(tenantId)
 
   const handleSave = async (data: CreateLocationRequest) => {
-    try {
-      await updateLocation(locationId, data)
-      toast.success('Ubicación actualizada exitosamente')
-      router.push(`/${locale}/${tenantSlug}/dashboard/consignments/locations/${locationId}`)
-    } catch (error) {
-      throw error // Let form handle error display
-    }
+    await updateLocation(locationId, data)
+    toast.success('Ubicación actualizada exitosamente')
+    router.push(`/${locale}/${tenantSlug}/dashboard/consignments/locations/${locationId}`)
   }
 
   const handleCancel = () => {
@@ -54,12 +50,7 @@ export function EditLocationClient({
         <ArrowLeft className="h-4 w-4" />
         Volver
       </button>
-      <LocationForm
-        isOpen={true}
-        location={location}
-        onSave={handleSave}
-        onCancel={handleCancel}
-      />
+      <LocationForm isOpen={true} location={location} onSave={handleSave} onCancel={handleCancel} />
     </div>
   )
 }

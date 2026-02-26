@@ -9,7 +9,7 @@
  * - Responsive behavior
  */
 
-import { Page, Locator, expect } from '@playwright/test'
+import { expect, type Locator, type Page } from '@playwright/test'
 
 type TenantTemplate = 'gallery' | 'detail' | 'minimal'
 
@@ -106,7 +106,7 @@ export class StorefrontPage {
       if (!gridElement) return null
 
       const gridColsClass = Array.from(gridElement.classList).find(
-        (cls) => cls.startsWith('grid-cols-') || cls.startsWith('lg:grid-cols-')
+        (cls) => cls.startsWith('grid-cols-') || cls.startsWith('lg:grid-cols-'),
       )
 
       if (!gridColsClass) return null

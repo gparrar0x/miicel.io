@@ -12,9 +12,8 @@
  */
 
 import { NextResponse } from 'next/server'
+import { decryptToken, encryptToken } from '@/lib/encryption'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
-import { encryptToken, decryptToken } from '@/lib/encryption'
-import { z } from 'zod'
 
 /**
  * GET /api/settings?tenant_id=123
@@ -41,54 +40,42 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const tenantId = searchParams.get('tenant_id')
 
-    if (!tenantId || isNaN(parseInt(tenantId))) {
-      return NextResponse.json(
-        { error: 'Valid tenant_id is required' },
-        { status: 400 }
-      )
+    if (!tenantId || Number.isNaN(parseInt(tenantId, 10))) {
+      return NextResponse.json({ error: 'Valid tenant_id is required' }, { status: 400 })
     }
 
     const supabase = await createClient()
 
     // Verify authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized. Please log in.' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
     // Fetch tenant with ownership check
     const { data: tenant, error: tenantError } = await supabase
       .from('tenants')
       .select('*')
-      .eq('id', parseInt(tenantId))
+      .eq('id', parseInt(tenantId, 10))
       .maybeSingle()
 
     if (tenantError) {
       console.error('Error fetching tenant:', tenantError)
-      return NextResponse.json(
-        { error: 'Failed to fetch tenant settings.' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Failed to fetch tenant settings.' }, { status: 500 })
     }
 
     if (!tenant) {
-      return NextResponse.json(
-        { error: 'Tenant not found.' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
     }
 
     // Verify ownership (allow superadmin)
     const isSuperAdmin = user.email === 'gparrar@skywalking.dev'
     if (!isSuperAdmin && tenant.owner_id !== user.id) {
-      return NextResponse.json(
-        { error: 'Forbidden. You do not own this tenant.' },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
     }
 
     // Decrypt MP token if exists
@@ -114,14 +101,11 @@ export async function GET(request: Request) {
       template: tenant.template,
       theme_overrides: tenant.theme_overrides || {},
       plan: tenant.plan,
-      active: tenant.active
+      active: tenant.active,
     })
   } catch (error) {
     console.error('Unexpected error in GET /api/settings:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -151,46 +135,37 @@ export async function PATCH(request: Request) {
     const { searchParams } = new URL(request.url)
     const tenantId = searchParams.get('tenant_id')
 
-    if (!tenantId || isNaN(parseInt(tenantId))) {
-      return NextResponse.json(
-        { error: 'Valid tenant_id is required' },
-        { status: 400 }
-      )
+    if (!tenantId || Number.isNaN(parseInt(tenantId, 10))) {
+      return NextResponse.json({ error: 'Valid tenant_id is required' }, { status: 400 })
     }
 
     const supabase = await createClient()
 
     // Verify authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized. Please log in.' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
     // Fetch tenant for ownership check
     const { data: tenant, error: tenantError } = await supabase
       .from('tenants')
       .select('id, owner_id')
-      .eq('id', parseInt(tenantId))
+      .eq('id', parseInt(tenantId, 10))
       .maybeSingle()
 
     if (tenantError || !tenant) {
-      return NextResponse.json(
-        { error: 'Tenant not found.' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
     }
 
     // Verify ownership (allow superadmin)
     const isSuperAdmin = user.email === 'gparrar@skywalking.dev'
     if (!isSuperAdmin && tenant.owner_id !== user.id) {
-      return NextResponse.json(
-        { error: 'Forbidden. You do not own this tenant.' },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
     }
 
     // Parse request body
@@ -198,7 +173,7 @@ export async function PATCH(request: Request) {
 
     // Build update object (only include provided fields)
     const updates: any = {
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     }
 
     if (body.name !== undefined) updates.name = body.name
@@ -218,7 +193,7 @@ export async function PATCH(request: Request) {
           console.error('Failed to encrypt MP token:', error)
           return NextResponse.json(
             { error: 'Failed to encrypt payment token. Check ENCRYPTION_KEY env var.' },
-            { status: 500 }
+            { status: 500 },
           )
         }
       }
@@ -229,16 +204,13 @@ export async function PATCH(request: Request) {
     const { data: updated, error: updateError } = await updateClient
       .from('tenants')
       .update(updates)
-      .eq('id', parseInt(tenantId))
+      .eq('id', parseInt(tenantId, 10))
       .select()
       .single()
 
     if (updateError) {
       console.error('Error updating tenant:', updateError)
-      return NextResponse.json(
-        { error: 'Failed to update tenant settings.' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Failed to update tenant settings.' }, { status: 500 })
     }
 
     // Return success (without decrypted token)
@@ -250,14 +222,11 @@ export async function PATCH(request: Request) {
         name: updated.name,
         config: updated.config,
         template: updated.template,
-        theme_overrides: updated.theme_overrides
-      }
+        theme_overrides: updated.theme_overrides,
+      },
     })
   } catch (error) {
     console.error('Unexpected error in PATCH /api/settings:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

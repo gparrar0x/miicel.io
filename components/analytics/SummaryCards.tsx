@@ -1,5 +1,5 @@
+import { DollarSign, Package, ShoppingCart, TrendingUp } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
-import { DollarSign, ShoppingCart, TrendingUp, Package } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface SummaryCardsProps {
@@ -58,7 +58,10 @@ export function SummaryCards({ data, loading }: SummaryCardsProps) {
               <div className="space-y-2">
                 <p className="text-sm font-medium text-muted-foreground">{card.title}</p>
                 <p
-                  className={cn('text-3xl font-bold tracking-tight text-foreground', loading && 'animate-pulse')}
+                  className={cn(
+                    'text-3xl font-bold tracking-tight text-foreground',
+                    loading && 'animate-pulse',
+                  )}
                   data-testid={card.testId}
                 >
                   {loading ? '...' : card.value}

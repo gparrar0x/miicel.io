@@ -16,7 +16,7 @@
 
 'use client'
 
-import { UseFormRegister, UseFormWatch, UseFormSetValue, FieldErrors } from 'react-hook-form'
+import type { FieldErrors, UseFormRegister, UseFormSetValue, UseFormWatch } from 'react-hook-form'
 
 interface ThemeFormData {
   template: 'gallery' | 'detail' | 'minimal' | 'gastronomy'
@@ -43,7 +43,7 @@ const IMAGE_ASPECT_PRESETS = [
 
 export function ThemeFieldsEditor({ register, watch, setValue, errors }: ThemeFieldsEditorProps) {
   const gridCols = watch('gridCols')
-  const imageAspect = watch('imageAspect')
+  const _imageAspect = watch('imageAspect')
   const primaryColor = watch('primaryColor')
   const accentColor = watch('accentColor')
 
@@ -71,9 +71,7 @@ export function ThemeFieldsEditor({ register, watch, setValue, errors }: ThemeFi
             {gridCols}
           </span>
         </div>
-        {errors.gridCols && (
-          <p className="mt-1 text-sm text-red-600">{errors.gridCols.message}</p>
-        )}
+        {errors.gridCols && <p className="mt-1 text-sm text-red-600">{errors.gridCols.message}</p>}
       </div>
 
       {/* Image Aspect Ratio */}

@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
-import { Bell, Search, Moon, Sun, Menu } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Bell, Menu, Moon, Search, Sun } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,9 +11,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useState, useEffect } from "react"
-import { useSidebar } from "./sidebar-context"
+} from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
+import { useSidebar } from './sidebar-context'
 
 export function Header() {
   const [isDark, setIsDark] = useState(false)
@@ -22,14 +22,14 @@ export function Header() {
 
   // Initialize theme from localStorage or OS preference
   useEffect(() => {
-    const stored = localStorage.getItem("theme")
-    if (stored === "dark") {
+    const stored = localStorage.getItem('theme')
+    if (stored === 'dark') {
       setIsDark(true)
-    } else if (stored === "light") {
+    } else if (stored === 'light') {
       setIsDark(false)
     } else {
       // Check OS preference
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
       setIsDark(prefersDark)
     }
     setMounted(true)
@@ -40,13 +40,13 @@ export function Header() {
     if (!mounted) return
     const root = document.documentElement
     if (isDark) {
-      root.classList.add("dark")
-      root.classList.remove("light")
-      localStorage.setItem("theme", "dark")
+      root.classList.add('dark')
+      root.classList.remove('light')
+      localStorage.setItem('theme', 'dark')
     } else {
-      root.classList.remove("dark")
-      root.classList.add("light")
-      localStorage.setItem("theme", "light")
+      root.classList.remove('dark')
+      root.classList.add('light')
+      localStorage.setItem('theme', 'light')
     }
   }, [isDark, mounted])
 
@@ -66,7 +66,10 @@ export function Header() {
 
         <div className="relative w-full max-w-md hidden sm:block">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Buscar productos, pedidos, usuarios..." className="pl-10 bg-secondary border-0" />
+          <Input
+            placeholder="Buscar productos, pedidos, usuarios..."
+            className="pl-10 bg-secondary border-0"
+          />
         </div>
       </div>
 
@@ -77,7 +80,12 @@ export function Header() {
           <Search className="h-5 w-5" />
         </Button>
 
-        <Button variant="ghost" size="icon" onClick={() => setIsDark(!isDark)} className="text-muted-foreground">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsDark(!isDark)}
+          className="text-muted-foreground"
+        >
           {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </Button>
 

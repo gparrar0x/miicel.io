@@ -6,13 +6,13 @@
 
 'use client'
 
+import { ShoppingBag } from 'lucide-react'
 import { useState } from 'react'
+import { CheckoutModal } from '@/components/CheckoutModal'
+import { Button } from '@/components/ui/button'
 import { Link } from '@/i18n/routing'
 import { useCartStore } from '@/lib/stores/cartStore'
 import { CartItemGallery } from './CartItemGallery'
-import { CheckoutModal } from '@/components/CheckoutModal'
-import { Button } from '@/components/ui/button'
-import { ShoppingBag } from 'lucide-react'
 
 interface CartClientGalleryProps {
   tenantId: string
@@ -29,9 +29,7 @@ export function CartClientGallery({ tenantId }: CartClientGalleryProps) {
       <div className="text-center py-16" data-testid="cart-empty-state">
         <ShoppingBag className="mx-auto h-20 w-20 text-gray-300 mb-6" />
 
-        <h2 className="text-2xl font-serif font-bold mb-3 text-black">
-          Tu carrito está vacío
-        </h2>
+        <h2 className="text-2xl font-serif font-bold mb-3 text-black">Tu carrito está vacío</h2>
         <p className="text-gray-600 mb-8" style={{ fontSize: 'var(--font-size-body)' }}>
           Explora nuestra colección y encuentra tu próxima obra favorita
         </p>
@@ -42,7 +40,7 @@ export function CartClientGallery({ tenantId }: CartClientGalleryProps) {
             style={{
               backgroundColor: 'var(--color-accent-primary)',
               height: '56px',
-              fontSize: 'var(--font-size-h4)'
+              fontSize: 'var(--font-size-h4)',
             }}
             data-testid="cart-continue-shopping-link"
           >
@@ -60,10 +58,7 @@ export function CartClientGallery({ tenantId }: CartClientGalleryProps) {
       {/* Cart Items - Left side (2/3 on desktop) */}
       <div className="lg:col-span-2 space-y-6" data-testid="cart-items-list">
         {items.map((item) => (
-          <CartItemGallery
-            key={`${item.productId}-${item.color?.id || 'default'}`}
-            item={item}
-          />
+          <CartItemGallery key={`${item.productId}-${item.color?.id || 'default'}`} item={item} />
         ))}
 
         <button
@@ -79,9 +74,7 @@ export function CartClientGallery({ tenantId }: CartClientGalleryProps) {
       {/* Summary Sidebar - Right side (1/3 on desktop) */}
       <div className="lg:col-span-1" data-testid="cart-summary">
         <div className="sticky top-24 p-6 rounded-xl bg-gray-50 border border-gray-200">
-          <h2 className="text-2xl font-serif font-bold mb-6 text-black">
-            Resumen
-          </h2>
+          <h2 className="text-2xl font-serif font-bold mb-6 text-black">Resumen</h2>
 
           <div className="space-y-4 py-6 border-t border-b border-gray-200">
             <div className="flex justify-between">
@@ -112,7 +105,7 @@ export function CartClientGallery({ tenantId }: CartClientGalleryProps) {
             style={{
               backgroundColor: 'var(--color-accent-primary)',
               height: '56px',
-              fontSize: 'var(--font-size-h4)'
+              fontSize: 'var(--font-size-h4)',
             }}
             data-testid="cart-checkout-button"
           >
@@ -133,4 +126,3 @@ export function CartClientGallery({ tenantId }: CartClientGalleryProps) {
     </div>
   )
 }
-

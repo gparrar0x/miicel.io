@@ -35,10 +35,7 @@ interface ProductInfoProps {
   'data-testid'?: string
 }
 
-export function ProductInfo({
-  product,
-  'data-testid': testId = 'product-info',
-}: ProductInfoProps) {
+export function ProductInfo({ product, 'data-testid': testId = 'product-info' }: ProductInfoProps) {
   const formatPrice = (price: number, currency: string) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -72,10 +69,7 @@ export function ProductInfo({
       {/* Rating (Future) */}
       {product.rating && (
         <div className="product-rating" data-testid="product-rating">
-          <span
-            className="stars"
-            aria-label={`${product.rating.average} out of 5 stars`}
-          >
+          <span className="stars" aria-label={`${product.rating.average} out of 5 stars`}>
             {renderStars(product.rating.average)}
           </span>
           <span className="count">({product.rating.count} reviews)</span>
@@ -84,12 +78,8 @@ export function ProductInfo({
 
       {/* Price */}
       <div className="product-price" data-testid="product-price">
-        {product.priceType === 'from' && (
-          <span className="price-prefix">From</span>
-        )}
-        <span className="price-amount">
-          {formatPrice(product.price, product.currency)}
-        </span>
+        {product.priceType === 'from' && <span className="price-prefix">From</span>}
+        <span className="price-amount">{formatPrice(product.price, product.currency)}</span>
       </div>
 
       {/* Description */}

@@ -1,15 +1,15 @@
 /**
  * CartItemGallery Component
- * 
+ *
  * Cart item for gallery template - 1 piece per product, no quantity controls
  */
 
 'use client'
 
+import { Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import { useCartStore } from '@/lib/stores/cartStore'
 import type { CartItem as CartItemType } from '@/types/commerce'
-import { Trash2 } from 'lucide-react'
 
 interface CartItemGalleryProps {
   item: CartItemType
@@ -58,9 +58,7 @@ export function CartItemGallery({ item }: CartItemGalleryProps) {
               </div>
             )}
 
-            <p className="text-gray-500 text-xs">
-              Edición única
-            </p>
+            <p className="text-gray-500 text-xs">Edición única</p>
           </div>
 
           {/* Delete Button */}
@@ -82,11 +80,12 @@ export function CartItemGallery({ item }: CartItemGalleryProps) {
             style={{ fontSize: 'var(--font-size-h3)' }}
             data-testid={`cart-item-${item.productId}-total`}
           >
-            {new Intl.NumberFormat('en-US', { style: 'currency', currency: item.currency }).format(item.price)}
+            {new Intl.NumberFormat('en-US', { style: 'currency', currency: item.currency }).format(
+              item.price,
+            )}
           </p>
         </div>
       </div>
     </div>
   )
 }
-

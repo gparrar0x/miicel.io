@@ -4,14 +4,26 @@
       "role": "Eres Mentat, Chief Automation Architect de Skywalking.dev.",
       "context_template": "INFORMACIÓN DEL CLIENTE:\n- Nombre: {{CLIENT_NAME}}\n- Website: {{CLIENT_WEBSITE}}\n- Industria: {{INDUSTRY}}\n- Problema: {{MAIN_PROBLEM}}\n- Tipo de proyecto: {{PROJECT_TYPE}}\n- Budget: {{BUDGET_RANGE}}\n- Timeline: {{TIMELINE_PREFERENCE}}",
       "prompt": "Analiza la información del cliente y proporciona:\n\n1. **Perfil del Cliente**: Análisis de madurez digital, necesidades y capacidades\n2. **Análisis de Mercado**: Investigación del sector, tendencias y oportunidades\n3. **Paisaje Competitivo**: Benchmarking y diferenciación potencial\n4. **Evaluación de Oportunidades**: Valor potencial y factores de éxito\n\nUsa investigación web si es necesario. Responde en formato markdown estructurado.",
-      "expected_sections": ["client_profile", "market_analysis", "competitive_landscape", "opportunities"]
+      "expected_sections": [
+        "client_profile",
+        "market_analysis",
+        "competitive_landscape",
+        "opportunities"
+      ]
     },
 
     "technical_analysis": {
       "role": "Eres Mentat, experto en arquitectura técnica para automatización e IA.",
       "context_template": "PROYECTO: {{CLIENT_NAME}}\nTIPO: {{PROJECT_TYPE}}\nPROBLEMA A RESOLVER: {{MAIN_PROBLEM}}\nBUDGET: {{BUDGET_RANGE}}\nTIMELINE: {{TIMELINE_PREFERENCE}}\nHARDWARE: {{HARDWARE_INTEGRATION}}",
       "prompt": "Basándote en el tipo de proyecto y problema a resolver, proporciona:\n\n1. **Stack Tecnológico Recomendado**: Herramientas específicas con justificación\n2. **Arquitectura Sugerida**: Diseño técnico de alto nivel con diagramas\n3. **Integraciones Necesarias**: APIs, servicios externos y conectores\n4. **Hardware Integration** (si aplica): NFC, IoT, sensores, protocolos\n5. **Consideraciones de Seguridad**: Aspectos críticos y mejores prácticas\n6. **Estimación de Complejidad**: Análisis de riesgos técnicos\n\nPrioriza nuestro stack preferido: n8n, Claude API, FastAPI, Next.js, Supabase, WhatsApp Business API.\nPara proyectos con hardware: React Native, TimescaleDB, WebSocket, ML pipelines.\nResponde en formato markdown estructurado.",
-      "expected_sections": ["tech_stack", "architecture", "integrations", "hardware", "security", "complexity"]
+      "expected_sections": [
+        "tech_stack",
+        "architecture",
+        "integrations",
+        "hardware",
+        "security",
+        "complexity"
+      ]
     },
 
     "strategic_options": {

@@ -10,7 +10,7 @@
  * - Auth guard verification
  */
 
-import { Page, Locator, expect } from '@playwright/test'
+import { expect, type Locator, type Page } from '@playwright/test'
 import { ThemeLocators } from '../locators/theme.locators'
 
 type TenantTemplate = 'gallery' | 'detail' | 'minimal'
@@ -121,10 +121,7 @@ export class ThemeEditorPage {
    * @param field - Field name
    * @param value - New value
    */
-  async setThemeField(
-    field: keyof Omit<ThemeEditorData, 'template'>,
-    value: string | number
-  ) {
+  async setThemeField(field: keyof Omit<ThemeEditorData, 'template'>, value: string | number) {
     const stringValue = String(value)
 
     switch (field) {
@@ -161,9 +158,7 @@ export class ThemeEditorPage {
    * @param field - Field name
    * @returns Current value
    */
-  async getThemeField(
-    field: keyof Omit<ThemeEditorData, 'template'>
-  ): Promise<string | null> {
+  async getThemeField(field: keyof Omit<ThemeEditorData, 'template'>): Promise<string | null> {
     const locator = {
       gridCols: this.gridColsInput,
       imageAspect: this.imageAspectInput,
@@ -223,9 +218,9 @@ export class ThemeEditorPage {
     await spinner.waitFor({ state: 'hidden', timeout: 5000 })
 
     // Wait for success toast
-    await expect(
-      this.page.locator(ThemeLocators.toast.successMessage)
-    ).toBeVisible({ timeout: 5000 })
+    await expect(this.page.locator(ThemeLocators.toast.successMessage)).toBeVisible({
+      timeout: 5000,
+    })
   }
 
   /**
@@ -235,9 +230,7 @@ export class ThemeEditorPage {
     await this.resetButton.click()
 
     // Wait for reset toast notification
-    await expect(
-      this.page.locator(ThemeLocators.toast.infoMessage)
-    ).toBeVisible({ timeout: 2000 })
+    await expect(this.page.locator(ThemeLocators.toast.infoMessage)).toBeVisible({ timeout: 2000 })
   }
 
   /**
@@ -266,9 +259,7 @@ export class ThemeEditorPage {
    * @param field - Field name
    * @returns Error message text or null
    */
-  async getFieldError(
-    field: keyof Omit<ThemeEditorData, 'template'>
-  ): Promise<string | null> {
+  async getFieldError(field: keyof Omit<ThemeEditorData, 'template'>): Promise<string | null> {
     const errorSelector = {
       gridCols: ThemeLocators.themeFields.gridColsError,
       imageAspect: ThemeLocators.themeFields.imageAspectError,
@@ -292,9 +283,7 @@ export class ThemeEditorPage {
    * Check if form has validation errors
    */
   async hasValidationErrors(): Promise<boolean> {
-    const errorElements = await this.page
-      .locator(ThemeLocators.validation.fieldError)
-      .all()
+    const errorElements = await this.page.locator(ThemeLocators.validation.fieldError).all()
     return errorElements.length > 0
   }
 

@@ -1,5 +1,5 @@
-import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
 
 /**
  * API endpoint to check if current user is superadmin
@@ -8,13 +8,15 @@ import { NextResponse } from 'next/server'
 export async function GET() {
   try {
     const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
     if (!user?.email) {
       return NextResponse.json({ isSuperAdmin: false })
     }
 
-    const superAdmins = process.env.SUPER_ADMINS?.split(',').map(e => e.trim()) || []
+    const superAdmins = process.env.SUPER_ADMINS?.split(',').map((e) => e.trim()) || []
     const isSuperAdmin = superAdmins.includes(user.email)
 
     return NextResponse.json({ isSuperAdmin })
@@ -23,4 +25,3 @@ export async function GET() {
     return NextResponse.json({ isSuperAdmin: false })
   }
 }
-

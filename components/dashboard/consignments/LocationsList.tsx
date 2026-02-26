@@ -7,10 +7,10 @@
  * Includes empty state and loading skeleton
  */
 
-import { useState, useMemo } from 'react'
-import { ConsignmentLocation } from '@/lib/types/consignment'
+import { MapPin, Plus, Search } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import type { ConsignmentLocation } from '@/lib/types/consignment'
 import { LocationCard } from './LocationCard'
-import { Search, Plus, MapPin } from 'lucide-react'
 
 interface LocationsListProps {
   locations: ConsignmentLocation[]
@@ -32,9 +32,7 @@ export function LocationsList({
 
   const filteredLocations = useMemo(() => {
     return locations.filter((loc) => {
-      const matchSearch = loc.name
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
+      const matchSearch = loc.name.toLowerCase().includes(searchTerm.toLowerCase())
       const matchCity = !filterCity || loc.city === filterCity
       return matchSearch && matchCity
     })

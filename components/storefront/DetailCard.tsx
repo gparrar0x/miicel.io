@@ -19,7 +19,7 @@
 'use client'
 
 import Image from 'next/image'
-import { Product } from '@/types/commerce'
+import type { Product } from '@/types/commerce'
 
 interface DetailCardProps {
   product: Product
@@ -97,9 +97,7 @@ export function DetailCard({ product, loading = false, onClick }: DetailCardProp
       <div className="space-y-2">
         {/* Title & Price */}
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-semibold text-lg line-clamp-2 flex-1">
-            {product.name}
-          </h3>
+          <h3 className="font-semibold text-lg line-clamp-2 flex-1">{product.name}</h3>
           <p
             className="font-bold text-lg whitespace-nowrap"
             style={{ color: 'var(--color-primary, #3B82F6)' }}
@@ -143,15 +141,15 @@ export function DetailCard({ product, loading = false, onClick }: DetailCardProp
                 product.stock === 0
                   ? 'text-red-600'
                   : product.stock < 5
-                  ? 'text-amber-600'
-                  : 'text-green-600'
+                    ? 'text-amber-600'
+                    : 'text-green-600'
               }`}
             >
               {product.stock === 0
                 ? 'Out of Stock'
                 : product.stock < 5
-                ? `${product.stock} left`
-                : 'In Stock'}
+                  ? `${product.stock} left`
+                  : 'In Stock'}
             </p>
           </div>
 

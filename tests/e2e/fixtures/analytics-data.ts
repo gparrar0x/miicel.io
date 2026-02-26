@@ -115,7 +115,7 @@ export function generateAnalyticsTestData(daysBack: number = 30): AnalyticsTestD
       let discountApplied: string | undefined
       if (Math.random() < 0.2) {
         const discountPercent = Math.random() < 0.6 ? 10 : 20
-        revenue *= (1 - discountPercent / 100)
+        revenue *= 1 - discountPercent / 100
         discountApplied = Math.random() < 0.5 ? 'RedBag8' : 'LOCAL_PROMO'
       }
 
@@ -149,13 +149,13 @@ export function generateAnalyticsTestData(daysBack: number = 30): AnalyticsTestD
 
   // Calculate totals
   const totalRevenue = Object.values(productSales).reduce((sum, p) => sum + p.revenue, 0)
-  const totalItems = Object.values(productSales).reduce((sum, p) => sum + p.qty, 0)
-  const totalTransactions = transactions.length
+  const _totalItems = Object.values(productSales).reduce((sum, p) => sum + p.qty, 0)
+  const _totalTransactions = transactions.length
 
   // Build products array (sorted by revenue, top 10)
   const products: ProductData[] = Object.entries(productSales)
     .map(([name, { qty, revenue }]) => {
-      const product = baseProducts.find(p => p.name === name)!
+      const product = baseProducts.find((p) => p.name === name)!
       return {
         id: `PRD-${name.replace(/\s+/g, '-').toLowerCase()}`,
         name,
@@ -180,7 +180,7 @@ export function generateAnalyticsTestData(daysBack: number = 30): AnalyticsTestD
 
   // Build payment methods
   const paymentStats: Record<string, { count: number; amount: number }> = {}
-  transactions.forEach(tx => {
+  transactions.forEach((tx) => {
     if (!paymentStats[tx.paymentMethod]) {
       paymentStats[tx.paymentMethod] = { count: 0, amount: 0 }
     }
@@ -196,7 +196,7 @@ export function generateAnalyticsTestData(daysBack: number = 30): AnalyticsTestD
 
   // Build discount codes
   const discountStats: Record<string, { count: number; amount: number }> = {}
-  transactions.forEach(tx => {
+  transactions.forEach((tx) => {
     if (tx.discount) {
       if (!discountStats[tx.discount]) {
         discountStats[tx.discount] = { count: 0, amount: 0 }
@@ -209,11 +209,13 @@ export function generateAnalyticsTestData(daysBack: number = 30): AnalyticsTestD
     }
   })
 
-  const discountCodes: DiscountCodeData[] = Object.entries(discountStats).map(([source, stats]) => ({
-    source,
-    count: stats.count,
-    amount: Math.round(stats.amount * 100) / 100,
-  }))
+  const discountCodes: DiscountCodeData[] = Object.entries(discountStats).map(
+    ([source, stats]) => ({
+      source,
+      count: stats.count,
+      amount: Math.round(stats.amount * 100) / 100,
+    }),
+  )
 
   return {
     products,

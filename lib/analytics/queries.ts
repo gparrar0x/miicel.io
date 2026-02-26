@@ -10,8 +10,8 @@
  * - Returns empty arrays gracefully for new tenants
  */
 
-import { SupabaseClient } from '@supabase/supabase-js'
-import { Database } from '@/types/database.types'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '@/types/database.types'
 
 type SupabaseType = SupabaseClient<Database>
 
@@ -72,7 +72,7 @@ export async function getSummaryMetrics(
   supabase: SupabaseType,
   tenantId: number,
   dateFrom: string,
-  dateTo: string
+  dateTo: string,
 ): Promise<SummaryMetrics> {
   // Query orders directly for real-time summary metrics
   const { data, error } = await supabase
@@ -89,7 +89,7 @@ export async function getSummaryMetrics(
       total_revenue: 0,
       total_orders: 0,
       avg_order_value: 0,
-      total_discounts: 0
+      total_discounts: 0,
     }
   }
 
@@ -98,7 +98,7 @@ export async function getSummaryMetrics(
       total_revenue: 0,
       total_orders: 0,
       avg_order_value: 0,
-      total_discounts: 0
+      total_discounts: 0,
     }
   }
 
@@ -112,7 +112,7 @@ export async function getSummaryMetrics(
     total_revenue: totalRevenue,
     total_orders: totalOrders,
     avg_order_value: totalOrders > 0 ? totalRevenue / totalOrders : 0,
-    total_discounts: totalDiscounts
+    total_discounts: totalDiscounts,
   }
 }
 
@@ -124,7 +124,7 @@ export async function getTopProducts(
   supabase: SupabaseType,
   tenantId: number,
   dateFrom: string,
-  dateTo: string
+  dateTo: string,
 ): Promise<TopProduct[]> {
   // Query from order_items joined with products for real-time data
   // since materialized views may not be accessible via Supabase client
@@ -174,7 +174,7 @@ export async function getTopProducts(
           product_id: productId,
           product_name: productName,
           units_sold: quantity,
-          revenue: Number(itemTotal)
+          revenue: Number(itemTotal),
         })
       }
     }
@@ -193,7 +193,7 @@ export async function getTopCategories(
   supabase: SupabaseType,
   tenantId: number,
   dateFrom: string,
-  dateTo: string
+  dateTo: string,
 ): Promise<CategoryMetrics[]> {
   // Get orders and aggregate by category from items
   const { data: orders, error } = await supabase
@@ -240,7 +240,7 @@ export async function getTopCategories(
           category,
           order_count: 0,
           units_sold: quantity,
-          revenue: Number(itemTotal)
+          revenue: Number(itemTotal),
         })
       }
     }
@@ -252,8 +252,7 @@ export async function getTopCategories(
     }
   }
 
-  return Array.from(categoryMap.values())
-    .sort((a, b) => b.revenue - a.revenue)
+  return Array.from(categoryMap.values()).sort((a, b) => b.revenue - a.revenue)
 }
 
 /**
@@ -264,7 +263,7 @@ export async function getPaymentMethods(
   supabase: SupabaseType,
   tenantId: number,
   dateFrom: string,
-  dateTo: string
+  dateTo: string,
 ): Promise<PaymentMethodMetrics[]> {
   const { data: orders, error } = await supabase
     .from('orders')
@@ -293,13 +292,12 @@ export async function getPaymentMethods(
       methodMap.set(method, {
         payment_method: method,
         order_count: 1,
-        revenue: Number(order.total)
+        revenue: Number(order.total),
       })
     }
   }
 
-  return Array.from(methodMap.values())
-    .sort((a, b) => b.revenue - a.revenue)
+  return Array.from(methodMap.values()).sort((a, b) => b.revenue - a.revenue)
 }
 
 /**
@@ -310,7 +308,7 @@ export async function getDiscounts(
   supabase: SupabaseType,
   tenantId: number,
   dateFrom: string,
-  dateTo: string
+  dateTo: string,
 ): Promise<DiscountMetrics[]> {
   const { data: orders, error } = await supabase
     .from('orders')
@@ -352,11 +350,12 @@ export async function getDiscounts(
         discount_code: discount.code || null,
         usage_count: 1,
         total_discount_amount: Number(discount.amount || 0),
-        avg_discount_percentage: discount.type === 'percentage' ? discount.value || null : null
+        avg_discount_percentage: discount.type === 'percentage' ? discount.value || null : null,
       })
     }
   }
 
-  return Array.from(discountMap.values())
-    .sort((a, b) => b.total_discount_amount - a.total_discount_amount)
+  return Array.from(discountMap.values()).sort(
+    (a, b) => b.total_discount_amount - a.total_discount_amount,
+  )
 }

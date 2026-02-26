@@ -5,7 +5,7 @@
  * Returns: { flags: { flag1: true, flag2: false } }
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { isEnabled } from '@/lib/flags'
 
 export async function GET(request: NextRequest) {
@@ -15,10 +15,7 @@ export async function GET(request: NextRequest) {
   const userId = searchParams.get('userId')
 
   if (!keys.length) {
-    return NextResponse.json(
-      { error: 'Missing required parameter: keys' },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: 'Missing required parameter: keys' }, { status: 400 })
   }
 
   const context = {
@@ -31,7 +28,7 @@ export async function GET(request: NextRequest) {
     keys.map(async (key) => ({
       key,
       enabled: await isEnabled(key, context),
-    }))
+    })),
   )
 
   const flags = results.reduce(
@@ -39,7 +36,7 @@ export async function GET(request: NextRequest) {
       acc[key] = enabled
       return acc
     },
-    {} as Record<string, boolean>
+    {} as Record<string, boolean>,
   )
 
   return NextResponse.json({ flags })

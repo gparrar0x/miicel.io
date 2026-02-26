@@ -1,4 +1,4 @@
-import { Clock, Phone, MapPin, Instagram } from "lucide-react"
+import { Clock, Instagram, MapPin, Phone } from 'lucide-react'
 
 interface GastronomyFooterProps {
   tenantName: string
@@ -18,22 +18,25 @@ export function GastronomyFooter({
   tenantPhone,
   tenantInstagram,
   businessHours = [
-    { day: "Lunes", hours: "20:00-00:30" },
-    { day: "Martes", hours: "20:00-00:30" },
-    { day: "Miércoles", hours: "20:00-00:30" },
-    { day: "Jueves", hours: "20:00-00:30" },
-    { day: "Viernes", hours: "20:00-01:30", isToday: true },
-    { day: "Sábado", hours: "11:00-00:30" },
-    { day: "Domingo", hours: "11:00-00:30" },
+    { day: 'Lunes', hours: '20:00-00:30' },
+    { day: 'Martes', hours: '20:00-00:30' },
+    { day: 'Miércoles', hours: '20:00-00:30' },
+    { day: 'Jueves', hours: '20:00-00:30' },
+    { day: 'Viernes', hours: '20:00-01:30', isToday: true },
+    { day: 'Sábado', hours: '11:00-00:30' },
+    { day: 'Domingo', hours: '11:00-00:30' },
   ],
 }: GastronomyFooterProps) {
   return (
-    <footer className="text-white py-8 px-4 mt-8" style={{
-      background: `linear-gradient(135deg, 
+    <footer
+      className="text-white py-8 px-4 mt-8"
+      style={{
+        background: `linear-gradient(135deg, 
         color-mix(in srgb, var(--color-primary) 90%, black), 
         color-mix(in srgb, var(--color-primary) 70%, black), 
-        color-mix(in srgb, var(--color-primary) 80%, black))`
-    }}>
+        color-mix(in srgb, var(--color-primary) 80%, black))`,
+      }}
+    >
       <div className="container mx-auto max-w-4xl">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Horarios de Atención */}
@@ -48,12 +51,12 @@ export function GastronomyFooter({
                   key={schedule.day}
                   className="flex justify-between items-center px-3 py-2 rounded-lg transition-all text-sm"
                   style={{
-                    background: schedule.isToday 
-                      ? 'rgba(255, 255, 255, 0.25)' 
+                    background: schedule.isToday
+                      ? 'rgba(255, 255, 255, 0.25)'
                       : 'rgba(255, 255, 255, 0.1)',
                     ...(schedule.isToday && {
-                      border: '2px solid rgba(255, 255, 255, 0.4)'
-                    })
+                      border: '2px solid rgba(255, 255, 255, 0.4)',
+                    }),
                   }}
                 >
                   <span className="font-semibold">{schedule.day}</span>
@@ -78,7 +81,7 @@ export function GastronomyFooter({
               )}
               {tenantPhone && (
                 <a
-                  href={`https://wa.me/${tenantPhone.replace(/\D/g, "")}`}
+                  href={`https://wa.me/${tenantPhone.replace(/\D/g, '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 bg-white/10 hover:bg-white/20 px-3 py-2 rounded-lg transition-colors text-sm"
@@ -92,7 +95,7 @@ export function GastronomyFooter({
               )}
               {tenantInstagram && (
                 <a
-                  href={`https://instagram.com/${tenantInstagram.replace("@", "")}`}
+                  href={`https://instagram.com/${tenantInstagram.replace('@', '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 bg-white/10 hover:bg-white/20 px-3 py-2 rounded-lg transition-colors text-sm"
@@ -107,10 +110,11 @@ export function GastronomyFooter({
 
         {/* Copyright */}
         <div className="mt-6 pt-4 border-t border-white/20 text-center opacity-80 text-xs">
-          <p>© {new Date().getFullYear()} {tenantName}. Todos los derechos reservados.</p>
+          <p>
+            © {new Date().getFullYear()} {tenantName}. Todos los derechos reservados.
+          </p>
         </div>
       </div>
     </footer>
   )
 }
-

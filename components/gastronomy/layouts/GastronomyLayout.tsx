@@ -1,22 +1,22 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Product } from '@/types/commerce'
-import { Category } from '../organisms/CategoryTabsNav'
-import { ProductGridGastronomy } from '../organisms/ProductGridGastronomy'
-import { FloatingCartButton } from '../organisms/FloatingCartButton'
-import { GastronomyHeader } from '../organisms/GastronomyHeader'
-import { GastronomyFooter } from '../organisms/GastronomyFooter'
-import { CartSheet } from '../organisms/CartSheet'
+import { useState } from 'react'
 import { WhatsAppButton } from '@/components/storefront/WhatsAppButton'
-import { useCartStore } from '@/lib/stores/cartStore'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
+import { useCartStore } from '@/lib/stores/cartStore'
+import type { Product } from '@/types/commerce'
+import { CartSheet } from '../organisms/CartSheet'
+import type { Category } from '../organisms/CategoryTabsNav'
+import { FloatingCartButton } from '../organisms/FloatingCartButton'
+import { GastronomyFooter } from '../organisms/GastronomyFooter'
+import { GastronomyHeader } from '../organisms/GastronomyHeader'
+import { ProductGridGastronomy } from '../organisms/ProductGridGastronomy'
 
 interface GastronomyLayoutProps {
   tenantSlug: string
@@ -51,12 +51,15 @@ export function GastronomyLayout({
   const { items, addItem, removeItem, updateQuantity } = useCartStore()
 
   const totalItems = items.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0)
-  const totalPrice = items.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 0), 0)
+  const totalPrice = items.reduce(
+    (sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 0),
+    0,
+  )
 
   const [isCartOpen, setIsCartOpen] = useState(false)
   // All categories expanded by default
   const [expandedCategories, setExpandedCategories] = useState<string[]>(
-    categories.map((c) => c.id)
+    categories.map((c) => c.id),
   )
 
   const handleAddToCart = async (productId: string) => {
@@ -71,7 +74,7 @@ export function GastronomyLayout({
       currency: product.currency,
       image: product.images[0] || '/placeholder.svg',
       // For gastronomy, if stock is 0 or undefined, assume available (999)
-      maxQuantity: (product.stock && product.stock > 0) ? product.stock : 999,
+      maxQuantity: product.stock && product.stock > 0 ? product.stock : 999,
       quantity: 1, // Default to 1
     })
   }
@@ -88,9 +91,14 @@ export function GastronomyLayout({
   }))
 
   return (
-    <div data-testid="gastronomy-layout" className="min-h-screen bg-gradient-to-b from-white/50 to-white" style={{
-      backgroundImage: 'linear-gradient(to bottom, color-mix(in srgb, var(--color-primary) 5%, white), white)'
-    }}>
+    <div
+      data-testid="gastronomy-layout"
+      className="min-h-screen bg-gradient-to-b from-white/50 to-white"
+      style={{
+        backgroundImage:
+          'linear-gradient(to bottom, color-mix(in srgb, var(--color-primary) 5%, white), white)',
+      }}
+    >
       {/* Header */}
       <GastronomyHeader
         tenantName={tenantName}
@@ -101,7 +109,6 @@ export function GastronomyLayout({
         tenantLocation={tenantLocation}
         hours={hours}
       />
-
 
       <main className="px-2 pt-6">
         {/* Collapsible Categories Accordion */}
@@ -120,11 +127,16 @@ export function GastronomyLayout({
             >
               <AccordionTrigger
                 className="px-6 py-4 hover:no-underline transition-colors"
-                style={{
-                  ['--hover-bg' as string]: 'color-mix(in srgb, var(--color-primary) 8%, white)'
-                } as React.CSSProperties}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--color-primary) 8%, white)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = ''}
+                style={
+                  {
+                    ['--hover-bg' as string]: 'color-mix(in srgb, var(--color-primary) 8%, white)',
+                  } as React.CSSProperties
+                }
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.background =
+                    'color-mix(in srgb, var(--color-primary) 8%, white)')
+                }
+                onMouseLeave={(e) => (e.currentTarget.style.background = '')}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{category.icon}</span>

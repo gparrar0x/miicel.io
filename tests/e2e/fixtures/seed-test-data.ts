@@ -60,8 +60,10 @@ export async function seedTestData() {
     let owner
 
     // Try to find existing owner user
-    const { data: allUsersData, error: listError } = await supabase.auth.admin.listUsers({ perPage: 100 })
-    const existingOwner = allUsersData?.users?.find(u => u.email === TEST_USERS.owner.email)
+    const { data: allUsersData, error: listError } = await supabase.auth.admin.listUsers({
+      perPage: 100,
+    })
+    const existingOwner = allUsersData?.users?.find((u) => u.email === TEST_USERS.owner.email)
 
     if (existingOwner) {
       owner = existingOwner
@@ -92,7 +94,9 @@ export async function seedTestData() {
           // Sign out to clean up session
           await supabase.auth.signOut()
         } else {
-          throw new Error(`Owner user exists but could not be retrieved. Error: ${signInError?.message || 'Unknown'}. Manual cleanup required: delete user ${TEST_USERS.owner.email} from Supabase auth.`)
+          throw new Error(
+            `Owner user exists but could not be retrieved. Error: ${signInError?.message || 'Unknown'}. Manual cleanup required: delete user ${TEST_USERS.owner.email} from Supabase auth.`,
+          )
         }
       } else {
         throw new Error(`Failed to create owner user: ${ownerError?.message}`)
@@ -113,7 +117,9 @@ export async function seedTestData() {
       .single()
 
     if (!existingTenant) {
-      throw new Error(`Demo tenant ${TEST_TENANT.slug} (ID ${TEST_TENANT.id}) not found in database`)
+      throw new Error(
+        `Demo tenant ${TEST_TENANT.slug} (ID ${TEST_TENANT.id}) not found in database`,
+      )
     }
 
     // Update BOTH demo tenants owner to test user (for admin access)
@@ -135,7 +141,9 @@ export async function seedTestData() {
       .eq('id', TEST_TENANT_2.id)
 
     if (updateError1 || updateError2) {
-      console.log(`  ⚠ Could not update tenant owners: ${updateError1?.message || updateError2?.message}`)
+      console.log(
+        `  ⚠ Could not update tenant owners: ${updateError1?.message || updateError2?.message}`,
+      )
     } else {
       console.log(`  ✓ Updated owners for tenants ${TEST_TENANT.id} and ${TEST_TENANT_2.id}`)
     }
@@ -147,7 +155,7 @@ export async function seedTestData() {
     console.log(`  Getting or creating non-owner user: ${TEST_USERS.nonOwner.email}`)
 
     // Try to find existing non-owner user
-    const existingNonOwner = allUsersData?.users?.find(u => u.email === TEST_USERS.nonOwner.email)
+    const existingNonOwner = allUsersData?.users?.find((u) => u.email === TEST_USERS.nonOwner.email)
 
     let nonOwner
     if (existingNonOwner) {
@@ -179,7 +187,9 @@ export async function seedTestData() {
           // Sign out to clean up session
           await supabase.auth.signOut()
         } else {
-          throw new Error(`Non-owner user exists but could not be retrieved. Error: ${signInError?.message || 'Unknown'}. Manual cleanup required: delete user ${TEST_USERS.nonOwner.email} from Supabase auth.`)
+          throw new Error(
+            `Non-owner user exists but could not be retrieved. Error: ${signInError?.message || 'Unknown'}. Manual cleanup required: delete user ${TEST_USERS.nonOwner.email} from Supabase auth.`,
+          )
         }
       } else {
         throw new Error(`Failed to create non-owner user: ${nonOwnerError?.message}`)

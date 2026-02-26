@@ -8,8 +8,8 @@
  * Uses MERCADOPAGO_WEBHOOK_SECRET from environment variables.
  */
 
-import { test, expect } from '@playwright/test'
-import * as crypto from 'crypto'
+import * as crypto from 'node:crypto'
+import { expect, test } from '@playwright/test'
 
 test.describe('MercadoPago Webhook API - Happy Paths', () => {
   const BASE_URL = process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000'

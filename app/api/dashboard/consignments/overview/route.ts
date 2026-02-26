@@ -60,11 +60,11 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const tenantIdStr = searchParams.get('tenant_id')
 
-    if (!tenantIdStr || isNaN(parseInt(tenantIdStr))) {
+    if (!tenantIdStr || Number.isNaN(parseInt(tenantIdStr, 10))) {
       return NextResponse.json({ error: 'Valid tenant_id required' }, { status: 400 })
     }
 
-    const tenantId = parseInt(tenantIdStr)
+    const tenantId = parseInt(tenantIdStr, 10)
 
     // Verify tenant ownership
     const { data: tenant, error: tenantError } = await supabase
@@ -90,7 +90,14 @@ export async function GET(request: Request) {
     const now = new Date()
     const firstDayThisMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
     const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString()
-    const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString()
+    const lastDayLastMonth = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      0,
+      23,
+      59,
+      59,
+    ).toISOString()
 
     // Metric 1: Total works ever assigned
     const { count: totalWorks } = await dbClient
@@ -158,7 +165,7 @@ export async function GET(request: Request) {
       .eq('status', 'sold')
       .gte('unassigned_date', firstDayThisMonth)
 
-    let topLocationBySales = undefined
+    let topLocationBySales
     if (locationSales && locationSales.length > 0) {
       type LocationRevenue = { location_id: number; location_name: string; revenue: number }
       const salesByLocation = locationSales.reduce(
@@ -173,12 +180,12 @@ export async function GET(request: Request) {
           acc[locId].revenue += Number(price)
           return acc
         },
-        {} as Record<number, LocationRevenue>
+        {} as Record<number, LocationRevenue>,
       )
 
       type LocationSale = { location_id: number; location_name: string; revenue: number }
       const sorted = (Object.values(salesByLocation) as LocationSale[]).sort(
-        (a, b) => b.revenue - a.revenue
+        (a, b) => b.revenue - a.revenue,
       )
       if (sorted.length > 0) {
         topLocationBySales = sorted[0]
@@ -194,7 +201,7 @@ export async function GET(request: Request) {
         assigned_date,
         work:products(title),
         location:consignment_locations(name)
-      `
+      `,
       )
       .eq('tenant_id', tenantId)
       .eq('status', 'in_gallery')
@@ -202,7 +209,7 @@ export async function GET(request: Request) {
       .order('assigned_date', { ascending: true })
       .limit(1)
 
-    let longestInGallery = undefined
+    let longestInGallery
     if (oldestWorks && oldestWorks.length > 0) {
       const oldest = oldestWorks[0]
       const assignedDate = new Date(oldest.assigned_date)

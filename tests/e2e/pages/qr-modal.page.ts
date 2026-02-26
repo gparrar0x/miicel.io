@@ -3,7 +3,7 @@
  * Encapsulates all QR modal interactions including opening, closing, and downloads
  */
 
-import { Page, Locator, expect } from '@playwright/test'
+import { expect, type Page } from '@playwright/test'
 import { QRModalLocators, QRModalWaits } from '../locators/qr-modal.locators'
 
 export class QRModalPage {
@@ -145,7 +145,7 @@ export class QRModalPage {
     if (!(await printBtn.isVisible({ timeout: this.waits.contentVisible }).catch(() => false))) {
       return false
     }
-    return !await printBtn.isDisabled()
+    return !(await printBtn.isDisabled())
   }
 
   /**
@@ -156,7 +156,7 @@ export class QRModalPage {
     if (!(await downloadBtn.isVisible({ timeout: this.waits.contentVisible }).catch(() => false))) {
       return false
     }
-    return !await downloadBtn.isDisabled()
+    return !(await downloadBtn.isDisabled())
   }
 
   /**
@@ -196,7 +196,7 @@ export class QRModalPage {
   async openAndVerifyContent(
     productId: string,
     productName: string,
-    tenantId: string
+    tenantId: string,
   ): Promise<boolean> {
     // Click QR button
     await this.clickQrButton(productId)

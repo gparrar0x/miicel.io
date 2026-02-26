@@ -5,12 +5,20 @@
  * Validates HMAC-SHA256 signature and updates order status
  */
 
-import * as crypto from 'crypto'
-import { NextResponse } from 'next/server'
-import { createServiceRoleClient } from '@/lib/supabase/server'
+import * as crypto from 'node:crypto'
 import { MercadoPagoConfig, Payment } from 'mercadopago'
+import { getClientIp, rateLimitExceededResponse, ratelimitLight } from '@/lib/rate-limit'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 
 export async function POST(request: Request) {
+  // Rate limit: 20 req / 10 s per IP (webhook — MP server sends from known IPs;
+  // signature validation below rejects tampered payloads regardless)
+  const ip = getClientIp(request)
+  const { success, limit, remaining, reset } = await ratelimitLight.limit(ip)
+  if (!success) {
+    return rateLimitExceededResponse(limit, remaining, reset)
+  }
+
   try {
     // 1. Validate MP signature (x-signature header)
     const signature = request.headers.get('x-signature')
@@ -90,9 +98,9 @@ export async function POST(request: Request) {
         return new Response('OK', { status: 200 })
       }
 
-      const orderId = parseInt(paymentInfo.external_reference)
+      const orderId = parseInt(paymentInfo.external_reference, 10)
 
-      if (isNaN(orderId)) {
+      if (Number.isNaN(orderId)) {
         console.error('Invalid order ID in external_reference')
         return new Response('OK', { status: 200 })
       }
@@ -137,7 +145,7 @@ export async function POST(request: Request) {
       }
 
       // 7. Create or update payment record
-      const paymentData = {
+      const _paymentData = {
         order_id: orderId,
         payment_id: paymentId.toString(),
         status: paymentInfo.status || 'unknown',
@@ -147,16 +155,19 @@ export async function POST(request: Request) {
         amount: paymentInfo.transaction_amount || 0,
         currency: paymentInfo.currency_id || 'ARS',
         payer_email: paymentInfo.payer?.email || null,
-        payer_name: paymentInfo.payer ? 
-          `${paymentInfo.payer.first_name || ''} ${paymentInfo.payer.last_name || ''}`.trim() || null 
+        payer_name: paymentInfo.payer
+          ? `${paymentInfo.payer.first_name || ''} ${paymentInfo.payer.last_name || ''}`.trim() ||
+            null
           : null,
         metadata: {
           merchant_order_id: paymentInfo.order?.id || null,
           transaction_details: paymentInfo.transaction_details || null,
-          card_info: paymentInfo.card ? {
-            first_six_digits: paymentInfo.card.first_six_digits,
-            last_four_digits: paymentInfo.card.last_four_digits,
-          } : null,
+          card_info: paymentInfo.card
+            ? {
+                first_six_digits: paymentInfo.card.first_six_digits,
+                last_four_digits: paymentInfo.card.last_four_digits,
+              }
+            : null,
           payment_date: paymentInfo.date_approved || paymentInfo.date_created,
         },
         updated_at: new Date().toISOString(),
@@ -165,9 +176,9 @@ export async function POST(request: Request) {
       // TODO: Payments table not yet in schema - skip for now
       // const { error: paymentError } = await supabase
       //   .from('payments')
-      //   .upsert(paymentData, { 
+      //   .upsert(paymentData, {
       //     onConflict: 'payment_id',
-      //     ignoreDuplicates: false 
+      //     ignoreDuplicates: false
       //   })
       // if (paymentError) {
       //   console.error('Error creating payment record:', paymentError)

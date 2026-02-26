@@ -5,10 +5,9 @@
  * Validates HMAC-SHA256 signature and updates order status
  */
 
-import * as crypto from 'crypto'
-import { NextResponse } from 'next/server'
-import { createServiceRoleClient } from '@/lib/supabase/server'
+import * as crypto from 'node:crypto'
 import { MercadoPagoConfig, Payment } from 'mercadopago'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 
 export async function POST(request: Request) {
   try {
@@ -90,9 +89,9 @@ export async function POST(request: Request) {
         return new Response('OK', { status: 200 })
       }
 
-      const orderId = parseInt(paymentInfo.external_reference)
+      const orderId = parseInt(paymentInfo.external_reference, 10)
 
-      if (isNaN(orderId)) {
+      if (Number.isNaN(orderId)) {
         console.error('Invalid order ID in external_reference')
         return new Response('OK', { status: 200 })
       }

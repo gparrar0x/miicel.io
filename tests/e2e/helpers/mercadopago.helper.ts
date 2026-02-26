@@ -10,7 +10,7 @@
  * await mpHelper.completePayment()
  */
 
-import { Page, expect } from '@playwright/test'
+import type { Page } from '@playwright/test'
 
 export interface MercadoPagoCardData {
   cardNumber: string
@@ -50,7 +50,7 @@ export class MercadoPagoHelper {
       // Look for common MP form elements
       await this.page.waitForSelector(
         'input[type="text"], input[type="tel"], input[name*="card"], form, iframe, button',
-        { timeout: 2000, state: 'visible' }
+        { timeout: 2000, state: 'visible' },
       )
       console.log('✓ Found form elements on MP page')
     } catch {
@@ -87,8 +87,8 @@ export class MercadoPagoHelper {
       if (error.message.includes('closed') || error.message.includes('Target page')) {
         throw new Error(
           'Page was closed while trying to select payment method. ' +
-          'Please keep the browser window open during test execution. ' +
-          'If running in headed mode, do not manually close the browser.'
+            'Please keep the browser window open during test execution. ' +
+            'If running in headed mode, do not manually close the browser.',
         )
       }
       console.log('⚠️  Error checking page state, continuing:', error.message)
@@ -125,67 +125,70 @@ export class MercadoPagoHelper {
         'a[class*="tarjeta"]',
       ]
 
-        let selected = false
-        for (const selector of cardOptionSelectors) {
-          try {
-            const option = this.page.locator(selector).first()
-            // Check if element exists and is visible
-            if (await option.isVisible({ timeout: 1000 })) {
-              console.log(`🎯 Trying to click card option with selector: ${selector}`)
-              await option.click({ timeout: 3000 })
-              await this.page.waitForTimeout(1500) // Wait for navigation/form to load
-              selected = true
-              console.log(`✓ Selected payment method with selector: ${selector}`)
-              break
-            }
-          } catch (error) {
-            console.log(`⚠️  Selector ${selector} failed: ${error.message}`)
-            continue
+      let selected = false
+      for (const selector of cardOptionSelectors) {
+        try {
+          const option = this.page.locator(selector).first()
+          // Check if element exists and is visible
+          if (await option.isVisible({ timeout: 1000 })) {
+            console.log(`🎯 Trying to click card option with selector: ${selector}`)
+            await option.click({ timeout: 3000 })
+            await this.page.waitForTimeout(1500) // Wait for navigation/form to load
+            selected = true
+            console.log(`✓ Selected payment method with selector: ${selector}`)
+            break
           }
+        } catch (error) {
+          console.log(`⚠️  Selector ${selector} failed: ${error.message}`)
         }
+      }
 
-        if (!selected) {
-          // Try clicking on any button/link that might be a card option
-          try {
-            const allButtons = this.page.locator('button, a').filter({ hasText: /tarjeta|card|crédito|débito|credito/i })
-            const count = await allButtons.count()
-            console.log(`🔍 Found ${count} potential card buttons/links`)
-            if (count > 0) {
-              // Log what we found for debugging
-              for (let i = 0; i < Math.min(count, 3); i++) {
-                const text = await allButtons.nth(i).textContent()
-                console.log(`  Option ${i}: "${text}"`)
-              }
-              await allButtons.first().click()
-              await this.page.waitForTimeout(1500)
-              console.log('✓ Clicked on first card option button')
-              selected = true
+      if (!selected) {
+        // Try clicking on any button/link that might be a card option
+        try {
+          const allButtons = this.page
+            .locator('button, a')
+            .filter({ hasText: /tarjeta|card|crédito|débito|credito/i })
+          const count = await allButtons.count()
+          console.log(`🔍 Found ${count} potential card buttons/links`)
+          if (count > 0) {
+            // Log what we found for debugging
+            for (let i = 0; i < Math.min(count, 3); i++) {
+              const text = await allButtons.nth(i).textContent()
+              console.log(`  Option ${i}: "${text}"`)
             }
-          } catch (error) {
-            console.log(`⚠️  Error clicking fallback card option: ${error.message}`)
+            await allButtons.first().click()
+            await this.page.waitForTimeout(1500)
+            console.log('✓ Clicked on first card option button')
+            selected = true
           }
+        } catch (error) {
+          console.log(`⚠️  Error clicking fallback card option: ${error.message}`)
         }
+      }
 
-        if (!selected) {
-          // Take screenshot for debugging
-          await this.takeDebugScreenshot('payment-method-not-found')
-          console.log('❌ Could not find card payment option. Screenshot saved as mp-debug-payment-method-not-found-*.png')
+      if (!selected) {
+        // Take screenshot for debugging
+        await this.takeDebugScreenshot('payment-method-not-found')
+        console.log(
+          '❌ Could not find card payment option. Screenshot saved as mp-debug-payment-method-not-found-*.png',
+        )
 
-          // Log available buttons for debugging
-          try {
-            const allButtons = await this.page.locator('button').all()
-            console.log(`Found ${allButtons.length} total buttons on page:`)
-            for (let i = 0; i < Math.min(allButtons.length, 5); i++) {
-              const text = await allButtons[i].textContent()
-              console.log(`  Button ${i}: "${text?.trim()}"`)
-            }
-          } catch (e) {
-            console.log('Could not analyze buttons')
+        // Log available buttons for debugging
+        try {
+          const allButtons = await this.page.locator('button').all()
+          console.log(`Found ${allButtons.length} total buttons on page:`)
+          for (let i = 0; i < Math.min(allButtons.length, 5); i++) {
+            const text = await allButtons[i].textContent()
+            console.log(`  Button ${i}: "${text?.trim()}"`)
           }
+        } catch (_e) {
+          console.log('Could not analyze buttons')
         }
+      }
 
-        // Wait for form to load after selection (reduced timeout)
-        await this.page.waitForTimeout(500)
+      // Wait for form to load after selection (reduced timeout)
+      await this.page.waitForTimeout(500)
     } else {
       console.log('ℹ️  Not on payment method selection page, skipping selection')
     }
@@ -211,7 +214,7 @@ export class MercadoPagoHelper {
       await this.page.waitForURL(/card-form/, { timeout: 15000 })
       console.log('✓ Navigated to card form page')
     } catch {
-      console.log('⚠️  Card form URL not detected, checking if we\'re already on the right page...')
+      console.log("⚠️  Card form URL not detected, checking if we're already on the right page...")
       const currentUrl = this.page.url()
       if (currentUrl.includes('card-form') || currentUrl.includes('payment-form')) {
         console.log('✓ Already on card form page')
@@ -223,7 +226,7 @@ export class MercadoPagoHelper {
     // Give MP time to render the form and load iframes
     console.log('⏳ Giving MP time to render card form and iframes...')
     await this.page.waitForTimeout(2000)
-    
+
     // Wait for iframes to be present
     try {
       await this.page.waitForSelector('iframe', { timeout: 5000 })
@@ -244,11 +247,11 @@ export class MercadoPagoHelper {
       const allIframes = this.page.locator('iframe')
       const iframeCount = await allIframes.count()
       console.log(`🔍 Searching ${iframeCount} iframes for ${fieldName}...`)
-      
+
       for (let i = 0; i < iframeCount; i++) {
         try {
           const frameLocator = this.page.frameLocator(`iframe >> nth=${i}`)
-          
+
           for (const selector of selectors) {
             try {
               const field = frameLocator.locator(selector).first()
@@ -256,13 +259,9 @@ export class MercadoPagoHelper {
                 console.log(`✓ Found ${fieldName} in iframe ${i} with selector: ${selector}`)
                 return field
               }
-            } catch {
-              continue
-            }
+            } catch {}
           }
-        } catch {
-          continue
-        }
+        } catch {}
       }
       return null
     }
@@ -276,9 +275,7 @@ export class MercadoPagoHelper {
             console.log(`✓ Found ${fieldName} in main page with selector: ${selector}`)
             return field
           }
-        } catch {
-          continue
-        }
+        } catch {}
       }
       return null
     }
@@ -286,7 +283,7 @@ export class MercadoPagoHelper {
     // Helper to fill a field - works for both iframe and main page locators
     const fillField = async (field: any, value: string, fieldName: string, isInIframe = false) => {
       console.log(`📝 Filling ${fieldName} (iframe: ${isInIframe})...`)
-      
+
       // Strategy 1: Try fill() first - this should work for Playwright locators
       try {
         await field.fill(value, { timeout: 3000 })
@@ -294,10 +291,10 @@ export class MercadoPagoHelper {
         const displayValue = fieldName.includes('CVV') ? '***' : value
         console.log(`✓ ${fieldName} filled via fill(): ${displayValue}`)
         return value
-      } catch (e) {
+      } catch (_e) {
         console.log(`⚠️  fill() failed for ${fieldName}, trying pressSequentially...`)
       }
-      
+
       // Strategy 2: Click and use pressSequentially on the element
       try {
         await field.click({ timeout: 2000, force: true })
@@ -307,10 +304,10 @@ export class MercadoPagoHelper {
         const displayValue = fieldName.includes('CVV') ? '***' : value
         console.log(`✓ ${fieldName} filled via pressSequentially: ${displayValue}`)
         return value
-      } catch (e) {
+      } catch (_e) {
         console.log(`⚠️  pressSequentially failed for ${fieldName}, trying type...`)
       }
-      
+
       // Strategy 3: Focus and type character by character
       try {
         await field.focus({ timeout: 2000 })
@@ -338,7 +335,7 @@ export class MercadoPagoHelper {
 
     // Find card number field (always in iframe for MP)
     let cardNumberField = await findFieldInIframes(cardNumberSelectors, 'card number')
-    
+
     if (!cardNumberField) {
       cardNumberField = await findFieldInMainPage(cardNumberSelectors, 'card number')
     }
@@ -364,20 +361,19 @@ export class MercadoPagoHelper {
     ]
 
     console.log('👤 Looking for cardholder name field...')
-    
+
     // Cardholder is in main page for MercadoPago
     let cardholderField = await findFieldInMainPage(cardholderSelectors, 'cardholder')
-    
+
     if (!cardholderField) {
       cardholderField = await findFieldInIframes(cardholderSelectors, 'cardholder')
     }
-    
+
     if (cardholderField) {
       await fillField(cardholderField, cardData.cardholder, 'cardholder', false)
     } else {
       console.log('⚠️  Cardholder field not found')
     }
-
 
     // Fill expiration date (in iframe for MP)
     const expirationSelectors = [
@@ -389,13 +385,13 @@ export class MercadoPagoHelper {
 
     console.log('📅 Looking for expiration date field...')
     const expiration = `${cardData.expirationMonth}/${cardData.expirationYear}`
-    
+
     let expirationField = await findFieldInIframes(expirationSelectors, 'expiration')
-    
+
     if (!expirationField) {
       expirationField = await findFieldInMainPage(expirationSelectors, 'expiration')
     }
-    
+
     if (expirationField) {
       await fillField(expirationField, expiration, 'expiration', true)
     } else {
@@ -414,13 +410,13 @@ export class MercadoPagoHelper {
     ]
 
     console.log('🔒 Looking for CVV field...')
-    
+
     let cvvField = await findFieldInIframes(cvvSelectors, 'CVV')
-    
+
     if (!cvvField) {
       cvvField = await findFieldInMainPage(cvvSelectors, 'CVV')
     }
-    
+
     if (cvvField) {
       await fillField(cvvField, cardData.cvv, 'CVV', true)
     } else {
@@ -437,14 +433,14 @@ export class MercadoPagoHelper {
     ]
 
     console.log('🆔 Looking for document field...')
-    
+
     // Document field is in main page for MercadoPago
     let documentField = await findFieldInMainPage(documentNumberSelectors, 'document')
-    
+
     if (!documentField) {
       documentField = await findFieldInIframes(documentNumberSelectors, 'document')
     }
-    
+
     if (documentField) {
       const dniNumber = cardData.dni || '12345678'
       await fillField(documentField, dniNumber, 'document', false)
@@ -493,9 +489,7 @@ export class MercadoPagoHelper {
           await this.page.waitForTimeout(2000)
           break
         }
-      } catch {
-        continue
-      }
+      } catch {}
     }
 
     // Try multiple button selectors
@@ -515,7 +509,7 @@ export class MercadoPagoHelper {
     for (const selector of buttonSelectors) {
       try {
         const button = this.page.locator(selector).first()
-        if (await button.isVisible({ timeout: 2000 }) && await button.isEnabled()) {
+        if ((await button.isVisible({ timeout: 2000 })) && (await button.isEnabled())) {
           console.log(`🔘 Clicking payment button: ${selector}`)
           await button.click()
           buttonClicked = true
@@ -525,7 +519,6 @@ export class MercadoPagoHelper {
         }
       } catch (error) {
         console.log(`⚠️  Button ${selector} not clickable:`, error.message)
-        continue
       }
     }
 
@@ -533,7 +526,9 @@ export class MercadoPagoHelper {
       // Take screenshot for debugging
       await this.takeDebugScreenshot('button-not-found')
       console.error('❌ Could not find MercadoPago submit button')
-      throw new Error('Could not find MercadoPago submit button. Screenshot saved as mp-debug-button-not-found-*.png.')
+      throw new Error(
+        'Could not find MercadoPago submit button. Screenshot saved as mp-debug-button-not-found-*.png.',
+      )
     }
   }
 
@@ -542,15 +537,16 @@ export class MercadoPagoHelper {
    * Verifies we're back on our domain with success parameters
    * Handles MP confirmation pages and manual redirect buttons
    */
-  async waitForRedirectToSuccess(
-    expectedBaseUrl: string,
-    timeout: number = 90000
-  ): Promise<void> {
+  async waitForRedirectToSuccess(_expectedBaseUrl: string, timeout: number = 90000): Promise<void> {
     console.log('⏳ Waiting for redirect back to platform...')
 
     // First, check if we're already on our domain
     const currentUrl = this.page.url()
-    if (currentUrl.includes('localhost') || currentUrl.includes('miicelio') || currentUrl.includes('/checkout/success')) {
+    if (
+      currentUrl.includes('localhost') ||
+      currentUrl.includes('miicelio') ||
+      currentUrl.includes('/checkout/success')
+    ) {
       console.log('✓ Already on platform domain')
       await this.page.waitForLoadState('domcontentloaded', { timeout: 30000 })
       return
@@ -583,7 +579,6 @@ export class MercadoPagoHelper {
           }
         } catch (error) {
           console.log(`⚠️  Could not click ${selector}:`, error.message)
-          continue
         }
       }
     } catch (error) {
@@ -606,9 +601,9 @@ export class MercadoPagoHelper {
 
           return isOurDomain
         },
-        { timeout }
+        { timeout },
       )
-    } catch (error) {
+    } catch (_error) {
       // Log current URL for debugging
       const finalUrl = this.page.url()
       const finalTitle = await this.page.title()
@@ -617,10 +612,11 @@ export class MercadoPagoHelper {
       await this.takeDebugScreenshot('redirect-timeout')
 
       // Check if MercadoPago returned an error page
-      const isMPErrorPage = finalUrl.includes('/congrats/recover/error') || 
-                           finalUrl.includes('/error') ||
-                           finalTitle.toLowerCase().includes('algo salió mal') ||
-                           finalTitle.toLowerCase().includes('error')
+      const isMPErrorPage =
+        finalUrl.includes('/congrats/recover/error') ||
+        finalUrl.includes('/error') ||
+        finalTitle.toLowerCase().includes('algo salió mal') ||
+        finalTitle.toLowerCase().includes('error')
 
       // Additional debugging info
       let errorDetails = ''
@@ -628,14 +624,16 @@ export class MercadoPagoHelper {
         const pageContent = await this.page.content()
         const hasError = pageContent.includes('error') || pageContent.includes('Error')
         console.log(`Page contains error text: ${hasError}`)
-        
+
         // Try to extract error message from page
-        const errorTextElement = await this.page.locator('text=/no pudimos|algo salió|error/i').first()
+        const errorTextElement = await this.page
+          .locator('text=/no pudimos|algo salió|error/i')
+          .first()
         if (await errorTextElement.isVisible({ timeout: 1000 }).catch(() => false)) {
-          errorDetails = await errorTextElement.textContent() || ''
+          errorDetails = (await errorTextElement.textContent()) || ''
           console.log(`Error message on page: ${errorDetails}`)
         }
-      } catch (e) {
+      } catch (_e) {
         console.log('Could not check page content for errors')
       }
 
@@ -643,23 +641,23 @@ export class MercadoPagoHelper {
       if (isMPErrorPage) {
         throw new Error(
           `MercadoPago SANDBOX rejected the payment. ` +
-          `This is a MercadoPago issue, NOT a test automation problem. ` +
-          `The test successfully filled all form fields and submitted the payment. ` +
-          `URL: ${finalUrl}. ` +
-          `Title: ${finalTitle}. ` +
-          `${errorDetails ? `MP Error: ${errorDetails}. ` : ''}` +
-          `Possible causes: 1) Invalid/expired Access Token, 2) Sandbox account not properly configured, ` +
-          `3) Test card not enabled for this merchant, 4) Payment amount out of sandbox limits. ` +
-          `Verify your MERCADOPAGO_TEST_ACCESS_TOKEN and sandbox configuration.`
+            `This is a MercadoPago issue, NOT a test automation problem. ` +
+            `The test successfully filled all form fields and submitted the payment. ` +
+            `URL: ${finalUrl}. ` +
+            `Title: ${finalTitle}. ` +
+            `${errorDetails ? `MP Error: ${errorDetails}. ` : ''}` +
+            `Possible causes: 1) Invalid/expired Access Token, 2) Sandbox account not properly configured, ` +
+            `3) Test card not enabled for this merchant, 4) Payment amount out of sandbox limits. ` +
+            `Verify your MERCADOPAGO_TEST_ACCESS_TOKEN and sandbox configuration.`,
         )
       }
 
       throw new Error(
         `Timeout waiting for redirect from MercadoPago. ` +
-        `Current URL: ${finalUrl}. ` +
-        `Page title: ${finalTitle}. ` +
-        `Screenshot saved as mp-debug-redirect-timeout-*.png. ` +
-        `MP might require manual confirmation or the redirect URL might be incorrect.`
+          `Current URL: ${finalUrl}. ` +
+          `Page title: ${finalTitle}. ` +
+          `Screenshot saved as mp-debug-redirect-timeout-*.png. ` +
+          `MP might require manual confirmation or the redirect URL might be incorrect.`,
       )
     }
 
@@ -703,9 +701,7 @@ export class MercadoPagoHelper {
             await this.page.waitForTimeout(2000)
           }
         }
-      } catch {
-        continue
-      }
+      } catch {}
     }
   }
 
@@ -719,4 +715,3 @@ export class MercadoPagoHelper {
     })
   }
 }
-

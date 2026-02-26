@@ -6,8 +6,8 @@
  */
 
 import { useRouter } from 'next/navigation'
+import type { Product } from '@/types/commerce'
 import { ProductGrid } from './ProductGrid'
-import { Product } from '@/types/commerce'
 
 interface GalleryGridWrapperProps {
   products: Product[]

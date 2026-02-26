@@ -1,8 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
-import { createServiceRoleClient } from '@/lib/supabase/server'
-import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 import createMiddleware from 'next-intl/middleware'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 import { routing } from './i18n/routing'
 
 type TenantData = {
@@ -25,7 +25,11 @@ export async function proxy(req: NextRequest) {
   const pathname = req.nextUrl.pathname
 
   // Skip proxy logic for SEO files and static assets
-  if (pathname === '/robots.txt' || pathname === '/sitemap.xml' || pathname.startsWith('/tenants/')) {
+  if (
+    pathname === '/robots.txt' ||
+    pathname === '/sitemap.xml' ||
+    pathname.startsWith('/tenants/')
+  ) {
     return NextResponse.next()
   }
 
@@ -63,11 +67,11 @@ export async function proxy(req: NextRequest) {
             supabaseResponse.headers.set(key, value)
           })
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(name, value, options),
           )
         },
       },
-    }
+    },
   )
 
   // Refresh session if needed
@@ -93,10 +97,12 @@ export async function proxy(req: NextRequest) {
   const secondSegment = pathSegments[1]
 
   // Skip tenant logic for special routes under [locale]
-  if (!secondSegment ||
-      secondSegment === 'signup' ||
-      secondSegment === 'test-theme' ||
-      secondSegment === 'login') {
+  if (
+    !secondSegment ||
+    secondSegment === 'signup' ||
+    secondSegment === 'test-theme' ||
+    secondSegment === 'login'
+  ) {
     return supabaseResponse
   }
 
@@ -111,8 +117,7 @@ export async function proxy(req: NextRequest) {
   // 1. Header-based bypass (for API calls)
   // 2. Query param _t bypass (for redirects after activation)
   const bypassCache =
-    req.headers.get('x-bypass-tenant-cache') === 'true' ||
-    req.nextUrl.searchParams.has('_t')
+    req.headers.get('x-bypass-tenant-cache') === 'true' || req.nextUrl.searchParams.has('_t')
 
   // Cache lookup uses the original identifier to keep behaviour predictable
   const cached = tenantCache.get(tenantIdentifier)
@@ -176,7 +181,10 @@ export async function proxy(req: NextRequest) {
   // If path contains 'dashboard', we need to check auth
   // pathSegments might be ['es', 'tenant', 'dashboard'] or ['tenant', 'dashboard']
   if (pathSegments.includes('dashboard')) {
-    const { data: { user }, error } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser()
 
     if (error || !user) {
       // Keep locale in the redirect target to avoid bouncing through the intl middleware
@@ -191,8 +199,11 @@ export async function proxy(req: NextRequest) {
       .eq('auth_user_id', user.id)
       .single()
 
-    const isSuperAdmin = user.email &&
-      process.env.SUPER_ADMINS?.split(',').map(e => e.trim()).includes(user.email)
+    const isSuperAdmin =
+      user.email &&
+      process.env.SUPER_ADMINS?.split(',')
+        .map((e) => e.trim())
+        .includes(user.email)
 
     const isPlatformAdmin = userRecord?.role === 'platform_admin'
     const isTenantAdmin = userRecord?.role === 'tenant_admin' && userRecord?.tenant_id === tenant.id
@@ -200,7 +211,16 @@ export async function proxy(req: NextRequest) {
     const isOwnerByTenant = user.id === tenant.owner_id
     const isOwnerByRole = userRecord?.role === 'owner' && userRecord?.tenant_id === tenant.id
 
-    if (!(isSuperAdmin || isPlatformAdmin || isTenantAdmin || isStaff || isOwnerByTenant || isOwnerByRole)) {
+    if (
+      !(
+        isSuperAdmin ||
+        isPlatformAdmin ||
+        isTenantAdmin ||
+        isStaff ||
+        isOwnerByTenant ||
+        isOwnerByRole
+      )
+    ) {
       // Unauthorized: send to locale-aware login to break redirect loop
       return NextResponse.redirect(new URL(`/${locale}/login`, req.url))
     }
@@ -210,7 +230,5 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)'],
 }

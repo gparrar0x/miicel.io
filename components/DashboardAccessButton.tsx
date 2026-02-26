@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Settings } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { checkDashboardAccess } from '@/lib/auth/permissions'
 
 interface DashboardAccessButtonProps {
@@ -43,4 +43,3 @@ export function DashboardAccessButton({ tenantId }: DashboardAccessButtonProps) 
     </button>
   )
 }
-

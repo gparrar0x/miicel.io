@@ -7,9 +7,9 @@
  * Uses Zod validation matching API schema
  */
 
+import { Loader2, X } from 'lucide-react'
 import { useState } from 'react'
-import { ConsignmentLocation, CreateLocationRequest } from '@/lib/types/consignment'
-import { X, Loader2 } from 'lucide-react'
+import type { ConsignmentLocation, CreateLocationRequest } from '@/lib/types/consignment'
 
 interface LocationFormProps {
   location?: ConsignmentLocation
@@ -81,7 +81,11 @@ export function LocationForm({ location, onSave, onCancel, isOpen }: LocationFor
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="overflow-y-auto p-6 space-y-4" data-testid="location-form">
+        <form
+          onSubmit={handleSubmit}
+          className="overflow-y-auto p-6 space-y-4"
+          data-testid="location-form"
+        >
           {/* Name */}
           <div>
             <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">
@@ -170,7 +174,9 @@ export function LocationForm({ location, onSave, onCancel, isOpen }: LocationFor
 
           {/* Contact Info */}
           <div className="pt-4 border-t border-[var(--color-border-subtle)]">
-            <h3 className="font-medium text-[var(--color-text-primary)] mb-3">Información de Contacto</h3>
+            <h3 className="font-medium text-[var(--color-text-primary)] mb-3">
+              Información de Contacto
+            </h3>
             <div className="space-y-3">
               <div>
                 <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">

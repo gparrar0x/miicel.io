@@ -30,7 +30,10 @@ export type OrderItem = z.infer<typeof orderItemSchema>
  */
 export const customerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
-  phone: z.string().regex(/^\+?[0-9\s-()]+$/, 'Invalid phone number').optional(),
+  phone: z
+    .string()
+    .regex(/^\+?[0-9\s-()]+$/, 'Invalid phone number')
+    .optional(),
   email: z.string().email('Invalid email').optional(),
   notes: z.string().optional(),
 })
@@ -68,7 +71,8 @@ export const slugSchema = z
   .min(3, 'Slug must be at least 3 characters')
   .max(30, 'Slug cannot exceed 30 characters')
   .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, {
-    message: 'Slug must be lowercase alphanumeric with hyphens (no consecutive or leading/trailing hyphens)',
+    message:
+      'Slug must be lowercase alphanumeric with hyphens (no consecutive or leading/trailing hyphens)',
   })
 
 /**
@@ -144,7 +148,7 @@ export const tenantConfigSchema = z.object({
       z.object({
         open: z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format (HH:MM)'),
         close: z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format (HH:MM)'),
-      })
+      }),
     )
     .optional(),
 })
@@ -199,11 +203,26 @@ export type OnboardingSaveResponse = z.infer<typeof onboardingSaveResponseSchema
 export const configColorsExtendedSchema = z.object({
   primary: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color'),
   secondary: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color'),
-  accent: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color').optional(),
-  background: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color').optional(),
-  surface: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color').optional(),
-  textPrimary: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color').optional(),
-  textSecondary: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color').optional(),
+  accent: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color')
+    .optional(),
+  background: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color')
+    .optional(),
+  surface: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color')
+    .optional(),
+  textPrimary: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color')
+    .optional(),
+  textSecondary: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid hex color')
+    .optional(),
 })
 
 /**
@@ -220,13 +239,15 @@ export const tenantConfigExtendedSchema = z.object({
     subtitle: z.string().optional(),
     location: z.string().optional(),
   }),
-  hours: z.record(
-    z.string(),
-    z.object({
-      open: z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format (HH:MM)'),
-      close: z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format (HH:MM)'),
-    })
-  ).optional(),
+  hours: z
+    .record(
+      z.string(),
+      z.object({
+        open: z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format (HH:MM)'),
+        close: z.string().regex(/^\d{2}:\d{2}$/, 'Invalid time format (HH:MM)'),
+      }),
+    )
+    .optional(),
 })
 
 export type TenantConfigExtended = z.infer<typeof tenantConfigExtendedSchema>
@@ -321,10 +342,16 @@ export type ProductResponse = z.infer<typeof productResponseSchema>
 export const orderListQuerySchema = z.object({
   tenant_id: z.string().regex(/^\d+$/).transform(Number),
   status: z.enum(['pending', 'paid', 'preparing', 'ready', 'delivered', 'cancelled']).optional(),
-  date_from: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-  date_to: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  date_from: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+  date_to: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
   limit: z.string().regex(/^\d+$/).transform(Number).optional(),
-  offset: z.string().regex(/^\d+$/).transform(Number).optional()
+  offset: z.string().regex(/^\d+$/).transform(Number).optional(),
 })
 
 export type OrderListQuery = z.infer<typeof orderListQuerySchema>
@@ -334,7 +361,7 @@ export type OrderListQuery = z.infer<typeof orderListQuerySchema>
  * Used in PATCH /api/orders/[id]/status
  */
 export const orderStatusUpdateSchema = z.object({
-  status: z.enum(['pending', 'paid', 'preparing', 'ready', 'delivered', 'cancelled'])
+  status: z.enum(['pending', 'paid', 'preparing', 'ready', 'delivered', 'cancelled']),
 })
 
 export type OrderStatusUpdate = z.infer<typeof orderStatusUpdateSchema>
@@ -342,12 +369,14 @@ export type OrderStatusUpdate = z.infer<typeof orderStatusUpdateSchema>
 /**
  * Schema for customer in order response
  */
-export const orderCustomerSchema = z.object({
-  id: z.number().int().positive(),
-  name: z.string(),
-  email: z.string().email().nullable(),
-  phone: z.string().nullable()
-}).nullable()
+export const orderCustomerSchema = z
+  .object({
+    id: z.number().int().positive(),
+    name: z.string(),
+    email: z.string().email().nullable(),
+    phone: z.string().nullable(),
+  })
+  .nullable()
 
 export type OrderCustomer = z.infer<typeof orderCustomerSchema>
 
@@ -366,7 +395,7 @@ export const orderResponseSchema = z.object({
   payment_id: z.string().nullable(),
   notes: z.string().nullable(),
   created_at: z.string(),
-  updated_at: z.string()
+  updated_at: z.string(),
 })
 
 export type OrderResponse = z.infer<typeof orderResponseSchema>
@@ -378,7 +407,7 @@ export const orderListResponseSchema = z.object({
   orders: z.array(orderResponseSchema),
   total_count: z.number().int().nonnegative(),
   page: z.number().int().positive(),
-  per_page: z.number().int().positive()
+  per_page: z.number().int().positive(),
 })
 
 export type OrderListResponse = z.infer<typeof orderListResponseSchema>

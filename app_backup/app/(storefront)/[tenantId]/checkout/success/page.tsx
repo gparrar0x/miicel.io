@@ -6,10 +6,10 @@
 
 'use client'
 
-import { useEffect, useState } from 'react'
+import { ArrowLeft, CheckCircle, CreditCard, Package, User } from 'lucide-react'
 import { useParams, useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { Link } from '@/i18n/routing'
-import { CheckCircle, Package, User, CreditCard, ArrowLeft } from 'lucide-react'
 
 interface OrderData {
   orderId: string
@@ -37,7 +37,7 @@ export default function CheckoutSuccessPage() {
   // MercadoPago returns: payment_id, status, external_reference (orderId)
   const paymentId = searchParams?.get('payment_id')
   const externalReference = searchParams?.get('external_reference')
-  const mpStatus = searchParams?.get('status')
+  const _mpStatus = searchParams?.get('status')
 
   // Fallback to legacy orderId param for backwards compatibility
   const orderId = externalReference || searchParams?.get('orderId')
@@ -55,8 +55,8 @@ export default function CheckoutSuccessPage() {
 
     // Fetch order details
     fetch(`/api/orders/${orderId}`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (data.error) {
           setError(data.error)
         } else {
@@ -64,7 +64,7 @@ export default function CheckoutSuccessPage() {
         }
         setLoading(false)
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Failed to fetch order:', err)
         setError('Failed to load order details')
         setLoading(false)
@@ -85,7 +85,10 @@ export default function CheckoutSuccessPage() {
   if (error || !orderData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-        <div className="bg-white rounded-lg p-8 max-w-md w-full text-center" data-testid="checkout-success-error">
+        <div
+          className="bg-white rounded-lg p-8 max-w-md w-full text-center"
+          data-testid="checkout-success-error"
+        >
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-2xl">⚠️</span>
           </div>
@@ -108,7 +111,10 @@ export default function CheckoutSuccessPage() {
     <div className="min-h-screen bg-gray-50 py-12 px-4" data-testid="checkout-success-page">
       <div className="max-w-3xl mx-auto">
         {/* Success Header */}
-        <div className="bg-white rounded-lg p-8 mb-6 text-center" data-testid="checkout-success-header">
+        <div
+          className="bg-white rounded-lg p-8 mb-6 text-center"
+          data-testid="checkout-success-header"
+        >
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-12 h-12 text-green-600" />
           </div>
@@ -127,9 +133,7 @@ export default function CheckoutSuccessPage() {
             {paymentId && (
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-lg ml-2">
                 <span className="text-sm text-blue-600">Payment ID:</span>
-                <span className="font-mono font-semibold text-blue-700">
-                  {paymentId}
-                </span>
+                <span className="font-mono font-semibold text-blue-700">{paymentId}</span>
               </div>
             )}
           </div>
@@ -144,19 +148,28 @@ export default function CheckoutSuccessPage() {
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-600">Name:</span>
-              <span className="font-medium text-gray-900" data-testid="checkout-success-customer-name">
+              <span
+                className="font-medium text-gray-900"
+                data-testid="checkout-success-customer-name"
+              >
                 {orderData.customer.name}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Email:</span>
-              <span className="font-medium text-gray-900" data-testid="checkout-success-customer-email">
+              <span
+                className="font-medium text-gray-900"
+                data-testid="checkout-success-customer-email"
+              >
                 {orderData.customer.email}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Phone:</span>
-              <span className="font-medium text-gray-900" data-testid="checkout-success-customer-phone">
+              <span
+                className="font-medium text-gray-900"
+                data-testid="checkout-success-customer-phone"
+              >
                 {orderData.customer.phone}
               </span>
             </div>

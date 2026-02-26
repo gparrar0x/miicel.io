@@ -15,8 +15,8 @@
  * Requires MERCADOPAGO_TEST_* environment variables for sandbox credentials
  */
 
-import { test, expect, Page } from '@playwright/test'
-import { MercadoPagoHelper, MercadoPagoCardData } from '../helpers/mercadopago.helper'
+import { expect, type Page, test } from '@playwright/test'
+import { type MercadoPagoCardData, MercadoPagoHelper } from '../helpers/mercadopago.helper'
 
 test.describe('Complete Purchase Flow - MercadoPago Sandbox', () => {
   const TEST_TENANT = process.env.TEST_TENANT_SLUG || 'demo_galeria'
@@ -48,13 +48,11 @@ test.describe('Complete Purchase Flow - MercadoPago Sandbox', () => {
     // Skip test if MP sandbox credentials not configured
     test.skip(
       !process.env.MERCADOPAGO_TEST_ACCESS_TOKEN,
-      'MERCADOPAGO_TEST_ACCESS_TOKEN not set. Skipping sandbox test.'
+      'MERCADOPAGO_TEST_ACCESS_TOKEN not set. Skipping sandbox test.',
     )
   })
 
-  test('should complete full purchase journey with real MercadoPago sandbox', async ({
-    page,
-  }) => {
+  test('should complete full purchase journey with real MercadoPago sandbox', async ({ page }) => {
     const mpHelper = new MercadoPagoHelper(page)
     const cardData = getMercadoPagoCardData()
 
@@ -208,11 +206,9 @@ test.describe('Complete Purchase Flow - MercadoPago Sandbox', () => {
     expect(orderId).toBeTruthy()
 
     // Verify customer info
-    await expect(page.getByTestId('checkout-success-customer-name')).toContainText(
-      testCustomerName
-    )
+    await expect(page.getByTestId('checkout-success-customer-name')).toContainText(testCustomerName)
     await expect(page.getByTestId('checkout-success-customer-email')).toContainText(
-      testCustomerEmail
+      testCustomerEmail,
     )
 
     // Verify order items
@@ -245,13 +241,13 @@ test.describe('Complete Purchase Flow - MercadoPago Sandbox', () => {
     if (href) {
       const url = new URL(href)
       const message = decodeURIComponent(url.searchParams.get('text') || '')
-      
+
       // Verify message contains order ID
       expect(message).toContain(orderId || '')
-      
+
       // Verify message contains customer name
       expect(message).toContain(testCustomerName)
-      
+
       // Verify message contains total
       expect(message).toMatch(/\d+\.\d{2}/) // Price format
     }
@@ -266,7 +262,10 @@ test.describe('Complete Purchase Flow - MercadoPago Sandbox', () => {
     // Note: Playwright can't actually open WhatsApp, but we can verify
     // the link opens in a new window/tab
     const [newPage] = await Promise.all([
-      page.context().waitForEvent('page', { timeout: 5000 }).catch(() => null),
+      page
+        .context()
+        .waitForEvent('page', { timeout: 5000 })
+        .catch(() => null),
       whatsappButton.click(),
     ])
 
@@ -288,4 +287,3 @@ test.describe('Complete Purchase Flow - MercadoPago Sandbox', () => {
     test.skip(true, 'Error handling test to be implemented')
   })
 })
-

@@ -12,8 +12,8 @@
  * </ThemeProvider>
  */
 
-import { type TenantConfigResponse } from '@/lib/schemas/order'
 import { useEffect } from 'react'
+import type { TenantConfigResponse } from '@/lib/schemas/order'
 
 interface ThemeProviderProps {
   config: TenantConfigResponse

@@ -6,12 +6,11 @@
  * Optimistic updates for better UX
  */
 
-import { useState, useCallback, useEffect } from 'react'
-import {
+import { useCallback, useEffect, useState } from 'react'
+import type {
+  ConsignmentError,
   ConsignmentLocation,
   CreateLocationRequest,
-  UpdateLocationRequest,
-  ConsignmentError,
 } from '@/lib/types/consignment'
 
 interface UseConsignmentLocationsReturn {
@@ -24,9 +23,7 @@ interface UseConsignmentLocationsReturn {
   deleteLocation: (locationId: string) => Promise<void>
 }
 
-export function useConsignmentLocations(
-  tenantId: number
-): UseConsignmentLocationsReturn {
+export function useConsignmentLocations(tenantId: number): UseConsignmentLocationsReturn {
   const [locations, setLocations] = useState<ConsignmentLocation[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<ConsignmentError | null>(null)
@@ -35,9 +32,7 @@ export function useConsignmentLocations(
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch(
-        `/api/dashboard/consignment-locations?tenant_id=${tenantId}`
-      )
+      const res = await fetch(`/api/dashboard/consignment-locations?tenant_id=${tenantId}`)
 
       if (!res.ok) {
         const errorData = await res.json()
@@ -78,14 +73,11 @@ export function useConsignmentLocations(
       setLocations((prev) => [newLocation, ...prev])
       return newLocation
     },
-    [tenantId]
+    [tenantId],
   )
 
   const updateLocation = useCallback(
-    async (
-      id: string,
-      data: Partial<CreateLocationRequest>
-    ): Promise<ConsignmentLocation> => {
+    async (id: string, data: Partial<CreateLocationRequest>): Promise<ConsignmentLocation> => {
       const res = await fetch(`/api/dashboard/consignment-locations/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -98,32 +90,30 @@ export function useConsignmentLocations(
       }
 
       const updatedLocation = await res.json()
-      setLocations((prev) =>
-        prev.map((loc) => (loc.id === id ? updatedLocation : loc))
-      )
+      setLocations((prev) => prev.map((loc) => (loc.id === id ? updatedLocation : loc)))
       return updatedLocation
     },
-    [tenantId]
+    [tenantId],
   )
 
-  const deleteLocation = useCallback(async (locationId: string) => {
-    // Optimistic update
-    setLocations((prev) => prev.filter((loc) => loc.id !== locationId))
+  const deleteLocation = useCallback(
+    async (locationId: string) => {
+      // Optimistic update
+      setLocations((prev) => prev.filter((loc) => loc.id !== locationId))
 
-    const res = await fetch(
-      `/api/dashboard/consignment-locations/${locationId}`,
-      {
+      const res = await fetch(`/api/dashboard/consignment-locations/${locationId}`, {
         method: 'DELETE',
-      }
-    )
+      })
 
-    if (!res.ok) {
-      // Rollback on error
-      fetchLocations()
-      const errorData = await res.json()
-      throw new Error(errorData.error || 'Failed to delete location')
-    }
-  }, [fetchLocations])
+      if (!res.ok) {
+        // Rollback on error
+        fetchLocations()
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Failed to delete location')
+      }
+    },
+    [fetchLocations],
+  )
 
   return {
     locations,

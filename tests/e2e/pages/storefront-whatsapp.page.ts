@@ -7,7 +7,7 @@
  * - Test across multiple templates
  */
 
-import { Page, Locator, expect } from '@playwright/test'
+import { expect, type Locator, type Page } from '@playwright/test'
 import { WhatsAppLocators } from '../locators/whatsapp.locators'
 
 type Template = 'gallery' | 'detail' | 'minimal' | 'gastronomy'
@@ -124,7 +124,7 @@ export class StorefrontWhatsAppPage {
     const container = await this.getButtonContainer()
     return await container.evaluate(
       (el, prop) => window.getComputedStyle(el).getPropertyValue(prop),
-      property
+      property,
     )
   }
 
@@ -143,9 +143,7 @@ export class StorefrontWhatsAppPage {
    */
   async isButtonFloating(): Promise<boolean> {
     const container = await this.getButtonContainer()
-    const position = await container.evaluate(
-      (el) => window.getComputedStyle(el).position
-    )
+    const position = await container.evaluate((el) => window.getComputedStyle(el).position)
     return position === 'fixed' || position === 'sticky'
   }
 

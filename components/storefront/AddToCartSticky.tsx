@@ -13,7 +13,7 @@
  * Accessibility: ARIA labels, disabled state, tap feedback
  */
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 interface SelectedOption {
   id: string
@@ -34,9 +34,9 @@ export function AddToCartSticky({
   onAddToCart,
   'data-testid': testId = 'add-to-cart-sticky',
 }: AddToCartStickyProps) {
-  const [buttonState, setButtonState] = useState<
-    'default' | 'loading' | 'success' | 'error'
-  >('default')
+  const [buttonState, setButtonState] = useState<'default' | 'loading' | 'success' | 'error'>(
+    'default',
+  )
 
   useEffect(() => {
     if (isLoading) {
@@ -57,7 +57,7 @@ export function AddToCartSticky({
       setTimeout(() => {
         setButtonState('default')
       }, 2000)
-    } catch (error) {
+    } catch (_error) {
       setButtonState('error')
       // Reset to default after 2s
       setTimeout(() => {
@@ -85,17 +85,9 @@ export function AddToCartSticky({
           </>
         )
       case 'success':
-        return (
-          <>
-            ✓ Added to Cart
-          </>
-        )
+        return <>✓ Added to Cart</>
       case 'error':
-        return (
-          <>
-            ⚠ Try Again
-          </>
-        )
+        return <>⚠ Try Again</>
       default:
         return (
           <>

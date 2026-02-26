@@ -13,7 +13,7 @@
  * - Uses demo_galeria tenant which has sample data
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { loginAsOwner } from '../../fixtures/auth.fixture'
 import { ConsignmentsPage } from '../../pages/consignments.page'
 
@@ -101,7 +101,10 @@ test.describe('Consignments - Artwork Assignment', () => {
     await expect(statusSelect).toBeVisible({ timeout: 5000 })
     await statusSelect.click()
 
-    const option = page.locator('[role="option"]').filter({ hasText: /gallery|galería/i }).first()
+    const option = page
+      .locator('[role="option"]')
+      .filter({ hasText: /gallery|galería/i })
+      .first()
     await expect(option).toBeVisible({ timeout: 5000 })
     await option.click()
 

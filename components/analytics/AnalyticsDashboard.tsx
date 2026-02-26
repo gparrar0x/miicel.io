@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import { DateRangePicker } from './DateRangePicker'
-import { SummaryCards } from './SummaryCards'
-import { TopProducts } from './TopProducts'
-import { TopCategories } from './TopCategories'
-import { PaymentMethods } from './PaymentMethods'
 import { DiscountsBreakdown } from './DiscountsBreakdown'
+import { PaymentMethods } from './PaymentMethods'
+import { SummaryCards } from './SummaryCards'
+import { TopCategories } from './TopCategories'
+import { TopProducts } from './TopProducts'
 
 interface DashboardMetrics {
   summary: {
@@ -64,7 +64,7 @@ export function AnalyticsDashboard({ tenantId, locale }: AnalyticsDashboardProps
 
       try {
         const response = await fetch(
-          `/api/analytics/dashboard?tenant_id=${tenantId}&date_from=${dateRange.from}&date_to=${dateRange.to}`
+          `/api/analytics/dashboard?tenant_id=${tenantId}&date_from=${dateRange.from}&date_to=${dateRange.to}`,
         )
 
         if (!response.ok) {

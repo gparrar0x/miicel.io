@@ -6,12 +6,12 @@
  * Form page for creating a new consignment location
  */
 
-import { useRouter } from 'next/navigation'
-import { useConsignmentLocations } from '@/lib/hooks/useConsignmentLocations'
-import { LocationForm } from '@/components/dashboard/consignments/LocationForm'
-import { CreateLocationRequest } from '@/lib/types/consignment'
-import { toast } from 'sonner'
 import { ArrowLeft } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+import { LocationForm } from '@/components/dashboard/consignments/LocationForm'
+import { useConsignmentLocations } from '@/lib/hooks/useConsignmentLocations'
+import type { CreateLocationRequest } from '@/lib/types/consignment'
 
 interface NewLocationClientProps {
   tenantId: number
@@ -23,13 +23,9 @@ export function NewLocationClient({ tenantId, tenantSlug }: NewLocationClientPro
   const { createLocation } = useConsignmentLocations(tenantId)
 
   const handleSave = async (data: CreateLocationRequest) => {
-    try {
-      const newLocation = await createLocation(data)
-      toast.success('Ubicación creada exitosamente')
-      router.push(`/${tenantSlug}/dashboard/consignments`)
-    } catch (error) {
-      throw error // Let form handle error display
-    }
+    const _newLocation = await createLocation(data)
+    toast.success('Ubicación creada exitosamente')
+    router.push(`/${tenantSlug}/dashboard/consignments`)
   }
 
   const handleCancel = () => {

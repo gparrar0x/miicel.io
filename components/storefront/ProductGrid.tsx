@@ -1,6 +1,6 @@
 /**
  * SKY-43: ProductGrid Component (Neo-Brutalist Layout)
- * 
+ *
  * Layout: Asymmetric Grid
  * - Desktop: 4 columns, items span 1 or 2 cols randomly
  * - Mobile: 1 column
@@ -8,10 +8,10 @@
 
 'use client'
 
-import { Product } from '@/types/commerce'
-import { TenantTemplate } from '@/types/theme'
-import { GalleryCard } from './GalleryCard'
+import type { Product } from '@/types/commerce'
+import type { TenantTemplate } from '@/types/theme'
 import { DetailCard } from './DetailCard'
+import { GalleryCard } from './GalleryCard'
 import { MinimalCard } from './MinimalCard'
 
 interface ProductGridProps {
@@ -54,7 +54,9 @@ export function ProductGrid({
   if (products.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-32 border-y border-black">
-        <h3 className="font-display text-3xl font-bold uppercase tracking-widest">No Artifacts Found</h3>
+        <h3 className="font-display text-3xl font-bold uppercase tracking-widest">
+          No Artifacts Found
+        </h3>
         <p className="font-mono text-sm mt-2 text-gray-500">The collection is currently empty.</p>
       </div>
     )
@@ -68,7 +70,7 @@ export function ProductGrid({
       {products.map((product, index) => {
         // Editorial Layout Logic:
         // Every 5th item spans 2 columns (if not on mobile)
-        const isFeatured = index % 5 === 0 && index !== 0;
+        const isFeatured = index % 5 === 0 && index !== 0
 
         return (
           <div

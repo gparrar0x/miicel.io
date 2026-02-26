@@ -10,7 +10,7 @@
  *   await page.createLocation({ name: 'Gallery X', city: 'Madrid' })
  */
 
-import { Page, expect } from '@playwright/test'
+import { expect, type Page } from '@playwright/test'
 import { CONSIGNMENTS } from '../locators/consignments.locators'
 
 export interface CreateLocationData {
@@ -71,10 +71,10 @@ export class ConsignmentsPage {
       .textContent()
 
     return {
-      totalWorks: parseInt(totalWorks || '0'),
-      activeLocations: parseInt(activeLocations || '0'),
-      worksInGallery: parseInt(worksInGallery || '0'),
-      soldThisMonth: parseInt(soldThisMonth || '0'),
+      totalWorks: parseInt(totalWorks || '0', 10),
+      activeLocations: parseInt(activeLocations || '0', 10),
+      worksInGallery: parseInt(worksInGallery || '0', 10),
+      soldThisMonth: parseInt(soldThisMonth || '0', 10),
     }
   }
 
@@ -171,7 +171,9 @@ export class ConsignmentsPage {
     await this.fillLocationForm(data)
     await this.submitLocationForm()
     // Verify success toast or location appears in list
-    await expect(this.page.getByText(/creado|creada|actualizado|actualizada|success|éxito/i)).toBeVisible({
+    await expect(
+      this.page.getByText(/creado|creada|actualizado|actualizada|success|éxito/i),
+    ).toBeVisible({
       timeout: 5000,
     })
   }
@@ -210,7 +212,7 @@ export class ConsignmentsPage {
 
   async deleteLocation(locationId: string) {
     // Register dialog handler BEFORE clicking delete (must happen before dialog appears)
-    this.page.once('dialog', dialog => dialog.accept())
+    this.page.once('dialog', (dialog) => dialog.accept())
 
     // Trigger the delete action
     await this.page.getByTestId(CONSIGNMENTS.LOCATIONS.CARD_DELETE_BTN(locationId)).click()
@@ -220,7 +222,7 @@ export class ConsignmentsPage {
       await expect(this.page.getByText(/eliminado|eliminada|borrado|success|éxito/i)).toBeVisible({
         timeout: 5000,
       })
-    } catch (error) {
+    } catch (_error) {
       // If toast doesn't appear, check if location card is gone (alternative success indicator)
       const card = this.page.getByTestId(CONSIGNMENTS.LOCATIONS.CARD(locationId))
       const stillVisible = await card.isVisible().catch(() => false)
@@ -242,7 +244,9 @@ export class ConsignmentsPage {
 
   async selectProductInModal(productId: string) {
     // In SelectProductModal, click product option
-    const productOption = this.page.getByTestId(CONSIGNMENTS.SELECT_PRODUCT.PRODUCT_OPTION(productId))
+    const productOption = this.page.getByTestId(
+      CONSIGNMENTS.SELECT_PRODUCT.PRODUCT_OPTION(productId),
+    )
     if (await productOption.isVisible()) {
       await productOption.click()
     } else {

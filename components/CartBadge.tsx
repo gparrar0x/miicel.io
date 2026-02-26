@@ -1,13 +1,13 @@
 'use client'
 
-import { useCartStore } from '@/lib/store/cart'
 import { ShoppingCart } from 'lucide-react'
 import { useState } from 'react'
+import { useCartStore } from '@/lib/store/cart'
 import { CartDrawer } from './CartDrawer'
 
 export function CartBadge() {
   const [open, setOpen] = useState(false)
-  const items = useCartStore(state => state.items)
+  const items = useCartStore((state) => state.items)
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
 
   return (

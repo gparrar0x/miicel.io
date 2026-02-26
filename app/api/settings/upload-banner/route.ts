@@ -41,11 +41,8 @@ export async function POST(request: Request) {
     const { searchParams } = new URL(request.url)
     const tenantId = searchParams.get('tenant_id')
 
-    if (!tenantId || isNaN(parseInt(tenantId))) {
-      return NextResponse.json(
-        { error: 'Valid tenant_id is required' },
-        { status: 400 }
-      )
+    if (!tenantId || Number.isNaN(parseInt(tenantId, 10))) {
+      return NextResponse.json({ error: 'Valid tenant_id is required' }, { status: 400 })
     }
 
     const supabase = await createClient()
@@ -57,33 +54,24 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized. Please log in.' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
     // Fetch tenant for ownership check
     const { data: tenant, error: tenantError } = await supabase
       .from('tenants')
       .select('id, slug, owner_id, config')
-      .eq('id', parseInt(tenantId))
+      .eq('id', parseInt(tenantId, 10))
       .maybeSingle()
 
     if (tenantError || !tenant) {
-      return NextResponse.json(
-        { error: 'Tenant not found.' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
     }
 
     // Verify ownership (allow superadmin)
     const isSuperAdmin = user.email === 'gparrar@skywalking.dev'
     if (!isSuperAdmin && tenant.owner_id !== user.id) {
-      return NextResponse.json(
-        { error: 'Forbidden. You do not own this tenant.' },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
     }
 
     // Parse form data
@@ -93,7 +81,7 @@ export async function POST(request: Request) {
     if (!file) {
       return NextResponse.json(
         { error: 'No file provided. Use multipart/form-data with "file" field.' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -104,7 +92,7 @@ export async function POST(request: Request) {
           error: 'Invalid file type. Allowed: PNG, JPEG, WEBP.',
           received: file.type,
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -116,7 +104,7 @@ export async function POST(request: Request) {
           size: file.size,
           max: MAX_FILE_SIZE,
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -125,19 +113,14 @@ export async function POST(request: Request) {
     const fileName = `${tenant.slug}/banner-${Date.now()}.${fileExt}`
 
     // Upload to Supabase Storage
-    const { error: uploadError } = await supabase.storage
-      .from('assets')
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false,
-      })
+    const { error: uploadError } = await supabase.storage.from('assets').upload(fileName, file, {
+      cacheControl: '3600',
+      upsert: false,
+    })
 
     if (uploadError) {
       console.error('Storage upload error (banner):', uploadError)
-      return NextResponse.json(
-        { error: 'Failed to upload file to storage.' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Failed to upload file to storage.' }, { status: 500 })
     }
 
     // Get public URL
@@ -164,7 +147,9 @@ export async function POST(request: Request) {
     if (updateError) {
       console.error('Error updating tenant banner config:', updateError)
       // File uploaded but config update failed - log warning but return URL
-      console.warn('Banner uploaded but tenant.config.banner update failed. Manual update may be needed.')
+      console.warn(
+        'Banner uploaded but tenant.config.banner update failed. Manual update may be needed.',
+      )
     }
 
     return NextResponse.json({
@@ -174,11 +159,6 @@ export async function POST(request: Request) {
     })
   } catch (error) {
     console.error('Unexpected error in POST /api/settings/upload-banner:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-
-

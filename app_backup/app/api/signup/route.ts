@@ -18,8 +18,8 @@
  * - Password meets minimum requirements (8 chars)
  */
 
-import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { NextResponse } from 'next/server'
 import { signupRequestSchema } from '@/lib/schemas/order'
 import type { Database } from '@/types/supabase'
 
@@ -32,7 +32,7 @@ const supabaseAdmin = createClient<Database>(
       autoRefreshToken: false,
       persistSession: false,
     },
-  }
+  },
 )
 
 export async function POST(request: Request) {
@@ -42,10 +42,7 @@ export async function POST(request: Request) {
     const validationResult = signupRequestSchema.safeParse(body)
 
     if (!validationResult.success) {
-      return NextResponse.json(
-        { error: validationResult.error.issues[0].message },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: validationResult.error.issues[0].message }, { status: 400 })
     }
 
     const { email, password, businessName, slug } = validationResult.data
@@ -60,7 +57,7 @@ export async function POST(request: Request) {
     if (existingTenant) {
       return NextResponse.json(
         { error: 'Slug already taken. Please choose a different one.' },
-        { status: 409 }
+        { status: 409 },
       )
     }
 
@@ -75,7 +72,7 @@ export async function POST(request: Request) {
       console.error('Auth creation failed:', authError)
       return NextResponse.json(
         { error: authError?.message || 'Failed to create user account' },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
@@ -116,7 +113,7 @@ export async function POST(request: Request) {
 
       return NextResponse.json(
         { error: 'Failed to create tenant. Please try again.' },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
@@ -126,13 +123,13 @@ export async function POST(request: Request) {
         userId,
         tenantSlug: tenantData.slug,
       },
-      { status: 201 }
+      { status: 201 },
     )
   } catch (error) {
     console.error('Signup error:', error)
     return NextResponse.json(
       { error: 'Internal server error. Please try again later.' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

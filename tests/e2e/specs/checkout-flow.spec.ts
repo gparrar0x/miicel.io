@@ -11,7 +11,7 @@
  * Uses data-testid selectors per TEST_ID_CONTRACT.md
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 test.describe('Checkout Flow - Happy Paths', () => {
   const TEST_TENANT = 'demo_galeria' // Use demo tenant ID 1
@@ -192,7 +192,9 @@ test.describe('Checkout Flow - Happy Paths', () => {
 
     // Verify customer info
     await expect(page.getByTestId('checkout-success-customer-name')).toContainText('John Doe')
-    await expect(page.getByTestId('checkout-success-customer-email')).toContainText('john@example.com')
+    await expect(page.getByTestId('checkout-success-customer-email')).toContainText(
+      'john@example.com',
+    )
     await expect(page.getByTestId('checkout-success-customer-phone')).toContainText('1234567890')
 
     // Verify order items

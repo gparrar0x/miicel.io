@@ -11,7 +11,7 @@
  * Cleans up created products after tests
  */
 
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { loginAsOwner } from '../../fixtures/auth.fixture'
 
 test.describe('Admin Products CRUD - Happy Path', () => {
@@ -89,7 +89,9 @@ test.describe('Admin Products CRUD - Happy Path', () => {
     await page.getByTestId('product-form-submit').click()
 
     // Verify success toast (Spanish: "actualizado" or "éxito")
-    await expect(page.getByText(/actualizado|guardado|éxito|updated|success/i)).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText(/actualizado|guardado|éxito|updated|success/i)).toBeVisible({
+      timeout: 10000,
+    })
   })
 
   test('should delete product successfully', async ({ page }) => {
@@ -100,14 +102,16 @@ test.describe('Admin Products CRUD - Happy Path', () => {
     const initialCount = await page.getByTestId('product-table-row').count()
 
     // Setup dialog handler to auto-confirm delete (app uses window.confirm, not modal)
-    page.on('dialog', dialog => dialog.accept())
+    page.on('dialog', (dialog) => dialog.accept())
 
     // Click delete on first product
     const firstRow = page.locator('[data-testid="product-table-row"]').first()
     await firstRow.getByTestId('product-delete-button').click()
 
     // Verify success toast (Spanish: "eliminado" or "éxito")
-    await expect(page.getByText(/eliminado|borrado|éxito|deleted|success/i)).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText(/eliminado|borrado|éxito|deleted|success/i)).toBeVisible({
+      timeout: 10000,
+    })
 
     // Verify row count decreased
     await page.waitForTimeout(500) // Brief wait for table update

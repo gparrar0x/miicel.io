@@ -9,6 +9,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Vitest + service layer** [2026-02-25] (SKY-120)
+  - Vitest configured with jsdom + RTL
+  - Extracted service layer: checkout, order, product services + repositories
+  - 32 unit tests with mocked repos
+  - API routes refactored to <50 LOC each
+- **Sentry error tracking** [2026-02-25] (SKY-122)
+  - @sentry/nextjs with client/server/edge configs
+  - global-error.tsx error boundary
+  - tracesSampleRate 0.1 in production
+- **GitHub Actions CI** [2026-02-25] (SKY-121)
+  - Biome check + tsc + vitest gates on PR/push to main
+- **Rate limiting** [2026-02-22] (SKY-111)
+  - Upstash-based rate limiting on checkout, orders, signup, webhooks
+  - 3 tiers: strict (10/10s), signup (5/60s), light (20/10s)
+- **RLS optimization migration** [2026-02-22] (SKY-110)
+  - `039_optimize_rls_auth_uid.sql`: 18 policies wrapped with `(select auth.uid())`
+
+### Changed
+
+- **@skywalking/core migration** [2026-02-25] (SKY-117)
+  - Supabase clients, auth guards, encryption, utils → thin re-export shims from @skywalking/core
+- **Biome + Lefthook** [2026-02-22] (SKY-113)
+  - Biome 2.4.4 replaces ESLint+Prettier for formatting/linting
+  - Lefthook pre-commit hook for biome check
+- **pnpm migration** [2026-02-22] (SKY-114)
+  - Switched from npm to pnpm@10.28.0
+
 - **Analytics page route** [2025-01-27] (SKY-44)
   - `app/[locale]/[tenantId]/dashboard/analytics/page.tsx`: Created route for AnalyticsDashboard component
   - Matches pattern of other dashboard pages (products, orders)

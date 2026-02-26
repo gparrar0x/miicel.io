@@ -1,17 +1,17 @@
 'use client'
 
-import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { createClient } from '@/lib/supabase/client'
+import { Suspense, useState } from 'react'
+import { MicelioLogo } from '@/components/icons/micelio-logo'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { MicelioLogo } from '@/components/icons/micelio-logo'
+import { createClient } from '@/lib/supabase/client'
 
 function LoginForm() {
-  const router = useRouter()
+  const _router = useRouter()
   const searchParams = useSearchParams()
   const t = useTranslations('Login')
   const [email, setEmail] = useState('')
@@ -144,11 +144,13 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-foreground" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-background">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-foreground" />
+        </div>
+      }
+    >
       <LoginForm />
     </Suspense>
   )

@@ -1,10 +1,10 @@
 'use client'
 
+import { CalendarIcon } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { CalendarIcon } from 'lucide-react'
 
 interface DateRangePickerProps {
   value: { from: string; to: string }

@@ -24,11 +24,7 @@ interface ProductStructuredDataProps {
   locale: string
 }
 
-export function ProductStructuredData({
-  product,
-  tenant,
-  locale,
-}: ProductStructuredDataProps) {
+export function ProductStructuredData({ product, tenant, locale }: ProductStructuredDataProps) {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -40,9 +36,7 @@ export function ProductStructuredData({
       price: product.price.toFixed(2),
       priceCurrency: product.currency || 'ARS',
       availability:
-        product.stock > 0
-          ? 'https://schema.org/InStock'
-          : 'https://schema.org/OutOfStock',
+        product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
       url: `https://miicel.io/${locale}/${tenant.slug}/p/${product.id}`,
     },
     brand: {

@@ -5,7 +5,7 @@
  * Called after onboarding completion to ensure redirect works.
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
 // This will be used by middleware to check for invalidation signals
@@ -17,7 +17,9 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient()
 
     // Verify user is authenticated
-    const { data: { session } } = await supabase.auth.getSession()
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -34,14 +36,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `Cache invalidated for tenant: ${tenantSlug}`
+      message: `Cache invalidated for tenant: ${tenantSlug}`,
     })
   } catch (error) {
     console.error('Cache invalidation error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 

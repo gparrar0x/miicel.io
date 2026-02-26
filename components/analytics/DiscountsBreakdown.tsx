@@ -1,7 +1,14 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
 import { Download } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 interface Discount {
   source: string
@@ -97,7 +104,9 @@ export function DiscountsBreakdown({ data, onExport }: DiscountsBreakdownProps) 
             </Table>
             <div className="mt-4 pt-4 border-t border-border flex justify-between items-center">
               <span className="font-semibold text-foreground">Total descontado</span>
-              <span className="font-bold text-destructive">{formatCurrency(totalDiscountAmount)}</span>
+              <span className="font-bold text-destructive">
+                {formatCurrency(totalDiscountAmount)}
+              </span>
             </div>
           </>
         )}

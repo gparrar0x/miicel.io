@@ -8,7 +8,7 @@
  * - Save configuration
  */
 
-import { Page, Locator, expect } from '@playwright/test'
+import { expect, type Locator, type Page } from '@playwright/test'
 import { WhatsAppLocators } from '../locators/whatsapp.locators'
 
 export class TenantSettingsPage {
@@ -119,7 +119,7 @@ export class TenantSettingsPage {
    */
   async isWhatsappInputRequired(): Promise<boolean> {
     return await this.whatsappInput.evaluate((el) =>
-      (el as HTMLInputElement).hasAttribute('required')
+      (el as HTMLInputElement).hasAttribute('required'),
     )
   }
 
@@ -134,8 +134,6 @@ export class TenantSettingsPage {
    * Verify input is focused
    */
   async isWhatsappInputFocused(): Promise<boolean> {
-    return await this.whatsappInput.evaluate(
-      (el) => el === document.activeElement
-    )
+    return await this.whatsappInput.evaluate((el) => el === document.activeElement)
   }
 }

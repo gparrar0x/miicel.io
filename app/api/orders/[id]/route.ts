@@ -8,19 +8,13 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const orderId = parseInt(id, 10)
 
-    if (isNaN(orderId)) {
-      return NextResponse.json(
-        { error: 'Invalid order ID' },
-        { status: 400 }
-      )
+    if (Number.isNaN(orderId)) {
+      return NextResponse.json({ error: 'Invalid order ID' }, { status: 400 })
     }
 
     const supabase = await createClient()
@@ -54,17 +48,11 @@ export async function GET(
 
     if (error) {
       console.error('Error fetching order:', error)
-      return NextResponse.json(
-        { error: 'Failed to fetch order' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Failed to fetch order' }, { status: 500 })
     }
 
     if (!order) {
-      return NextResponse.json(
-        { error: 'Order not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
 
     // Extract WhatsApp phone from tenant config
@@ -79,7 +67,7 @@ export async function GET(
         email: order.customers?.email || '',
         phone: order.customers?.phone || '',
       },
-      items: (order.items as any[] || []).map((item: any) => ({
+      items: ((order.items as any[]) || []).map((item: any) => ({
         name: item.name,
         quantity: item.quantity,
         price: item.price,
@@ -96,9 +84,6 @@ export async function GET(
     return NextResponse.json(response)
   } catch (error) {
     console.error('Unexpected error in GET /api/orders/[id]:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

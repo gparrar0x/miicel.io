@@ -7,12 +7,12 @@
  * Allows assigning/removing artworks from this location
  */
 
-import { useState, useEffect } from 'react'
+import { ArrowLeft, Edit, MapPin, Package } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { ConsignmentLocation } from '@/lib/types/consignment'
-import { ArrowLeft, MapPin, Edit, Package } from 'lucide-react'
-import { SelectProductModal } from '@/components/dashboard/consignments/SelectProductModal'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { SelectProductModal } from '@/components/dashboard/consignments/SelectProductModal'
+import type { ConsignmentLocation } from '@/lib/types/consignment'
 
 interface Artwork {
   id: number
@@ -51,19 +51,19 @@ export function LocationDetailClient({
 }: LocationDetailClientProps) {
   const router = useRouter()
   const [assignedArtworks, setAssignedArtworks] = useState<Artwork[]>([])
-  const [availableArtworks, setAvailableArtworks] = useState<Artwork[]>([])
+  const [_availableArtworks, setAvailableArtworks] = useState<Artwork[]>([])
   const [loading, setLoading] = useState(true)
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false)
 
   useEffect(() => {
     fetchAssignedArtworks()
     fetchAvailableArtworks()
-  }, [locationId])
+  }, [fetchAssignedArtworks, fetchAvailableArtworks])
 
   const fetchAssignedArtworks = async () => {
     try {
       const res = await fetch(
-        `/api/dashboard/consignment-locations/${locationId}/artworks?tenant_id=${tenantId}`
+        `/api/dashboard/consignment-locations/${locationId}/artworks?tenant_id=${tenantId}`,
       )
       if (!res.ok) throw new Error('Failed to fetch artworks')
       const data = await res.json()
@@ -93,25 +93,18 @@ export function LocationDetailClient({
     }
   }
 
-  const handleAssignArtwork = async (
-    productId: number,
-    status: string,
-    notes?: string
-  ) => {
+  const handleAssignArtwork = async (productId: number, status: string, notes?: string) => {
     try {
-      const res = await fetch(
-        `/api/dashboard/consignment-locations/${locationId}/artworks`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            tenant_id: tenantId,
-            work_id: productId,
-            status,
-            notes,
-          }),
-        }
-      )
+      const res = await fetch(`/api/dashboard/consignment-locations/${locationId}/artworks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tenant_id: tenantId,
+          work_id: productId,
+          status,
+          notes,
+        }),
+      })
 
       if (!res.ok) {
         const errorData = await res.json()
@@ -133,7 +126,7 @@ export function LocationDetailClient({
     try {
       const res = await fetch(
         `/api/dashboard/consignment-locations/${locationId}/artworks/${artworkId}`,
-        { method: 'DELETE' }
+        { method: 'DELETE' },
       )
 
       if (!res.ok) {
@@ -167,7 +160,9 @@ export function LocationDetailClient({
               <MapPin className="h-6 w-6 text-[var(--color-text-primary)]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">{location.name}</h1>
+              <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">
+                {location.name}
+              </h1>
               <p className="text-[var(--color-text-secondary)]">
                 {location.city}, {location.country}
               </p>
@@ -175,7 +170,9 @@ export function LocationDetailClient({
           </div>
           <button
             onClick={() =>
-              router.push(`/${locale}/${tenantSlug}/dashboard/consignments/locations/${locationId}/edit`)
+              router.push(
+                `/${locale}/${tenantSlug}/dashboard/consignments/locations/${locationId}/edit`,
+              )
             }
             className="flex items-center gap-2 px-4 py-2 bg-[var(--btn-secondary-bg)] text-[var(--btn-secondary-text)] border-2 border-[var(--btn-secondary-border)] rounded-lg hover:bg-[var(--btn-secondary-hover-bg)] shadow-[var(--btn-secondary-shadow)]"
           >
@@ -208,7 +205,9 @@ export function LocationDetailClient({
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <Package className="h-5 w-5 text-[var(--color-text-secondary)]" />
-            <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">Obras en Esta Ubicación</h2>
+            <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
+              Obras en Esta Ubicación
+            </h2>
           </div>
           <button
             onClick={() => setIsAssignModalOpen(true)}

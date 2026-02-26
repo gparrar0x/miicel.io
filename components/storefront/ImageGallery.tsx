@@ -14,8 +14,8 @@
  * Performance: Main eager, thumbs lazy, <60KB total
  */
 
-import { useState } from 'react'
 import Image from 'next/image'
+import { useState } from 'react'
 
 interface ImageData {
   id: string
@@ -43,9 +43,7 @@ export function ImageGallery({
   const [isZoomed, setIsZoomed] = useState(false)
 
   const currentImage = images[currentIndex] || images[0]
-  const altText = artistName
-    ? `${productName} by ${artistName}`
-    : productName
+  const altText = artistName ? `${productName} by ${artistName}` : productName
 
   const handlePrevious = () => {
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
@@ -105,11 +103,7 @@ export function ImageGallery({
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        <div
-          className="image-container"
-          onClick={handleZoomOpen}
-          data-testid="gallery-main"
-        >
+        <div className="image-container" onClick={handleZoomOpen} data-testid="gallery-main">
           <Image
             src={currentImage.url}
             alt={`${altText} - vista ${currentIndex + 1} de ${images.length}`}
@@ -165,12 +159,7 @@ export function ImageGallery({
 
       {/* Zoom Modal */}
       {isZoomed && (
-        <dialog
-          className="zoom-modal"
-          open
-          onClick={handleZoomClose}
-          data-testid="gallery-zoom"
-        >
+        <dialog className="zoom-modal" open onClick={handleZoomClose} data-testid="gallery-zoom">
           <div className="modal-content">
             <Image
               src={currentImage.url}
@@ -179,11 +168,7 @@ export function ImageGallery({
               style={{ objectFit: 'contain' }}
               quality={90}
             />
-            <button
-              className="close-btn"
-              onClick={handleZoomClose}
-              aria-label="Close zoom"
-            >
+            <button className="close-btn" onClick={handleZoomClose} aria-label="Close zoom">
               ×
             </button>
           </div>

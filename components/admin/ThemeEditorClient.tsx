@@ -18,12 +18,12 @@
 
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import { useCallback, useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { TenantTemplate, TEMPLATE_DEFAULTS } from '@/types/theme'
+import { z } from 'zod'
+import { TEMPLATE_DEFAULTS, type TenantTemplate } from '@/types/theme'
 import { TemplateSelector } from './TemplateSelector'
 import { ThemeFieldsEditor } from './ThemeFieldsEditor'
 import { ThemePreview } from './ThemePreview'
@@ -67,7 +67,7 @@ export function ThemeEditorClient({ tenantSlug, initialTheme }: ThemeEditorClien
         accentColor: overrides.colors?.accent ?? '#F59E0B',
       }
     },
-    []
+    [],
   )
 
   const {
@@ -92,7 +92,7 @@ export function ThemeEditorClient({ tenantSlug, initialTheme }: ThemeEditorClien
     }, 300)
 
     return () => clearTimeout(timer)
-  }, [formData])
+  }, [])
 
   // Handle template change - reset overrides to new template defaults
   const handleTemplateChange = (template: TenantTemplate) => {

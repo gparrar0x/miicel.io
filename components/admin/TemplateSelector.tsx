@@ -13,7 +13,7 @@
 
 'use client'
 
-import { TenantTemplate } from '@/types/theme'
+import type { TenantTemplate } from '@/types/theme'
 
 interface TemplateSelectorProps {
   selectedTemplate: TenantTemplate
@@ -97,11 +97,7 @@ export function TemplateSelector({ selectedTemplate, onTemplateChange }: Templat
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-semibold text-gray-900">{template.name}</h3>
                 {isSelected && (
-                  <svg
-                    className="w-5 h-5 text-blue-600"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
+                  <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                     <path
                       fillRule="evenodd"
                       d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -117,7 +113,14 @@ export function TemplateSelector({ selectedTemplate, onTemplateChange }: Templat
                 <div className="mt-2 flex gap-4 text-xs text-gray-500">
                   <span>
                     Grid:{' '}
-                    {template.id === 'gallery' ? '3' : template.id === 'detail' ? '2' : template.id === 'gastronomy' ? '2' : '4'} cols
+                    {template.id === 'gallery'
+                      ? '3'
+                      : template.id === 'detail'
+                        ? '2'
+                        : template.id === 'gastronomy'
+                          ? '2'
+                          : '4'}{' '}
+                    cols
                   </span>
                   <span>
                     Aspect:{' '}

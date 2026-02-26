@@ -17,9 +17,8 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { createServiceRoleClient } from '@/lib/supabase/server'
 import { onboardingSaveRequestSchema } from '@/lib/schemas/order'
+import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 
 export async function PATCH(request: Request) {
   try {
@@ -43,10 +42,7 @@ export async function PATCH(request: Request) {
     const validationResult = onboardingSaveRequestSchema.safeParse(body)
 
     if (!validationResult.success) {
-      return NextResponse.json(
-        { error: validationResult.error.issues[0].message },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: validationResult.error.issues[0].message }, { status: 400 })
     }
 
     const { config, products } = validationResult.data
@@ -61,7 +57,7 @@ export async function PATCH(request: Request) {
     if (tenantError || !tenant) {
       return NextResponse.json(
         { error: 'Tenant not found. Please complete signup first.' },
-        { status: 404 }
+        { status: 404 },
       )
     }
 
@@ -69,7 +65,7 @@ export async function PATCH(request: Request) {
     if (tenant.owner_id !== user.id) {
       return NextResponse.json(
         { error: 'Forbidden. Only tenant owner can update configuration.' },
-        { status: 403 }
+        { status: 403 },
       )
     }
 
@@ -90,7 +86,7 @@ export async function PATCH(request: Request) {
       console.error('Failed to update tenant config:', updateError)
       return NextResponse.json(
         { error: 'Failed to save configuration. Please try again.' },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
@@ -125,13 +121,13 @@ export async function PATCH(request: Request) {
         tenantSlug: tenant.slug,
         productsCreated,
       },
-      { status: 200, headers: { 'Cache-Control': 'no-store' } }
+      { status: 200, headers: { 'Cache-Control': 'no-store' } },
     )
   } catch (error) {
     console.error('Onboarding save error:', error)
     return NextResponse.json(
       { error: 'Internal server error. Please try again later.' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

@@ -34,8 +34,8 @@ export type ImageAspectRatio = string
  * Only includes colors that theme_overrides can modify
  */
 export interface ThemeColors {
-  primary?: string    // Hex color (e.g., "#3B82F6")
-  accent?: string     // Hex color (e.g., "#F59E0B")
+  primary?: string // Hex color (e.g., "#3B82F6")
+  accent?: string // Hex color (e.g., "#F59E0B")
 }
 
 /**
@@ -45,11 +45,11 @@ export interface ThemeColors {
  * Defaults applied by ThemeProvider when fields missing
  */
 export interface ThemeOverrides {
-  gridCols?: number             // Product grid columns (1-6)
+  gridCols?: number // Product grid columns (1-6)
   imageAspect?: ImageAspectRatio // Product image ratio ("1:1", "16:9", etc)
-  cardVariant?: CardVariant     // Card style
-  spacing?: SpacingMode          // Layout density
-  colors?: ThemeColors           // Color palette overrides
+  cardVariant?: CardVariant // Card style
+  spacing?: SpacingMode // Layout density
+  colors?: ThemeColors // Color palette overrides
 }
 
 /**
@@ -77,7 +77,10 @@ export interface ResolvedTheme {
  * Template default configurations
  * Used when theme_overrides doesn't specify a value
  */
-export const TEMPLATE_DEFAULTS: Record<TenantTemplate, Omit<ResolvedTheme, 'template' | 'colors'>> = {
+export const TEMPLATE_DEFAULTS: Record<
+  TenantTemplate,
+  Omit<ResolvedTheme, 'template' | 'colors'>
+> = {
   gallery: {
     gridCols: 3,
     imageAspect: '1:1',
@@ -108,8 +111,8 @@ export const TEMPLATE_DEFAULTS: Record<TenantTemplate, Omit<ResolvedTheme, 'temp
  * Fallback color palette when config.colors missing
  */
 export const DEFAULT_COLORS: Required<ThemeColors> = {
-  primary: '#3B82F6',  // Blue-500
-  accent: '#F59E0B',   // Amber-500
+  primary: '#3B82F6', // Blue-500
+  accent: '#F59E0B', // Amber-500
 }
 
 /**
@@ -129,7 +132,11 @@ export function isValidThemeOverrides(value: unknown): value is ThemeOverrides {
 
   // Validate gridCols if present
   if ('gridCols' in overrides) {
-    if (typeof overrides.gridCols !== 'number' || overrides.gridCols < 1 || overrides.gridCols > 6) {
+    if (
+      typeof overrides.gridCols !== 'number' ||
+      overrides.gridCols < 1 ||
+      overrides.gridCols > 6
+    ) {
       return false
     }
   }
@@ -161,10 +168,16 @@ export function isValidThemeOverrides(value: unknown): value is ThemeOverrides {
     if (typeof colors !== 'object' || colors === null) return false
 
     const colorObj = colors as Record<string, unknown>
-    if ('primary' in colorObj && (typeof colorObj.primary !== 'string' || !/^#[0-9A-Fa-f]{6}$/.test(colorObj.primary))) {
+    if (
+      'primary' in colorObj &&
+      (typeof colorObj.primary !== 'string' || !/^#[0-9A-Fa-f]{6}$/.test(colorObj.primary))
+    ) {
       return false
     }
-    if ('accent' in colorObj && (typeof colorObj.accent !== 'string' || !/^#[0-9A-Fa-f]{6}$/.test(colorObj.accent))) {
+    if (
+      'accent' in colorObj &&
+      (typeof colorObj.accent !== 'string' || !/^#[0-9A-Fa-f]{6}$/.test(colorObj.accent))
+    ) {
       return false
     }
   }
@@ -184,7 +197,7 @@ export function isValidThemeOverrides(value: unknown): value is ThemeOverrides {
 export function resolveTheme(
   template: TenantTemplate,
   themeOverrides: ThemeOverrides = {},
-  configColors?: Record<string, string>
+  configColors?: Record<string, string>,
 ): ResolvedTheme {
   const defaults = TEMPLATE_DEFAULTS[template]
 

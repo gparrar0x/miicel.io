@@ -6,13 +6,13 @@
  * Auth: Requires authenticated user who is tenant owner
  */
 
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
-import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { DashboardShell } from '@/components/dashboard/dashboard-shell'
 import type { NavItem } from '@/components/dashboard/sidebar'
-import { isEnabled, Flags } from '@/lib/flags'
+import { Flags, isEnabled } from '@/lib/flags'
+import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
   robots: {
@@ -34,7 +34,10 @@ export default async function DashboardLayout({ children, params }: LayoutProps)
   const dashboardPath = `/${locale}/${tenantId}/dashboard`
 
   // Check authentication
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
 
   if (authError || !user) {
     // Redirect to login with returnUrl
@@ -67,9 +70,11 @@ export default async function DashboardLayout({ children, params }: LayoutProps)
       .eq('auth_user_id', user.id)
       .maybeSingle()
 
-    hasAccess = !!(userRecord &&
+    hasAccess = !!(
+      userRecord &&
       ['owner', 'tenant_admin'].includes(userRecord.role) &&
-      userRecord.tenant_id === tenant.id)
+      userRecord.tenant_id === tenant.id
+    )
   }
 
   if (!hasAccess) {
@@ -83,16 +88,36 @@ export default async function DashboardLayout({ children, params }: LayoutProps)
   const showConsignments = await isEnabled(Flags.CONSIGNMENTS, flagContext)
 
   const navItems: NavItem[] = [
-    { name: t('navDashboard') || 'Dashboard', href: `/${locale}/${tenantId}/dashboard`, icon: 'analytics' },
-    { name: t('navProducts') || 'Productos', href: `/${locale}/${tenantId}/dashboard/products`, icon: 'products' },
-    { name: t('navOrders') || 'Pedidos', href: `/${locale}/${tenantId}/dashboard/orders`, icon: 'orders' },
-    ...(showConsignments ? [{ name: t('navConsignments') || 'Consignaciones', href: `/${locale}/${tenantId}/dashboard/consignments`, icon: 'consignments' as const }] : []),
-    { name: t('navSettings') || 'Ajustes', href: `/${locale}/${tenantId}/dashboard/settings`, icon: 'settings' },
+    {
+      name: t('navDashboard') || 'Dashboard',
+      href: `/${locale}/${tenantId}/dashboard`,
+      icon: 'analytics',
+    },
+    {
+      name: t('navProducts') || 'Productos',
+      href: `/${locale}/${tenantId}/dashboard/products`,
+      icon: 'products',
+    },
+    {
+      name: t('navOrders') || 'Pedidos',
+      href: `/${locale}/${tenantId}/dashboard/orders`,
+      icon: 'orders',
+    },
+    ...(showConsignments
+      ? [
+          {
+            name: t('navConsignments') || 'Consignaciones',
+            href: `/${locale}/${tenantId}/dashboard/consignments`,
+            icon: 'consignments' as const,
+          },
+        ]
+      : []),
+    {
+      name: t('navSettings') || 'Ajustes',
+      href: `/${locale}/${tenantId}/dashboard/settings`,
+      icon: 'settings',
+    },
   ]
 
-  return (
-    <DashboardShell navItems={navItems}>
-      {children}
-    </DashboardShell>
-  )
+  return <DashboardShell navItems={navItems}>{children}</DashboardShell>
 }

@@ -4,10 +4,11 @@
  * Skips seed data when it fails - allows tests to proceed with existing data
  * Use: --config playwright.config.simple.ts
  */
-import { seedTestData } from './e2e/fixtures/seed-test-data'
-import type { FullConfig } from '@playwright/test'
 
-async function globalSetup(config: FullConfig) {
+import type { FullConfig } from '@playwright/test'
+import { seedTestData } from './e2e/fixtures/seed-test-data'
+
+async function globalSetup(_config: FullConfig) {
   console.log('\n')
   console.log('════════════════════════════════════════════════════════')
   console.log('  PLAYWRIGHT GLOBAL SETUP (Permissive Mode)')

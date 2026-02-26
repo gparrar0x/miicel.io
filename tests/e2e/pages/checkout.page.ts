@@ -3,7 +3,7 @@
  * Encapsulates all checkout interactions including form validation, payment methods, and submission
  */
 
-import { Page, Locator, expect } from '@playwright/test'
+import { expect, type Page } from '@playwright/test'
 import { CheckoutLocators } from '../locators/checkout.locators'
 
 export class CheckoutPage {
@@ -22,7 +22,10 @@ export class CheckoutPage {
    * Verify checkout modal is visible
    */
   async isModalVisible(): Promise<boolean> {
-    return await this.page.locator(this.locators.modal.container).isVisible({ timeout: 5000 }).catch(() => false)
+    return await this.page
+      .locator(this.locators.modal.container)
+      .isVisible({ timeout: 5000 })
+      .catch(() => false)
   }
 
   /**
@@ -384,7 +387,10 @@ export class CheckoutPage {
   /**
    * Mock successful MercadoPago preference creation
    */
-  async mockMercadopagoPreferenceSuccess(orderId = '123', initPoint = 'https://www.mercadopago.com/test') {
+  async mockMercadopagoPreferenceSuccess(
+    orderId = '123',
+    initPoint = 'https://www.mercadopago.com/test',
+  ) {
     await this.page.route(this.locators.api.createPreferenceEndpoint, (route) => {
       route.fulfill({
         status: 200,

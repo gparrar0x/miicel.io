@@ -8,21 +8,18 @@
  * Example: /en/artmonkeys/p/19
  */
 
-import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import { ProductImageCarousel } from '@/components/commerce/ProductImageCarousel'
 import { TenantHeader } from '@/components/commerce/TenantHeader'
 import { ThemeProvider } from '@/components/commerce/ThemeProvider'
-import { ProductImageCarousel } from '@/components/commerce/ProductImageCarousel'
-import { ColorSelector } from '@/components/commerce/ColorSelector'
-import { QuantityControl } from '@/components/commerce/QuantityControl'
-import { AddToCartButton } from '@/components/commerce/AddToCartButton'
-import { ProductClient } from './ProductClient'
 import { ArtworkDetail } from '@/components/gallery-v2/ArtworkDetail'
 import { GalleryHeader } from '@/components/gallery-v2/GalleryHeader'
 import { ProductStructuredData } from '@/components/seo/StructuredData'
 import { tenantConfigResponseSchema } from '@/lib/schemas/order'
 import { createClient } from '@/lib/supabase/server'
 import type { Product, ProductColor } from '@/types/commerce'
+import { ProductClient } from './ProductClient'
 
 interface PageProps {
   params: Promise<{ locale: string; tenantId: string; id: string }>
@@ -125,10 +122,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, tenantId, id } = await params
 
-  const [config, product] = await Promise.all([
-    getTenantConfig(tenantId),
-    getProduct(id),
-  ])
+  const [config, product] = await Promise.all([getTenantConfig(tenantId), getProduct(id)])
 
   if (!config || !product) {
     return {}
@@ -174,10 +168,7 @@ export async function generateMetadata({
 export default async function ProductPage({ params }: PageProps) {
   // Force rebuild: Fix 404 on production
   const { tenantId, id, locale } = await params
-  const [config, product] = await Promise.all([
-    getTenantConfig(tenantId),
-    getProduct(id),
-  ])
+  const [config, product] = await Promise.all([getTenantConfig(tenantId), getProduct(id)])
 
   if (!config || !product) {
     notFound()
@@ -195,15 +186,18 @@ export default async function ProductPage({ params }: PageProps) {
   if (config.template === 'gallery') {
     // Parse sizes from metadata or use default (disabled)
     const metadataSizes = product.metadata?.sizes || []
-    const sizes = metadataSizes.length > 0
-      ? metadataSizes
-      : [{
-        id: 'default',
-        dimensions: 'Standard',
-        price: product.price,
-        stock: 0, // Disabled - requires explicit metadata.sizes configuration
-        label: 'Standard'
-      }]
+    const sizes =
+      metadataSizes.length > 0
+        ? metadataSizes
+        : [
+            {
+              id: 'default',
+              dimensions: 'Standard',
+              price: product.price,
+              stock: 0, // Disabled - requires explicit metadata.sizes configuration
+              label: 'Standard',
+            },
+          ]
 
     const artwork = {
       id: product.id,
@@ -217,7 +211,7 @@ export default async function ProductPage({ params }: PageProps) {
       price: product.price,
       currency: product.currency,
       sizes,
-      isLimitedEdition: product.isLimited || false
+      isLimitedEdition: product.isLimited || false,
     }
 
     return (
@@ -300,9 +294,7 @@ export default async function ProductPage({ params }: PageProps) {
                     data-testid={`product-${product.id}-stock`}
                   >
                     {product.stock > 0 ? (
-                      <span className="text-green-600">
-                        In stock ({product.stock} available)
-                      </span>
+                      <span className="text-green-600">In stock ({product.stock} available)</span>
                     ) : (
                       <span className="text-red-600">Out of stock</span>
                     )}
@@ -310,10 +302,7 @@ export default async function ProductPage({ params }: PageProps) {
                 )}
 
                 {/* Client-side interactive components */}
-                <ProductClient
-                  product={product}
-                  maxQuantity={Math.min(product.stock, 99)}
-                />
+                <ProductClient product={product} maxQuantity={Math.min(product.stock, 99)} />
               </div>
             </div>
           </div>

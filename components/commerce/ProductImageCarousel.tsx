@@ -7,8 +7,8 @@
 
 'use client'
 
-import { useState } from 'react'
 import Image from 'next/image'
+import { useState } from 'react'
 
 interface ProductImageCarouselProps {
   images: string[]
@@ -47,10 +47,7 @@ export function ProductImageCarousel({
   }
 
   return (
-    <div
-      className="relative space-y-4"
-      data-testid={`product-${productId}-image-carousel`}
-    >
+    <div className="relative space-y-4" data-testid={`product-${productId}-image-carousel`}>
       {/* Main Image */}
       <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden">
         <Image
@@ -75,12 +72,7 @@ export function ProductImageCarousel({
               data-testid={`product-${productId}-image-prev`}
               className="absolute left-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/80 hover:bg-white shadow-md flex items-center justify-center transition-all"
             >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -97,12 +89,7 @@ export function ProductImageCarousel({
               data-testid={`product-${productId}-image-next`}
               className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/80 hover:bg-white shadow-md flex items-center justify-center transition-all"
             >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"

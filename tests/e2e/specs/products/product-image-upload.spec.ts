@@ -11,12 +11,12 @@
  * Storage: Supabase bucket "product-images" with tenant_id folder structure
  */
 
-import { test, expect } from '@playwright/test'
+import * as path from 'node:path'
+import { expect, test } from '@playwright/test'
+import { createClient } from '@supabase/supabase-js'
+import { loginAsOwner } from '../../fixtures/auth.fixture'
 import { ProductFormPage } from '../../pages/product-form.page'
 import { ProductsDashboardPage } from '../../pages/products-dashboard.page'
-import { loginAsOwner } from '../../fixtures/auth.fixture'
-import * as path from 'path'
-import { createClient } from '@supabase/supabase-js'
 
 // Test configuration
 const TEST_TENANT = 'demo_galeria' // Use demo tenant ID 1
@@ -27,7 +27,7 @@ function getBaseUrl(page: any): string {
   return `${baseURL}/es/${TEST_TENANT}`
 }
 
-function getAdminProductsUrl(page: any): string {
+function _getAdminProductsUrl(page: any): string {
   return `${getBaseUrl(page)}/dashboard/products`
 }
 
@@ -38,7 +38,7 @@ function getSupabaseAdmin() {
 
   if (!supabaseUrl || !supabaseServiceRoleKey) {
     throw new Error(
-      'Missing Supabase credentials: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY'
+      'Missing Supabase credentials: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY',
     )
   }
 
@@ -154,8 +154,7 @@ test.describe('Product Image Upload (SKY-44)', () => {
     await test.step('Submit form', async () => {
       // Wait for API response
       const responsePromise = page.waitForResponse(
-        (response) =>
-          response.url().includes('/api/products') && response.status() === 201
+        (response) => response.url().includes('/api/products') && response.status() === 201,
       )
       await formPage.submit()
       await responsePromise
@@ -214,8 +213,7 @@ test.describe('Product Image Upload (SKY-44)', () => {
       })
 
       await page.waitForResponse(
-        (response) =>
-          response.url().includes('/api/products') && response.status() === 201
+        (response) => response.url().includes('/api/products') && response.status() === 201,
       )
       await formPage.submit()
       await dashboardPage.waitForProductInList(productName)
@@ -238,8 +236,7 @@ test.describe('Product Image Upload (SKY-44)', () => {
 
       // Submit changes
       await page.waitForResponse(
-        (response) =>
-          response.url().includes('/api/products') && response.status() === 200
+        (response) => response.url().includes('/api/products') && response.status() === 200,
       )
       await formPage.submit()
     })
@@ -290,8 +287,7 @@ test.describe('Product Image Upload (SKY-44)', () => {
     // Step 2: Submit form
     await test.step('Submit form', async () => {
       await page.waitForResponse(
-        (response) =>
-          response.url().includes('/api/products') && response.status() === 201
+        (response) => response.url().includes('/api/products') && response.status() === 201,
       )
       await formPage.submit()
     })

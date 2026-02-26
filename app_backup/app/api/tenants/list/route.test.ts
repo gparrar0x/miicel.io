@@ -40,9 +40,7 @@ describe('GET /api/tenants/list', () => {
     const data = await response.json()
 
     data.forEach((tenant: { logo: string | null }) => {
-      expect(
-        tenant.logo === null || typeof tenant.logo === 'string'
-      ).toBe(true)
+      expect(tenant.logo === null || typeof tenant.logo === 'string').toBe(true)
     })
   })
 })

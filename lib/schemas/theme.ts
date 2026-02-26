@@ -11,8 +11,14 @@ import { z } from 'zod'
  */
 const themeColorsSchema = z
   .object({
-    primary: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Primary color must be valid hex (e.g., #3B82F6)').optional(),
-    accent: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Accent color must be valid hex (e.g., #F59E0B)').optional(),
+    primary: z
+      .string()
+      .regex(/^#[0-9A-Fa-f]{6}$/, 'Primary color must be valid hex (e.g., #3B82F6)')
+      .optional(),
+    accent: z
+      .string()
+      .regex(/^#[0-9A-Fa-f]{6}$/, 'Accent color must be valid hex (e.g., #F59E0B)')
+      .optional(),
   })
   .strict()
 
@@ -23,7 +29,10 @@ const themeColorsSchema = z
 export const themeOverridesSchema = z
   .object({
     gridCols: z.number().int().min(1).max(6).optional(),
-    imageAspect: z.string().regex(/^\d+:\d+$/, 'Image aspect must be ratio format (e.g., 1:1, 16:9)').optional(),
+    imageAspect: z
+      .string()
+      .regex(/^\d+:\d+$/, 'Image aspect must be ratio format (e.g., 1:1, 16:9)')
+      .optional(),
     cardVariant: z.enum(['flat', 'elevated', 'outlined']).optional(),
     spacing: z.enum(['compact', 'normal', 'relaxed']).optional(),
     colors: themeColorsSchema.optional(),

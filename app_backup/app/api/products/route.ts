@@ -16,8 +16,8 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { productCreateSchema } from '@/lib/schemas/order'
+import { createClient } from '@/lib/supabase/server'
 
 /**
  * GET /api/products - List products with filters
@@ -43,14 +43,11 @@ export async function GET(request: Request) {
     const supabase = await createClient()
 
     // Build query with proper error handling
-    let query = supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false })
+    let query = supabase.from('products').select('*').order('created_at', { ascending: false })
 
     // Apply filters
     if (tenant_id) {
-      query = query.eq('tenant_id', parseInt(tenant_id))
+      query = query.eq('tenant_id', parseInt(tenant_id, 10))
     }
 
     if (category) {
@@ -71,7 +68,7 @@ export async function GET(request: Request) {
       console.error('Error fetching products:', error)
       return NextResponse.json(
         { error: 'Failed to fetch products. Please try again.' },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
@@ -80,7 +77,7 @@ export async function GET(request: Request) {
     console.error('Unexpected error in GET /api/products:', error)
     return NextResponse.json(
       { error: 'Internal server error. Please try again later.' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
@@ -115,10 +112,7 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized. Please log in.' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
     // Step 2: Parse and validate request body
@@ -126,10 +120,7 @@ export async function POST(request: Request) {
     const validationResult = productCreateSchema.safeParse(body)
 
     if (!validationResult.success) {
-      return NextResponse.json(
-        { error: validationResult.error.issues[0].message },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: validationResult.error.issues[0].message }, { status: 400 })
     }
 
     const productData = validationResult.data
@@ -142,19 +133,13 @@ export async function POST(request: Request) {
       .maybeSingle()
 
     if (tenantError || !tenant) {
-      return NextResponse.json(
-        { error: 'Tenant not found.' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
     }
 
     const isSuperadmin = user.email?.toLowerCase().trim() === 'gparrar@skywalking.dev'
 
     if (!isSuperadmin && tenant.owner_id !== user.id) {
-      return NextResponse.json(
-        { error: 'Forbidden. You do not own this tenant.' },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
     }
 
     // Step 4: Create product (RLS will enforce ownership)
@@ -177,7 +162,7 @@ export async function POST(request: Request) {
       console.error('Error creating product:', insertError)
       return NextResponse.json(
         { error: 'Failed to create product. Please try again.' },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
@@ -186,7 +171,7 @@ export async function POST(request: Request) {
     console.error('Unexpected error in POST /api/products:', error)
     return NextResponse.json(
       { error: 'Internal server error. Please try again later.' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

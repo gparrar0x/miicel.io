@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { signupSchema, type SignupFormData } from '@/lib/schemas/signup'
+import { CheckCircle, Eye, EyeOff, Loader2, XCircle } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
-import { Eye, EyeOff, CheckCircle, XCircle, Loader2 } from 'lucide-react'
+import { type SignupFormData, signupSchema } from '@/lib/schemas/signup'
 import { createClient } from '@/lib/supabase/client'
 
 export default function SignupPage() {
@@ -21,10 +21,10 @@ export default function SignupPage() {
     register,
     handleSubmit,
     watch,
-    formState: { errors }
+    formState: { errors },
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
-    mode: 'onBlur'
+    mode: 'onBlur',
   })
 
   const slugValue = watch('slug')
@@ -41,7 +41,7 @@ export default function SignupPage() {
       const res = await fetch('/api/signup/validate-slug', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug })
+        body: JSON.stringify({ slug }),
       })
 
       const data = await res.json()
@@ -60,7 +60,7 @@ export default function SignupPage() {
       if (slugValue) validateSlug(slugValue)
     }, 500)
     return () => clearTimeout(timer)
-  }, [slugValue])
+  }, [slugValue, validateSlug])
 
   const onSubmit = async (data: SignupFormData) => {
     if (slugAvailable === false) {
@@ -74,7 +74,7 @@ export default function SignupPage() {
       const res = await fetch('/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       })
 
       if (!res.ok) {
@@ -87,21 +87,26 @@ export default function SignupPage() {
       // Step 2: Sign in the user automatically
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: data.email,
-        password: data.password
+        password: data.password,
       })
 
       if (signInError || !signInData.session) {
         console.error('Auto sign-in failed:', signInError)
-        throw new Error('Cuenta creada pero error al iniciar sesion. Por favor inicia sesion manualmente.')
+        throw new Error(
+          'Cuenta creada pero error al iniciar sesion. Por favor inicia sesion manualmente.',
+        )
       }
 
       console.log('✅ User signed in:', signInData.user.id)
-      console.log('✅ Session established:', signInData.session.access_token.substring(0, 20) + '...')
+      console.log(
+        '✅ Session established:',
+        `${signInData.session.access_token.substring(0, 20)}...`,
+      )
 
       toast.success('Cuenta creada exitosamente!')
 
       // Small delay to ensure cookies are written
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 500))
 
       router.push(`/signup/${result.tenantSlug}/onboarding`)
     } catch (error) {
@@ -135,7 +140,9 @@ export default function SignupPage() {
               data-testid="signup-email-input"
             />
             {errors.email && (
-              <p className="mt-1 text-sm text-red-600" data-testid="signup-email-error">{errors.email.message}</p>
+              <p className="mt-1 text-sm text-red-600" data-testid="signup-email-error">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
@@ -163,7 +170,9 @@ export default function SignupPage() {
               </button>
             </div>
             {errors.password && (
-              <p className="mt-1 text-sm text-red-600" data-testid="signup-password-error">{errors.password.message}</p>
+              <p className="mt-1 text-sm text-red-600" data-testid="signup-password-error">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
@@ -181,7 +190,9 @@ export default function SignupPage() {
               data-testid="signup-businessname-input"
             />
             {errors.businessName && (
-              <p className="mt-1 text-sm text-red-600" data-testid="signup-businessname-error">{errors.businessName.message}</p>
+              <p className="mt-1 text-sm text-red-600" data-testid="signup-businessname-error">
+                {errors.businessName.message}
+              </p>
             )}
           </div>
 
@@ -205,12 +216,26 @@ export default function SignupPage() {
                   }}
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  {checkingSlug && <Loader2 size={20} className="animate-spin text-gray-400" data-testid="signup-slug-loading-spinner" />}
+                  {checkingSlug && (
+                    <Loader2
+                      size={20}
+                      className="animate-spin text-gray-400"
+                      data-testid="signup-slug-loading-spinner"
+                    />
+                  )}
                   {!checkingSlug && slugAvailable === true && (
-                    <CheckCircle size={20} className="text-green-500" data-testid="signup-slug-available-icon" />
+                    <CheckCircle
+                      size={20}
+                      className="text-green-500"
+                      data-testid="signup-slug-available-icon"
+                    />
                   )}
                   {!checkingSlug && slugAvailable === false && (
-                    <XCircle size={20} className="text-red-500" data-testid="signup-slug-unavailable-icon" />
+                    <XCircle
+                      size={20}
+                      className="text-red-500"
+                      data-testid="signup-slug-unavailable-icon"
+                    />
                   )}
                 </div>
               </div>
@@ -219,10 +244,14 @@ export default function SignupPage() {
               tutienda.com/<span className="font-medium">{slugValue || 'slug'}</span>
             </p>
             {errors.slug && (
-              <p className="mt-1 text-sm text-red-600" data-testid="signup-slug-error">{errors.slug.message}</p>
+              <p className="mt-1 text-sm text-red-600" data-testid="signup-slug-error">
+                {errors.slug.message}
+              </p>
             )}
             {slugAvailable === false && (
-              <p className="mt-1 text-sm text-red-600" data-testid="signup-slug-error">Este slug no esta disponible</p>
+              <p className="mt-1 text-sm text-red-600" data-testid="signup-slug-error">
+                Este slug no esta disponible
+              </p>
             )}
           </div>
 
@@ -235,7 +264,11 @@ export default function SignupPage() {
           >
             {submitting ? (
               <>
-                <Loader2 size={20} className="animate-spin" data-testid="signup-submit-loading-spinner" />
+                <Loader2
+                  size={20}
+                  className="animate-spin"
+                  data-testid="signup-submit-loading-spinner"
+                />
                 Creando cuenta...
               </>
             ) : (
@@ -246,7 +279,11 @@ export default function SignupPage() {
 
         <p className="mt-6 text-center text-sm text-gray-600">
           Ya tienes cuenta?{' '}
-          <a href="/login" className="text-blue-600 hover:text-blue-700 font-medium" data-testid="signup-login-link">
+          <a
+            href="/login"
+            className="text-blue-600 hover:text-blue-700 font-medium"
+            data-testid="signup-login-link"
+          >
             Inicia sesion
           </a>
         </p>

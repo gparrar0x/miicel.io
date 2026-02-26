@@ -1,10 +1,16 @@
-"use client"
+'use client'
 
-import type React from "react"
-
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
+import type React from 'react'
+import { Badge } from '@/components/ui/badge'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { cn } from '@/lib/utils'
 
 interface Column<T> {
   key: keyof T | string
@@ -38,7 +44,7 @@ export function DataTable<T extends Record<string, unknown>>({ data, columns }: 
             <TableRow key={index} className="hover:bg-accent/50">
               {columns.map((column) => (
                 <TableCell key={String(column.key)} className="text-sm">
-                  {column.render ? column.render(item) : String(item[column.key as keyof T] ?? "")}
+                  {column.render ? column.render(item) : String(item[column.key as keyof T] ?? '')}
                 </TableCell>
               ))}
             </TableRow>
@@ -55,16 +61,16 @@ export function StatusBadge({
   variant,
 }: {
   status: string
-  variant: "default" | "secondary" | "outline"
+  variant: 'default' | 'secondary' | 'outline'
 }) {
   return (
     <Badge
       variant={variant}
       className={cn(
-        "font-medium",
-        variant === "default" && "bg-foreground text-background",
-        variant === "secondary" && "bg-secondary text-secondary-foreground",
-        variant === "outline" && "border-border text-foreground",
+        'font-medium',
+        variant === 'default' && 'bg-foreground text-background',
+        variant === 'secondary' && 'bg-secondary text-secondary-foreground',
+        variant === 'outline' && 'border-border text-foreground',
       )}
     >
       {status}

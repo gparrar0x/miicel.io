@@ -7,7 +7,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 interface QuantityControlProps {
   value: number
@@ -52,7 +52,7 @@ export function QuantityControl({
     if (val === '') return
 
     const num = parseInt(val, 10)
-    if (!isNaN(num)) {
+    if (!Number.isNaN(num)) {
       const clamped = Math.max(min, Math.min(max, num))
       onChange(clamped)
     }
@@ -60,7 +60,7 @@ export function QuantityControl({
 
   const handleBlur = () => {
     // Ensure valid value on blur
-    if (inputValue === '' || isNaN(parseInt(inputValue, 10))) {
+    if (inputValue === '' || Number.isNaN(parseInt(inputValue, 10))) {
       setInputValue(String(value))
     } else {
       const num = parseInt(inputValue, 10)

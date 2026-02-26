@@ -5,9 +5,8 @@
  * Each method represents a user action in the wizard.
  */
 
-import { Page, expect } from '@playwright/test'
+import { expect, type Page } from '@playwright/test'
 import { OnboardingLocators, OnboardingWaits } from '../locators/onboarding.locators'
-import * as path from 'path'
 
 export interface ProductData {
   name: string
@@ -24,7 +23,9 @@ export class StorefrontPage {
 
   async waitForPageLoad() {
     // Wait for dashboard to load (/{slug}/dashboard with optional query params)
-    await this.page.waitForURL(/\/[a-z0-9-]+\/dashboard(\?.*)?$/, { timeout: OnboardingWaits.redirect })
+    await this.page.waitForURL(/\/[a-z0-9-]+\/dashboard(\?.*)?$/, {
+      timeout: OnboardingWaits.redirect,
+    })
     return this
   }
 
@@ -58,9 +59,12 @@ export class OnboardingWizardPage {
    * Get current step number from progress indicator
    */
   async getCurrentStep(): Promise<number> {
-    const text = await this.page.locator(OnboardingLocators.header.stepIndicator).first().textContent()
+    const text = await this.page
+      .locator(OnboardingLocators.header.stepIndicator)
+      .first()
+      .textContent()
     const match = text?.match(/Step (\d) of 5/)
-    return match ? parseInt(match[1]) : 1
+    return match ? parseInt(match[1], 10) : 1
   }
 
   // ============================================================================
@@ -81,7 +85,7 @@ export class OnboardingWizardPage {
 
     // Wait for preview to appear
     await expect(this.page.locator(OnboardingLocators.step1.logoPreview)).toBeVisible({
-      timeout: OnboardingWaits.fileUpload
+      timeout: OnboardingWaits.fileUpload,
     })
 
     return this
@@ -157,9 +161,13 @@ export class OnboardingWizardPage {
 
     // Fill product form
     await this.page.locator(OnboardingLocators.step3.productNameInput).fill(product.name)
-    await this.page.locator(OnboardingLocators.step3.productPriceInput).fill(product.price.toString())
+    await this.page
+      .locator(OnboardingLocators.step3.productPriceInput)
+      .fill(product.price.toString())
     await this.page.locator(OnboardingLocators.step3.productCategoryInput).fill(product.category)
-    await this.page.locator(OnboardingLocators.step3.productStockInput).fill(product.stock.toString())
+    await this.page
+      .locator(OnboardingLocators.step3.productStockInput)
+      .fill(product.stock.toString())
 
     // Click add button
     await this.page.locator(OnboardingLocators.step3.addButton).click()
@@ -247,7 +255,7 @@ export class OnboardingWizardPage {
     // Wait for activation to complete and redirect to storefront
     // The URL pattern should be /{slug} (tenant storefront)
     await this.page.waitForURL(/\/[a-z0-9-]+$/, {
-      timeout: OnboardingWaits.activation
+      timeout: OnboardingWaits.activation,
     })
 
     return new StorefrontPage(this.page)

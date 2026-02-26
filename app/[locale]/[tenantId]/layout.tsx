@@ -1,8 +1,8 @@
 export default function TenantLayout({
-    children,
+  children,
 }: Readonly<{
-    children: React.ReactNode;
+  children: React.ReactNode
 }>) {
-    // Layout anidado - html/body están en [locale]/layout.tsx
-    return <>{children}</>;
+  // Layout anidado - html/body están en [locale]/layout.tsx
+  return <>{children}</>
 }

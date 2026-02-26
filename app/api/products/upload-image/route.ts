@@ -46,10 +46,7 @@ export async function POST(request: Request) {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized. Please log in.' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
     // Step 2: Parse form data
@@ -60,38 +57,29 @@ export async function POST(request: Request) {
     if (!file) {
       return NextResponse.json(
         { error: 'No file provided. Please upload an image.' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
     if (!tenantIdStr) {
-      return NextResponse.json(
-        { error: 'No tenant_id provided.' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'No tenant_id provided.' }, { status: 400 })
     }
 
-    const tenantId = parseInt(tenantIdStr)
+    const tenantId = parseInt(tenantIdStr, 10)
 
-    if (isNaN(tenantId)) {
-      return NextResponse.json(
-        { error: 'Invalid tenant_id.' },
-        { status: 400 }
-      )
+    if (Number.isNaN(tenantId)) {
+      return NextResponse.json({ error: 'Invalid tenant_id.' }, { status: 400 })
     }
 
     // Step 3: Validate file
     if (file.size > MAX_FILE_SIZE) {
-      return NextResponse.json(
-        { error: 'File too large. Maximum size is 5MB.' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'File too large. Maximum size is 5MB.' }, { status: 400 })
     }
 
     if (!ALLOWED_TYPES.includes(file.type)) {
       return NextResponse.json(
         { error: 'Invalid file type. Only images are allowed (jpg, png, webp, gif).' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -103,19 +91,13 @@ export async function POST(request: Request) {
       .maybeSingle()
 
     if (tenantError || !tenant) {
-      return NextResponse.json(
-        { error: 'Tenant not found.' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
     }
 
     const isSuperadmin = user.email?.toLowerCase().trim() === 'gparrar@skywalking.dev'
 
     if (!isSuperadmin && tenant.owner_id !== user.id) {
-      return NextResponse.json(
-        { error: 'Forbidden. You do not own this tenant.' },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
     }
 
     // Step 5: Generate unique filename
@@ -137,14 +119,12 @@ export async function POST(request: Request) {
       console.error('Error uploading file:', uploadError)
       return NextResponse.json(
         { error: 'Failed to upload file. Please try again.' },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
     // Step 7: Get public URL
-    const { data: urlData } = supabase.storage
-      .from('product-images')
-      .getPublicUrl(filename)
+    const { data: urlData } = supabase.storage.from('product-images').getPublicUrl(filename)
 
     return NextResponse.json({
       url: urlData.publicUrl,
@@ -154,7 +134,7 @@ export async function POST(request: Request) {
     console.error('Unexpected error in POST /api/products/upload-image:', error)
     return NextResponse.json(
       { error: 'Internal server error. Please try again later.' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

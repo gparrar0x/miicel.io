@@ -18,8 +18,8 @@ async function createAdmin() {
   const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     auth: {
       autoRefreshToken: false,
-      persistSession: false
-    }
+      persistSession: false,
+    },
   })
 
   try {
@@ -29,8 +29,8 @@ async function createAdmin() {
       password: 'Tenant123!',
       email_confirm: true,
       user_metadata: {
-        name: 'Tenant Admin'
-      }
+        name: 'Tenant Admin',
+      },
     })
 
     if (authError) {
@@ -41,16 +41,14 @@ async function createAdmin() {
     console.log('✓ Auth user created:', authData.user.id)
 
     // Create user record in users table
-    const { error: userError } = await supabase
-      .from('users')
-      .insert({
-        auth_user_id: authData.user.id,
-        email: 'tenant@miicel.io',
-        name: 'Tenant Admin',
-        role: 'tenant_admin',
-        tenant_id: 3,
-        is_active: true
-      })
+    const { error: userError } = await supabase.from('users').insert({
+      auth_user_id: authData.user.id,
+      email: 'tenant@miicel.io',
+      name: 'Tenant Admin',
+      role: 'tenant_admin',
+      tenant_id: 3,
+      is_active: true,
+    })
 
     if (userError) {
       console.error('Error creating user record:', userError)

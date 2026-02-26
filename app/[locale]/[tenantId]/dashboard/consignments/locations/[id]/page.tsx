@@ -1,7 +1,7 @@
-import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
+import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
+import type { ConsignmentLocation } from '@/lib/types/consignment'
 import { LocationDetailClient } from './LocationDetailClient'
-import { ConsignmentLocation } from '@/lib/types/consignment'
 
 interface PageProps {
   params: Promise<{ locale: string; tenantId: string; id: string }>
@@ -26,8 +26,8 @@ export default async function LocationDetailPage({ params }: PageProps) {
   }
 
   // Get tenant
-  const numericId = parseInt(tenantId)
-  const isNumeric = !isNaN(numericId)
+  const numericId = parseInt(tenantId, 10)
+  const isNumeric = !Number.isNaN(numericId)
 
   const { data: tenant } = await supabase
     .from('tenants')
@@ -44,7 +44,12 @@ export default async function LocationDetailPage({ params }: PageProps) {
   const dbClient = isSuperAdmin ? createServiceRoleClient() : supabase
 
   // Get location
-  const { data: location, error } = await dbClient.from('consignment_locations').select('*').eq('id', parseInt(id)).eq('tenant_id', tenant.id).single()
+  const { data: location, error } = await dbClient
+    .from('consignment_locations')
+    .select('*')
+    .eq('id', parseInt(id, 10))
+    .eq('tenant_id', tenant.id)
+    .single()
 
   if (error || !location) {
     notFound()

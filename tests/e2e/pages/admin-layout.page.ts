@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test'
+import { expect, type Locator, type Page } from '@playwright/test'
 
 /**
  * Page Object Model for Admin Dashboard Layout
@@ -105,13 +105,14 @@ export class AdminLayoutPage {
    * @returns true if route is active
    */
   async isActiveRoute(route: 'dashboard' | 'products' | 'orders' | 'settings'): Promise<boolean> {
-    const locator = route === 'dashboard'
-      ? this.navDashboard
-      : route === 'products'
-      ? this.navProducts
-      : route === 'orders'
-      ? this.navOrders
-      : this.navSettings
+    const locator =
+      route === 'dashboard'
+        ? this.navDashboard
+        : route === 'products'
+          ? this.navProducts
+          : route === 'orders'
+            ? this.navOrders
+            : this.navSettings
 
     const classList = await locator.getAttribute('class')
     // Check for active indicator classes (bg-blue-50, text-blue-700)

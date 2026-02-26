@@ -1,9 +1,9 @@
 'use client'
 
+import { LogOut } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from '@/i18n/routing'
 import { createClient } from '@/lib/supabase/client'
-import { LogOut } from 'lucide-react'
 
 interface Tenant {
   slug: string
@@ -42,12 +42,14 @@ export default function TenantsPage() {
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
       setUser(session?.user || null)
     }
     checkUser()
     fetchTenants()
-  }, [])
+  }, [fetchTenants, supabase.auth.getSession])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -78,10 +80,7 @@ export default function TenantsPage() {
           data-testid="tenant-list-loading"
         >
           {Array.from({ length: 8 }).map((_, i) => (
-            <div
-              key={i}
-              className="bg-white border border-[#E5E5E5] rounded-xl p-4 animate-pulse"
-            >
+            <div key={i} className="bg-white border border-[#E5E5E5] rounded-xl p-4 animate-pulse">
               <div className="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-3"></div>
               <div className="h-5 bg-gray-200 rounded mb-4"></div>
               <div className="h-10 bg-gray-200 rounded mb-2"></div>
@@ -120,9 +119,7 @@ export default function TenantsPage() {
           <h2 className="text-[24px] md:text-[28px] font-bold text-[#1A1A1A] mb-2">
             Failed to Load Tenants
           </h2>
-          <p className="text-[14px] md:text-[16px] text-[#666666] mb-6">
-            Please try again
-          </p>
+          <p className="text-[14px] md:text-[16px] text-[#666666] mb-6">Please try again</p>
           <button
             onClick={fetchTenants}
             className="w-[200px] h-12 bg-[#FF6B35] text-white text-[14px] md:text-[16px] font-semibold rounded-lg hover:bg-[#E5602F] active:scale-[0.98] transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6B35] focus-visible:ring-offset-2"

@@ -13,8 +13,8 @@
  */
 
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
 import { ThemeEditorClient } from '@/components/admin/ThemeEditorClient'
+import { createClient } from '@/lib/supabase/server'
 
 export default async function AppearanceSettingsPage({
   params,

@@ -45,7 +45,7 @@ export function OptionsSelector({
   const hasBothTypes = digitalOptions.length > 0 && physicalOptions.length > 0
 
   const [activeTab, setActiveTab] = useState<'digital' | 'physical'>(
-    digitalOptions.length > 0 ? 'digital' : 'physical'
+    digitalOptions.length > 0 ? 'digital' : 'physical',
   )
 
   const formatPrice = (price: number, currency: string) => {
@@ -55,9 +55,7 @@ export function OptionsSelector({
     }).format(price)
   }
 
-  const filteredOptions = hasBothTypes
-    ? options.filter((opt) => opt.type === activeTab)
-    : options
+  const filteredOptions = hasBothTypes ? options.filter((opt) => opt.type === activeTab) : options
 
   const handleSelect = (optionId: string) => {
     const option = options.find((opt) => opt.id === optionId)
@@ -91,11 +89,7 @@ export function OptionsSelector({
       )}
 
       {/* Options List */}
-      <div
-        className="options-tabpanel"
-        role="tabpanel"
-        data-testid="options-tabpanel"
-      >
+      <div className="options-tabpanel" role="tabpanel" data-testid="options-tabpanel">
         <fieldset>
           <legend className="sr-only">Select option</legend>
           {filteredOptions.map((option) => (
@@ -117,23 +111,16 @@ export function OptionsSelector({
               <div className="option-content">
                 <div className="option-header">
                   <span className="option-title">{option.title}</span>
-                  <span className="option-price">
-                    {formatPrice(option.price, option.currency)}
-                  </span>
+                  <span className="option-price">{formatPrice(option.price, option.currency)}</span>
                 </div>
 
-                <ul
-                  className="option-specs"
-                  data-testid={`option-specs-${option.id}`}
-                >
+                <ul className="option-specs" data-testid={`option-specs-${option.id}`}>
                   {option.specs.map((spec, idx) => (
                     <li key={idx}>{spec}</li>
                   ))}
                 </ul>
 
-                {option.stock === 0 && (
-                  <span className="out-of-stock-badge">Out of Stock</span>
-                )}
+                {option.stock === 0 && <span className="out-of-stock-badge">Out of Stock</span>}
               </div>
             </label>
           ))}

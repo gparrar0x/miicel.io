@@ -6,8 +6,8 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createServiceRoleClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 
 // Validation schema
 const orderRequestSchema = z.object({
@@ -17,12 +17,14 @@ const orderRequestSchema = z.object({
     phone: z.string().regex(/^\d{10}$/, 'Phone must be 10 digits'),
     email: z.string().email(),
   }),
-  items: z.array(
-    z.object({
-      productId: z.number(),
-      quantity: z.number().min(1),
-    })
-  ).min(1),
+  items: z
+    .array(
+      z.object({
+        productId: z.number(),
+        quantity: z.number().min(1),
+      }),
+    )
+    .min(1),
   paymentMethod: z.literal('mercadopago'), // Solo digital por ahora
   notes: z.string().optional(),
 })
@@ -34,10 +36,7 @@ export async function POST(request: Request) {
     const validationResult = orderRequestSchema.safeParse(body)
 
     if (!validationResult.success) {
-      return NextResponse.json(
-        { error: validationResult.error.issues[0].message },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: validationResult.error.issues[0].message }, { status: 400 })
     }
 
     const { tenantSlug, customer, items, paymentMethod, notes } = validationResult.data
@@ -53,35 +52,26 @@ export async function POST(request: Request) {
       .maybeSingle()
 
     if (tenantError || !tenant) {
-      return NextResponse.json(
-        { error: 'Tenant not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Tenant not found' }, { status: 404 })
     }
 
     const tenantId = tenant.id
 
     // Validate product ownership & stock (CRITICAL SECURITY)
-    const productIds = items.map(item => item.productId)
+    const productIds = items.map((item) => item.productId)
     const { data: products, error: productsError } = await supabase
       .from('products')
       .select('id, tenant_id, stock, price, active, name')
       .in('id', productIds)
 
     if (productsError || !products) {
-      return NextResponse.json(
-        { error: 'Failed to validate products' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Failed to validate products' }, { status: 500 })
     }
 
     // Security check: verify ALL products belong to tenant
-    const invalidProducts = products.filter(p => p.tenant_id !== tenantId)
+    const invalidProducts = products.filter((p) => p.tenant_id !== tenantId)
     if (invalidProducts.length > 0) {
-      return NextResponse.json(
-        { error: 'Forbidden: Product ownership mismatch' },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: 'Forbidden: Product ownership mismatch' }, { status: 403 })
     }
 
     // Check stock & active status
@@ -94,30 +84,27 @@ export async function POST(request: Request) {
     let total = 0
 
     for (const item of items) {
-      const product = products.find(p => p.id === item.productId)
+      const product = products.find((p) => p.id === item.productId)
 
       if (!product) {
-        return NextResponse.json(
-          { error: `Product ${item.productId} not found` },
-          { status: 400 }
-        )
+        return NextResponse.json({ error: `Product ${item.productId} not found` }, { status: 400 })
       }
 
       if (!product.active) {
         return NextResponse.json(
           { error: `Product ${product.name} is not available` },
-          { status: 400 }
+          { status: 400 },
         )
       }
 
       const stock = product.stock ?? 0
-      
+
       // Restaurant template: Ignore stock levels (infinite supply)
       // Other templates: Enforce stock limits
       if (tenant.template !== 'restaurant' && stock < item.quantity) {
         return NextResponse.json(
           { error: `Insufficient stock for ${product.name}. Available: ${stock}` },
-          { status: 400 }
+          { status: 400 },
         )
       }
 
@@ -172,7 +159,7 @@ export async function POST(request: Request) {
             details: customerError?.message || 'Unknown error',
             code: customerError?.code,
           },
-          { status: 500 }
+          { status: 500 },
         )
       }
 
@@ -202,7 +189,7 @@ export async function POST(request: Request) {
           details: orderError?.message || 'Unknown error',
           code: orderError?.code,
         },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
@@ -213,9 +200,6 @@ export async function POST(request: Request) {
     })
   } catch (error) {
     console.error('Unexpected error in POST /api/orders/create:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

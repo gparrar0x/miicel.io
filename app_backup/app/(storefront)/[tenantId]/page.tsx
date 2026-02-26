@@ -4,17 +4,17 @@
  * Route: /[tenantId]
  */
 
-import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { CartBadge } from '@/components/commerce/CartBadge'
+import { ProductGrid as ProductGridLegacy } from '@/components/commerce/ProductGrid'
 import { TenantHeader } from '@/components/commerce/TenantHeader'
 import { ThemeProvider } from '@/components/commerce/ThemeProvider'
-import { ProductGrid as ProductGridLegacy } from '@/components/commerce/ProductGrid'
 import { GalleryGrid } from '@/components/gallery-v2/GalleryGrid'
-import { CartBadge } from '@/components/commerce/CartBadge'
 import { RestaurantLayout } from '@/components/restaurant/layouts/RestaurantLayout'
-import { tenantConfigResponseSchema, type TenantConfigResponse } from '@/lib/schemas/order'
-import { createClient } from '@/lib/supabase/server'
 import { GalleryGridWrapper } from '@/components/storefront/GalleryGridWrapper'
+import { type TenantConfigResponse, tenantConfigResponseSchema } from '@/lib/schemas/order'
+import { createClient } from '@/lib/supabase/server'
 
 interface PageProps {
   params: Promise<{ tenantId: string }>
@@ -79,11 +79,7 @@ async function getTenantConfig(tenantId: string): Promise<TenantConfigResponse |
 async function getProducts(tenantId: string, category?: string, search?: string) {
   const supabase = await createClient()
 
-  const { data: tenant } = await supabase
-    .from('tenants')
-    .select('id')
-    .eq('slug', tenantId)
-    .single()
+  const { data: tenant } = await supabase.from('tenants').select('id').eq('slug', tenantId).single()
 
   if (!tenant) return []
 
@@ -109,7 +105,7 @@ async function getProducts(tenantId: string, category?: string, search?: string)
     return []
   }
 
-  return (data || []).map(p => ({
+  return (data || []).map((p) => ({
     id: String(p.id),
     name: p.name,
     description: p.description,
@@ -132,11 +128,7 @@ async function getProducts(tenantId: string, category?: string, search?: string)
 async function getCategories(tenantId: string) {
   const supabase = await createClient()
 
-  const { data: tenant } = await supabase
-    .from('tenants')
-    .select('id')
-    .eq('slug', tenantId)
-    .single()
+  const { data: tenant } = await supabase.from('tenants').select('id').eq('slug', tenantId).single()
 
   if (!tenant) return []
 
@@ -171,10 +163,20 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
     // ... (Restaurant logic kept as is, though simplified here for brevity if needed, but keeping full for safety)
     const getCategoryIcon = (category: string): string => {
       const iconMap: Record<string, string> = {
-        'PANCHOS': '🌭', 'COMBOS': '🍔', 'BEBIDAS': '🥤', 'CERVEZA': '🍺',
-        'AREPAS': '🫓', 'CACHAPAS': '🥞', 'CLÁSICOS': '🍴', 'SANDWICH': '🥪',
-        'HOT DOGS': '🌭', 'HAMBURGUESAS': '🍔', 'PIZZAS': '🍕', 'ENSALADAS': '🥗',
-        'POSTRES': '🍰', 'CAFE': '☕',
+        PANCHOS: '🌭',
+        COMBOS: '🍔',
+        BEBIDAS: '🥤',
+        CERVEZA: '🍺',
+        AREPAS: '🫓',
+        CACHAPAS: '🥞',
+        CLÁSICOS: '🍴',
+        SANDWICH: '🥪',
+        'HOT DOGS': '🌭',
+        HAMBURGUESAS: '🍔',
+        PIZZAS: '🍕',
+        ENSALADAS: '🥗',
+        POSTRES: '🍰',
+        CAFE: '☕',
       }
       return iconMap[category.toUpperCase()] || '🍽️'
     }
@@ -184,7 +186,7 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
       slug: cat,
       name: cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase(),
       icon: getCategoryIcon(cat),
-      productCount: products.filter(p => p.category === cat).length,
+      productCount: products.filter((p) => p.category === cat).length,
     }))
 
     return (
@@ -207,7 +209,7 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
 
   if (config.template === 'gallery') {
     // Transform products to Artwork format for new GalleryGrid
-    const artworks = products.map(p => ({
+    const artworks = products.map((p) => ({
       id: String(p.id),
       title: p.name,
       artist: p.artist || 'Unknown Artist',
@@ -218,14 +220,16 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
       image: p.images[0] || '/placeholder.svg',
       price: p.price,
       currency: config.currency,
-      sizes: [{
-        id: 'default',
-        dimensions: 'Standard',
-        price: p.price,
-        stock: p.stock,
-        label: 'Standard'
-      }],
-      isLimitedEdition: p.isLimited || false
+      sizes: [
+        {
+          id: 'default',
+          dimensions: 'Standard',
+          price: p.price,
+          stock: p.stock,
+          label: 'Standard',
+        },
+      ],
+      isLimitedEdition: p.isLimited || false,
     }))
 
     return (
@@ -241,12 +245,7 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
             className="fixed bottom-8 right-8 w-16 h-16 bg-black text-white flex items-center justify-center z-50 shadow-[4px_4px_0px_0px_rgba(255,255,255,1),8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1),10px_10px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
             data-testid="cart-floating-button"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="square"
                 strokeLinejoin="miter"
@@ -310,12 +309,7 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
           className="fixed bottom-8 right-8 w-16 h-16 bg-black text-white flex items-center justify-center z-50 shadow-[4px_4px_0px_0px_rgba(255,255,255,1),8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1),10px_10px_0px_0px_rgba(0,0,0,1)] transition-all duration-200"
           data-testid="cart-floating-button"
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="square"
               strokeLinejoin="miter"

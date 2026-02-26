@@ -1,16 +1,17 @@
 import { createServerClient } from '@supabase/ssr'
-import { createServiceRoleClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 
 // GET: For authenticated users to get their redirect URL
 export async function GET(request: Request) {
   try {
     const cookieStore = await cookies()
 
-    const locale = cookieStore.get('NEXT_LOCALE')?.value ||
-                   request.headers.get('referer')?.match(/\/(en|es)\//)?.[1] ||
-                   'es'
+    const locale =
+      cookieStore.get('NEXT_LOCALE')?.value ||
+      request.headers.get('referer')?.match(/\/(en|es)\//)?.[1] ||
+      'es'
 
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -23,10 +24,12 @@ export async function GET(request: Request) {
           set() {},
           remove() {},
         },
-      }
+      },
     )
 
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
     if (!user) {
       return NextResponse.json({ redirectTo: '/' })
@@ -72,17 +75,15 @@ export async function POST(request: Request) {
     const { userId } = await request.json()
 
     if (!userId) {
-      return NextResponse.json(
-        { error: 'User ID required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'User ID required' }, { status: 400 })
     }
 
     const cookieStore = await cookies()
 
-    const locale = cookieStore.get('NEXT_LOCALE')?.value ||
-                   request.headers.get('referer')?.match(/\/(en|es)\//)?.[1] ||
-                   'es'
+    const locale =
+      cookieStore.get('NEXT_LOCALE')?.value ||
+      request.headers.get('referer')?.match(/\/(en|es)\//)?.[1] ||
+      'es'
 
     let redirectTo = '/'
 
@@ -105,7 +106,7 @@ export async function POST(request: Request) {
     console.error('Login redirect error:', err)
     return NextResponse.json(
       { error: err.message || 'Failed to determine redirect' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }

@@ -46,8 +46,10 @@ export function FilterBar({
       className="sticky top-16 md:top-18 z-30 bg-[var(--color-bg-secondary)]
                  border-b border-[var(--color-border-subtle)]"
     >
-      <div className="h-14 px-[var(--spacing-sm)] max-w-[1200px] mx-auto
-                      flex items-center justify-between gap-4">
+      <div
+        className="h-14 px-[var(--spacing-sm)] max-w-[1200px] mx-auto
+                      flex items-center justify-between gap-4"
+      >
         {/* Filter Toggle (Mobile + Desktop) */}
         {onFilterClick && (
           <button
@@ -70,8 +72,10 @@ export function FilterBar({
             >
               <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
             </svg>
-            <span className="text-[var(--font-size-small)] font-[var(--font-weight-medium)]
-                             text-[var(--color-text-primary)]">
+            <span
+              className="text-[var(--font-size-small)] font-[var(--font-weight-medium)]
+                             text-[var(--color-text-primary)]"
+            >
               Filter
             </span>
 

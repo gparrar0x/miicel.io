@@ -41,46 +41,37 @@ export async function POST(request: Request) {
     const { searchParams } = new URL(request.url)
     const tenantId = searchParams.get('tenant_id')
 
-    if (!tenantId || isNaN(parseInt(tenantId))) {
-      return NextResponse.json(
-        { error: 'Valid tenant_id is required' },
-        { status: 400 }
-      )
+    if (!tenantId || Number.isNaN(parseInt(tenantId, 10))) {
+      return NextResponse.json({ error: 'Valid tenant_id is required' }, { status: 400 })
     }
 
     const supabase = await createClient()
 
     // Verify authentication
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized. Please log in.' },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
     // Fetch tenant for ownership check
     const { data: tenant, error: tenantError } = await supabase
       .from('tenants')
       .select('id, slug, owner_id, config')
-      .eq('id', parseInt(tenantId))
+      .eq('id', parseInt(tenantId, 10))
       .maybeSingle()
 
     if (tenantError || !tenant) {
-      return NextResponse.json(
-        { error: 'Tenant not found.' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
     }
 
     // Verify ownership (allow superadmin)
     const isSuperAdmin = user.email === 'gparrar@skywalking.dev'
     if (!isSuperAdmin && tenant.owner_id !== user.id) {
-      return NextResponse.json(
-        { error: 'Forbidden. You do not own this tenant.' },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
     }
 
     // Parse form data
@@ -90,7 +81,7 @@ export async function POST(request: Request) {
     if (!file) {
       return NextResponse.json(
         { error: 'No file provided. Use multipart/form-data with "file" field.' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -99,9 +90,9 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           error: 'Invalid file type. Allowed: PNG, JPEG, WEBP, SVG.',
-          received: file.type
+          received: file.type,
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -111,9 +102,9 @@ export async function POST(request: Request) {
         {
           error: 'File too large. Max size: 10MB.',
           size: file.size,
-          max: MAX_FILE_SIZE
+          max: MAX_FILE_SIZE,
         },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -122,31 +113,26 @@ export async function POST(request: Request) {
     const fileName = `${tenant.slug}/logo-${Date.now()}.${fileExt}`
 
     // Upload to Supabase Storage
-    const { error: uploadError } = await supabase.storage
-      .from('assets')
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false
-      })
+    const { error: uploadError } = await supabase.storage.from('assets').upload(fileName, file, {
+      cacheControl: '3600',
+      upsert: false,
+    })
 
     if (uploadError) {
       console.error('Storage upload error:', uploadError)
-      return NextResponse.json(
-        { error: 'Failed to upload file to storage.' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Failed to upload file to storage.' }, { status: 500 })
     }
 
     // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('assets')
-      .getPublicUrl(fileName)
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from('assets').getPublicUrl(fileName)
 
     // Update tenant config with new logo URL
     const updatedConfig = {
-      ...(tenant.config as any || {}),
+      ...((tenant.config as any) || {}),
       logo: publicUrl,
-      logo_url: publicUrl // Support both formats
+      logo_url: publicUrl, // Support both formats
     }
 
     // Use service role for superadmin to bypass RLS
@@ -155,26 +141,25 @@ export async function POST(request: Request) {
       .from('tenants')
       .update({
         config: updatedConfig,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', tenant.id)
 
     if (updateError) {
       console.error('Error updating tenant config:', updateError)
       // File uploaded but config update failed - log warning but return URL
-      console.warn('Logo uploaded but tenant.config.logo update failed. Manual update may be needed.')
+      console.warn(
+        'Logo uploaded but tenant.config.logo update failed. Manual update may be needed.',
+      )
     }
 
     return NextResponse.json({
       url: publicUrl,
       tenant_id: tenant.id,
-      file_name: fileName
+      file_name: fileName,
     })
   } catch (error) {
     console.error('Unexpected error in POST /api/settings/upload-logo:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -1,8 +1,8 @@
-"use client"
+'use client'
 
-import { SidebarProvider } from "./sidebar-context"
-import { Sidebar, type NavItem } from "./sidebar"
-import { Header } from "./header"
+import { Header } from './header'
+import { type NavItem, Sidebar } from './sidebar'
+import { SidebarProvider } from './sidebar-context'
 
 interface DashboardShellProps {
   children: React.ReactNode

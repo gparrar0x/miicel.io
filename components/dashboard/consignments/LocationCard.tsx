@@ -7,8 +7,8 @@
  * Mobile-first responsive card with action buttons
  */
 
-import { ConsignmentLocation } from '@/lib/types/consignment'
-import { MapPin, Pencil, Trash2, ChevronRight } from 'lucide-react'
+import { ChevronRight, MapPin, Pencil, Trash2 } from 'lucide-react'
+import type { ConsignmentLocation } from '@/lib/types/consignment'
 
 interface LocationWithMetrics extends ConsignmentLocation {
   worksCount?: number
@@ -26,11 +26,7 @@ interface LocationCardProps {
 export function LocationCard({ location, onEdit, onDelete, onView }: LocationCardProps) {
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (
-      confirm(
-        `¿Eliminar "${location.name}"?\n\nEsta acción no se puede deshacer.`
-      )
-    ) {
+    if (confirm(`¿Eliminar "${location.name}"?\n\nEsta acción no se puede deshacer.`)) {
       onDelete(location.id)
     }
   }
@@ -49,7 +45,9 @@ export function LocationCard({ location, onEdit, onDelete, onView }: LocationCar
       {/* Header */}
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-[var(--color-text-primary)] truncate">{location.name}</h3>
+          <h3 className="font-semibold text-[var(--color-text-primary)] truncate">
+            {location.name}
+          </h3>
           <p className="text-sm text-[var(--color-text-secondary)]">
             {location.city}, {location.country}
           </p>

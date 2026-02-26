@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test'
+import { expect, type Locator, type Page } from '@playwright/test'
 
 /**
  * Page Object Model for ProductForm Modal
@@ -180,7 +180,12 @@ export class ProductFormPage {
    * Get error message for a field
    */
   async getFieldError(field: 'name' | 'category' | 'price'): Promise<string | null> {
-    const input = field === 'name' ? this.nameInput : field === 'category' ? this.categoryInput : this.priceInput
+    const input =
+      field === 'name'
+        ? this.nameInput
+        : field === 'category'
+          ? this.categoryInput
+          : this.priceInput
     const errorLocator = input.locator('+ p')
 
     try {
