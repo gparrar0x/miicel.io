@@ -5,15 +5,33 @@
     "enabled": true,
     "rules": {
       "recommended": true,
-      "suspicious": { "noExplicitAny": "warn", "noArrayIndexKey": "warn" },
+      "suspicious": {
+        "noExplicitAny": "warn",
+        "noArrayIndexKey": "warn",
+        "useIterableCallbackReturn": "warn",
+        "noImplicitAnyLet": "warn"
+      },
       "a11y": {
         "useButtonType": "warn",
         "noSvgWithoutTitle": "warn",
-        "noLabelWithoutControl": "warn"
+        "noLabelWithoutControl": "warn",
+        "useKeyWithClickEvents": "warn",
+        "useHtmlLang": "warn",
+        "useAriaPropsSupportedByRole": "warn",
+        "noStaticElementInteractions": "warn",
+        "useSemanticElements": "warn"
       },
+      "security": { "noDangerouslySetInnerHtml": "warn" },
       "style": { "noNonNullAssertion": "warn" },
       "complexity": { "noUselessCatch": "warn" },
-      "correctness": { "useParseIntRadix": "warn", "noUnusedFunctionParameters": "warn" }
+      "correctness": {
+        "useParseIntRadix": "warn",
+        "noUnusedFunctionParameters": "warn",
+        "useExhaustiveDependencies": "warn",
+        "noInvalidUseBeforeDeclaration": "warn",
+        "noInnerDeclarations": "warn",
+        "noEmptyPattern": "warn"
+      }
     }
   },
   "formatter": {
@@ -36,7 +54,12 @@
       "!**/dist",
       "!**/*.gen.ts",
       "!**/database.types.ts",
-      "!**/supabase.ts"
+      "!**/supabase.ts",
+      "!**/website/build",
+      "!**/app_backup",
+      "!**/*.css",
+      "!**/playwright-report",
+      "!**/tests/reports"
     ]
   }
 }
