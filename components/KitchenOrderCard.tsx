@@ -1,6 +1,7 @@
 'use client'
 
 import { ArrowRight, Clock, Eye, Printer } from 'lucide-react'
+import { DiscountBadge } from '@/components/gastronomy/atoms/DiscountBadge'
 import type { OrderResponse } from '@/lib/schemas/order'
 import { cn } from '@/lib/utils'
 
@@ -139,10 +140,25 @@ export function KitchenOrderCard({
                 {item.quantity}
               </span>
               <span className="text-base font-semibold text-gray-900">{item.name}</span>
-              {(item as any).options && (
+              {(item as any).options && !(item as any).modifiers && (
                 <p className="ml-8 text-sm text-gray-600">
                   {JSON.stringify((item as any).options)}
                 </p>
+              )}
+              {(item as any).modifiers && Array.isArray((item as any).modifiers) && (
+                <ul
+                  data-testid={`kds-item-modifiers-${order.id}-${idx}`}
+                  className="ml-8 mt-1 space-y-0.5"
+                >
+                  {(item as any).modifiers.map((mod: any, mIdx: number) => (
+                    <li key={mIdx} className="text-sm text-gray-600">
+                      {'    '}+ {mod.modifier_name ?? mod.modifier_option_id}
+                      {mod.price_delta != null && mod.price_delta !== 0 && (
+                        <span className="ml-1 font-medium">${mod.price_delta}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
             <span className="text-base font-bold text-gray-900 ml-2">
@@ -154,10 +170,43 @@ export function KitchenOrderCard({
 
       {/* Total */}
       <div className="px-4 py-3 bg-gray-50 border-t border-gray-200">
-        <div className="flex justify-between items-center">
-          <span className="text-lg font-bold text-gray-700">TOTAL</span>
-          <span className="text-2xl font-black text-gray-900">${order.total.toFixed(0)}</span>
-        </div>
+        {(order as any).discount_amount > 0 && (order as any).discount_snapshot ? (
+          <div className="space-y-1.5">
+            <div
+              data-testid={`kds-order-original-total-${order.id}`}
+              className="flex justify-between items-center text-sm text-gray-500"
+            >
+              <span className="font-medium">SUBTOTAL</span>
+              <span className="line-through">
+                ${((order as any).total_before_discount ?? order.total).toFixed(0)}
+              </span>
+            </div>
+            <div
+              data-testid={`kds-order-discount-${order.id}`}
+              className="flex justify-between items-center"
+            >
+              <DiscountBadge
+                discount={(order as any).discount_snapshot}
+                discountAmount={(order as any).discount_amount}
+              />
+            </div>
+            <div
+              data-testid={`kds-order-final-total-${order.id}`}
+              className="flex justify-between items-center"
+            >
+              <span className="text-lg font-bold text-gray-700">TOTAL</span>
+              <span className="text-2xl font-black text-gray-900">${order.total.toFixed(0)}</span>
+            </div>
+          </div>
+        ) : (
+          <div
+            data-testid={`kds-order-final-total-${order.id}`}
+            className="flex justify-between items-center"
+          >
+            <span className="text-lg font-bold text-gray-700">TOTAL</span>
+            <span className="text-2xl font-black text-gray-900">${order.total.toFixed(0)}</span>
+          </div>
+        )}
         {order.payment_method && (
           <div className="mt-1 text-sm text-gray-600">💳 {order.payment_method.toUpperCase()}</div>
         )}

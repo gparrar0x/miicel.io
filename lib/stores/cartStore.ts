@@ -16,12 +16,27 @@ export const useCartStore = create<CartStore>()(
 
       addItem: (newItem) => {
         const items = get().items
+        // Key: productId + sorted modifier option IDs (separate rows for different modifiers)
+        const modifierKey = newItem.modifiers?.length
+          ? newItem.modifiers
+              .map((m) => m.modifier_option_id)
+              .sort()
+              .join('|')
+          : ''
         const existingIndex = items.findIndex(
-          (item) => item.productId === newItem.productId && item.color?.id === newItem.color?.id,
+          (item) =>
+            item.productId === newItem.productId &&
+            item.color?.id === newItem.color?.id &&
+            (item.modifiers?.length
+              ? item.modifiers
+                  .map((m) => m.modifier_option_id)
+                  .sort()
+                  .join('|')
+              : '') === modifierKey,
         )
 
         if (existingIndex > -1) {
-          // Update quantity if same product+color combo exists
+          // Update quantity if same product+color+modifiers combo exists
           const updated = [...items]
           const current = updated[existingIndex]
           const requestedQty = (newItem.quantity ?? 1) + current.quantity
@@ -84,7 +99,10 @@ export const useCartStore = create<CartStore>()(
       },
 
       getTotalPrice: () => {
-        return get().items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+        return get().items.reduce(
+          (sum, item) => sum + (item.price + (item.modifiersTotalDelta ?? 0)) * item.quantity,
+          0,
+        )
       },
     }),
     {

@@ -74,6 +74,8 @@ export interface CartItem {
     label: string
     dimensions: string
   }
+  modifiers?: SelectedModifier[]
+  modifiersTotalDelta?: number
 }
 
 /**
@@ -87,4 +89,89 @@ export interface CartStore {
   clearCart: () => void
   getTotalItems: () => number
   getTotalPrice: () => number
+}
+
+// ---- Product Modifiers ----
+
+export interface ModifierGroup {
+  id: string
+  tenant_id: number
+  product_id: number
+  name: string
+  min_selections: number
+  max_selections: number
+  display_order: number
+  active: boolean
+  created_at: string
+  options?: ModifierOption[]
+}
+
+export interface ModifierOption {
+  id: string
+  tenant_id: number
+  modifier_group_id: string
+  name: string
+  price_delta: number
+  active: boolean
+  display_order: number
+}
+
+export interface SelectedModifier {
+  modifier_group_id: string
+  modifier_option_id: string
+}
+
+export interface CartLineItem {
+  product_id: number
+  quantity: number
+  selected_modifiers: SelectedModifier[]
+}
+
+// ---- Order Line Items (structured) ----
+
+export interface OrderLineItem {
+  id: string
+  tenant_id: number
+  order_id: number
+  product_id: number
+  product_name: string
+  unit_price: number
+  quantity: number
+  subtotal: number
+  modifiers?: OrderLineItemModifier[]
+}
+
+export interface OrderLineItemModifier {
+  id: string
+  order_line_item_id: string
+  modifier_option_id: string
+  modifier_group_name: string
+  modifier_name: string
+  price_delta: number
+}
+
+// ---- Discounts ----
+
+export type DiscountType = 'fixed' | 'percentage'
+export type DiscountScope = 'order' | 'item'
+
+export interface Discount {
+  id: string
+  tenant_id: number
+  name: string
+  type: DiscountType
+  scope: DiscountScope
+  value: number
+  valid_from?: string | null
+  valid_to?: string | null
+  active: boolean
+  created_by?: string
+  created_at: string
+}
+
+export interface DiscountSnapshot {
+  name: string
+  type: DiscountType
+  scope: DiscountScope
+  value: number
 }
