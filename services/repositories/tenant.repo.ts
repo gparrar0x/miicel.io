@@ -14,12 +14,24 @@ export interface TenantWithToken {
 }
 
 export interface ITenantRepo {
+  findById(id: number): Promise<(TenantRow & { owner_id: string }) | null>
   findBySlug(slug: string): Promise<TenantRow | null>
   findBySlugWithToken(slug: string): Promise<(TenantRow & TenantWithToken) | null>
 }
 
 export class TenantRepo implements ITenantRepo {
   constructor(private readonly supabase: SupabaseClient) {}
+
+  async findById(id: number): Promise<(TenantRow & { owner_id: string }) | null> {
+    const { data, error } = await this.supabase
+      .from('tenants')
+      .select('id, template, owner_id')
+      .eq('id', id)
+      .maybeSingle()
+
+    if (error) throw new Error(`Failed to fetch tenant: ${error.message}`)
+    return data ?? null
+  }
 
   async findBySlug(slug: string): Promise<TenantRow | null> {
     const { data, error } = await this.supabase
