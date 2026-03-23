@@ -8,6 +8,7 @@ import type { ITenantRepo } from '../repositories/tenant.repo'
 // ---- Mocks ----
 
 const mockTenantRepo = (): ITenantRepo => ({
+  findById: vi.fn(),
   findBySlug: vi.fn(),
   findBySlugWithToken: vi.fn(),
 })

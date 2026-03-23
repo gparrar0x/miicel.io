@@ -7,6 +7,7 @@ import type { ITenantRepo } from '../repositories/tenant.repo'
 // ---- Mocks ----
 
 const mockTenantRepo = (): ITenantRepo => ({
+  findById: vi.fn(),
   findBySlug: vi.fn(),
   findBySlugWithToken: vi.fn(),
 })
@@ -53,7 +54,7 @@ describe('CheckoutService', () => {
 
   describe('cash payment — happy path', () => {
     it('creates order and returns orderId for cash payment', async () => {
-      vi.mocked(tenantRepo.findBySlug).mockResolvedValue({ id: 42 })
+      vi.mocked(tenantRepo.findBySlugWithToken).mockResolvedValue({ id: 42, mp_access_token: null })
       vi.mocked(customerRepo.findByEmail).mockResolvedValue(null)
       vi.mocked(customerRepo.create).mockResolvedValue({ id: 7 })
       vi.mocked(orderRepo.create).mockResolvedValue({ id: 99 })
@@ -61,7 +62,7 @@ describe('CheckoutService', () => {
       const result = await service.execute(baseInput)
 
       expect(result).toEqual({ success: true, orderId: 99 })
-      expect(tenantRepo.findBySlug).toHaveBeenCalledWith('test-store')
+      expect(tenantRepo.findBySlugWithToken).toHaveBeenCalledWith('test-store')
       expect(customerRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({ tenant_id: 42, email: 'juan@test.com' }),
       )
@@ -71,7 +72,7 @@ describe('CheckoutService', () => {
     })
 
     it('updates existing customer instead of creating new one', async () => {
-      vi.mocked(tenantRepo.findBySlug).mockResolvedValue({ id: 42 })
+      vi.mocked(tenantRepo.findBySlugWithToken).mockResolvedValue({ id: 42, mp_access_token: null })
       vi.mocked(customerRepo.findByEmail).mockResolvedValue({ id: 5 })
       vi.mocked(customerRepo.update).mockResolvedValue(undefined)
       vi.mocked(orderRepo.create).mockResolvedValue({ id: 100 })
@@ -89,13 +90,13 @@ describe('CheckoutService', () => {
 
   describe('error paths', () => {
     it('throws NotFoundError when tenant not found', async () => {
-      vi.mocked(tenantRepo.findBySlug).mockResolvedValue(null)
+      vi.mocked(tenantRepo.findBySlugWithToken).mockResolvedValue(null)
 
       await expect(service.execute(baseInput)).rejects.toThrow('Tenant not found')
     })
 
     it('throws when customer creation fails', async () => {
-      vi.mocked(tenantRepo.findBySlug).mockResolvedValue({ id: 42 })
+      vi.mocked(tenantRepo.findBySlugWithToken).mockResolvedValue({ id: 42, mp_access_token: null })
       vi.mocked(customerRepo.findByEmail).mockResolvedValue(null)
       vi.mocked(customerRepo.create).mockRejectedValue(
         new Error('Failed to create customer: DB error'),
@@ -105,7 +106,7 @@ describe('CheckoutService', () => {
     })
 
     it('throws when order creation fails', async () => {
-      vi.mocked(tenantRepo.findBySlug).mockResolvedValue({ id: 42 })
+      vi.mocked(tenantRepo.findBySlugWithToken).mockResolvedValue({ id: 42, mp_access_token: null })
       vi.mocked(customerRepo.findByEmail).mockResolvedValue(null)
       vi.mocked(customerRepo.create).mockResolvedValue({ id: 7 })
       vi.mocked(orderRepo.create).mockRejectedValue(new Error('Failed to create order: DB error'))
@@ -114,14 +115,10 @@ describe('CheckoutService', () => {
     })
 
     it('throws ValidationError when MP not configured for mercadopago payment', async () => {
-      vi.mocked(tenantRepo.findBySlug).mockResolvedValue({ id: 42 })
+      vi.mocked(tenantRepo.findBySlugWithToken).mockResolvedValue({ id: 42, mp_access_token: null })
       vi.mocked(customerRepo.findByEmail).mockResolvedValue(null)
       vi.mocked(customerRepo.create).mockResolvedValue({ id: 7 })
       vi.mocked(orderRepo.create).mockResolvedValue({ id: 88 })
-      vi.mocked(tenantRepo.findBySlugWithToken).mockResolvedValue({
-        id: 42,
-        mp_access_token: null,
-      })
 
       await expect(service.execute({ ...baseInput, paymentMethod: 'mercadopago' })).rejects.toThrow(
         'MercadoPago not configured',

@@ -19,6 +19,8 @@ export interface CheckoutItem {
   image?: string
   sizeId?: string
   color?: { id: number; name: string }
+  modifiersDelta?: number
+  modifiersSummary?: string
 }
 
 export interface CheckoutCustomer {
@@ -55,8 +57,8 @@ export class CheckoutService {
   async execute(input: CheckoutInput): Promise<CheckoutResult> {
     const { customer, paymentMethod, items, total, currency, tenantSlug, returnUrl } = input
 
-    // 1. Resolve tenant
-    const tenant = await this.tenantRepo.findBySlug(tenantSlug)
+    // 1. Resolve tenant (fetch token upfront to avoid a second DB call for MP flow)
+    const tenant = await this.tenantRepo.findBySlugWithToken(tenantSlug)
     if (!tenant) throw new NotFoundError('Tenant')
     const tenantId = tenant.id
 
@@ -67,7 +69,6 @@ export class CheckoutService {
     const order = await this.orderRepo.create({
       tenant_id: tenantId,
       customer_id: customerId,
-      // Checkout stores denormalised price/currency/image — cast to satisfy repo type
       items: items.map((item) => ({
         product_id: item.productId,
         name: item.name,
@@ -78,7 +79,7 @@ export class CheckoutService {
         image: item.image,
         color: item.color,
         size_id: item.sizeId ?? null,
-      })) as any,
+      })),
       total,
       status: 'pending',
       payment_method: paymentMethod,
@@ -91,12 +92,11 @@ export class CheckoutService {
     }
 
     // 5. MercadoPago — build preference
-    const tenantData = await this.tenantRepo.findBySlugWithToken(tenantSlug)
-    if (!tenantData?.mp_access_token) {
+    if (!tenant.mp_access_token) {
       throw new ValidationError('MercadoPago not configured for this tenant')
     }
 
-    const mpToken = decryptToken(tenantData.mp_access_token)
+    const mpToken = decryptToken(tenant.mp_access_token)
     const client = new MercadoPagoConfig({ accessToken: mpToken })
     const preference = new Preference(client)
 
@@ -107,11 +107,11 @@ export class CheckoutService {
     const preferenceData: Record<string, unknown> = {
       items: items.map((item) => ({
         id: item.productId.toString(),
-        title: item.name,
-        unit_price: item.price,
+        title: item.modifiersSummary ? `${item.name} (${item.modifiersSummary})` : item.name,
+        unit_price: item.price + (item.modifiersDelta ?? 0),
         quantity: item.quantity,
         currency_id: currency === 'ARS' ? 'ARS' : 'USD',
-        description: item.name,
+        description: item.modifiersSummary ? `${item.name} + ${item.modifiersSummary}` : item.name,
       })),
       payer: {
         name: customer.name,

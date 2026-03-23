@@ -3,7 +3,8 @@
  * Auth checks: ownership via tenants.owner_id, superadmin bypass.
  */
 
-import { ForbiddenError, NotFoundError } from '@skywalking/core/errors'
+import { NotFoundError } from '@skywalking/core/errors'
+import { assertOwnership } from '@/lib/auth/constants'
 import type {
   CreateProductInput,
   IProductRepo,
@@ -11,8 +12,6 @@ import type {
   UpdateProductInput,
 } from './repositories/product.repo'
 import type { ITenantRepo } from './repositories/tenant.repo'
-
-const SUPERADMIN_EMAIL = 'gparrar@skywalking.dev'
 
 export interface ListProductsInput {
   tenant_id?: number
@@ -70,15 +69,9 @@ export class ProductService {
   ): Promise<ProductRow> {
     const { userId, userEmail, ...productData } = input
 
-    // Verify tenant ownership
-    const tenant =
-      (await (this.tenantRepo as any).findById?.(productData.tenant_id)) ??
-      (await this._getTenantOwner(productData.tenant_id))
-
-    const isSuperadmin = userEmail?.toLowerCase().trim() === SUPERADMIN_EMAIL
-    if (!isSuperadmin && tenant.owner_id !== userId) {
-      throw new ForbiddenError('You do not own this tenant')
-    }
+    const tenant = await this.tenantRepo.findById(productData.tenant_id)
+    if (!tenant) throw new NotFoundError('Tenant')
+    assertOwnership(userId, userEmail, tenant.owner_id, 'tenant')
 
     return this.productRepo.create(productData)
   }
@@ -90,12 +83,7 @@ export class ProductService {
   ): Promise<ProductRow> {
     const product = await this.productRepo.findByIdWithOwner(productId)
     if (!product) throw new NotFoundError('Product')
-
-    const tenants = product.tenants as { owner_id: string }
-    const isSuperadmin = auth.userEmail?.toLowerCase().trim() === SUPERADMIN_EMAIL
-    if (!isSuperadmin && tenants.owner_id !== auth.userId) {
-      throw new ForbiddenError('You do not own this product')
-    }
+    assertOwnership(auth.userId, auth.userEmail, product.tenants.owner_id, 'product')
 
     return this.productRepo.update(productId, updateData)
   }
@@ -103,21 +91,8 @@ export class ProductService {
   async softDelete(productId: number, auth: AuthContext): Promise<ProductRow> {
     const product = await this.productRepo.findByIdWithOwner(productId)
     if (!product) throw new NotFoundError('Product')
-
-    const tenants = product.tenants as { owner_id: string }
-    const isSuperadmin = auth.userEmail?.toLowerCase().trim() === SUPERADMIN_EMAIL
-    if (!isSuperadmin && tenants.owner_id !== auth.userId) {
-      throw new ForbiddenError('You do not own this product')
-    }
+    assertOwnership(auth.userId, auth.userEmail, product.tenants.owner_id, 'product')
 
     return this.productRepo.softDelete(productId)
-  }
-
-  // Fallback: fetch tenant owner_id via tenantRepo (which may not expose findById)
-  private async _getTenantOwner(_tenantId: number): Promise<{ owner_id: string }> {
-    // TenantRepo only has findBySlug; for create product we get owner from Supabase
-    // via the route handler which passes auth context directly.
-    // This path is hit when tenantRepo.findById is not available.
-    throw new NotFoundError('Tenant')
   }
 }

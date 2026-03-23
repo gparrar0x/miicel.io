@@ -16,6 +16,7 @@ const mockProductRepo = (): IProductRepo => ({
 })
 
 const mockTenantRepo = (): ITenantRepo => ({
+  findById: vi.fn(),
   findBySlug: vi.fn(),
   findBySlugWithToken: vi.fn(),
 })

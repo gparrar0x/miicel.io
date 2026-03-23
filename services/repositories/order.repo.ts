@@ -30,6 +30,20 @@ export interface OrderRow {
   id: number
 }
 
+export interface OrderWithCustomer {
+  id: number
+  tenant_id: number
+  customers: { id: number; name: string; email: string; phone: string } | null
+  items: OrderItem[]
+  total: number
+  status: string
+  payment_method: string
+  payment_id: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
 export interface IOrderRepo {
   create(input: CreateOrderInput): Promise<OrderRow>
   findByIdWithTenant(
@@ -43,7 +57,7 @@ export interface IOrderRepo {
     date_to?: string
     limit: number
     offset: number
-  }): Promise<{ data: unknown[]; count: number | null }>
+  }): Promise<{ data: OrderWithCustomer[]; count: number | null }>
 }
 
 export class OrderRepo implements IOrderRepo {
@@ -73,7 +87,7 @@ export class OrderRepo implements IOrderRepo {
   async findByIdWithTenant(
     orderId: number,
   ): Promise<{ id: number; status: string; tenants: { owner_id: string } } | null> {
-    const { data, error } = await (this.supabase as any)
+    const { data, error } = await this.supabase
       .from('orders')
       .select('*, tenants!inner(owner_id)')
       .eq('id', orderId)
@@ -102,7 +116,7 @@ export class OrderRepo implements IOrderRepo {
     date_to?: string
     limit: number
     offset: number
-  }): Promise<{ data: unknown[]; count: number | null }> {
+  }): Promise<{ data: OrderWithCustomer[]; count: number | null }> {
     let query = this.supabase
       .from('orders')
       .select(`*, customers ( id, name, email, phone )`, { count: 'exact' })
@@ -120,6 +134,6 @@ export class OrderRepo implements IOrderRepo {
 
     const { data, error, count } = await query
     if (error) throw new Error(`Failed to list orders: ${error.message}`)
-    return { data: data ?? [], count }
+    return { data: (data ?? []) as OrderWithCustomer[], count }
   }
 }

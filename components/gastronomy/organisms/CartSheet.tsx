@@ -16,6 +16,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { Textarea } from '@/components/ui/textarea'
+import { CartItemModifiersSummary } from '@/components/gastronomy/atoms/CartItemModifiersSummary'
 import type { CartItem } from '@/types/commerce'
 
 interface CartSheetProps {
@@ -239,8 +240,16 @@ export function CartSheet({
                       <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
                         {item.name}
                       </h3>
-                      <p className="font-bold" style={{ color: 'var(--color-primary)' }}>
-                        {formatPrice(item.price * item.quantity)}
+                      {item.modifiers && item.modifiers.length > 0 && (
+                        <CartItemModifiersSummary
+                          productId={item.productId}
+                          modifiers={item.modifiers}
+                        />
+                      )}
+                      <p className="font-bold mt-1" style={{ color: 'var(--color-primary)' }}>
+                        {formatPrice(
+                          (item.price + (item.modifiersTotalDelta ?? 0)) * item.quantity,
+                        )}
                       </p>
                     </div>
                     <div className="flex flex-col items-end gap-2">
@@ -486,7 +495,9 @@ export function CartSheet({
                         {item.quantity}x {item.name}
                       </span>
                       <span className="font-semibold text-gray-900 dark:text-white">
-                        {formatPrice(item.price * item.quantity)}
+                        {formatPrice(
+                          (item.price + (item.modifiersTotalDelta ?? 0)) * item.quantity,
+                        )}
                       </span>
                     </div>
                   ))}
