@@ -83,6 +83,26 @@ export default defineConfig({
       },
     },
 
+    // Firefox — uncomment to enable cross-browser CI coverage
+    // {
+    //   name: 'firefox',
+    //   use: {
+    //     ...sharedConfig,
+    //     baseURL: process.env.BASE_URL || 'http://localhost:3001',
+    //     ...devices['Desktop Firefox'],
+    //   },
+    // },
+
+    // WebKit (Safari) — uncomment to enable cross-browser CI coverage
+    // {
+    //   name: 'webkit',
+    //   use: {
+    //     ...sharedConfig,
+    //     baseURL: process.env.BASE_URL || 'http://localhost:3001',
+    //     ...devices['Desktop Safari'],
+    //   },
+    // },
+
     // MercadoPago Sandbox tests - requires longer timeouts
     {
       name: 'mercadopago-sandbox',
