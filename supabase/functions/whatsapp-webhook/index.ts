@@ -59,7 +59,7 @@ Deno.serve(async (req: Request) => {
     return new Response('Forbidden', { status: 403 })
   }
 
-  // POST — receive messages; ack immediately
+  // POST — receive messages; process inline (Deno runtime, no EdgeRuntime)
   if (req.method === 'POST') {
     let payload: WebhookPayload
     try {
@@ -68,8 +68,8 @@ Deno.serve(async (req: Request) => {
       return new Response('Bad Request', { status: 400 })
     }
 
-    // Fire-and-forget — don't block Meta's 20s timeout
-    EdgeRuntime.waitUntil(processMessages(payload))
+    // Process messages inline — Supabase Edge Functions run on Deno, not Vercel Edge
+    await processMessages(payload)
 
     return new Response('OK', { status: 200 })
   }

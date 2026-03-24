@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
+import { getServerSession } from '@/lib/auth'
 import { orchestrate } from '@/lib/agents/orchestrator'
 import type { AgentMessage, OrchestratorConfig } from '@/lib/agents/types'
 import { loadOraculoAgent } from '@/services/agents/oraculo'
@@ -18,6 +19,12 @@ const chatRequestSchema = z.object({
 
 export async function POST(request: Request) {
   try {
+    // --- Auth guard ---
+    const { session, error: authError } = await getServerSession()
+    if (authError || !session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const body = await request.json()
     const parsed = chatRequestSchema.safeParse(body)
 
@@ -123,8 +130,12 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error: 'Internal server error',
-        details: err instanceof Error ? err.message : String(err),
-        debug: process.env.NODE_ENV === 'development' ? (err as Error)?.stack : undefined,
+        ...(process.env.NODE_ENV === 'development'
+          ? {
+              details: err instanceof Error ? err.message : String(err),
+              debug: (err as Error)?.stack,
+            }
+          : {}),
       },
       { status: 500 },
     )
