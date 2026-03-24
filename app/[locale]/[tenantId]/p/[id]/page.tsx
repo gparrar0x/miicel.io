@@ -19,6 +19,9 @@ import { ProductStructuredData } from '@/components/seo/StructuredData'
 import { tenantConfigResponseSchema } from '@/lib/schemas/order'
 import { createClient } from '@/lib/supabase/server'
 import type { Product, ProductColor } from '@/types/commerce'
+
+// ISR: revalidate product pages every 60 seconds
+export const revalidate = 60
 import { ProductClient } from './ProductClient'
 
 interface PageProps {
