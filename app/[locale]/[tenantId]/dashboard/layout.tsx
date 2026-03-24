@@ -85,7 +85,10 @@ export default async function DashboardLayout({ children, params }: LayoutProps)
 
   // Check feature flags based on tenant template
   const flagContext = { tenantId: tenant.id, tenantTemplate: tenant.template }
-  const showConsignments = await isEnabled(Flags.CONSIGNMENTS, flagContext)
+  const [showConsignments, showAgents] = await Promise.all([
+    isEnabled(Flags.CONSIGNMENTS, flagContext),
+    isEnabled(Flags.AGENTS, flagContext),
+  ])
 
   const navItems: NavItem[] = [
     {
@@ -109,6 +112,15 @@ export default async function DashboardLayout({ children, params }: LayoutProps)
             name: t('navConsignments') || 'Consignaciones',
             href: `/${locale}/${tenantId}/dashboard/consignments`,
             icon: 'consignments' as const,
+          },
+        ]
+      : []),
+    ...(showAgents
+      ? [
+          {
+            name: t('navAgents') || 'Agents',
+            href: `/${locale}/${tenantId}/dashboard/agents`,
+            icon: 'agents' as const,
           },
         ]
       : []),

@@ -101,11 +101,6 @@ export function ThemeProvider({ theme, children }: ThemeProviderProps) {
     } as React.CSSProperties
   }, [theme])
 
-  if (process.env.NODE_ENV === 'development') {
-    console.log('[ThemeProvider] Resolved theme:', theme)
-    console.log('[ThemeProvider] CSS vars:', cssVars)
-  }
-
   return (
     <ThemeContext.Provider value={theme}>
       <div style={cssVars} data-testid="theme-provider-root">

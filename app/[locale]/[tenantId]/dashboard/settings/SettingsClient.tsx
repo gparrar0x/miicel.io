@@ -244,15 +244,11 @@ export function SettingsClient({
         updateData.whatsapp_number = whatsappNumber || null
       }
 
-      console.log('Sending update request:', updateData)
-
       const res = await fetch(`/api/settings?tenant_id=${tenantId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updateData),
       })
-
-      console.log('Response status:', res.status, res.statusText)
 
       if (!res.ok) {
         const responseText = await res.text()

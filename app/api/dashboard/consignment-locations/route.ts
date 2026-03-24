@@ -13,6 +13,7 @@
  */
 
 import { NextResponse } from 'next/server'
+import { isSuperadmin } from '@/lib/auth/constants'
 import { createLocationSchema, listLocationsQuerySchema } from '@/lib/schemas/consignment'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 
@@ -89,7 +90,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Tenant not found' }, { status: 404 })
     }
 
-    const isSuperAdmin = user.email === 'gparrar@skywalking.dev'
+    const isSuperAdmin = isSuperadmin(user.email)
     if (!isSuperAdmin && tenant.owner_id !== user.id) {
       return NextResponse.json({ error: 'Forbidden. Not tenant owner.' }, { status: 403 })
     }
@@ -106,7 +107,8 @@ export async function GET(request: Request) {
 
     // Apply filters
     if (search) {
-      query = query.ilike('name', `%${search}%`)
+      const sanitized = search.replace(/[%_\\]/g, (c) => `\\${c}`)
+      query = query.ilike('name', `%${sanitized}%`)
     }
     if (city) {
       query = query.eq('city', city)
@@ -203,7 +205,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Tenant not found' }, { status: 404 })
     }
 
-    const isSuperAdmin = user.email === 'gparrar@skywalking.dev'
+    const isSuperAdmin = isSuperadmin(user.email)
     if (!isSuperAdmin && tenant.owner_id !== user.id) {
       return NextResponse.json({ error: 'Forbidden. Not tenant owner.' }, { status: 403 })
     }

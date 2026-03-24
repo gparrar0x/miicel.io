@@ -206,4 +206,5 @@ export const Flags = {
   ANALYTICS_V2: 'analytics_v2',
   CONSIGNMENTS: 'consignments',
   KITCHEN_VIEW: 'kitchen_view',
+  AGENTS: 'agents',
 } as const

@@ -1,5 +1,4 @@
 # Exclude from Vercel build
-app_backup/
 artist-gallery-system/
 digital-menu-prototype/
 *.zip

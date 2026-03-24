@@ -10,6 +10,7 @@
  */
 
 import { NextResponse } from 'next/server'
+import { isSuperadmin } from '@/lib/auth/constants'
 import { createClient } from '@/lib/supabase/server'
 
 type RouteParams = {
@@ -82,7 +83,7 @@ export async function GET(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Tenant not found' }, { status: 404 })
     }
 
-    const isSuperAdmin = user.email === 'gparrar@skywalking.dev'
+    const isSuperAdmin = isSuperadmin(user.email)
     if (!isSuperAdmin && tenant.owner_id !== user.id) {
       return NextResponse.json({ error: 'Forbidden. Not tenant owner.' }, { status: 403 })
     }
