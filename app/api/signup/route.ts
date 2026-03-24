@@ -18,23 +18,10 @@
  * - Password meets minimum requirements (8 chars)
  */
 
-import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 import { getClientIp, rateLimitExceededResponse, ratelimitSignup } from '@/lib/rate-limit'
 import { signupRequestSchema } from '@/lib/schemas/order'
-import type { Database } from '@/types/database.types'
-
-// Service role client for bypassing RLS
-const supabaseAdmin = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  },
-)
 
 export async function POST(request: Request) {
   // Rate limit: 5 req / 60 s per IP (account creation)
@@ -56,7 +43,7 @@ export async function POST(request: Request) {
     const { email, password, businessName, slug } = validationResult.data
 
     // Step 1: Check if slug is already taken
-    const { data: existingTenant } = await supabaseAdmin
+    const { data: existingTenant } = await createServiceRoleClient()
       .from('tenants')
       .select('slug')
       .eq('slug', slug)
@@ -70,11 +57,12 @@ export async function POST(request: Request) {
     }
 
     // Step 2: Create auth user
-    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true, // Auto-confirm email for now
-    })
+    const { data: authData, error: authError } =
+      await createServiceRoleClient().auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true, // Auto-confirm email for now
+      })
 
     if (authError || !authData.user) {
       console.error('Auth creation failed:', authError)
@@ -87,7 +75,7 @@ export async function POST(request: Request) {
     const userId = authData.user.id
 
     // Step 3: Create tenant (using service role to bypass RLS)
-    const { data: tenantData, error: tenantError } = await supabaseAdmin
+    const { data: tenantData, error: tenantError } = await createServiceRoleClient()
       .from('tenants')
       .insert({
         slug,
@@ -114,7 +102,7 @@ export async function POST(request: Request) {
 
       // Rollback: Delete the auth user we just created
       try {
-        await supabaseAdmin.auth.admin.deleteUser(userId)
+        await createServiceRoleClient().auth.admin.deleteUser(userId)
       } catch (rollbackError) {
         console.error('Rollback failed - orphaned user created:', userId, rollbackError)
       }
@@ -126,7 +114,7 @@ export async function POST(request: Request) {
     }
 
     // Step 4: Create owner record in public.users
-    const { error: userError } = await supabaseAdmin.from('users').insert({
+    const { error: userError } = await createServiceRoleClient().from('users').insert({
       tenant_id: tenantData.id,
       email,
       role: 'owner',

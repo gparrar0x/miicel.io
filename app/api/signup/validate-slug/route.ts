@@ -15,23 +15,10 @@
  * - suggestion?: string - alternative slug if taken (slug-2, slug-3, etc.)
  */
 
-import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 import { getClientIp, rateLimitExceededResponse, ratelimitLight } from '@/lib/rate-limit'
 import { slugSchema, validateSlugRequestSchema } from '@/lib/schemas/order'
-import type { Database } from '@/types/database.types'
-
-// Service role client for checking slug uniqueness
-const supabaseAdmin = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  },
-)
 
 /**
  * Generate slug suggestions by appending incrementing numbers
@@ -43,7 +30,7 @@ async function generateSlugSuggestion(baseSlug: string): Promise<string | undefi
     const suggestion = `${baseSlug}-${i}`
 
     // Check if suggestion is available
-    const { data } = await supabaseAdmin
+    const { data } = await createServiceRoleClient()
       .from('tenants')
       .select('slug')
       .eq('slug', suggestion)
@@ -90,7 +77,7 @@ export async function POST(request: Request) {
     }
 
     // Check uniqueness in database
-    const { data: existingTenant, error: dbError } = await supabaseAdmin
+    const { data: existingTenant, error: dbError } = await createServiceRoleClient()
       .from('tenants')
       .select('slug')
       .eq('slug', slug)
