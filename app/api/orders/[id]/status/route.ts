@@ -13,6 +13,7 @@
  */
 
 import { NextResponse } from 'next/server'
+import { isSuperadmin } from '@/lib/auth/constants'
 import { orderStatusUpdateSchema } from '@/lib/schemas/order'
 import { createClient } from '@/lib/supabase/server'
 
@@ -89,9 +90,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
     // Step 5: Verify tenant ownership or superadmin access
     const userEmail = user.email?.toLowerCase().trim()
-    const isSuperadmin = userEmail === 'gparrar@skywalking.dev'
+    const isSuperadminUser = isSuperadmin(userEmail)
 
-    if (!isSuperadmin && order.tenants.owner_id !== user.id) {
+    if (!isSuperadminUser && order.tenants.owner_id !== user.id) {
       return NextResponse.json(
         { error: `Forbidden. You do not own this order. User: ${userEmail}` },
         { status: 403 },

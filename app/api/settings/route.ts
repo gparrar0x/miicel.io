@@ -12,6 +12,7 @@
  */
 
 import { NextResponse } from 'next/server'
+import { isSuperadmin } from '@/lib/auth/constants'
 import { decryptToken, encryptToken } from '@/lib/encryption'
 import { whatsappNumberSchema } from '@/lib/schemas/tenant'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
@@ -74,7 +75,7 @@ export async function GET(request: Request) {
     }
 
     // Verify ownership (allow superadmin)
-    const isSuperAdmin = user.email === 'gparrar@skywalking.dev'
+    const isSuperAdmin = isSuperadmin(user.email)
     if (!isSuperAdmin && tenant.owner_id !== user.id) {
       return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
     }
@@ -166,7 +167,7 @@ export async function PATCH(request: Request) {
     }
 
     // Verify ownership (allow superadmin)
-    const isSuperAdmin = user.email === 'gparrar@skywalking.dev'
+    const isSuperAdmin = isSuperadmin(user.email)
     if (!isSuperAdmin && tenant.owner_id !== user.id) {
       return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
     }

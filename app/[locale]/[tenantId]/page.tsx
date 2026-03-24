@@ -20,6 +20,9 @@ import { WhatsAppButton } from '@/components/storefront/WhatsAppButton'
 import { type TenantConfigResponse, tenantConfigResponseSchema } from '@/lib/schemas/order'
 import { createClient } from '@/lib/supabase/server'
 
+// ISR: revalidate storefront every 60 seconds
+export const revalidate = 60
+
 interface PageProps {
   params: Promise<{ locale: string; tenantId: string }>
   searchParams: Promise<{ category?: string; search?: string }>
@@ -29,7 +32,6 @@ async function getTenantConfig(tenantId: string): Promise<TenantConfigResponse |
   const supabase = await createClient()
 
   try {
-    // @ts-expect-error - whatsapp_number not in generated types yet
     const { data: tenant, error } = await supabase
       .from('tenants')
       .select('config, template, whatsapp_number')
@@ -41,11 +43,7 @@ async function getTenantConfig(tenantId: string): Promise<TenantConfigResponse |
       return null
     }
 
-    // @ts-expect-error - tenant type affected by whatsapp_number query
-    const config = (tenant.config as any) || {}
-
-    console.log(`[getTenantConfig] Raw config from DB:`, JSON.stringify(config, null, 2))
-    console.log(`[getTenantConfig] config.template value:`, config.template)
+    const config = (tenant.config as Record<string, any>) || {}
 
     // Map DB config to schema expected format
     const mappedConfig = {
@@ -75,8 +73,8 @@ async function getTenantConfig(tenantId: string): Promise<TenantConfigResponse |
         sunday: { open: '00:00', close: '00:00' },
       },
       currency: config.currency || 'USD',
-      template: (tenant as any).template || config.template || 'gallery',
-      whatsappNumber: (tenant as any).whatsapp_number || null,
+      template: tenant.template || config.template || 'gallery',
+      whatsappNumber: tenant.whatsapp_number || null,
     }
 
     return tenantConfigResponseSchema.parse(mappedConfig)
@@ -105,7 +103,8 @@ async function getProducts(tenantId: string, category?: string, search?: string)
   }
 
   if (search) {
-    query = query.ilike('name', `%${search}%`)
+    const sanitized = search.replace(/[%_\\]/g, (c) => `\\${c}`)
+    query = query.ilike('name', `%${sanitized}%`)
   }
 
   const { data, error } = await query
@@ -215,14 +214,7 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
     notFound()
   }
 
-  console.log(`[${tenantId}] Template from config:`, config.template)
-  console.log(`[${tenantId}] Template type:`, typeof config.template)
-  console.log(`[${tenantId}] Template === 'gastronomy':`, config.template === 'gastronomy')
-  console.log(`[${tenantId}] Full config:`, JSON.stringify(config, null, 2))
-
   if (config.template === 'gastronomy') {
-    console.log(`[${tenantId}] ✓ RENDERING GASTRONOMY LAYOUT`)
-
     const getCategoryIcon = (category: string): string => {
       const iconMap: Record<string, string> = {
         PANCHOS: '🌭',
@@ -274,7 +266,6 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
 
   // Legacy support: also accept 'restaurant' for backwards compatibility
   if (config.template === 'gallery') {
-    console.log(`[${tenantId}] ✓ RENDERING GALLERY LAYOUT`)
     // Transform products to Artwork format for new GalleryGrid
     const artworks = products.map((p) => {
       // Check if product has custom sizes in metadata

@@ -56,7 +56,6 @@
       "!**/database.types.ts",
       "!**/supabase.ts",
       "!**/website/build",
-      "!**/app_backup",
       "!**/*.css",
       "!**/playwright-report",
       "!**/tests/reports"

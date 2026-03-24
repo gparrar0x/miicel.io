@@ -97,12 +97,6 @@ export default function SignupPage() {
         )
       }
 
-      console.log('✅ User signed in:', signInData.user.id)
-      console.log(
-        '✅ Session established:',
-        `${signInData.session.access_token.substring(0, 20)}...`,
-      )
-
       toast.success('Cuenta creada exitosamente!')
 
       // Small delay to ensure cookies are written

@@ -335,13 +335,23 @@ export type ProductResponse = z.infer<typeof productResponseSchema>
 // ORDER MANAGEMENT SCHEMAS
 // ============================================================================
 
+export const ORDER_STATUSES = [
+  'pending',
+  'paid',
+  'preparing',
+  'ready',
+  'delivered',
+  'cancelled',
+] as const
+export type OrderStatus = (typeof ORDER_STATUSES)[number]
+
 /**
  * Schema for order list query parameters
  * Used in GET /api/orders/list
  */
 export const orderListQuerySchema = z.object({
   tenant_id: z.string().regex(/^\d+$/).transform(Number),
-  status: z.enum(['pending', 'paid', 'preparing', 'ready', 'delivered', 'cancelled']).optional(),
+  status: z.enum(ORDER_STATUSES).optional(),
   date_from: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/)
@@ -361,7 +371,7 @@ export type OrderListQuery = z.infer<typeof orderListQuerySchema>
  * Used in PATCH /api/orders/[id]/status
  */
 export const orderStatusUpdateSchema = z.object({
-  status: z.enum(['pending', 'paid', 'preparing', 'ready', 'delivered', 'cancelled']),
+  status: z.enum(ORDER_STATUSES),
 })
 
 export type OrderStatusUpdate = z.infer<typeof orderStatusUpdateSchema>

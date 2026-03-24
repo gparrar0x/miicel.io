@@ -54,6 +54,13 @@ export async function POST(request: Request) {
       return new Response('Invalid signature format', { status: 403 })
     }
 
+    // Reject replay attacks: notifications older than 5 minutes
+    const MAX_AGE_MS = 5 * 60 * 1000
+    const tsMs = Number(ts) * 1000
+    if (Number.isNaN(tsMs) || Math.abs(Date.now() - tsMs) > MAX_AGE_MS) {
+      return new Response('Stale notification', { status: 403 })
+    }
+
     // Construct signed payload: ts + request-id + body
     const signedPayload = `${ts}.${xRequestId}.${body}`
 
@@ -184,7 +191,6 @@ export async function POST(request: Request) {
       //   console.error('Error creating payment record:', paymentError)
       // }
 
-      console.log(`Order ${orderId} updated to ${newStatus}, payment ${paymentId} recorded`)
       return new Response('OK', { status: 200 })
     }
 

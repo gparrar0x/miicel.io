@@ -19,6 +19,7 @@
  */
 
 import { NextResponse } from 'next/server'
+import { isSuperadmin } from '@/lib/auth/constants'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
@@ -69,7 +70,7 @@ export async function POST(request: Request) {
     }
 
     // Verify ownership (allow superadmin)
-    const isSuperAdmin = user.email === 'gparrar@skywalking.dev'
+    const isSuperAdmin = isSuperadmin(user.email)
     if (!isSuperAdmin && tenant.owner_id !== user.id) {
       return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
     }

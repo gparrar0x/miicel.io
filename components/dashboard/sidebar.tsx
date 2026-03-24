@@ -4,6 +4,7 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import type { LucideIcon } from 'lucide-react'
 import {
   BarChart3,
+  Bot,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
@@ -34,6 +35,7 @@ export type NavItem = {
     | 'settings'
     | 'consignments'
     | 'analytics'
+    | 'agents'
     | LucideIcon
 }
 
@@ -69,6 +71,7 @@ export function Sidebar({
       settings: Settings,
       consignments: MapPin,
       analytics: BarChart3,
+      agents: Bot,
     }),
     [],
   )

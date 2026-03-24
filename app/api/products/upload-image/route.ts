@@ -26,6 +26,7 @@
  */
 
 import { NextResponse } from 'next/server'
+import { isSuperadmin } from '@/lib/auth/constants'
 import { createClient } from '@/lib/supabase/server'
 
 /**
@@ -94,9 +95,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
     }
 
-    const isSuperadmin = user.email?.toLowerCase().trim() === 'gparrar@skywalking.dev'
+    const isSuperadminUser = isSuperadmin(user.email)
 
-    if (!isSuperadmin && tenant.owner_id !== user.id) {
+    if (!isSuperadminUser && tenant.owner_id !== user.id) {
       return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
     }
 

@@ -62,10 +62,8 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
       const {
         data: { session },
       } = await supabase.auth.getSession()
-      if (session) {
-        console.log('✅ Onboarding: Session found', session.user.id)
-      } else {
-        console.warn('⚠️ Onboarding: No session found')
+      if (!session) {
+        // no-op: session check only
       }
     }
     checkSession()
@@ -122,7 +120,6 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
 
       if (sessionError || !session) {
         console.error('Session error:', sessionError)
-        console.log('No session found. User needs to log in.')
         throw new Error('User not authenticated')
       }
 
@@ -161,7 +158,6 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
 
       if (sessionError || !session) {
         console.error('Session error (banner):', sessionError)
-        console.log('No session found. User needs to log in.')
         throw new Error('User not authenticated')
       }
 
@@ -189,11 +185,9 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
 
   // Handle final activation
   const handleActivate = async () => {
-    console.log('🚀 [ACTIVATION START] Starting activation for tenant:', slug)
     setLoading(true)
     try {
       // Upload logo first (optional - won't block activation if it fails)
-      console.log('📤 [LOGO UPLOAD] Attempting logo upload...')
       let logoUrl: string | null = null
       let bannerUrl: string | null = null
 
@@ -201,37 +195,22 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
         // Add timeout to uploadLogo to prevent infinite hang
         const uploadPromise = uploadLogo()
         const timeoutPromise = new Promise<null>((resolve) => {
-          setTimeout(() => {
-            console.warn('⏱️ [LOGO UPLOAD] Timeout after 3 seconds')
-            resolve(null)
-          }, 3000)
+          setTimeout(() => resolve(null), 3000)
         })
-
         logoUrl = await Promise.race([uploadPromise, timeoutPromise])
-        console.log('📤 [LOGO UPLOAD] Logo URL:', logoUrl)
-      } catch (uploadError) {
-        console.warn('⚠️ [LOGO UPLOAD] Failed to upload logo, continuing without it:', uploadError)
+      } catch {
         // Continue activation without logo - it's optional
       }
 
       // Upload banner (optional - won't block activation if it fails)
-      console.log('📤 [BANNER UPLOAD] Attempting banner upload...')
       try {
         const uploadPromise = uploadBanner()
         const timeoutPromise = new Promise<null>((resolve) => {
-          setTimeout(() => {
-            console.warn('⏱️ [BANNER UPLOAD] Timeout after 3 seconds')
-            resolve(null)
-          }, 3000)
+          setTimeout(() => resolve(null), 3000)
         })
-
         bannerUrl = await Promise.race([uploadPromise, timeoutPromise])
-        console.log('📤 [BANNER UPLOAD] Banner URL:', bannerUrl)
-      } catch (uploadError) {
-        console.warn(
-          '⚠️ [BANNER UPLOAD] Failed to upload banner, continuing without it:',
-          uploadError,
-        )
+      } catch {
+        // Continue activation without banner - it's optional
       }
 
       // Format products for API
@@ -243,8 +222,6 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
         active: true,
         image_url: p.imagePreview, // Will be replaced by actual upload in future
       }))
-
-      console.log('📦 [PRODUCTS] Formatted products:', formattedProducts.length)
 
       const payload = {
         config: {
@@ -270,8 +247,6 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
         products: formattedProducts,
       }
 
-      console.log('📡 [API CALL] Sending PATCH to /api/onboarding/save with payload:', payload)
-
       // Save onboarding data
       const res = await fetch('/api/onboarding/save', {
         method: 'PATCH',
@@ -279,20 +254,14 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
         body: JSON.stringify(payload),
       })
 
-      console.log('📡 [API RESPONSE] Status:', res.status, res.statusText)
-
       if (!res.ok) {
         const error = await res.json()
-        console.error('❌ [API ERROR] Response:', error)
+        console.error('Onboarding save error:', error)
         throw new Error(error.error || 'Error al guardar configuracion')
       }
 
-      const responseData = await res.json()
-      console.log('✅ [API SUCCESS] Response:', responseData)
-
+      await res.json()
       toast.success('¡Tienda activada! Redirigiendo al panel...')
-
-      console.log('🔄 [REDIRECT] Redirecting to dashboard:', `/${slug}/dashboard`)
 
       // Wait a moment for database to propagate changes
       await new Promise((resolve) => setTimeout(resolve, 500))
@@ -301,11 +270,10 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
       // The middleware will check for _t param and use shorter cache TTL
       router.push(`/${slug}/dashboard?_t=${Date.now()}`)
     } catch (error) {
-      console.error('❌ [ACTIVATION ERROR]', error)
+      console.error('Activation error:', error)
       toast.error(error instanceof Error ? error.message : 'Error al activar tienda')
     } finally {
       setLoading(false)
-      console.log('🏁 [ACTIVATION END] Process finished')
     }
   }
 
