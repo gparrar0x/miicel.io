@@ -1,6 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck — agent_conversations not yet in generated types; regenerate after migration
-
 import { createServiceRoleClient } from '@/lib/supabase/server'
 
 export interface ConversationMessage {
@@ -17,7 +14,7 @@ export async function getOrCreateConversation(
 ): Promise<{ id: string; messages: ConversationMessage[] }> {
   const db = createServiceRoleClient()
 
-  const { data: existing, error: fetchErr } = await (db as any)
+  const { data: existing, error: fetchErr } = await db
     .from('agent_conversations')
     .select('id, messages')
     .eq('tenant_id', tenantId)
@@ -35,7 +32,7 @@ export async function getOrCreateConversation(
     }
   }
 
-  const { data: created, error: insertErr } = await (db as any)
+  const { data: created, error: insertErr } = await db
     .from('agent_conversations')
     .insert({ tenant_id: tenantId, thread_id: threadId, from_channel: channel })
     .select('id')
@@ -55,7 +52,7 @@ export async function appendMessages(
 ): Promise<void> {
   const db = createServiceRoleClient()
 
-  const { data: current, error: fetchErr } = await (db as any)
+  const { data: current, error: fetchErr } = await db
     .from('agent_conversations')
     .select('messages')
     .eq('id', conversationId)
@@ -67,7 +64,7 @@ export async function appendMessages(
 
   const merged = [...((current.messages as ConversationMessage[]) ?? []), ...newMessages]
 
-  const { error: updateErr } = await (db as any)
+  const { error: updateErr } = await db
     .from('agent_conversations')
     .update({
       messages: merged,
@@ -87,7 +84,7 @@ export async function listConversations(
 ): Promise<Array<{ id: string; thread_id: string; status: string; updated_at: string }>> {
   const db = createServiceRoleClient()
 
-  const { data, error } = await (db as any)
+  const { data, error } = await db
     .from('agent_conversations')
     .select('id, thread_id, status, updated_at')
     .eq('tenant_id', tenantId)

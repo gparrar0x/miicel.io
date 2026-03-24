@@ -1,6 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck — agent_usage_logs not yet in generated types; regenerate after migration
-
 import { createServiceRoleClient } from '@/lib/supabase/server'
 
 // USD per 1M tokens — March 2026
@@ -29,7 +26,7 @@ export async function trackUsage(params: {
 
   const cost_usd = calcCost(model, tokensIn, tokensOut)
 
-  const { error } = await (db as any).from('agent_usage_logs').insert({
+  const { error } = await db.from('agent_usage_logs').insert({
     tenant_id: tenantId,
     conversation_id: conversationId ?? null,
     agent_name: agentName,
@@ -61,7 +58,7 @@ export async function checkBudget(
   startOfMonth.setUTCDate(1)
   startOfMonth.setUTCHours(0, 0, 0, 0)
 
-  const { data, error } = await (db as any)
+  const { data, error } = await db
     .from('agent_usage_logs')
     .select('cost_usd')
     .eq('tenant_id', tenantId)
@@ -92,7 +89,7 @@ export async function getUsageSummary(
 }> {
   const db = createServiceRoleClient()
 
-  let query = (db as any)
+  let query = db
     .from('agent_usage_logs')
     .select('agent_name, tokens_in, tokens_out, cost_usd')
     .eq('tenant_id', tenantId)

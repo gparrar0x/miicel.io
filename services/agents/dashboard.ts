@@ -1,5 +1,3 @@
-// @ts-nocheck — agent_conversations / agent_usage_logs not yet in generated DB types
-
 import { createServiceRoleClient } from '@/lib/supabase/server'
 
 export interface AgentStats {
@@ -42,12 +40,12 @@ export async function getAgentStats(tenantId: number): Promise<AgentStats> {
   const db = createServiceRoleClient()
 
   const [{ count: totalConversations }, usageResult, agentsResult] = await Promise.all([
-    (db as any)
+    db
       .from('agent_conversations')
       .select('id', { count: 'exact', head: true })
       .eq('tenant_id', tenantId),
 
-    (db as any)
+    db
       .from('agent_usage_logs')
       .select('cost_usd')
       .eq('tenant_id', tenantId)
@@ -56,7 +54,7 @@ export async function getAgentStats(tenantId: number): Promise<AgentStats> {
         new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString(),
       ),
 
-    (db as any).from('agent_conversations').select('agent_name').eq('tenant_id', tenantId),
+    db.from('agent_conversations').select('agent_name').eq('tenant_id', tenantId),
   ])
 
   const monthlyCost = (usageResult.data ?? []).reduce(
@@ -81,7 +79,7 @@ export async function getRecentConversations(
 ): Promise<ConversationRow[]> {
   const db = createServiceRoleClient()
 
-  const { data, error } = await (db as any)
+  const { data, error } = await db
     .from('agent_conversations')
     .select('id, thread_id, messages, agent_name, status, updated_at')
     .eq('tenant_id', tenantId)
@@ -112,7 +110,7 @@ export async function getDailyUsage(tenantId: number, days = 7): Promise<DailyUs
   const since = new Date()
   since.setDate(since.getDate() - days)
 
-  const { data, error } = await (db as any)
+  const { data, error } = await db
     .from('agent_usage_logs')
     .select('tokens_in, tokens_out, cost_usd, created_at')
     .eq('tenant_id', tenantId)
@@ -144,7 +142,7 @@ export async function getConversation(
 ): Promise<ConversationDetail | null> {
   const db = createServiceRoleClient()
 
-  const { data, error } = await (db as any)
+  const { data, error } = await db
     .from('agent_conversations')
     .select('id, thread_id, messages, status')
     .eq('tenant_id', tenantId)

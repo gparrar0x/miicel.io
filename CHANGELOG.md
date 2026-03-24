@@ -19,6 +19,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Supabase Edge Function: whatsapp-webhook
   - Tenant onboarding script
   - Updated database types
+- **Agent service unit tests** [2026-03-24] (SKY-188)
+  - 38 unit tests: tracking (budget, usage, cost calc) + agent-loop (API calls, tool use, errors)
+- **RLS policies for agent tables** [2026-03-24] (SKY-188)
+  - Migration 042: tenant-scoped SELECT on agent_conversations + agent_usage_logs
+
+### Fixed
+
+- **E2E CI build failure** [2026-03-24]
+  - Signup routes: module-scope Supabase client → lazy `createServiceRoleClient()` (fixes missing env var at build time)
+- **Agent services type safety** [2026-03-24] (SKY-188)
+  - Removed `@ts-nocheck` from memory, tracking, dashboard services; use typed DB client
+- **Vitest config** [2026-03-24]
+  - Replaced absolute path alias with `path.resolve(__dirname)` for CI portability
+
 - **Vitest + service layer** [2026-02-25] (SKY-120)
   - Vitest configured with jsdom + RTL
   - Extracted service layer: checkout, order, product services + repositories
