@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Agent Service module** [2026-03-24] (SKY-188)
+  - Agent orchestrator, loader, agent-loop with tool registry
+  - Agent definitions (Oraculo, Pregon) in Toon format
+  - WhatsApp messages + agent tables migrations (040, 041)
+  - Dashboard: agents overview, conversations table, thread view
+  - API routes: `/api/agents/chat`, `/api/agents/health`
+  - Services: tracking, memory, dashboard, per-agent services
+  - Supabase Edge Function: whatsapp-webhook
+  - Tenant onboarding script
+  - Updated database types
 - **Vitest + service layer** [2026-02-25] (SKY-120)
   - Vitest configured with jsdom + RTL
   - Extracted service layer: checkout, order, product services + repositories
