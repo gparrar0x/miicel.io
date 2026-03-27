@@ -1,13 +1,16 @@
 /**
  * CheckoutService — business logic for checkout/create-preference.
  * Orchestrates: tenant lookup → customer upsert → order creation → MP preference.
+ * Prices are always resolved from DB — client-sent prices are ignored for security.
  */
 
 import { AppError, NotFoundError, ValidationError } from '@skywalking/core/errors'
 import { MercadoPagoConfig, Preference } from 'mercadopago'
+import { computeEffectivePrice } from '@/lib/pricing'
 import { decryptToken } from '@/lib/encryption'
 import type { ICustomerRepo } from './repositories/customer.repo'
 import type { IOrderRepo } from './repositories/order.repo'
+import type { IProductRepo } from './repositories/product.repo'
 import type { ITenantRepo } from './repositories/tenant.repo'
 
 export interface CheckoutItem {
@@ -52,24 +55,42 @@ export class CheckoutService {
     private readonly tenantRepo: ITenantRepo,
     private readonly customerRepo: ICustomerRepo,
     private readonly orderRepo: IOrderRepo,
+    private readonly productRepo: IProductRepo,
   ) {}
 
   async execute(input: CheckoutInput): Promise<CheckoutResult> {
-    const { customer, paymentMethod, items, total, currency, tenantSlug, returnUrl } = input
+    const { customer, paymentMethod, items, currency, tenantSlug, returnUrl } = input
 
     // 1. Resolve tenant (fetch token upfront to avoid a second DB call for MP flow)
     const tenant = await this.tenantRepo.findBySlugWithToken(tenantSlug)
     if (!tenant) throw new NotFoundError('Tenant')
     const tenantId = tenant.id
 
-    // 2. Upsert customer (find by email, update or create)
+    // 2. Resolve authoritative prices from DB — never trust client-sent prices
+    const productIds = items.map((i) => i.productId)
+    const dbProducts = await this.productRepo.findByIds(productIds)
+    const productMap = new Map(dbProducts.map((p) => [p.id, p]))
+
+    const resolvedItems = items.map((item) => {
+      const dbProduct = productMap.get(item.productId)
+      if (!dbProduct) throw new NotFoundError(`Product ${item.productId}`)
+      const serverPrice = computeEffectivePrice(dbProduct)
+      return { ...item, price: serverPrice }
+    })
+
+    const resolvedTotal = resolvedItems.reduce(
+      (sum, item) => sum + item.price * item.quantity + (item.modifiersDelta ?? 0) * item.quantity,
+      0,
+    )
+
+    // 3. Upsert customer (find by email, update or create)
     const customerId = await this.upsertCustomer(tenantId, customer)
 
-    // 3. Create order
+    // 4. Create order
     const order = await this.orderRepo.create({
       tenant_id: tenantId,
       customer_id: customerId,
-      items: items.map((item) => ({
+      items: resolvedItems.map((item) => ({
         product_id: item.productId,
         name: item.name,
         price: item.price,
@@ -80,18 +101,18 @@ export class CheckoutService {
         color: item.color,
         size_id: item.sizeId ?? null,
       })),
-      total,
+      total: resolvedTotal,
       status: 'pending',
       payment_method: paymentMethod,
       notes: customer.notes ?? '',
     })
 
-    // 4. Cash — done
+    // 5. Cash — done
     if (paymentMethod === 'cash') {
       return { success: true, orderId: order.id }
     }
 
-    // 5. MercadoPago — build preference
+    // 6. MercadoPago — build preference using server-resolved prices
     if (!tenant.mp_access_token) {
       throw new ValidationError('MercadoPago not configured for this tenant')
     }
@@ -105,7 +126,7 @@ export class CheckoutService {
     const locale = 'es'
 
     const preferenceData: Record<string, unknown> = {
-      items: items.map((item) => ({
+      items: resolvedItems.map((item) => ({
         id: item.productId.toString(),
         title: item.modifiersSummary ? `${item.name} (${item.modifiersSummary})` : item.name,
         unit_price: item.price + (item.modifiersDelta ?? 0),

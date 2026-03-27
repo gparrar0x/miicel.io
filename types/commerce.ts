@@ -58,12 +58,15 @@ export interface ProductColor {
 }
 
 /**
- * Cart item with product reference and selections
+ * Cart item with product reference and selections.
+ * price = effective (post-discount) price.
+ * originalPrice = base price before any discount.
  */
 export interface CartItem {
   productId: string
   name: string
   price: number
+  originalPrice: number
   currency: string
   quantity: number
   image: string
@@ -150,28 +153,7 @@ export interface OrderLineItemModifier {
   price_delta: number
 }
 
-// ---- Discounts ----
-
-export type DiscountType = 'fixed' | 'percentage'
-export type DiscountScope = 'order' | 'item'
-
-export interface Discount {
-  id: string
-  tenant_id: number
-  name: string
-  type: DiscountType
-  scope: DiscountScope
-  value: number
-  valid_from?: string | null
-  valid_to?: string | null
-  active: boolean
-  created_by?: string
-  created_at: string
-}
-
-export interface DiscountSnapshot {
-  name: string
-  type: DiscountType
-  scope: DiscountScope
-  value: number
-}
+// ---- Legacy discount types removed (043 table dropped in 044) ----
+// Product-level discounts now live on the products table as:
+// discount_type, discount_value, discount_starts_at, discount_ends_at
+// Use computeEffectivePrice / isDiscountActive from lib/pricing.ts

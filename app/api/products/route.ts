@@ -7,11 +7,22 @@
 import { AppError } from '@skywalking/core/errors'
 import { NextResponse } from 'next/server'
 import { isSuperadmin } from '@/lib/auth/constants'
+import { computeEffectivePrice, isDiscountActive } from '@/lib/pricing'
 import { productCreateSchema } from '@/lib/schemas/order'
 import { createClient } from '@/lib/supabase/server'
 import { ProductService } from '@/services/product.service'
+import type { ProductRow } from '@/services/repositories/product.repo'
 import { ProductRepo } from '@/services/repositories/product.repo'
 import { TenantRepo } from '@/services/repositories/tenant.repo'
+
+function withDiscountFields(product: ProductRow) {
+  return {
+    ...product,
+    original_price: product.price,
+    discount_active: isDiscountActive(product),
+    effective_price: computeEffectivePrice(product),
+  }
+}
 
 export async function GET(request: Request) {
   try {
@@ -31,7 +42,7 @@ export async function GET(request: Request) {
       search,
     })
 
-    return NextResponse.json({ products })
+    return NextResponse.json({ products: products.map(withDiscountFields) })
   } catch (err: any) {
     if (err instanceof AppError) {
       return NextResponse.json({ error: err.message }, { status: err.statusCode })
