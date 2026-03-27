@@ -22,6 +22,7 @@ import type { Product, ProductColor } from '@/types/commerce'
 
 // ISR: revalidate product pages every 60 seconds
 export const revalidate = 60
+
 import { ProductClient } from './ProductClient'
 
 interface PageProps {

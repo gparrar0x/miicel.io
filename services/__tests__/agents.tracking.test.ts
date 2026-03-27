@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { checkBudget, getUsageSummary, trackUsage } from '../agents/tracking'
 import * as supabaseServer from '@/lib/supabase/server'
+import { checkBudget, getUsageSummary, trackUsage } from '../agents/tracking'
 
 // ---- Mocks ----
 
@@ -14,24 +14,14 @@ vi.mock('@/lib/supabase/server', () => ({
  */
 function createMockSupabaseClient() {
   return {
-    from: vi.fn(function () {
-      return {
-        select: vi.fn(function () {
-          return {
-            eq: vi.fn(function () {
-              return {
-                gte: vi.fn(function () {
-                  return Promise.resolve({ data: [], error: null })
-                }),
-              }
-            }),
-          }
-        }),
-        insert: vi.fn(function () {
-          return Promise.resolve({ data: null, error: null })
-        }),
-      }
-    }),
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          gte: vi.fn(() => Promise.resolve({ data: [], error: null })),
+        })),
+      })),
+      insert: vi.fn(() => Promise.resolve({ data: null, error: null })),
+    })),
   }
 }
 

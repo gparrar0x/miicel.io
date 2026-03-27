@@ -66,11 +66,19 @@ export function GastronomyLayout({
     const product = products.find((p) => p.id === productId)
     if (!product) return
 
+    const effectivePrice =
+      product.discount_active && product.effective_price != null
+        ? Number(product.effective_price)
+        : Number(product.price) > 0
+          ? Number(product.price)
+          : 9990
+    const originalPrice = Number(product.original_price ?? product.price)
+
     addItem({
       productId: product.id,
       name: product.name,
-      // Fallback price for debugging if 0
-      price: Number(product.price) > 0 ? Number(product.price) : 9990,
+      price: effectivePrice,
+      originalPrice,
       currency: product.currency,
       image: product.images[0] || '/placeholder.svg',
       // For gastronomy, if stock is 0 or undefined, assume available (999)

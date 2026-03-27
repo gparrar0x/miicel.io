@@ -11,6 +11,49 @@ import { useCartStore } from '@/lib/stores/cartStore'
 import { cn } from '@/lib/utils'
 import type { Artwork } from './types'
 
+function ArtworkPrice({ artwork }: { artwork: Artwork }) {
+  const hasDiscount = artwork.discount_active === true
+  const displayPrice = hasDiscount ? (artwork.effective_price ?? artwork.price) : artwork.price
+
+  const fmt = (p: number) =>
+    new Intl.NumberFormat('en-US', { style: 'currency', currency: artwork.currency }).format(p)
+
+  if (!hasDiscount) {
+    return <span className="font-medium text-sm text-black">{fmt(displayPrice)}</span>
+  }
+
+  const discountLabel =
+    artwork.discount_type === 'percentage'
+      ? `-${artwork.discount_value}%`
+      : `-${fmt(artwork.discount_value ?? 0)}`
+
+  return (
+    <div className="flex flex-col items-end gap-0.5">
+      <span
+        data-testid="product-card-original-price"
+        className="text-xs line-through text-gray-400"
+      >
+        {fmt(artwork.price)}
+      </span>
+      <div className="flex items-center gap-1">
+        <span
+          data-testid="product-card-discounted-price"
+          className="font-medium text-sm text-black"
+        >
+          {fmt(displayPrice)}
+        </span>
+        <span
+          data-testid="product-discount-badge"
+          className="text-xs font-bold px-1.5 py-0.5 rounded-full"
+          style={{ backgroundColor: '#D4AF37', color: '#0C1A27' }}
+        >
+          {discountLabel}
+        </span>
+      </div>
+    </div>
+  )
+}
+
 interface GalleryGridProps {
   artworks: Artwork[]
   collections: string[]
@@ -110,12 +153,7 @@ export function GalleryGrid({ artworks, collections, tenantId }: GalleryGridProp
                     <h3 className="font-serif text-xl font-medium text-black group-hover:text-gray-600 transition-colors">
                       {artwork.title}
                     </h3>
-                    <span className="font-medium text-sm text-black">
-                      {new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: artwork.currency,
-                      }).format(artwork.price)}
-                    </span>
+                    <ArtworkPrice artwork={artwork} />
                   </div>
                   <p className="text-sm text-gray-500">{artwork.collection}</p>
                 </div>

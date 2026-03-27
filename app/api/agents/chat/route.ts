@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { getServerSession } from '@/lib/auth'
 import { orchestrate } from '@/lib/agents/orchestrator'
 import type { AgentMessage, OrchestratorConfig } from '@/lib/agents/types'
+import { getServerSession } from '@/lib/auth'
+import { appendMessages, getOrCreateConversation } from '@/services/agents/memory'
 import { loadOraculoAgent } from '@/services/agents/oraculo'
 import { loadPregonAgent } from '@/services/agents/pregon'
-import { getOrCreateConversation, appendMessages } from '@/services/agents/memory'
-import { trackUsage, checkBudget } from '@/services/agents/tracking'
+import { checkBudget, trackUsage } from '@/services/agents/tracking'
 export const runtime = 'nodejs'
 
 const AGENT_TIMEOUT_MS = 55_000 // Vercel function hard limit is 60 s

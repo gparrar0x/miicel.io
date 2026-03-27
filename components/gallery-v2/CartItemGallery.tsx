@@ -75,10 +75,25 @@ export function CartItemGallery({ item }: CartItemGalleryProps) {
 
         {/* Price */}
         <div className="mt-2">
+          {item.originalPrice != null && item.originalPrice !== item.price && (
+            <p
+              data-testid="cart-item-original-price"
+              className="text-sm line-through text-gray-400"
+            >
+              {new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: item.currency,
+              }).format(item.originalPrice)}
+            </p>
+          )}
           <p
             className="font-bold text-black"
             style={{ fontSize: 'var(--font-size-h3)' }}
-            data-testid={`cart-item-${item.productId}-total`}
+            data-testid={
+              item.originalPrice != null && item.originalPrice !== item.price
+                ? 'cart-item-discounted-price'
+                : `cart-item-${item.productId}-total`
+            }
           >
             {new Intl.NumberFormat('en-US', { style: 'currency', currency: item.currency }).format(
               item.price,

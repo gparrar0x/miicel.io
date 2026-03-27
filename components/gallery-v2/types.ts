@@ -17,4 +17,10 @@ export interface Artwork {
     label: string
   }[]
   isLimitedEdition: boolean
+  // Discount fields from API
+  original_price?: number
+  effective_price?: number
+  discount_active?: boolean
+  discount_type?: string | null
+  discount_value?: number | null
 }

@@ -25,7 +25,9 @@ export {
 } from './theme'
 
 /**
- * Product interface matching API response
+ * Product interface matching API response.
+ * Discount fields (original_price, effective_price, discount_active) are
+ * computed by the API via computeEffectivePrice / isDiscountActive.
  */
 export interface Product {
   id: string
@@ -44,6 +46,12 @@ export interface Product {
   isLimited?: boolean
   isFeatured?: boolean
   metadata?: any
+  // Discount fields (from API withDiscountFields)
+  original_price?: number
+  effective_price?: number
+  discount_active?: boolean
+  discount_type?: string | null
+  discount_value?: number | null
 }
 
 /**
