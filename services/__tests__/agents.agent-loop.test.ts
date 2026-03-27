@@ -1,5 +1,5 @@
+import type Anthropic from '@anthropic-ai/sdk'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import Anthropic from '@anthropic-ai/sdk'
 import { runAgentLoop } from '@/lib/agents/agent-loop'
 import type { AgentMessage, ToolDefinition } from '@/lib/agents/types'
 

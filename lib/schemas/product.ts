@@ -11,6 +11,11 @@ export const productSchema = z.object({
   display_order: z.coerce.number().int().default(0),
   stock: z.coerce.number().int().min(0, 'Stock must be non-negative').nullable().optional(),
   metadata: z.record(z.string(), z.any()).optional(),
+  // Product-level discount fields
+  discount_type: z.enum(['percentage', 'fixed']).nullable().optional(),
+  discount_value: z.coerce.number().min(0).nullable().optional(),
+  discount_starts_at: z.string().nullable().optional(),
+  discount_ends_at: z.string().nullable().optional(),
 })
 
 export type Product = z.infer<typeof productSchema>

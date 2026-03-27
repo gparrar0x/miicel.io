@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { AgentsDashboardClient } from '@/components/dashboard/agents/AgentsDashboardClient'
-import { getAgentStats, getDailyUsage, getRecentConversations } from '@/services/agents/dashboard'
 import { createServiceRoleClient } from '@/lib/supabase/server'
+import { getAgentStats, getDailyUsage, getRecentConversations } from '@/services/agents/dashboard'
 
 interface PageProps {
   params: Promise<{ tenantId: string; locale: string }>

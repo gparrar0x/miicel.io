@@ -2,6 +2,8 @@
 
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import { AgentBadge } from '@/components/dashboard/agents/AgentBadge'
+import { StatusBadge } from '@/components/dashboard/data-table'
 import {
   Table,
   TableBody,
@@ -10,8 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { StatusBadge } from '@/components/dashboard/data-table'
-import { AgentBadge } from '@/components/dashboard/agents/AgentBadge'
 import type { ConversationRow } from '@/services/agents/dashboard'
 
 interface ConversationsTableProps {

@@ -16,7 +16,6 @@
  */
 
 import { NextResponse } from 'next/server'
-import { isSuperadmin } from '@/lib/auth/constants'
 import {
   getDiscounts,
   getPaymentMethods,
@@ -24,6 +23,7 @@ import {
   getTopCategories,
   getTopProducts,
 } from '@/lib/analytics/queries'
+import { isSuperadmin } from '@/lib/auth/constants'
 import { createClient } from '@/lib/supabase/server'
 
 /**

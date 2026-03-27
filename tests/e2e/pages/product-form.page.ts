@@ -12,6 +12,11 @@ import { expect, type Locator, type Page } from '@playwright/test'
  * - product-price-input: Price field
  * - product-display-order-input: Display order
  * - product-active-checkbox: Active status
+ * - product-form-discount-toggle: Enable/disable discount
+ * - product-form-discount-type: Discount type (percentage|fixed)
+ * - product-form-discount-value: Discount value
+ * - product-form-discount-starts-at: Discount start date
+ * - product-form-discount-ends-at: Discount end date
  * - product-form-submit-btn: Submit button
  * - product-form-cancel-btn: Cancel button
  */
@@ -26,6 +31,13 @@ export class ProductFormPage {
   readonly priceInput: Locator
   readonly displayOrderInput: Locator
   readonly activeCheckbox: Locator
+
+  // Discount fields
+  readonly discountToggle: Locator
+  readonly discountType: Locator
+  readonly discountValue: Locator
+  readonly discountStartsAt: Locator
+  readonly discountEndsAt: Locator
 
   // Buttons
   readonly submitBtn: Locator
@@ -47,6 +59,11 @@ export class ProductFormPage {
     this.priceInput = page.getByTestId('product-price-input')
     this.displayOrderInput = page.getByTestId('product-display-order-input')
     this.activeCheckbox = page.getByTestId('product-active-checkbox')
+    this.discountToggle = page.getByTestId('product-form-discount-toggle')
+    this.discountType = page.getByTestId('product-form-discount-type')
+    this.discountValue = page.getByTestId('product-form-discount-value')
+    this.discountStartsAt = page.getByTestId('product-form-discount-starts-at')
+    this.discountEndsAt = page.getByTestId('product-form-discount-ends-at')
     this.submitBtn = page.getByTestId('product-form-submit-btn')
     this.cancelBtn = page.getByTestId('product-form-cancel-btn')
     this.modalOverlay = page.locator('div[class*="fixed"][class*="inset-0"]')
@@ -208,5 +225,70 @@ export class ProductFormPage {
    */
   async waitForSubmitEnabled(timeout = 5000) {
     await expect(this.submitBtn).not.toBeDisabled({ timeout })
+  }
+
+  /**
+   * Enable/disable discount
+   */
+  async setDiscountEnabled(enabled: boolean) {
+    const isChecked = await this.discountToggle.isChecked()
+    if (isChecked !== enabled) {
+      await this.discountToggle.click()
+    }
+  }
+
+  /**
+   * Select discount type (percentage | fixed)
+   */
+  async selectDiscountType(type: 'percentage' | 'fixed') {
+    await this.discountType.selectOption(type)
+  }
+
+  /**
+   * Fill discount value
+   */
+  async fillDiscountValue(value: number) {
+    await this.discountValue.fill(String(value))
+  }
+
+  /**
+   * Set discount start date (ISO format: YYYY-MM-DD)
+   */
+  async setDiscountStartsAt(date: string) {
+    await this.discountStartsAt.fill(date)
+  }
+
+  /**
+   * Set discount end date (ISO format: YYYY-MM-DD)
+   */
+  async setDiscountEndsAt(date: string) {
+    await this.discountEndsAt.fill(date)
+  }
+
+  /**
+   * Configure discount with all fields
+   */
+  async configureDiscount(config: {
+    enabled: boolean
+    type?: 'percentage' | 'fixed'
+    value?: number
+    startsAt?: string
+    endsAt?: string
+  }) {
+    await this.setDiscountEnabled(config.enabled)
+    if (config.enabled) {
+      if (config.type) {
+        await this.selectDiscountType(config.type)
+      }
+      if (config.value !== undefined) {
+        await this.fillDiscountValue(config.value)
+      }
+      if (config.startsAt) {
+        await this.setDiscountStartsAt(config.startsAt)
+      }
+      if (config.endsAt) {
+        await this.setDiscountEndsAt(config.endsAt)
+      }
+    }
   }
 }

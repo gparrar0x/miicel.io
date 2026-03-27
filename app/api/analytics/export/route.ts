@@ -14,13 +14,13 @@
  */
 
 import { NextResponse } from 'next/server'
-import { isSuperadmin } from '@/lib/auth/constants'
 import {
   getDiscounts,
   getPaymentMethods,
   getTopCategories,
   getTopProducts,
 } from '@/lib/analytics/queries'
+import { isSuperadmin } from '@/lib/auth/constants'
 import { createClient } from '@/lib/supabase/server'
 
 /**

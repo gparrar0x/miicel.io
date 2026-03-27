@@ -11,6 +11,7 @@ import { createServiceRoleClient } from '@/lib/supabase/server'
 import { CheckoutService } from '@/services/checkout.service'
 import { CustomerRepo } from '@/services/repositories/customer.repo'
 import { OrderRepo } from '@/services/repositories/order.repo'
+import { ProductRepo } from '@/services/repositories/product.repo'
 import { TenantRepo } from '@/services/repositories/tenant.repo'
 
 const checkoutRequestSchema = z.object({
@@ -59,6 +60,7 @@ export async function POST(request: Request) {
       new TenantRepo(supabase),
       new CustomerRepo(supabase),
       new OrderRepo(supabase),
+      new ProductRepo(supabase),
     )
 
     const result = await service.execute({

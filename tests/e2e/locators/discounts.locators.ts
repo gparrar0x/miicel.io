@@ -1,19 +1,43 @@
 /**
- * Order Discounts Locators
+ * Discounts Locators
  *
- * Defines all selectors for discount admin panel, checkout discount display,
- * and KDS discount lines.
+ * Defines all selectors for:
+ * 1. PRODUCT-level discounts (catalog admin, storefront display)
+ * 2. ORDER-level discounts (legacy, being deprecated)
+ * 3. Cart/Checkout discount display
+ * 4. KDS discount lines
+ *
  * Uses data-testid attributes following {feature}-{element}-{descriptor} convention.
- *
- * Coverage:
- * - Admin discount panel (type toggle, value input, scope selector, apply/remove)
- * - Cart summary discount display (original total, discount line, final total)
- * - Checkout summary discount display
- * - KDS discount lines (original, discount, final)
- * - Discount badge (reusable component)
  */
 
 export const DiscountsLocators = {
+  // ============================================================================
+  // PRODUCT: DISCOUNT FORM FIELDS (in ProductForm)
+  // ============================================================================
+  productForm: {
+    discountToggle: '[data-testid="product-form-discount-toggle"]',
+    discountType: '[data-testid="product-form-discount-type"]',
+    discountValue: '[data-testid="product-form-discount-value"]',
+    discountStartsAt: '[data-testid="product-form-discount-starts-at"]',
+    discountEndsAt: '[data-testid="product-form-discount-ends-at"]',
+  },
+
+  // ============================================================================
+  // STOREFRONT: PRODUCT CARD DISCOUNT DISPLAY
+  // ============================================================================
+  productCard: {
+    originalPrice: '[data-testid="product-card-original-price"]', // strikethrough
+    discountedPrice: '[data-testid="product-card-discounted-price"]',
+    discountBadge: '[data-testid="product-discount-badge"]',
+  },
+
+  // ============================================================================
+  // CART: DISCOUNT DISPLAY PER ITEM
+  // ============================================================================
+  cartItem: {
+    originalPrice: '[data-testid="cart-item-original-price"]',
+    discountedPrice: '[data-testid="cart-item-discounted-price"]',
+  },
   // ============================================================================
   // ADMIN: DISCOUNT PANEL
   // ============================================================================

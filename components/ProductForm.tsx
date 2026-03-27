@@ -8,6 +8,9 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { type Product, productSchema } from '@/lib/schemas/product'
 
+const INPUT_CLASS =
+  'mt-1 block w-full rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-bg-primary)] px-3 py-2 shadow-sm focus:border-[var(--btn-primary-border)] focus:outline-none focus:ring-1 focus:ring-[var(--btn-primary-border)] sm:text-sm text-[var(--color-text-primary)]'
+
 const AVAILABLE_BADGES = ['popular', 'new', 'sale'] as const
 
 interface ProductSize {
@@ -42,6 +45,7 @@ export function ProductForm({
     (initialData?.metadata as any)?.badges || [],
   )
   const [sizes, setSizes] = useState<ProductSize[]>((initialData?.metadata as any)?.sizes || [])
+  const [discountEnabled, setDiscountEnabled] = useState<boolean>(!!initialData?.discount_type)
 
   const {
     register,
@@ -398,6 +402,109 @@ export function ProductForm({
               )}
             </div>
           )}
+
+          {/* Discount Section */}
+          <div className="border-t border-[var(--color-border-subtle)] pt-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <label className="block text-sm font-medium text-[var(--color-text-primary)]">
+                  Descuento
+                </label>
+                <p className="text-xs text-[var(--color-text-secondary)]">
+                  Aplica un descuento de porcentaje o monto fijo
+                </p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={discountEnabled}
+                onClick={() => {
+                  const next = !discountEnabled
+                  setDiscountEnabled(next)
+                  if (!next) {
+                    setValue('discount_type', null)
+                    setValue('discount_value', null)
+                    setValue('discount_starts_at', null)
+                    setValue('discount_ends_at', null)
+                  }
+                }}
+                data-testid="product-form-discount-toggle"
+                className={`relative inline-flex h-6 w-11 items-center rounded-full border-2 transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--btn-primary-border)] focus:ring-offset-2 ${
+                  discountEnabled
+                    ? 'bg-[var(--btn-primary-bg)] border-[var(--btn-primary-border)]'
+                    : 'bg-[var(--color-bg-secondary)] border-[var(--color-border-subtle)]'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
+                    discountEnabled ? 'translate-x-5' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {discountEnabled && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-[var(--color-text-primary)]">
+                      Tipo de descuento
+                    </label>
+                    <select
+                      {...register('discount_type')}
+                      data-testid="product-form-discount-type"
+                      className={INPUT_CLASS}
+                    >
+                      <option value="">Seleccionar</option>
+                      <option value="percentage">Porcentaje (%)</option>
+                      <option value="fixed">Monto fijo ($)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-[var(--color-text-primary)]">
+                      Valor del descuento
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="any"
+                      {...register('discount_value')}
+                      data-testid="product-form-discount-value"
+                      className={INPUT_CLASS}
+                      placeholder="Ej: 10"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-[var(--color-text-primary)]">
+                      Vigencia desde{' '}
+                      <span className="text-[var(--color-text-secondary)]">(opcional)</span>
+                    </label>
+                    <input
+                      type="datetime-local"
+                      {...register('discount_starts_at')}
+                      data-testid="product-form-discount-starts-at"
+                      className={INPUT_CLASS}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-[var(--color-text-primary)]">
+                      Vigencia hasta{' '}
+                      <span className="text-[var(--color-text-secondary)]">(opcional)</span>
+                    </label>
+                    <input
+                      type="datetime-local"
+                      {...register('discount_ends_at')}
+                      data-testid="product-form-discount-ends-at"
+                      className={INPUT_CLASS}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t border-[var(--color-border-subtle)]">
             <button

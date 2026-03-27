@@ -1,8 +1,8 @@
 'use client'
 
-import { ChartCard } from '@/components/dashboard/chart-card'
 import { AgentStatsCards } from '@/components/dashboard/agents/AgentStatsCards'
 import { ConversationsTable } from '@/components/dashboard/agents/ConversationsTable'
+import { ChartCard } from '@/components/dashboard/chart-card'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { AgentStats, ConversationRow, DailyUsageRow } from '@/services/agents/dashboard'
 

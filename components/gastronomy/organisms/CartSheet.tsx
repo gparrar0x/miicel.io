@@ -4,6 +4,7 @@ import { ArrowLeft, CreditCard, Loader2, Minus, Plus, ShoppingBag, Trash2 } from
 import { useParams } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { CartItemModifiersSummary } from '@/components/gastronomy/atoms/CartItemModifiersSummary'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -16,7 +17,6 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { Textarea } from '@/components/ui/textarea'
-import { CartItemModifiersSummary } from '@/components/gastronomy/atoms/CartItemModifiersSummary'
 import type { CartItem } from '@/types/commerce'
 
 interface CartSheetProps {
@@ -246,7 +246,23 @@ export function CartSheet({
                           modifiers={item.modifiers}
                         />
                       )}
-                      <p className="font-bold mt-1" style={{ color: 'var(--color-primary)' }}>
+                      {item.originalPrice != null && item.originalPrice !== item.price && (
+                        <p
+                          data-testid="cart-item-original-price"
+                          className="text-xs line-through text-gray-400 mt-0.5"
+                        >
+                          {formatPrice(item.originalPrice * item.quantity)}
+                        </p>
+                      )}
+                      <p
+                        data-testid={
+                          item.originalPrice != null && item.originalPrice !== item.price
+                            ? 'cart-item-discounted-price'
+                            : undefined
+                        }
+                        className="font-bold mt-1"
+                        style={{ color: 'var(--color-primary)' }}
+                      >
                         {formatPrice(
                           (item.price + (item.modifiersTotalDelta ?? 0)) * item.quantity,
                         )}

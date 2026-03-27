@@ -113,9 +113,25 @@ export function CartSheet({ open, onOpenChange, tenantId }: CartSheetProps) {
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
+                      {item.originalPrice != null && item.originalPrice !== item.price && (
+                        <p
+                          data-testid="cart-item-original-price"
+                          className="text-xs line-through text-gray-400 mt-2"
+                        >
+                          {new Intl.NumberFormat('en-US', {
+                            style: 'currency',
+                            currency: item.currency,
+                          }).format(item.originalPrice)}
+                        </p>
+                      )}
                       <p
-                        className="font-bold text-black mt-2"
+                        className="font-bold text-black mt-1"
                         style={{ fontSize: 'var(--font-size-h4)' }}
+                        data-testid={
+                          item.originalPrice != null && item.originalPrice !== item.price
+                            ? 'cart-item-discounted-price'
+                            : undefined
+                        }
                       >
                         {new Intl.NumberFormat('en-US', {
                           style: 'currency',

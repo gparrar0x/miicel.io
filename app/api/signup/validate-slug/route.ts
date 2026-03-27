@@ -16,9 +16,9 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createServiceRoleClient } from '@/lib/supabase/server'
 import { getClientIp, rateLimitExceededResponse, ratelimitLight } from '@/lib/rate-limit'
 import { slugSchema, validateSlugRequestSchema } from '@/lib/schemas/order'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 
 /**
  * Generate slug suggestions by appending incrementing numbers

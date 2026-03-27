@@ -17,6 +17,10 @@ export interface ProductRow {
   metadata: unknown
   created_at?: string
   updated_at?: string
+  discount_type?: string | null
+  discount_value?: number | null
+  discount_starts_at?: string | null
+  discount_ends_at?: string | null
 }
 
 export interface ProductWithTenant extends ProductRow {

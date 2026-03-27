@@ -5,6 +5,7 @@
 
 import { NotFoundError } from '@skywalking/core/errors'
 import { assertOwnership } from '@/lib/auth/constants'
+import { computeEffectivePrice, isDiscountActive } from '@/lib/pricing'
 import type {
   CreateProductInput,
   IProductRepo,
@@ -30,6 +31,9 @@ export interface GetProductResult {
   colors: unknown[]
   stock: number
   category: string
+  original_price: number
+  discount_active: boolean
+  effective_price: number
 }
 
 export interface AuthContext {
@@ -61,6 +65,9 @@ export class ProductService {
       colors: [],
       stock: product.stock ?? 0,
       category: product.category ?? 'General',
+      original_price: product.price,
+      discount_active: isDiscountActive(product),
+      effective_price: computeEffectivePrice(product),
     }
   }
 

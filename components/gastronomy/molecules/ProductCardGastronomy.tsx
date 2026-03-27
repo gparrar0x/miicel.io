@@ -2,6 +2,7 @@
 
 import { Plus } from 'lucide-react'
 import { useState } from 'react'
+import { DiscountBadge } from '@/components/gastronomy/atoms/DiscountBadge'
 import { ProductModifierSheet } from '@/components/gastronomy/organisms/ProductModifierSheet'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -75,7 +76,13 @@ export function ProductCardGastronomy({
   }
 
   const imageUrl = product.images[0] || '/placeholder.svg'
+  const hasDiscount = product.discount_active === true
+  const displayPrice = hasDiscount ? (product.effective_price ?? product.price) : product.price
   const formattedPrice = new Intl.NumberFormat('es-CL', {
+    style: 'currency',
+    currency,
+  }).format(displayPrice)
+  const formattedOriginalPrice = new Intl.NumberFormat('es-CL', {
     style: 'currency',
     currency,
   }).format(product.price)
@@ -121,9 +128,32 @@ export function ProductCardGastronomy({
           )}
 
           <div className="flex items-center justify-between mt-auto">
-            <span className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>
-              {formattedPrice}
-            </span>
+            <div className="flex flex-col gap-0.5">
+              {hasDiscount && (
+                <span
+                  data-testid="product-card-original-price"
+                  className="text-sm line-through text-gray-400"
+                >
+                  {formattedOriginalPrice}
+                </span>
+              )}
+              <div className="flex items-center gap-2">
+                <span
+                  data-testid={hasDiscount ? 'product-card-discounted-price' : undefined}
+                  className="text-2xl font-bold"
+                  style={{ color: 'var(--color-primary)' }}
+                >
+                  {formattedPrice}
+                </span>
+                {hasDiscount && product.discount_type && product.discount_value != null && (
+                  <DiscountBadge
+                    discountType={product.discount_type}
+                    discountValue={product.discount_value}
+                    currency={currency}
+                  />
+                )}
+              </div>
+            </div>
             <Button
               onClick={handleAddToCart}
               className={cn(
