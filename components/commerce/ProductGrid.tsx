@@ -25,10 +25,16 @@ export function ProductGrid({ products, tenantId, currency }: ProductGridProps) 
     e.preventDefault() // Stop link navigation
     e.stopPropagation()
 
+    const effectivePrice =
+      product.discount_active && product.effective_price != null
+        ? product.effective_price
+        : product.price
+
     const cartItem: Omit<CartItem, 'quantity'> = {
       productId: String(product.id),
       name: product.name,
-      price: product.price,
+      price: effectivePrice,
+      originalPrice: product.original_price ?? product.price,
       currency,
       image: product.images[0] || '',
       maxQuantity: product.stock || 999,
@@ -89,9 +95,39 @@ export function ProductGrid({ products, tenantId, currency }: ProductGridProps) 
                   {product.description}
                 </p>
               )}
-              <p className="text-xl font-bold" style={{ color: 'var(--color-primary)' }}>
-                ${product.price}
-              </p>
+              {product.discount_active && product.effective_price != null ? (
+                <div className="flex items-center gap-2">
+                  <p
+                    data-testid="product-card-original-price"
+                    className="text-sm line-through"
+                    style={{ color: 'var(--color-text-secondary)' }}
+                  >
+                    ${product.price}
+                  </p>
+                  <p
+                    data-testid="product-card-discounted-price"
+                    className="text-xl font-bold"
+                    style={{ color: 'var(--color-primary)' }}
+                  >
+                    ${product.effective_price}
+                  </p>
+                  {product.discount_type && product.discount_value != null && (
+                    <span
+                      data-testid="product-discount-badge"
+                      className="text-xs font-bold px-1.5 py-0.5 rounded-full"
+                      style={{ backgroundColor: '#D4AF37', color: '#0C1A27' }}
+                    >
+                      {product.discount_type === 'percentage'
+                        ? `-${product.discount_value}%`
+                        : `-$${product.discount_value}`}
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <p className="text-xl font-bold" style={{ color: 'var(--color-primary)' }}>
+                  ${product.price}
+                </p>
+              )}
             </div>
           </Link>
 

@@ -19,9 +19,9 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createServiceRoleClient } from '@/lib/supabase/server'
 import { getClientIp, rateLimitExceededResponse, ratelimitSignup } from '@/lib/rate-limit'
 import { signupRequestSchema } from '@/lib/schemas/order'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 
 export async function POST(request: Request) {
   // Rate limit: 5 req / 60 s per IP (account creation)

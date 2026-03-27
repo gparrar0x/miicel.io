@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import { loadAgentDefinitions } from '@/lib/agents/loader'
-import type { AgentDefinition } from '@/lib/agents/types'
 import { getToolsForAgent } from '@/lib/agents/tools/registry'
+import type { AgentDefinition } from '@/lib/agents/types'
 
 export function loadPregonAgent(): AgentDefinition | null {
   const definitionsDir = join(process.cwd(), 'lib', 'agents', 'definitions')

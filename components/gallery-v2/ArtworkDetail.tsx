@@ -38,6 +38,7 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
         productId: artwork.id,
         name: artwork.title,
         price: selectedSize.price,
+        originalPrice: selectedSize.price, // size prices are fixed; no product-level discount on sizes
         currency: artwork.currency,
         quantity: 1,
         image: artwork.image,

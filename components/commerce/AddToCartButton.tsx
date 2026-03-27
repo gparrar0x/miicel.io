@@ -15,6 +15,7 @@ interface AddToCartButtonProps {
   productId: string
   productName: string
   price: number
+  originalPrice?: number
   currency: string
   image: string
   maxQuantity: number
@@ -27,6 +28,7 @@ export function AddToCartButton({
   productId,
   productName,
   price,
+  originalPrice,
   currency,
   image,
   maxQuantity,
@@ -44,6 +46,7 @@ export function AddToCartButton({
       productId,
       name: productName,
       price,
+      originalPrice: originalPrice ?? price,
       currency,
       image,
       color,

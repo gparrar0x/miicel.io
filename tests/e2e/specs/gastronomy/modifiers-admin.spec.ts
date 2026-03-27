@@ -211,7 +211,7 @@ test.describe('Product Modifiers - Admin Flow', () => {
     await page.waitForTimeout(500)
 
     // Verify count increased
-    let afterCreateCount = await modifiersPage.getModifierGroupCount()
+    const afterCreateCount = await modifiersPage.getModifierGroupCount()
     expect(afterCreateCount).toBeGreaterThan(initialCount)
 
     // Find and delete
