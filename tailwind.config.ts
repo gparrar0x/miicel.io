@@ -10,7 +10,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Miicel Design System
+        // Micelio Design System
         mii: {
           // Core
           white: '#FFFFFF',
@@ -40,7 +40,7 @@ const config: Config = {
         },
       },
       boxShadow: {
-        // Miicel shadows
+        // Micelio shadows
         mii: '0 1px 3px rgba(0, 0, 0, 0.1)',
         'mii-md': '0 4px 6px rgba(0, 0, 0, 0.1)',
         'mii-lg': '0 10px 15px rgba(0, 0, 0, 0.1)',
@@ -53,7 +53,7 @@ const config: Config = {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       fontSize: {
-        // Miicel typography
+        // Micelio typography
         'mii-h1': ['32px', { lineHeight: '1.2', fontWeight: '700' }],
         'mii-h2': ['24px', { lineHeight: '1.3', fontWeight: '600' }],
         'mii-h3': ['16px', { lineHeight: '1.4', fontWeight: '500' }],

@@ -200,7 +200,7 @@ Sidebar Link: "Consignaciones" with icon (MapPin or Package)
 - Color coded: Gold (>2 works), Gray (1 work)
 - Hover: Tooltip with location name + city
 
-**Library:** Use Leaflet or Mapbox (check existing miicel.io setup)
+**Library:** Use Leaflet or Mapbox (check existing micelio.skyw.app setup)
 
 ---
 
@@ -400,7 +400,7 @@ Title │ Galería Luna │ Café Frida │ 2025-01-15 │ 45 días
 
 **Existing tables to extend:**
 - `products` (artwork = product)
-- `tenants` (artist = tenant) — *Note: miicel.io uses multi-tenant model*
+- `tenants` (artist = tenant) — *Note: micelio.skyw.app uses multi-tenant model*
 
 **New tables:**
 ```sql
@@ -635,7 +635,7 @@ data-testid="move-work-button"
 
 ## Open Questions for Clarification
 
-1. **Map Provider:** Leaflet, Mapbox, or Google Maps? (Check existing miicel.io dependencies)
+1. **Map Provider:** Leaflet, Mapbox, or Google Maps? (Check existing micelio.skyw.app dependencies)
 2. **Bulk Operations:** Support batch move/assign? (v1 or v2)
 3. **QR Code Generation:** Who owns? (Artist or platform)?
 4. **Reporting Export:** PDF with images or CSV data-only?

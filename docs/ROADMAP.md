@@ -1,7 +1,7 @@
-# Miicel.io Product Roadmap 2025-2026
+# Micelio Product Roadmap 2025-2026
 
 **Documento:** Plan de Ejecución Estratégico
-**Basado en:** [Miicel.io Vision](miicel_vision.md) y Estado Actual del Desarrollo
+**Basado en:** [Micelio Vision](micelio_vision.md) y Estado Actual del Desarrollo
 **Fecha:** Noviembre 2025
 **Estado:** Vivo (Se actualiza trimestralmente)
 
@@ -9,7 +9,7 @@
 
 ## 🗺️ Resumen Ejecutivo
 
-Este roadmap traza el camino para transformar el MVP actual de **Miicel.io** en la plataforma SaaS líder para pequeños comercios en la Patagonia. La estrategia se centra en consolidar primero el **núcleo operativo** (que el comercio pueda vender y gestionar pedidos sin fricción) antes de expandir hacia las herramientas de **crecimiento** (Ads, Google, Bots).
+Este roadmap traza el camino para transformar el MVP actual de **Micelio** en la plataforma SaaS líder para pequeños comercios en la Patagonia. La estrategia se centra en consolidar primero el **núcleo operativo** (que el comercio pueda vender y gestionar pedidos sin fricción) antes de expandir hacia las herramientas de **crecimiento** (Ads, Google, Bots).
 
 ---
 
@@ -36,7 +36,7 @@ Hemos completado la infraestructura crítica multi-tenant y la experiencia de co
 ---
 
 ## 📅 Fase 1: Núcleo Operativo (Q1 2026)
-**Objetivo:** Que un restaurante pueda operar un turno completo de noche solo usando Miicel.io.
+**Objetivo:** Que un restaurante pueda operar un turno completo de noche solo usando Micelio.
 
 ### 1.1 Gestión de Pedidos (Order Manager)
 *El "Kitchen Display System" simplificado.*
@@ -80,7 +80,7 @@ Hemos completado la infraestructura crítica multi-tenant y la experiencia de co
 **Objetivo:** Automatizar el marketing y la atención al cliente (Plan PRO).
 
 ### 3.1 Meta Ads Manager (Simplificado)
-- **"Boost this Product":** Crear anuncio de Instagram desde el panel de Miicel.io en 3 clicks.
+- **"Boost this Product":** Crear anuncio de Instagram desde el panel de Micelio en 3 clicks.
 - **Plantillas de Anuncios:** Generadas automáticamente con las fotos del producto.
 - **Audiencias Predefinidas:** "Gente a 5km a la redonda interesada en comida".
 

@@ -18,7 +18,7 @@ async function globalSetup(config: FullConfig) {
     config.use?.baseURL ||
     'http://localhost:3000'
 
-  const isProduction = baseURL.includes('vercel.app') || baseURL.includes('miicelio.vercel.app')
+  const isProduction = baseURL.includes('vercel.app') || baseURL.includes('micelio.vercel.app')
   const environment = isProduction ? 'production' : 'local'
 
   console.log('\n')

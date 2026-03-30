@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Suspense, useState } from 'react'
+import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton'
 import { MicelioLogo } from '@/components/icons/micelio-logo'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -18,6 +19,14 @@ function LoginForm() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const errorParam = searchParams.get('error')
+  const oauthError =
+    errorParam === 'no_account'
+      ? t('error_no_account')
+      : errorParam === 'auth_failed' || errorParam === 'missing_code'
+        ? t('error_auth_failed')
+        : null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -76,6 +85,16 @@ function LoginForm() {
             <CardDescription>{t('subtitle')}</CardDescription>
           </CardHeader>
           <CardContent>
+            {oauthError && (
+              <div
+                data-testid="login-error-no-account"
+                className="mb-4 rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive"
+                role="alert"
+              >
+                {oauthError}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">{t('email')}</Label>
@@ -130,6 +149,16 @@ function LoginForm() {
                 )}
               </Button>
             </form>
+
+            <div className="mt-4 flex items-center gap-3" data-testid="auth-or-divider">
+              <div className="h-px flex-1 bg-border" />
+              <span className="text-xs text-muted-foreground">{t('or_divider')}</span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+
+            <div className="mt-4">
+              <GoogleSignInButton />
+            </div>
           </CardContent>
         </Card>
       </div>

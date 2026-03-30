@@ -22,7 +22,7 @@ SET config = '{
     "textSecondary": "#999999"
   },
   "business": {
-    "name": "Demo Store - Miicel",
+    "name": "Demo Store - Micelio",
     "subtitle": "Tu tienda en línea favorita",
     "location": "Buenos Aires, Argentina"
   },

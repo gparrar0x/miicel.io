@@ -1,6 +1,6 @@
-# Miicel.io
+# Micelio
 
-This is the **Miicel.io** project (formerly Commerce SaaS), a multi-tenant e-commerce platform built with Next.js 15, Supabase, and Tailwind CSS.
+This is the **Micelio** project (formerly Commerce SaaS), a multi-tenant e-commerce platform built with Next.js 15, Supabase, and Tailwind CSS.
 
 
 ## Quick Start
@@ -94,7 +94,7 @@ npm run format
 
 ## Deployment
 
-**Production:** https://miicel.io
+**Production:** https://micelio.skyw.app
 
 See deployment guides:
 - [`docs/VERCEL_DEPLOYMENT_GUIDE.md`](docs/VERCEL_DEPLOYMENT_GUIDE.md) - Complete setup instructions

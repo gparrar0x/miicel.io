@@ -22,7 +22,7 @@ Authenticated users were stuck in an infinite redirect between `/en/login` and `
 3. **Role check with service role**: Validate `users.role`/`tenant_id` via `createServiceRoleClient()` in the proxy to bypass RLS and accept `platform_admin`, `tenant_admin`, `staff`, or the tenant owner. (commit `ca9acc6`).
 
 ## Verification
-- Vercel deploy `micelio-hkg3tni24-*` (Dec 5, 2025): Playwright MCP login as `tenant@miicel.io / Tenant123!` redirected to `/en/3/dashboard` and loaded successfully with stats. No redirect loop observed.
+- Vercel deploy `micelio-hkg3tni24-*` (Dec 5, 2025): Playwright MCP login as `tenant@micelio.skyw.app / Tenant123!` redirected to `/en/3/dashboard` and loaded successfully with stats. No redirect loop observed.
 
 ## Lessons Learned
 - When URL structures change (slug → ID), update all auth/middleware layers, not just page components.

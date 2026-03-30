@@ -11,4 +11,4 @@ Disallow: /test-theme
 
 Crawl-delay: 1
 
-Sitemap: https://miicel.io/sitemap.xml
+Sitemap: https://micelio.skyw.app/sitemap.xml

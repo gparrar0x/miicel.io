@@ -64,11 +64,11 @@ const baseUrl = isProduction
 # 1. Deploy rápido
 vercel --prod
 
-# 2. Obtener URL (ej: miicel.io-xyz.vercel.app)
+# 2. Obtener URL (ej: micelio.skyw.app-xyz.vercel.app)
 
 # 3. Actualizar .env en Vercel
 # Settings → Environment Variables
-NEXT_PUBLIC_BASE_URL=https://miicel.io-xyz.vercel.app
+NEXT_PUBLIC_BASE_URL=https://micelio.skyw.app-xyz.vercel.app
 
 # 4. Redeploy
 vercel --prod

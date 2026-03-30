@@ -1,7 +1,7 @@
 -- Migration: 034_seed_platform_admin
 -- Description: Create platform admin user in auth.users and users table
 -- Created: 2024-12-04
--- Note: Uses admin@miicel.io (production email) instead of admin@skywalking.dev from spec
+-- Note: Uses admin@micelio.skyw.app (production email) instead of admin@skywalking.dev from spec
 
 -- Create auth user for platform admin
 DO $$
@@ -11,7 +11,7 @@ BEGIN
   -- Check if admin already exists
   SELECT id INTO v_admin_user_id
   FROM auth.users
-  WHERE email = 'admin@miicel.io';
+  WHERE email = 'admin@micelio.skyw.app';
 
   IF v_admin_user_id IS NULL THEN
     -- Create auth user (password: Admin123!)
@@ -35,7 +35,7 @@ BEGIN
       gen_random_uuid(),
       'authenticated',
       'authenticated',
-      'admin@miicel.io',
+      'admin@micelio.skyw.app',
       crypt('Admin123!', gen_salt('bf')),
       now(),
       '',
@@ -49,9 +49,9 @@ BEGIN
 
     -- Create user record in users table
     INSERT INTO users (auth_user_id, email, name, role, tenant_id, is_active)
-    VALUES (v_admin_user_id, 'admin@miicel.io', 'Platform Admin', 'platform_admin', NULL, true);
+    VALUES (v_admin_user_id, 'admin@micelio.skyw.app', 'Platform Admin', 'platform_admin', NULL, true);
 
-    RAISE NOTICE 'Platform admin created: admin@miicel.io';
+    RAISE NOTICE 'Platform admin created: admin@micelio.skyw.app';
   ELSE
     RAISE NOTICE 'Platform admin already exists';
   END IF;

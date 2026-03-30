@@ -36,7 +36,7 @@ export function QRProductModal({
 
   if (!product) return null
 
-  const productUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://miicel.io'}/${locale}/${tenantId}/p/${product.id}`
+  const productUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://micelio.skyw.app'}/${locale}/${tenantId}/p/${product.id}`
 
   const handlePrint = () => {
     window.print()

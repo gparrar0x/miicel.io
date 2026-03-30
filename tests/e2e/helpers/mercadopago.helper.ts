@@ -544,7 +544,7 @@ export class MercadoPagoHelper {
     const currentUrl = this.page.url()
     if (
       currentUrl.includes('localhost') ||
-      currentUrl.includes('miicelio') ||
+      currentUrl.includes('micelio') ||
       currentUrl.includes('/checkout/success')
     ) {
       console.log('✓ Already on platform domain')
@@ -592,7 +592,7 @@ export class MercadoPagoHelper {
         (url) => {
           const isOurDomain =
             url.hostname.includes('localhost') ||
-            url.hostname.includes('miicelio') ||
+            url.hostname.includes('micelio') ||
             url.pathname.includes('/checkout/success')
 
           if (isOurDomain) {

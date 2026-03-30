@@ -2,7 +2,7 @@
 
 **SKY-61 Implementation - Complete**
 
-Comprehensive Playwright E2E test suite for miicel.io analytics dashboard. 82 deterministic tests, production-ready, waiting for UI data-testid implementation.
+Comprehensive Playwright E2E test suite for micelio.skyw.app analytics dashboard. 82 deterministic tests, production-ready, waiting for UI data-testid implementation.
 
 ## Quick Links
 

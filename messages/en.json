@@ -237,7 +237,11 @@
     "passwordPlaceholder": "••••••••",
     "submit": "Sign In",
     "submitting": "Signing in...",
-    "platformOnly": "Platform access only"
+    "platformOnly": "Platform access only",
+    "google_signin": "Continue with Google",
+    "or_divider": "or",
+    "error_no_account": "No account found with that email. Contact your administrator.",
+    "error_auth_failed": "Authentication error. Try again."
   },
   "Checkout": {
     "title": "Checkout",

@@ -25,7 +25,7 @@ async function createAdmin() {
   try {
     // Create tenant admin user
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-      email: 'tenant@miicel.io',
+      email: 'tenant@micelio.skyw.app',
       password: 'Tenant123!',
       email_confirm: true,
       user_metadata: {
@@ -43,7 +43,7 @@ async function createAdmin() {
     // Create user record in users table
     const { error: userError } = await supabase.from('users').insert({
       auth_user_id: authData.user.id,
-      email: 'tenant@miicel.io',
+      email: 'tenant@micelio.skyw.app',
       name: 'Tenant Admin',
       role: 'tenant_admin',
       tenant_id: 3,
@@ -57,7 +57,7 @@ async function createAdmin() {
 
     console.log('✓ User record created')
     console.log('\nTenant admin created successfully!')
-    console.log('Email: tenant@miicel.io')
+    console.log('Email: tenant@micelio.skyw.app')
     console.log('Password: Tenant123!')
     console.log('Tenant ID: 3')
   } catch (err) {

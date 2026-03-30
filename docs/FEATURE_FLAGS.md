@@ -1,6 +1,6 @@
 # Feature Flags System
 
-> Technical documentation for miicel.io feature flags
+> Technical documentation for micelio.skyw.app feature flags
 > Last updated: 2025-01-24
 
 ## Overview

@@ -5,7 +5,7 @@ import * as dotenv from 'dotenv'
 dotenv.config({ path: '.env' })
 
 /**
- * Playwright Configuration for miicelio
+ * Playwright Configuration for micelio
  *
  * Configures browser automation for E2E testing with:
  * - Multiple environments (local and production)
@@ -68,6 +68,12 @@ export default defineConfig({
         baseURL: process.env.BASE_URL || 'http://localhost:3001',
         ...devices['Desktop Chrome'],
       },
+      webServer: {
+        command: 'npm run dev',
+        url: process.env.BASE_URL || 'http://localhost:3001',
+        reuseExistingServer: !process.env.CI,
+        timeout: 120 * 1000,
+      },
     },
 
     // Production environment - runs against production URL
@@ -75,7 +81,7 @@ export default defineConfig({
       name: 'production',
       use: {
         ...sharedConfig,
-        baseURL: 'https://miicelio.vercel.app',
+        baseURL: 'https://micelio.vercel.app',
         ...devices['Desktop Chrome'],
         // Production may need longer timeouts due to network latency
         navigationTimeout: 60000,
@@ -116,17 +122,14 @@ export default defineConfig({
         actionTimeout: 20000,
       },
       timeout: 120 * 1000, // 2 minutes per test
+      webServer: {
+        command: 'npm run dev',
+        url: process.env.BASE_URL || 'http://localhost:3001',
+        reuseExistingServer: !process.env.CI,
+        timeout: 120 * 1000,
+      },
     },
   ],
-
-  // Web Server configuration (only for local environment)
-  // Note: webServer is shared, but production tests won't use it
-  webServer: {
-    command: 'npm run dev',
-    url: process.env.BASE_URL || 'http://localhost:3001',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-  },
 
   // Fullypage screenshots
   snapshotDir: './tests/e2e/snapshots',

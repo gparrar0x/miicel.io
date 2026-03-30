@@ -1,4 +1,4 @@
-# E2E Testing - miicelio
+# E2E Testing - micelio
 
 Complete end-to-end test suite for tenant creation flow using Playwright.
 
@@ -229,7 +229,7 @@ npm run test:e2e:local -- --headed
 
 ### Production Environment
 
-Runs tests against `https://miicelio.vercel.app/`:
+Runs tests against `https://micelio.vercel.app/`:
 
 ```bash
 # Run all tests in production environment
@@ -252,7 +252,7 @@ npm run test:e2e:prod -- --headed
 
 The test suite automatically detects the environment:
 - **Local**: URLs containing `localhost:3000`
-- **Production**: URLs containing `vercel.app` or `miicelio.vercel.app`
+- **Production**: URLs containing `vercel.app` or `micelio.vercel.app`
 
 ### Configuration
 
@@ -266,7 +266,7 @@ projects: [
   },
   {
     name: 'production',
-    use: { baseURL: 'https://miicelio.vercel.app' },
+    use: { baseURL: 'https://micelio.vercel.app' },
   },
 ]
 ```

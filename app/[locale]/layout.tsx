@@ -9,7 +9,7 @@ import '../globals.css'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Miicel.io',
+  title: 'Micelio',
   description: 'Red de comercios descentralizada',
 }
 

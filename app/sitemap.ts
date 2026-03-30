@@ -1,11 +1,11 @@
 import type { MetadataRoute } from 'next'
 import { createClient } from '@/lib/supabase/server'
 
-const BASE_URL = 'https://miicel.io'
+const BASE_URL = 'https://micelio.skyw.app'
 const LOCALES = ['es', 'en'] as const
 
 /**
- * Dynamic sitemap for miicel.io multi-tenant storefronts
+ * Dynamic sitemap for micelio.skyw.app multi-tenant storefronts
  *
  * Auto-discovers:
  * - All active tenant storefronts (/{locale}/{tenant})

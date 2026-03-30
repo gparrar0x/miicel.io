@@ -2,7 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { runAgentLoop } from './agent-loop'
 import type { AgentMessage, AgentResponse, OrchestratorConfig, ToolDefinition } from './types'
 
-const ORCHESTRATOR_SYSTEM_PROMPT = `You are Micelio, an AI orchestrator for the Miicel.io platform.
+const ORCHESTRATOR_SYSTEM_PROMPT = `You are Micelio, an AI orchestrator for the Micelio platform.
 
 You coordinate a team of specialist agents. For each user message:
 1. Decide if you can answer directly (simple questions, greetings, platform info).

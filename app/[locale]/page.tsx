@@ -107,7 +107,7 @@ function RootPage() {
         >
           <div className="flex items-center gap-3">
             <MicelioLogo className="h-8 w-8 text-foreground" />
-            <span className="text-lg font-semibold tracking-tight text-foreground">Miicel.io</span>
+            <span className="text-lg font-semibold tracking-tight text-foreground">Micelio</span>
           </div>
           <Button variant="outline" onClick={handleLogout} data-testid="button-sign-out">
             <LogOut className="mr-2 h-4 w-4" />
@@ -240,7 +240,7 @@ function LoginForm() {
       >
         <div className="flex items-center gap-3">
           <MicelioLogo className="h-8 w-8 text-foreground" />
-          <span className="text-lg font-semibold tracking-tight text-foreground">Miicel.io</span>
+          <span className="text-lg font-semibold tracking-tight text-foreground">Micelio</span>
         </div>
       </header>
 

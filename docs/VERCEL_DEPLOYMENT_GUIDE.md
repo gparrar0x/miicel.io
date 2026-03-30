@@ -1,5 +1,5 @@
-# Vercel Deployment Guide - Miicel.io
-**Project:** miicel.io
+# Vercel Deployment Guide - Micelio
+**Project:** micelio.skyw.app
 **Stack:** Next.js 16 + Supabase + MercadoPago
 **ETA:** 30min full setup
 
@@ -7,7 +7,7 @@
 
 ## Prerequisites
 
-- GitHub repo: `skywalking/miicel.io`
+- GitHub repo: `skywalking/micelio.skyw.app`
 - Vercel account with team access
 - Supabase project: `lmqysqapqbttmyheuejo`
 - MercadoPago account (production credentials)
@@ -19,7 +19,7 @@
 ### 1.1 Connect GitHub → Vercel (3min)
 
 1. Go to https://vercel.com/new
-2. Import `miicel.io` repository
+2. Import `micelio.skyw.app` repository
 3. Configure project settings:
    ```
    Framework Preset: Next.js
@@ -53,7 +53,7 @@ SUPER_ADMINS=gparrar@skywalking.dev
 **Production-only variables:**
 
 ```bash
-NEXT_PUBLIC_BASE_URL=https://miicel.io
+NEXT_PUBLIC_BASE_URL=https://micelio.skyw.app
 MERCADOPAGO_WEBHOOK_SECRET=<ADD_AFTER_WEBHOOK_SETUP>
 ```
 
@@ -69,7 +69,7 @@ NEXT_PUBLIC_BASE_URL=<AUTO_GENERATED_PREVIEW_URL>
 1. Click "Deploy" button
 2. Wait for build (~4min)
 3. Verify deployment success
-4. Note production URL: `https://sw-commerce-miicel.io`
+4. Note production URL: `https://sw-commerce-micelio.skyw.app`
 
 **Expected build output:**
 ```
@@ -84,7 +84,7 @@ NEXT_PUBLIC_BASE_URL=<AUTO_GENERATED_PREVIEW_URL>
 
 ### 2.1 Custom Domain Setup
 
-If using custom domain (e.g., `miicel.io`):
+If using custom domain (e.g., `micelio.skyw.app`):
 
 1. Vercel Dashboard → Domains → Add Domain
 2. Enter domain name
@@ -114,7 +114,7 @@ Value: 2606:4700:4700::1111
 After domain active:
 ```bash
 # Update this variable
-NEXT_PUBLIC_BASE_URL=https://miicel.io
+NEXT_PUBLIC_BASE_URL=https://micelio.skyw.app
 ```
 
 Redeploy to apply changes.
@@ -131,7 +131,7 @@ Redeploy to apply changes.
 4. Click "Add webhook"
 5. Configure:
    ```
-   URL: https://miicel.io/api/webhooks/mercadopago
+   URL: https://micelio.skyw.app/api/webhooks/mercadopago
    Events: 
      ✓ payment (all events)
    ```
@@ -186,14 +186,14 @@ Vercel Dashboard → Settings → Notifications:
 
 ### 4.3 Health Check Endpoint
 
-Available at: `https://miicel.io/api/health`
+Available at: `https://micelio.skyw.app/api/health`
 
 Response:
 ```json
 {
   "status": "ok",
   "timestamp": "2025-01-23T12:00:00.000Z",
-  "service": "miicelio"
+  "service": "micelio"
 }
 ```
 
@@ -279,7 +279,7 @@ Every PR automatically creates preview deployment:
 
 **DNS propagation:**
 - Wait 5-30min after DNS changes
-- Check: `dig miicel.io`
+- Check: `dig micelio.skyw.app`
 - Verify A/AAAA records point to Vercel IPs
 
 ---

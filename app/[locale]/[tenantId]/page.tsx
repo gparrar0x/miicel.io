@@ -164,24 +164,24 @@ export async function generateMetadata({
 
   if (!config) {
     return {
-      title: 'Tienda | Miicel.io',
-      description: 'Descubre nuestra tienda online en Miicel.io',
+      title: 'Tienda | Micelio',
+      description: 'Descubre nuestra tienda online en Micelio',
     }
   }
 
-  const baseUrl = `https://miicel.io/${locale}/${tenantId}`
+  const baseUrl = `https://micelio.skyw.app/${locale}/${tenantId}`
 
   const description = config.subtitle
     ? `${config.businessName}. ${config.subtitle}. Ordena online ahora.`
-    : `Tienda online de ${config.businessName}. Descubre nuestros productos en Miicel.io.`
+    : `Tienda online de ${config.businessName}. Descubre nuestros productos en Micelio.`
 
   return {
-    title: `${config.businessName} - Tienda Online | Miicel.io`,
+    title: `${config.businessName} - Tienda Online | Micelio`,
     description,
-    metadataBase: new URL('https://miicel.io'),
+    metadataBase: new URL('https://micelio.skyw.app'),
     openGraph: {
       title: config.businessName,
-      description: config.subtitle || 'Tienda online en Miicel.io',
+      description: config.subtitle || 'Tienda online en Micelio',
       type: 'website',
       url: baseUrl,
       images: config.logoUrl
@@ -193,8 +193,8 @@ export async function generateMetadata({
     alternates: {
       canonical: baseUrl,
       languages: {
-        'es-ES': `https://miicel.io/es/${tenantId}`,
-        'en-US': `https://miicel.io/en/${tenantId}`,
+        'es-ES': `https://micelio.skyw.app/es/${tenantId}`,
+        'en-US': `https://micelio.skyw.app/en/${tenantId}`,
       },
     },
   }

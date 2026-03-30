@@ -38,6 +38,6 @@ export default sentryEnabled
   ? withSentryConfig(withNextIntl(nextConfig), {
       silent: true,
       org: 'skywalking',
-      project: 'miicel-io',
+      project: 'micelio',
     })
   : withNextIntl(nextConfig)
