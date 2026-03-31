@@ -3,7 +3,6 @@
  * Pattern: thin API route → this service → Supabase client.
  */
 
-import Anthropic from '@anthropic-ai/sdk'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { authorLandingContentSchema } from '@/lib/schemas/author-landing'
@@ -60,12 +59,13 @@ export interface GenerateLandingInput {
 // ─── Service ──────────────────────────────────────────────────────────────────
 
 export class AuthorLandingService {
-  private _anthropic: Anthropic | null = null
+  private _anthropic: any = null
 
   constructor(private readonly supabase: SupabaseClient) {}
 
-  private get anthropic(): Anthropic {
+  private async getAnthropic() {
     if (!this._anthropic) {
+      const { default: Anthropic } = await import('@anthropic-ai/sdk')
       this._anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
     }
     return this._anthropic
@@ -172,7 +172,8 @@ export class AuthorLandingService {
     })
 
     // Call Claude with tool_use structured output
-    const response = await this.anthropic.messages.create({
+    const anthropic = await this.getAnthropic()
+    const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1024,
       system: AUTHOR_LANDING_SYSTEM_PROMPT,
