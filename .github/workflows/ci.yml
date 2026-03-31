@@ -79,7 +79,7 @@ jobs:
               },
               {
                 "type": "section",
-                "text": { "type": "mrkdwn", "text": "🔍 <https://${PREVIEW}|Preview> · 📝 <${PR_URL}|PR> · 📋 <https://vercel.com/gonzalos-projects-42c4ae43/micelio|Vercel>" }
+                "text": { "type": "mrkdwn", "text": "🔍 <https://${PREVIEW}|Preview> · 📋 <https://vercel.com/gonzalos-projects-42c4ae43/micelio|Vercel>" }
               }
             ]
           }
