@@ -60,10 +60,15 @@ export interface GenerateLandingInput {
 // ─── Service ──────────────────────────────────────────────────────────────────
 
 export class AuthorLandingService {
-  private readonly anthropic: Anthropic
+  private _anthropic: Anthropic | null = null
 
-  constructor(private readonly supabase: SupabaseClient) {
-    this.anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  constructor(private readonly supabase: SupabaseClient) {}
+
+  private get anthropic(): Anthropic {
+    if (!this._anthropic) {
+      this._anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+    }
+    return this._anthropic
   }
 
   // ── Authors CRUD ────────────────────────────────────────────────────────────
