@@ -11,7 +11,7 @@
 
 import { NextResponse } from 'next/server'
 import { isSuperadmin } from '@/lib/auth/constants'
-import { createClient } from '@/lib/supabase/server'
+import { createClientFromRequest } from '@/lib/supabase/server'
 
 /**
  * GET /api/dashboard/consignments/alerts?tenant_id=123&min_days=60
@@ -39,7 +39,7 @@ import { createClient } from '@/lib/supabase/server'
  */
 export async function GET(request: Request) {
   try {
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     // Auth check
     const {

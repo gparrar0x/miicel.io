@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClientFromRequest } from '@/lib/supabase/server'
 
 /**
  * API endpoint to check if current user is superadmin
  * Required because SUPER_ADMINS env var is server-side only
  */
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
     const {
       data: { user },
     } = await supabase.auth.getUser()

@@ -18,7 +18,7 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { updateThemeSchema } from '@/lib/schemas/theme'
-import { createClient } from '@/lib/supabase/server'
+import { createClientFromRequest } from '@/lib/supabase/server'
 import type { Json } from '@/types/database.types'
 
 const slugParamSchema = z.string().regex(/^[a-z0-9-]+$/, 'Invalid slug format')
@@ -35,9 +35,9 @@ const slugParamSchema = z.string().regex(/^[a-z0-9-]+$/, 'Invalid slug format')
  *   "overrides": { "gridCols": 3, ... }
  * }
  */
-export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     // Step 1: Authenticate user
     const {
@@ -107,7 +107,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
  */
 export async function PATCH(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     // Step 1: Authenticate user
     const {

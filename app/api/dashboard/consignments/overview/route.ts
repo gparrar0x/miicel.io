@@ -17,7 +17,7 @@
 
 import { NextResponse } from 'next/server'
 import { isSuperadmin } from '@/lib/auth/constants'
-import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
+import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 
 /**
  * GET /api/dashboard/consignments/overview?tenant_id=123
@@ -45,7 +45,7 @@ import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
  */
 export async function GET(request: Request) {
   try {
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     // Auth check
     const {
