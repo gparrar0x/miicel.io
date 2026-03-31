@@ -207,4 +207,5 @@ export const Flags = {
   CONSIGNMENTS: 'consignments',
   KITCHEN_VIEW: 'kitchen_view',
   AGENTS: 'agents',
+  AUTHOR_LANDINGS: 'author_landings',
 } as const
