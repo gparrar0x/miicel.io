@@ -7,7 +7,7 @@
 import { NextResponse } from 'next/server'
 import { isSuperadmin } from '@/lib/auth/constants'
 import { authorUpdateSchema } from '@/lib/schemas/author-landing'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { AuthorLandingService } from '@/lib/services/author-landing-service'
 
 function parseId(id: string): number | null {
@@ -57,7 +57,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
-    const service = new AuthorLandingService(supabase)
+    const service = new AuthorLandingService(createServiceRoleClient())
     const author = await service.getAuthor(authorId)
 
     if (!author) {
@@ -103,7 +103,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
     }
 
-    const service = new AuthorLandingService(supabase)
+    const service = new AuthorLandingService(createServiceRoleClient())
     const existing = await service.getAuthor(authorId)
     if (!existing) {
       return NextResponse.json({ error: 'Author not found.' }, { status: 404 })
@@ -146,7 +146,7 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
-    const service = new AuthorLandingService(supabase)
+    const service = new AuthorLandingService(createServiceRoleClient())
     const existing = await service.getAuthor(authorId)
     if (!existing) {
       return NextResponse.json({ error: 'Author not found.' }, { status: 404 })

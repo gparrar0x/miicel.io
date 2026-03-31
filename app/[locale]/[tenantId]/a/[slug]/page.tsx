@@ -9,7 +9,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { AuthorLanding } from '@/components/storefront/AuthorLanding'
 import type { AuthorLandingContent } from '@/lib/schemas/author-landing'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 
 export const revalidate = 3600
 
@@ -18,7 +18,7 @@ interface PageProps {
 }
 
 async function getAuthorLanding(tenantSlug: string, authorSlug: string) {
-  const supabase = await createClient()
+  const supabase = createServiceRoleClient()
 
   // Resolve tenant
   const numericId = Number(tenantSlug)

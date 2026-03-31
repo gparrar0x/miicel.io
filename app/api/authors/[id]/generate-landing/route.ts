@@ -9,7 +9,7 @@ export const maxDuration = 60
 import { NextResponse } from 'next/server'
 import { isSuperadmin } from '@/lib/auth/constants'
 import { generateLandingRequestSchema } from '@/lib/schemas/author-landing'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { AuthorLandingService } from '@/lib/services/author-landing-service'
 
 function parseId(id: string): number | null {
@@ -41,7 +41,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
     }
 
-    const service = new AuthorLandingService(supabase)
+    const service = new AuthorLandingService(createServiceRoleClient())
     const author = await service.getAuthor(authorId)
     if (!author) {
       return NextResponse.json({ error: 'Author not found.' }, { status: 404 })

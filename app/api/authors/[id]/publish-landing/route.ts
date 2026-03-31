@@ -5,7 +5,7 @@
 
 import { NextResponse } from 'next/server'
 import { isSuperadmin } from '@/lib/auth/constants'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { AuthorLandingService } from '@/lib/services/author-landing-service'
 
 function parseId(id: string): number | null {
@@ -31,7 +31,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
       return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
-    const service = new AuthorLandingService(supabase)
+    const service = new AuthorLandingService(createServiceRoleClient())
     const author = await service.getAuthor(authorId)
     if (!author) {
       return NextResponse.json({ error: 'Author not found.' }, { status: 404 })

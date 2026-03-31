@@ -6,7 +6,7 @@
 import { NextResponse } from 'next/server'
 import { isSuperadmin } from '@/lib/auth/constants'
 import { authorCreateSchema } from '@/lib/schemas/author-landing'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { AuthorLandingService } from '@/lib/services/author-landing-service'
 
 export async function GET(request: Request) {
@@ -33,7 +33,9 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
-    const service = new AuthorLandingService(supabase)
+    // Use service role to bypass RLS (auth already verified above)
+    const adminClient = createServiceRoleClient()
+    const service = new AuthorLandingService(adminClient)
     const authors = await service.listAuthors(tenantId)
 
     return NextResponse.json({ authors })
@@ -77,7 +79,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
     }
 
-    const service = new AuthorLandingService(supabase)
+    const adminClient = createServiceRoleClient()
+    const service = new AuthorLandingService(adminClient)
     const author = await service.createAuthor(parsed.data)
 
     return NextResponse.json({ author }, { status: 201 })
