@@ -26,6 +26,73 @@ jobs:
         run: pnpm vitest run --passWithNoTests
         if: hashFiles('vitest.config.*') != ''
 
+  notify-slack:
+    runs-on: ubuntu-latest
+    needs: [check]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Get Vercel deployment
+        id: vercel
+        run: |
+          # Wait for Vercel to pick up the commit
+          sleep 30
+          DEPLOY=$(curl -s "https://api.vercel.com/v6/deployments?projectId=${{ secrets.VERCEL_PROJECT_ID }}&limit=1&target=production" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            | jq -r '.deployments[0]')
+          echo "url=$(echo $DEPLOY | jq -r '.url')" >> $GITHUB_OUTPUT
+          echo "state=$(echo $DEPLOY | jq -r '.state // .readyState')" >> $GITHUB_OUTPUT
+          echo "id=$(echo $DEPLOY | jq -r '.uid')" >> $GITHUB_OUTPUT
+
+      - name: Notify Slack
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          webhook: ${{ secrets.SLACK_DEPLOY_WEBHOOK }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "channel": "C0AQPJNUQEL",
+              "text": "🚀 *Micelio deployed to production*",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "🚀 Micelio — Production Deploy" }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    { "type": "mrkdwn", "text": "*Branch:*\nmain" },
+                    { "type": "mrkdwn", "text": "*Commit:*\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>" },
+                    { "type": "mrkdwn", "text": "*Author:*\n${{ github.actor }}" },
+                    { "type": "mrkdwn", "text": "*Status:*\n${{ steps.vercel.outputs.state || 'deploying' }}" }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": { "type": "mrkdwn", "text": "*Message:* ${{ github.event.head_commit.message }}" }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "🌐 Production" },
+                      "url": "https://micelio.skyw.app"
+                    },
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "🔍 Preview" },
+                      "url": "https://${{ steps.vercel.outputs.url || 'micelio-nine.vercel.app' }}"
+                    },
+                    {
+                      "type": "button",
+                      "text": { "type": "plain_text", "text": "📋 Vercel Dashboard" },
+                      "url": "https://vercel.com/gonzalos-projects-42c4ae43/micelio"
+                    }
+                  ]
+                }
+              ]
+            }
+
   e2e:
     runs-on: ubuntu-latest
     needs: [check]
