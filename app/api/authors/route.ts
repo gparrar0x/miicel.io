@@ -7,7 +7,6 @@ import { NextResponse } from 'next/server'
 import { isSuperadmin } from '@/lib/auth/constants'
 import { authorCreateSchema } from '@/lib/schemas/author-landing'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
-import { AuthorLandingService } from '@/lib/services/author-landing-service'
 
 export async function GET(request: Request) {
   try {
@@ -33,10 +32,44 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
-    // Use service role to bypass RLS (auth already verified above)
+    // Use service role to bypass RLS
     const adminClient = createServiceRoleClient()
-    const service = new AuthorLandingService(adminClient)
-    const authors = await service.listAuthors(tenantId)
+    const { data, error } = await adminClient
+      .from('authors')
+      .select(
+        `
+        id, tenant_id, name, slug, image_url, created_at,
+        author_landings(id, status, generated_at)
+      `,
+      )
+      .eq('tenant_id', tenantId)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      return NextResponse.json(
+        { error: `Failed to list authors: ${error.message}` },
+        { status: 500 },
+      )
+    }
+
+    const authors = ((data ?? []) as any[]).map((row) => {
+      const landings = row.author_landings ?? []
+      const latest = landings.sort(
+        (a: any, b: any) => new Date(b.generated_at).getTime() - new Date(a.generated_at).getTime(),
+      )[0]
+
+      return {
+        id: row.id,
+        tenant_id: row.tenant_id,
+        name: row.name,
+        slug: row.slug,
+        image_url: row.image_url,
+        created_at: row.created_at,
+        latest_landing: latest
+          ? { id: latest.id, status: latest.status, generated_at: latest.generated_at }
+          : null,
+      }
+    })
 
     return NextResponse.json({ authors })
   } catch (err: any) {
@@ -80,15 +113,30 @@ export async function POST(request: Request) {
     }
 
     const adminClient = createServiceRoleClient()
-    const service = new AuthorLandingService(adminClient)
-    const author = await service.createAuthor(parsed.data)
+    const { data: author, error: createError } = await adminClient
+      .from('authors')
+      .insert({
+        tenant_id: parsed.data.tenant_id,
+        name: parsed.data.name,
+        slug: parsed.data.slug,
+        image_url: parsed.data.image_url ?? null,
+      })
+      .select()
+      .single()
+
+    if (createError || !author) {
+      if (createError?.message?.includes('unique') || createError?.message?.includes('duplicate')) {
+        return NextResponse.json({ error: 'Slug already exists for this tenant.' }, { status: 409 })
+      }
+      return NextResponse.json(
+        { error: `Failed to create author: ${createError?.message}` },
+        { status: 500 },
+      )
+    }
 
     return NextResponse.json({ author }, { status: 201 })
   } catch (err: any) {
     console.error('POST /api/authors error:', err)
-    if (err.message?.includes('unique') || err.message?.includes('duplicate')) {
-      return NextResponse.json({ error: 'Slug already exists for this tenant.' }, { status: 409 })
-    }
     return NextResponse.json({ error: 'Internal server error.' }, { status: 500 })
   }
 }
