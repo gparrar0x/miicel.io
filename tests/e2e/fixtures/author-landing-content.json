@@ -1,0 +1,24 @@
+{
+  "landing": {
+    "id": 1,
+    "author_id": 1,
+    "content": {
+      "hero": {
+        "headline": "Trazos que habitan paredes",
+        "subheadline": "Grabados de gran formato nacidos en un taller de Mendoza. Tinta sobre papel japonés, prensados a mano.",
+        "cta_text": "Explorar obras originales"
+      },
+      "bio": {
+        "short": "Empezó grabando por accidente. Hoy sus prints cubren muros en catorce países.",
+        "long": "Un taller prestado en Godoy Cruz y una prensa oxidada. Así empezó. Las primeras cuarenta pruebas terminaron en el piso. La número cuarenta y uno la compró una galerista de paso por Mendoza. Desde entonces, cada grabado nace del mismo ritual: elegir el papel, preparar la tinta, prensar a mano. No hay atajos. El proceso es el punto. Hoy sus piezas viven en hogares de Buenos Aires, Santiago, Barcelona y Ciudad de México."
+      },
+      "seo": {
+        "meta_title": "Grabados originales — Arte de pared hecho a mano",
+        "meta_description": "Grabados de gran formato prensados a mano en taller de Mendoza. Tinta sobre papel japonés. Piezas para coleccionistas e interioristas."
+      }
+    },
+    "status": "draft",
+    "generated_at": "2026-03-31T00:00:00Z",
+    "published_at": null
+  }
+}
