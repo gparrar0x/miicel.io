@@ -14,7 +14,7 @@
  */
 
 import { expect, test } from '@playwright/test'
-import { loginAsOwner } from '../../fixtures/auth.fixture'
+import { loginAsOwner } from '../fixtures/auth.fixture'
 import { AuthorLandingsPage } from '../pages/author-landings.page'
 import mockContent from '../fixtures/author-landing-content.json'
 
