@@ -34,22 +34,35 @@ jobs:
       - name: Get Vercel preview deployment
         id: vercel
         run: |
-          sleep 30
+          sleep 45
           DEPLOY=$(curl -s "https://api.vercel.com/v6/deployments?projectId=${{ secrets.VERCEL_PROJECT_ID }}&limit=1" \
             -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
             | jq -r '.deployments[0]')
-          echo "url=$(echo $DEPLOY | jq -r '.url')" >> $GITHUB_OUTPUT
-          echo "state=$(echo $DEPLOY | jq -r '.state // .readyState')" >> $GITHUB_OUTPUT
+          URL=$(echo $DEPLOY | jq -r '.url // empty')
+          STATE=$(echo $DEPLOY | jq -r '.state // .readyState // empty')
+          echo "url=${URL}" >> $GITHUB_OUTPUT
+          echo "state=${STATE:-pending}" >> $GITHUB_OUTPUT
 
       - name: Notify Slack (staging)
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_NUM: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          BRANCH: ${{ github.head_ref }}
+          PREVIEW_URL: ${{ steps.vercel.outputs.url }}
+          DEPLOY_STATE: ${{ steps.vercel.outputs.state }}
         run: |
+          PREVIEW=${PREVIEW_URL:-micelio-nine.vercel.app}
           curl -s -X POST "https://slack.com/api/chat.postMessage" \
-            -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
+            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "$(cat <<'PAYLOAD'
+            -d @- <<EOF
           {
             "channel": "C0AQPJNUQEL",
-            "text": "🔀 *Micelio PR preview ready*",
+            "unfurl_links": false,
+            "text": "🔀 Micelio PR #${PR_NUM}: ${PR_TITLE}",
             "blocks": [
               {
                 "type": "header",
@@ -58,36 +71,19 @@ jobs:
               {
                 "type": "section",
                 "fields": [
-                  { "type": "mrkdwn", "text": "*PR:*\n<${{ github.event.pull_request.html_url }}|#${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}>" },
-                  { "type": "mrkdwn", "text": "*Author:*\n${{ github.event.pull_request.user.login }}" },
-                  { "type": "mrkdwn", "text": "*Branch:*\n${{ github.head_ref }}" },
-                  { "type": "mrkdwn", "text": "*Status:*\n${{ steps.vercel.outputs.state || 'deploying' }}" }
+                  { "type": "mrkdwn", "text": "*PR:*\n<${PR_URL}|#${PR_NUM} ${PR_TITLE}>" },
+                  { "type": "mrkdwn", "text": "*Author:*\n${PR_AUTHOR}" },
+                  { "type": "mrkdwn", "text": "*Branch:*\n${BRANCH}" },
+                  { "type": "mrkdwn", "text": "*Status:*\n${DEPLOY_STATE}" }
                 ]
               },
               {
-                "type": "actions",
-                "elements": [
-                  {
-                    "type": "button",
-                    "text": { "type": "plain_text", "text": "🔍 Preview" },
-                    "url": "https://${{ steps.vercel.outputs.url || 'micelio-nine.vercel.app' }}"
-                  },
-                  {
-                    "type": "button",
-                    "text": { "type": "plain_text", "text": "📝 PR" },
-                    "url": "${{ github.event.pull_request.html_url }}"
-                  },
-                  {
-                    "type": "button",
-                    "text": { "type": "plain_text", "text": "📋 Vercel" },
-                    "url": "https://vercel.com/gonzalos-projects-42c4ae43/micelio"
-                  }
-                ]
+                "type": "section",
+                "text": { "type": "mrkdwn", "text": "🔍 <https://${PREVIEW}|Preview> · 📝 <${PR_URL}|PR> · 📋 <https://vercel.com/gonzalos-projects-42c4ae43/micelio|Vercel>" }
               }
             ]
           }
-          PAYLOAD
-          )"
+          EOF
 
   notify-slack-prod:
     runs-on: ubuntu-latest
@@ -97,22 +93,37 @@ jobs:
       - name: Get Vercel deployment
         id: vercel
         run: |
-          sleep 30
+          sleep 45
           DEPLOY=$(curl -s "https://api.vercel.com/v6/deployments?projectId=${{ secrets.VERCEL_PROJECT_ID }}&limit=1&target=production" \
             -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
             | jq -r '.deployments[0]')
-          echo "url=$(echo $DEPLOY | jq -r '.url')" >> $GITHUB_OUTPUT
-          echo "state=$(echo $DEPLOY | jq -r '.state // .readyState')" >> $GITHUB_OUTPUT
+          URL=$(echo $DEPLOY | jq -r '.url // empty')
+          STATE=$(echo $DEPLOY | jq -r '.state // .readyState // empty')
+          echo "url=${URL}" >> $GITHUB_OUTPUT
+          echo "state=${STATE:-pending}" >> $GITHUB_OUTPUT
 
       - name: Notify Slack (production)
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          COMMIT_SHA: ${{ github.sha }}
+          COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
+          AUTHOR: ${{ github.actor }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+          PREVIEW_URL: ${{ steps.vercel.outputs.url }}
+          DEPLOY_STATE: ${{ steps.vercel.outputs.state }}
         run: |
+          PREVIEW=${PREVIEW_URL:-micelio-nine.vercel.app}
+          SHORT_SHA=${COMMIT_SHA:0:7}
+          # Escape newlines in commit message
+          MSG=$(echo "$COMMIT_MSG" | head -1)
           curl -s -X POST "https://slack.com/api/chat.postMessage" \
-            -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
+            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "$(cat <<'PAYLOAD'
+            -d @- <<EOF
           {
             "channel": "C0APZ38637W",
-            "text": "🚀 *Micelio deployed to production*",
+            "unfurl_links": false,
+            "text": "🚀 Micelio deployed to production: ${MSG}",
             "blocks": [
               {
                 "type": "header",
@@ -121,40 +132,19 @@ jobs:
               {
                 "type": "section",
                 "fields": [
-                  { "type": "mrkdwn", "text": "*Branch:*\nmain" },
-                  { "type": "mrkdwn", "text": "*Commit:*\n<${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>" },
-                  { "type": "mrkdwn", "text": "*Author:*\n${{ github.actor }}" },
-                  { "type": "mrkdwn", "text": "*Status:*\n${{ steps.vercel.outputs.state || 'deploying' }}" }
+                  { "type": "mrkdwn", "text": "*Commit:*\n<${COMMIT_URL}|${SHORT_SHA}>" },
+                  { "type": "mrkdwn", "text": "*Author:*\n${AUTHOR}" },
+                  { "type": "mrkdwn", "text": "*Status:*\n${DEPLOY_STATE}" },
+                  { "type": "mrkdwn", "text": "*Message:*\n${MSG}" }
                 ]
               },
               {
                 "type": "section",
-                "text": { "type": "mrkdwn", "text": "*Message:* ${{ github.event.head_commit.message }}" }
-              },
-              {
-                "type": "actions",
-                "elements": [
-                  {
-                    "type": "button",
-                    "text": { "type": "plain_text", "text": "🌐 Production" },
-                    "url": "https://micelio.skyw.app"
-                  },
-                  {
-                    "type": "button",
-                    "text": { "type": "plain_text", "text": "🔍 Preview" },
-                    "url": "https://${{ steps.vercel.outputs.url || 'micelio-nine.vercel.app' }}"
-                  },
-                  {
-                    "type": "button",
-                    "text": { "type": "plain_text", "text": "📋 Vercel Dashboard" },
-                    "url": "https://vercel.com/gonzalos-projects-42c4ae43/micelio"
-                  }
-                ]
+                "text": { "type": "mrkdwn", "text": "🌐 <https://micelio.skyw.app|Production> · 🔍 <https://${PREVIEW}|Preview> · 📋 <https://vercel.com/gonzalos-projects-42c4ae43/micelio|Vercel>" }
               }
             ]
           }
-          PAYLOAD
-          )"
+          EOF
 
   e2e:
     runs-on: ubuntu-latest
