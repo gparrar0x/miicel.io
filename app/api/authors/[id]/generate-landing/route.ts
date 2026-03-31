@@ -1,16 +1,23 @@
 /**
  * POST /api/authors/[id]/generate-landing
  * Calls Claude API, stores draft, returns content JSON.
- * Vercel timeout: set to 60s (Claude call can take ~10s).
  */
 
 export const maxDuration = 60
 
 import { NextResponse } from 'next/server'
 import { isSuperadmin } from '@/lib/auth/constants'
-import { generateLandingRequestSchema } from '@/lib/schemas/author-landing'
+import {
+  authorLandingContentSchema,
+  generateLandingRequestSchema,
+} from '@/lib/schemas/author-landing'
+import {
+  AUTHOR_LANDING_SYSTEM_PROMPT,
+  AUTHOR_LANDING_TOOL,
+  buildAuthorLandingUserMessage,
+  isAuthorLandingContent,
+} from '@/lib/prompts/author-landing'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
-import { AuthorLandingService } from '@/lib/services/author-landing-service'
 
 function parseId(id: string): number | null {
   const n = parseInt(id, 10)
@@ -41,20 +48,26 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
     }
 
-    const service = new AuthorLandingService(createServiceRoleClient())
-    const author = await service.getAuthor(authorId)
+    const admin = createServiceRoleClient()
+
+    // Get author
+    const { data: author } = await admin
+      .from('authors')
+      .select('*')
+      .eq('id', authorId)
+      .maybeSingle()
     if (!author) {
       return NextResponse.json({ error: 'Author not found.' }, { status: 404 })
     }
 
     // Tenant ownership check
-    const { data: tenant, error: tenantError } = await supabase
+    const { data: tenant } = await admin
       .from('tenants')
       .select('id, owner_id')
       .eq('id', author.tenant_id)
       .maybeSingle()
 
-    if (tenantError || !tenant) {
+    if (!tenant) {
       return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
     }
 
@@ -63,10 +76,58 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
     }
 
-    const landing = await service.generateLanding({
-      authorId,
+    // Fetch author's products for context
+    const { data: products } = await admin
+      .from('products')
+      .select('name, category')
+      .eq('author_id', authorId)
+      .eq('active', true)
+
+    const userMessage = buildAuthorLandingUserMessage({
+      authorName: author.name,
+      products: (products ?? []) as Array<{ name: string; category: string }>,
       customPrompt: parsed.data.custom_prompt,
     })
+
+    // Dynamic import to avoid module-level SDK load
+    const { default: Anthropic } = await import('@anthropic-ai/sdk')
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1024,
+      system: AUTHOR_LANDING_SYSTEM_PROMPT,
+      tools: [AUTHOR_LANDING_TOOL as any],
+      tool_choice: { type: 'tool', name: AUTHOR_LANDING_TOOL.name },
+      messages: [{ role: 'user', content: userMessage }],
+    })
+
+    const toolBlock = response.content.find((b) => b.type === 'tool_use')
+    if (!toolBlock || toolBlock.type !== 'tool_use') {
+      throw new Error('Claude did not return structured output')
+    }
+
+    const rawContent = toolBlock.input
+    if (!isAuthorLandingContent(rawContent)) {
+      throw new Error('Claude tool output missing required fields')
+    }
+
+    const validated = authorLandingContentSchema.parse(rawContent)
+
+    // Persist to DB
+    const { data: landing, error: insertError } = await admin
+      .from('author_landings')
+      .insert({
+        author_id: authorId,
+        content: validated,
+        status: 'draft',
+      })
+      .select()
+      .single()
+
+    if (insertError || !landing) {
+      throw new Error(`Failed to persist landing: ${insertError?.message ?? 'Unknown'}`)
+    }
 
     return NextResponse.json({ landing }, { status: 201 })
   } catch (err: any) {

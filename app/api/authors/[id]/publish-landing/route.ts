@@ -6,7 +6,6 @@
 import { NextResponse } from 'next/server'
 import { isSuperadmin } from '@/lib/auth/constants'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
-import { AuthorLandingService } from '@/lib/services/author-landing-service'
 
 function parseId(id: string): number | null {
   const n = parseInt(id, 10)
@@ -31,19 +30,24 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
       return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
-    const service = new AuthorLandingService(createServiceRoleClient())
-    const author = await service.getAuthor(authorId)
+    const admin = createServiceRoleClient()
+
+    const { data: author } = await admin
+      .from('authors')
+      .select('*')
+      .eq('id', authorId)
+      .maybeSingle()
     if (!author) {
       return NextResponse.json({ error: 'Author not found.' }, { status: 404 })
     }
 
-    const { data: tenant, error: tenantError } = await supabase
+    const { data: tenant } = await admin
       .from('tenants')
       .select('id, owner_id')
       .eq('id', author.tenant_id)
       .maybeSingle()
 
-    if (tenantError || !tenant) {
+    if (!tenant) {
       return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
     }
 
@@ -52,15 +56,35 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
       return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
     }
 
-    const landing = await service.publishLanding(authorId)
-    return NextResponse.json({ landing })
-  } catch (err: any) {
-    console.error('POST /api/authors/[id]/publish-landing error:', err)
+    // Get most recent landing
+    const { data: landings } = await admin
+      .from('author_landings')
+      .select('*')
+      .eq('author_id', authorId)
+      .order('generated_at', { ascending: false })
+      .limit(1)
 
-    if (err.message?.includes('No landing found')) {
+    if (!landings || landings.length === 0) {
       return NextResponse.json({ error: 'No landing found. Generate one first.' }, { status: 404 })
     }
 
+    const { data: updated, error: updateError } = await admin
+      .from('author_landings')
+      .update({ status: 'published', published_at: new Date().toISOString() })
+      .eq('id', landings[0].id)
+      .select()
+      .single()
+
+    if (updateError || !updated) {
+      return NextResponse.json(
+        { error: `Failed to publish: ${updateError?.message}` },
+        { status: 500 },
+      )
+    }
+
+    return NextResponse.json({ landing: updated })
+  } catch (err: any) {
+    console.error('POST /api/authors/[id]/publish-landing error:', err)
     return NextResponse.json({ error: 'Internal server error.' }, { status: 500 })
   }
 }
