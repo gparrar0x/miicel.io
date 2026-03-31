@@ -132,7 +132,7 @@ export async function generateMetadata({
     return {}
   }
 
-  const baseUrl = `https://miicel.io/${locale}/${tenantId}/p/${id}`
+  const baseUrl = `https://micelio.skyw.app/${locale}/${tenantId}/p/${id}`
   const price = `${config.currency} ${product.price.toFixed(2)}`
 
   const description = product.description
@@ -142,7 +142,7 @@ export async function generateMetadata({
   return {
     title: `${product.name} | ${config.businessName}`,
     description,
-    metadataBase: new URL('https://miicel.io'),
+    metadataBase: new URL('https://micelio.skyw.app'),
     openGraph: {
       title: product.name,
       description: `${product.name} - ${price}`,
@@ -162,8 +162,8 @@ export async function generateMetadata({
     alternates: {
       canonical: baseUrl,
       languages: {
-        'es-ES': `https://miicel.io/es/${tenantId}/p/${id}`,
-        'en-US': `https://miicel.io/en/${tenantId}/p/${id}`,
+        'es-ES': `https://micelio.skyw.app/es/${tenantId}/p/${id}`,
+        'en-US': `https://micelio.skyw.app/en/${tenantId}/p/${id}`,
       },
     },
   }

@@ -5,7 +5,7 @@ import { themes as prismThemes } from 'prism-react-renderer'
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'Miicel.io Documentation',
+  title: 'Micelio Documentation',
   tagline: 'Multi-tenant E-commerce Platform',
   favicon: 'img/favicon.ico',
 
@@ -18,12 +18,12 @@ const config: Config = {
   url: 'https://gparrar0x.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/miicel.io/',
+  baseUrl: '/micelio.skyw.app/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'gparrar0x', // Usually your GitHub org/user name.
-  projectName: 'miicel.io', // Usually your repo name.
+  projectName: 'micelio.skyw.app', // Usually your repo name.
 
   onBrokenLinks: 'warn',
 
@@ -58,9 +58,9 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'Miicel.io Docs',
+      title: 'Micelio Docs',
       logo: {
-        alt: 'Miicel.io Logo',
+        alt: 'Micelio Logo',
         src: 'img/logo.svg',
       },
       items: [
@@ -71,12 +71,12 @@ const config: Config = {
           label: 'Documentation',
         },
         {
-          href: 'https://miicel.io',
+          href: 'https://micelio.skyw.app',
           label: 'Live App',
           position: 'right',
         },
         {
-          href: 'https://github.com/skywalking/miicel.io',
+          href: 'https://github.com/skywalking/micelio.skyw.app',
           label: 'GitHub',
           position: 'right',
         },

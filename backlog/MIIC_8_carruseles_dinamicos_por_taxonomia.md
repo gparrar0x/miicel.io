@@ -1,7 +1,7 @@
 ---
 id: MIIC_8
 project_code: MIIC
-project: miicel.io
+project: micelio.skyw.app
 title: "MIIC_8: Carruseles dinámicos por taxonomía"
 estado: active
 tags:

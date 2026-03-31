@@ -98,7 +98,7 @@ MERCADOPAGO_WEBHOOK_SECRET=<from MP dashboard after step 3>
 
 ### Check build locally
 ```bash
-cd /Users/gpublica/workspace/skywalking/projects/miicel.io
+cd /Users/gpublica/workspace/skywalking/projects/micelio.skyw.app
 npm run build
 ```
 

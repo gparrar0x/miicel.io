@@ -1,4 +1,4 @@
-## Miicel.io - Product Overview
+## Micelio - Product Overview
 
 **Audience:** Founders, sales, onboarding
 **Version:** 0.1 (draft)
@@ -6,15 +6,15 @@
 
 ---
 
-## 1. What is Miicel.io?
+## 1. What is Micelio?
 
-Miicel.io is a SaaS platform that gives small restaurants, food trucks, and independent cooks a **high-converting digital storefront + simple backoffice** in minutes, without agencies or custom development.
+Micelio is a SaaS platform that gives small restaurants, food trucks, and independent cooks a **high-converting digital storefront + simple backoffice** in minutes, without agencies or custom development.
 
 - **Storefront:** Ready‑made templates optimized for selling (gallery, detail, minimal, restaurant).
 - **Backoffice:** Simple dashboard to manage products, prices, availability, and orders.
 - **Infra:** Hosted, secure, responsive, works on mobile first.
 
-Miicel.io is opinionated: instead of 1000 options, it ships with **sane defaults** that already follow UX best practices for food and retail.
+Micelio is opinionated: instead of 1000 options, it ships with **sane defaults** that already follow UX best practices for food and retail.
 
 ---
 
@@ -117,7 +117,7 @@ Not (yet) included:
 
 ## 7. Related docs
 
-- Vision & market: `docs/miicel_vision.md`
+- Vision & market: `docs/micelio_vision.md`
 - Template system: `docs/templates/USER_GUIDE.md`
 - Restaurant template design & implementation: `docs/backlog/SKY_42_restaurant_template/*`
 - Product cards implementation: `docs/PRODUCT_CARDS_IMPLEMENTATION.md`

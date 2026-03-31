@@ -1,6 +1,6 @@
 # styles/CLAUDE.md
 
-> Theming system for miicel.io
+> Theming system for micelio.skyw.app
 > Updated: 2025-01-27
 
 ---

@@ -5,13 +5,13 @@ title: Product Management
 
 # Product Management
 
-Complete guide to managing products, categories, and inventory in Miicel.io.
+Complete guide to managing products, categories, and inventory in Micelio.
 
 ---
 
 ## Product Cards
 
-Miicel.io supports three product card variants optimized for different use cases:
+Micelio supports three product card variants optimized for different use cases:
 
 ### Gallery Card
 - **Purpose:** Large image display with minimal text

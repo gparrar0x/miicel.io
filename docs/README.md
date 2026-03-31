@@ -1,4 +1,4 @@
-# Documentación miicel.io
+# Documentación micelio.skyw.app
 
 > Multi-tenant e-commerce SaaS
 > Última actualización: 2025-01-24

@@ -1,7 +1,7 @@
 ---
 id: MIIC_9
 project_code: MIIC
-project: miicel.io
+project: micelio.skyw.app
 title: "MIIC_9: Botón WhatsApp configurable en todos los templates"
 estado: active
 tags:
@@ -55,7 +55,7 @@ Templates actuales implementados en `/components/storefront/`:
 - [ ] Integrar botón en cada template (Gallery, Detail, Minimal, Restaurant)
 - [ ] UI en dashboard settings para configurar número
 - [ ] Validación de formato de número (con código de país)
-- [ ] Mensaje predeterminado opcional (ej: "Hola, vi tu tienda en miicel.io")
+- [ ] Mensaje predeterminado opcional (ej: "Hola, vi tu tienda en micelio.skyw.app")
 
 ## Technical Notes
 

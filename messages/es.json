@@ -237,7 +237,11 @@
     "passwordPlaceholder": "••••••••",
     "submit": "Entrar",
     "submitting": "Iniciando sesión...",
-    "platformOnly": "Acceso solo para plataforma"
+    "platformOnly": "Acceso solo para plataforma",
+    "google_signin": "Continuar con Google",
+    "or_divider": "o",
+    "error_no_account": "No existe una cuenta con ese email. Contacta al administrador.",
+    "error_auth_failed": "Error de autenticación. Intenta nuevamente."
   },
   "Checkout": {
     "title": "Finalizar Compra",

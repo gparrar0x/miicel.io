@@ -1,4 +1,4 @@
-# Miicel.io Visual Mockups & Layout Specs
+# Micelio Visual Mockups & Layout Specs
 
 **Format:** ASCII mockups + detailed layout grids
 **Usage:** Reference for Pixel during implementation
@@ -12,7 +12,7 @@
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                                                                       │
-│  MIICEL                                                               │
+│  MICELIO                                                               │
 │                                                                       │
 │                                                                       │
 │                    ┌──────────────────────────┐                       │
@@ -20,7 +20,7 @@
 │                    │                          │                       │
 │                    │  Email                   │                       │
 │                    │  ┌────────────────────┐  │                       │
-│                    │  │  admin@miicel.io   │  │                       │
+│                    │  │  admin@micelio.skyw.app   │  │                       │
 │                    │  └────────────────────┘  │                       │
 │                    │                          │                       │
 │                    │  Password                │                       │
@@ -34,7 +34,7 @@
 │                    │                          │                       │
 │                    └──────────────────────────┘                       │
 │                                                                       │
-│                  Miicel.io © 2025                                     │
+│                  Micelio © 2025                                     │
 │                  Enterprise Multi-Tenant Platform                    │
 │                                                                       │
 └─────────────────────────────────────────────────────────────────────┘
@@ -50,7 +50,7 @@ Button: 48px height, full width, #B8860B gold
 ```
 ┌───────────────────────────┐
 │                           │
-│       MIICEL              │
+│       MICELIO              │
 │                           │
 │                           │
 │  ┌─────────────────────┐  │
@@ -59,7 +59,7 @@ Button: 48px height, full width, #B8860B gold
 │  │                     │  │
 │  │  Email              │  │
 │  │  ┌───────────────┐  │  │
-│  │  │ admin@miicel  │  │  │
+│  │  │ admin@micelio  │  │  │
 │  │  └───────────────┘  │  │
 │  │                     │  │
 │  │  Password           │  │
@@ -73,7 +73,7 @@ Button: 48px height, full width, #B8860B gold
 │  │                     │  │
 │  └─────────────────────┘  │
 │                           │
-│  Miicel.io © 2025         │
+│  Micelio © 2025         │
 │                           │
 └───────────────────────────┘
 
@@ -109,7 +109,7 @@ Button height: 44px (touch target)
 ┌────────────────────────────┐
 │ Email                      │
 │ ┌──────────────────────┐   │
-│ │ admin@miicel.io      │   │  ← Border: 2px #B8860B (gold)
+│ │ admin@micelio.skyw.app      │   │  ← Border: 2px #B8860B (gold)
 │ └──────────────────────┘   │  ← Shadow: 0 0 0 3px rgba(184,134,11,0.1)
 │ ┌──────────────────────┐   │     (shadow extends outside border)
 ```
@@ -276,7 +276,7 @@ Status Badge Colors:
 ```
 ┌──────────────────┐
 │                  │
-│  MIICEL          │  ← Logo: 24px Cinzel 700, 120px min-width
+│  MICELIO          │  ← Logo: 24px Cinzel 700, 120px min-width
 │                  │
 │  ──────────────  │  ← Divider: 1px #E5E5E5, margin 16px 0
 │                  │

@@ -5,7 +5,7 @@ title: Quick Start
 
 # Quick Start
 
-Get started with Miicel.io in 5 minutes.
+Get started with Micelio in 5 minutes.
 
 ## Prerequisites
 

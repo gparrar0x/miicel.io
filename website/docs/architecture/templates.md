@@ -5,7 +5,7 @@ title: Template System
 
 # Template System
 
-Miicel.io supports multiple storefront templates optimized for different business types.
+Micelio supports multiple storefront templates optimized for different business types.
 
 ---
 

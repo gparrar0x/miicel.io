@@ -37,7 +37,7 @@ export function ProductStructuredData({ product, tenant, locale }: ProductStruct
       priceCurrency: product.currency || 'ARS',
       availability:
         product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
-      url: `https://miicel.io/${locale}/${tenant.slug}/p/${product.id}`,
+      url: `https://micelio.skyw.app/${locale}/${tenant.slug}/p/${product.id}`,
     },
     brand: {
       '@type': 'Brand',

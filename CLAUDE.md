@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> miicel.io — Multi-tenant e-commerce SaaS
+> micelio.skyw.app — Multi-tenant e-commerce SaaS
 > Updated: 2025-01-24
 
 ---
@@ -19,7 +19,7 @@ Ver `../../CLAUDE.md` para metodología completa, agentes disponibles y `subagen
 
 ## Project Overview
 
-Multi-tenant e-commerce SaaS platform (miicel.io) with customizable templates (Gallery, Restaurant). Built with Next.js 15, React 19, Supabase, and TypeScript.
+Multi-tenant e-commerce SaaS platform (micelio.skyw.app) with customizable templates (Gallery, Restaurant). Built with Next.js 15, React 19, Supabase, and TypeScript.
 
 ## Commands
 
@@ -34,7 +34,7 @@ npm run test:e2e              # Run all E2E tests (headless)
 npm run test:e2e:ui           # UI mode (recommended for debugging)
 npm run test:e2e:headed       # Visible browser
 npm run test:e2e:local        # Against localhost:3000
-npm run test:e2e:prod         # Against production (miicelio.vercel.app)
+npm run test:e2e:prod         # Against production (micelio.vercel.app)
 
 # Run single test
 npx playwright test tests/e2e/specs/checkout-flow.spec.ts
@@ -150,5 +150,5 @@ MERCADOPAGO_TEST_ACCESS_TOKEN= # For E2E sandbox tests
 
 ## Deployment
 
-Production: https://miicel.io (Vercel)
-Staging: https://miicelio.vercel.app
+Production: https://micelio.skyw.app (Vercel)
+Staging: https://micelio.vercel.app

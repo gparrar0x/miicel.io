@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Google Sign-In for existing users** [2026-03-30] (SKY-232)
+  - OAuth callback route (`app/api/auth/callback/route.ts`)
+  - GoogleSignInButton component with Google branding
+  - Login page: button, "or" divider, error handling for no_account/auth_failed
+  - i18n support (ES/EN) for all new auth strings
+  - `getUserByEmail()` helper in `lib/auth.ts`
+  - E2E tests: 13 specs (UI, errors, API callback, accessibility)
+  - Google Cloud OAuth + Supabase provider configured
+
+### Changed
+
+- **Rename miicel.io → micelio** [2026-03-30]
+  - Project directory, package name, GitHub repo, all code references
+  - Domain: micelio.skyw.app (production), micelio-nine.vercel.app (staging)
+  - Sentry project: micelio
+  - Supabase Site URL + redirect URLs updated
+
 - **Agent Service module** [2026-03-24] (SKY-188)
   - Agent orchestrator, loader, agent-loop with tool registry
   - Agent definitions (Oraculo, Pregon) in Toon format
