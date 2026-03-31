@@ -76,6 +76,11 @@ jobs:
                     "type": "button",
                     "text": { "type": "plain_text", "text": "📝 PR" },
                     "url": "${{ github.event.pull_request.html_url }}"
+                  },
+                  {
+                    "type": "button",
+                    "text": { "type": "plain_text", "text": "📋 Vercel" },
+                    "url": "https://vercel.com/gonzalos-projects-42c4ae43/micelio"
                   }
                 ]
               }
