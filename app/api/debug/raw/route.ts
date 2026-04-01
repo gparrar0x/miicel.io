@@ -4,3 +4,4 @@ export async function GET() {
     headers: { 'content-type': 'application/json' },
   })
 }
+// Node 20.x redeploy trigger
