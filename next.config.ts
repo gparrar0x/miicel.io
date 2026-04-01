@@ -1,11 +1,12 @@
-// NOTE: Sentry temporarily disabled — withSentryConfig causes ALL Node.js
-// serverless functions to hang on Vercel (OTEL keeps event loop alive).
-// Re-enable after finding compatible config. See PR #24.
+// NOTE: Sentry temporarily disabled — see PR #24.
 // import { withSentryConfig } from '@sentry/nextjs'
-import type { NextConfig } from 'next'
-import createNextIntlPlugin from 'next-intl/plugin'
 
-const withNextIntl = createNextIntlPlugin('./i18n/request.ts')
+// NOTE: next-intl temporarily disabled to test if it causes Node.js
+// serverless function hang on Vercel. See PR #24.
+// import createNextIntlPlugin from 'next-intl/plugin'
+// const withNextIntl = createNextIntlPlugin('./i18n/request.ts')
+
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   typescript: {
@@ -35,4 +36,4 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default withNextIntl(nextConfig)
+export default nextConfig
