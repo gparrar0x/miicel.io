@@ -7,7 +7,7 @@ import { AppError } from '@skywalking/core/errors'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { isSuperadmin } from '@/lib/auth/constants'
-import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
+import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 
 const createSchema = z.object({
   name: z.string().min(1),
@@ -18,7 +18,7 @@ const createSchema = z.object({
 export async function POST(request: Request, { params }: { params: Promise<{ groupId: string }> }) {
   try {
     const { groupId } = await params
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
     const {
       data: { user },
       error: authError,

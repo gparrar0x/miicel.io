@@ -27,7 +27,7 @@
 
 import { NextResponse } from 'next/server'
 import { isSuperadmin } from '@/lib/auth/constants'
-import { createClient } from '@/lib/supabase/server'
+import { createClientFromRequest } from '@/lib/supabase/server'
 
 /**
  * Maximum file size: 5MB
@@ -38,7 +38,7 @@ const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'im
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     // Step 1: Verify authentication
     const {

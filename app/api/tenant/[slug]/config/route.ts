@@ -16,11 +16,11 @@
 
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
+import { createClientFromRequest } from '@/lib/supabase/server'
 
 const slugParamSchema = z.string().regex(/^[a-z0-9-]+$/, 'Invalid slug format')
 
-export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   try {
     // Await params (Next.js 16 requirement)
     const { slug: rawSlug } = await params
@@ -35,7 +35,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
     }
 
     const slug = validationResult.data
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     // Query tenants table (template field)
     // Note: tenants_public view doesn't include template column

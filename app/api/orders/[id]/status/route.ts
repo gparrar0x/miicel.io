@@ -15,7 +15,7 @@
 import { NextResponse } from 'next/server'
 import { isSuperadmin } from '@/lib/auth/constants'
 import { orderStatusUpdateSchema } from '@/lib/schemas/order'
-import { createClient } from '@/lib/supabase/server'
+import { createClientFromRequest } from '@/lib/supabase/server'
 
 /**
  * PATCH /api/orders/[id]/status - Update order status
@@ -39,7 +39,7 @@ import { createClient } from '@/lib/supabase/server'
  */
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     // Step 1: Verify authentication
     const {

@@ -17,7 +17,7 @@ import {
   buildAuthorLandingUserMessage,
   isAuthorLandingContent,
 } from '@/lib/prompts/author-landing'
-import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
+import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 
 function parseId(id: string): number | null {
   const n = parseInt(id, 10)
@@ -32,7 +32,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Invalid author ID.' }, { status: 400 })
     }
 
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
     const {
       data: { user },
       error: authError,

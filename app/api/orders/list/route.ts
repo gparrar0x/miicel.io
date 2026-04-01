@@ -16,7 +16,7 @@
 import { NextResponse } from 'next/server'
 import { isSuperadmin } from '@/lib/auth/constants'
 import { orderListQuerySchema } from '@/lib/schemas/order'
-import { createClient } from '@/lib/supabase/server'
+import { createClientFromRequest } from '@/lib/supabase/server'
 
 /**
  * GET /api/orders/list - List orders with filters
@@ -63,7 +63,7 @@ export async function GET(request: Request) {
 
     const { tenant_id, status, date_from, date_to, limit = 50, offset = 0 } = validationResult.data
 
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     // Step 2: Verify user is authenticated
     const {

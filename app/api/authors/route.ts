@@ -6,7 +6,7 @@
 import { NextResponse } from 'next/server'
 import { isSuperadmin } from '@/lib/auth/constants'
 import { authorCreateSchema } from '@/lib/schemas/author-landing'
-import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
+import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 
 export async function GET(request: Request) {
   try {
@@ -22,7 +22,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Invalid tenant_id.' }, { status: 400 })
     }
 
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
     const {
       data: { user },
       error: authError,
@@ -80,7 +80,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
     const {
       data: { user },
       error: authError,

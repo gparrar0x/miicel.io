@@ -8,7 +8,7 @@
 import { AppError } from '@skywalking/core/errors'
 import { NextResponse } from 'next/server'
 import { productUpdateSchema } from '@/lib/schemas/order'
-import { createClient } from '@/lib/supabase/server'
+import { createClientFromRequest } from '@/lib/supabase/server'
 import { ProductService } from '@/services/product.service'
 import { ProductRepo } from '@/services/repositories/product.repo'
 import { TenantRepo } from '@/services/repositories/tenant.repo'
@@ -29,7 +29,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     if (productId === null)
       return NextResponse.json({ error: 'Invalid product ID.' }, { status: 400 })
 
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(_request)
     const service = makeService(supabase)
     const result = await service.getById(productId)
 
@@ -47,7 +47,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
     const {
       data: { user },
       error: authError,
@@ -85,7 +85,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
 export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(_request)
     const {
       data: { user },
       error: authError,

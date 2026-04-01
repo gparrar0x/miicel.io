@@ -12,7 +12,7 @@
 import { NextResponse } from 'next/server'
 import { isSuperadmin } from '@/lib/auth/constants'
 import { updateLocationSchema } from '@/lib/schemas/consignment'
-import { createClient } from '@/lib/supabase/server'
+import { createClientFromRequest } from '@/lib/supabase/server'
 
 type RouteParams = {
   params: Promise<{ id: string }>
@@ -32,7 +32,7 @@ export async function GET(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Invalid location ID' }, { status: 400 })
     }
 
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     // Auth check
     const {
@@ -110,7 +110,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Invalid location ID' }, { status: 400 })
     }
 
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     // Auth check
     const {
@@ -197,7 +197,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Invalid location ID' }, { status: 400 })
     }
 
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     // Auth check
     const {
