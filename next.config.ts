@@ -1,4 +1,7 @@
-import { withSentryConfig } from '@sentry/nextjs'
+// NOTE: Sentry temporarily disabled — withSentryConfig causes ALL Node.js
+// serverless functions to hang on Vercel (OTEL keeps event loop alive).
+// Re-enable after finding compatible config. See PR #24.
+// import { withSentryConfig } from '@sentry/nextjs'
 import type { NextConfig } from 'next'
 import createNextIntlPlugin from 'next-intl/plugin'
 
@@ -32,15 +35,4 @@ const nextConfig: NextConfig = {
   },
 }
 
-const sentryEnabled = !!process.env.SENTRY_AUTH_TOKEN
-
-export default sentryEnabled
-  ? withSentryConfig(withNextIntl(nextConfig), {
-      silent: true,
-      org: 'skywalking',
-      project: 'micelio',
-      autoInstrumentServerFunctions: false,
-      autoInstrumentMiddleware: false,
-      autoInstrumentAppDirectory: false,
-    })
-  : withNextIntl(nextConfig)
+export default withNextIntl(nextConfig)
