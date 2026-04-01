@@ -39,5 +39,8 @@ export default sentryEnabled
       silent: true,
       org: 'skywalking',
       project: 'micelio',
+      autoInstrumentServerFunctions: false,
+      autoInstrumentMiddleware: false,
+      autoInstrumentAppDirectory: false,
     })
   : withNextIntl(nextConfig)
