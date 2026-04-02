@@ -4,13 +4,8 @@
  */
 
 import { NextResponse } from 'next/server'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantOwnership, parseId } from '@/lib/api/utils'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
-
-function parseId(id: string): number | null {
-  const n = parseInt(id, 10)
-  return Number.isNaN(n) ? null : n
-}
 
 export async function POST(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -34,29 +29,16 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
 
     const { data: author } = await admin
       .from('authors')
-      .select('*')
+      .select('id, tenant_id')
       .eq('id', authorId)
       .maybeSingle()
     if (!author) {
       return NextResponse.json({ error: 'Author not found.' }, { status: 404 })
     }
 
-    const { data: tenant } = await admin
-      .from('tenants')
-      .select('id, owner_id')
-      .eq('id', author.tenant_id)
-      .maybeSingle()
+    const ownershipError = await assertTenantOwnership(admin, user.id, user.email, author.tenant_id)
+    if (ownershipError) return ownershipError
 
-    if (!tenant) {
-      return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
-    }
-
-    const isSuperadminUser = isSuperadmin(user.email)
-    if (!isSuperadminUser && tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
-    }
-
-    // Get most recent landing
     const { data: landings } = await admin
       .from('author_landings')
       .select('*')

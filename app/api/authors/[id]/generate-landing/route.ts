@@ -6,7 +6,7 @@
 export const maxDuration = 60
 
 import { NextResponse } from 'next/server'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantOwnership, parseId } from '@/lib/api/utils'
 import {
   authorLandingContentSchema,
   generateLandingRequestSchema,
@@ -18,11 +18,6 @@ import {
   isAuthorLandingContent,
 } from '@/lib/prompts/author-landing'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
-
-function parseId(id: string): number | null {
-  const n = parseInt(id, 10)
-  return Number.isNaN(n) ? null : n
-}
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -50,33 +45,18 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     const admin = createServiceRoleClient()
 
-    // Get author
     const { data: author } = await admin
       .from('authors')
-      .select('*')
+      .select('id, tenant_id, name, slug, image_url')
       .eq('id', authorId)
       .maybeSingle()
     if (!author) {
       return NextResponse.json({ error: 'Author not found.' }, { status: 404 })
     }
 
-    // Tenant ownership check
-    const { data: tenant } = await admin
-      .from('tenants')
-      .select('id, owner_id')
-      .eq('id', author.tenant_id)
-      .maybeSingle()
+    const ownershipError = await assertTenantOwnership(admin, user.id, user.email, author.tenant_id)
+    if (ownershipError) return ownershipError
 
-    if (!tenant) {
-      return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
-    }
-
-    const isSuperadminUser = isSuperadmin(user.email)
-    if (!isSuperadminUser && tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
-    }
-
-    // Fetch author's products for context
     const { data: products } = await admin
       .from('products')
       .select('name, category')
@@ -114,7 +94,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     const validated = authorLandingContentSchema.parse(rawContent)
 
-    // Persist to DB
     const { data: landing, error: insertError } = await admin
       .from('author_landings')
       .insert({
