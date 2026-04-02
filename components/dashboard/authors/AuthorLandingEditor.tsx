@@ -1,10 +1,5 @@
 'use client'
 
-/**
- * AuthorLandingEditor — dashboard panel for generating + publishing author landings.
- * Flow: select author → upload image → write prompt → generate → preview → publish.
- */
-
 import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useRef } from 'react'
 import { AuthorLanding } from '@/components/storefront/AuthorLanding'
@@ -36,8 +31,6 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
     selectedAuthorId,
     customPrompt,
     previewContent,
-    previewAuthorName,
-    previewAuthorImage,
     landingStatus,
     isLoadingAuthors,
     isGenerating,
@@ -46,7 +39,6 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
     error,
     setAuthors,
     selectAuthor,
-    setTenantId,
     setCustomPrompt,
     setPreview,
     setError,
@@ -56,17 +48,13 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
     setIsUploading,
     setLandingStatus,
     updateAuthorImage,
+    selectedAuthor: getSelectedAuthor,
   } = useAuthorLandingStore()
 
   const t = useTranslations('Authors')
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const selectedAuthor = getSelectedAuthor()
 
-  // Init
-  useEffect(() => {
-    setTenantId(tenantId)
-  }, [tenantId, setTenantId])
-
-  // Fetch authors
   const fetchAuthors = useCallback(async () => {
     setIsLoadingAuthors(true)
     setError(null)
@@ -86,12 +74,10 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
     fetchAuthors()
   }, [fetchAuthors])
 
-  // Set default prompt on first render
   useEffect(() => {
     if (!customPrompt) setCustomPrompt(DEFAULT_PROMPT)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Image upload
   const handleImageUpload = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0]
@@ -113,7 +99,6 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
 
         const { url } = await res.json()
 
-        // Update author image_url via PUT
         await fetch(`/api/authors/${selectedAuthorId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -131,7 +116,6 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
     [selectedAuthorId, tenantId, setError, setIsUploading, updateAuthorImage],
   )
 
-  // Generate landing
   const handleGenerate = useCallback(async () => {
     if (!selectedAuthorId) return
 
@@ -150,17 +134,14 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
       }
 
       const { landing } = await res.json()
-      const author = authors.find((a) => a.id === selectedAuthorId)
-
-      setPreview(landing.content, author?.name ?? '', author?.image_url ?? null, landing.status)
+      setPreview(landing.content, landing.status)
     } catch (err: any) {
       setError(err.message)
     } finally {
       setIsGenerating(false)
     }
-  }, [selectedAuthorId, customPrompt, authors, setError, setIsGenerating, setPreview])
+  }, [selectedAuthorId, customPrompt, setError, setIsGenerating, setPreview])
 
-  // Publish
   const handlePublish = useCallback(async () => {
     if (!selectedAuthorId) return
 
@@ -177,7 +158,6 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
       }
 
       setLandingStatus('published')
-      // Refresh author list to update badges
       fetchAuthors()
     } catch (err: any) {
       setError(err.message)
@@ -186,20 +166,16 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
     }
   }, [selectedAuthorId, setError, setIsPublishing, setLandingStatus, fetchAuthors])
 
-  const selectedAuthor = authors.find((a) => a.id === selectedAuthorId)
   const ctaHref = `/${locale}/${tenantSlug}/?artist=${encodeURIComponent(selectedAuthor?.name ?? '')}`
 
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div>
         <h1 className="font-display text-3xl font-bold uppercase tracking-tight">{t('title')}</h1>
         <p className="text-sm text-muted-foreground mt-1">{t('subtitle')}</p>
       </div>
 
-      {/* Controls */}
       <div className="space-y-6 max-w-2xl">
-        {/* Author Select */}
         <div className="space-y-2">
           <label className="text-sm font-medium" htmlFor="author-select">
             {t('author')}
@@ -216,34 +192,29 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
             <SelectContent>
               {authors.map((author) => (
                 <SelectItem key={author.id} value={String(author.id)}>
-                  <span className="flex items-center gap-2">
-                    {author.name}
-                    {author.latest_landing && (
-                      <Badge
-                        variant={
-                          author.latest_landing.status === 'published' ? 'default' : 'outline'
-                        }
-                        className="text-[10px] px-1.5 py-0"
-                      >
-                        {author.latest_landing.status}
-                      </Badge>
-                    )}
-                  </span>
+                  {author.name}
+                  {author.latest_landing && (
+                    <Badge
+                      variant={author.latest_landing.status === 'published' ? 'default' : 'outline'}
+                      className="text-[10px] px-1.5 py-0 ml-2"
+                    >
+                      {author.latest_landing.status}
+                    </Badge>
+                  )}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
 
-        {/* Image Upload */}
         {selectedAuthorId && (
           <div className="space-y-2">
             <label className="text-sm font-medium">{t('authorImage')}</label>
             <div className="flex items-center gap-4">
-              {previewAuthorImage && (
+              {selectedAuthor?.image_url && (
                 <img
-                  src={previewAuthorImage}
-                  alt={selectedAuthor?.name ?? 'Author'}
+                  src={selectedAuthor.image_url}
+                  alt={selectedAuthor.name}
                   className="w-16 h-16 object-cover border-2 border-black"
                 />
               )}
@@ -263,7 +234,6 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
           </div>
         )}
 
-        {/* Prompt */}
         {selectedAuthorId && (
           <div className="space-y-2">
             <label className="text-sm font-medium" htmlFor="author-prompt">
@@ -281,7 +251,6 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
           </div>
         )}
 
-        {/* Actions */}
         {selectedAuthorId && (
           <div className="flex items-center gap-3">
             <Button
@@ -324,7 +293,6 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
           </div>
         )}
 
-        {/* Error */}
         {error && (
           <p className="text-sm text-destructive border border-destructive/30 bg-destructive/5 px-3 py-2 rounded">
             {error}
@@ -332,8 +300,7 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
         )}
       </div>
 
-      {/* Preview */}
-      {previewContent && previewAuthorName && (
+      {previewContent && selectedAuthor && (
         <div data-testid="author-preview-container" className="border-2 border-black mt-8">
           <div className="bg-neutral-100 px-4 py-2 border-b-2 border-black flex items-center justify-between">
             <span className="text-sm font-mono font-medium uppercase tracking-wider">
@@ -347,8 +314,8 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
           </div>
           <AuthorLanding
             content={previewContent}
-            authorName={previewAuthorName}
-            authorImage={previewAuthorImage}
+            authorName={selectedAuthor.name}
+            authorImage={selectedAuthor.image_url}
             ctaHref={ctaHref}
           />
         </div>

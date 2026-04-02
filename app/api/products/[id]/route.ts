@@ -7,16 +7,12 @@
 
 import { AppError } from '@skywalking/core/errors'
 import { NextResponse } from 'next/server'
+import { parseId } from '@/lib/api/utils'
 import { productUpdateSchema } from '@/lib/schemas/order'
 import { createClient } from '@/lib/supabase/server'
 import { ProductService } from '@/services/product.service'
 import { ProductRepo } from '@/services/repositories/product.repo'
 import { TenantRepo } from '@/services/repositories/tenant.repo'
-
-function parseId(id: string): number | null {
-  const n = parseInt(id, 10)
-  return Number.isNaN(n) ? null : n
-}
 
 function makeService(supabase: any): ProductService {
   return new ProductService(new ProductRepo(supabase), new TenantRepo(supabase))

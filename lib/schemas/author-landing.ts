@@ -23,6 +23,8 @@ export const authorLandingContentSchema = z.object({
 
 export type AuthorLandingContent = z.infer<typeof authorLandingContentSchema>
 
+export type LandingStatus = 'draft' | 'published'
+
 // --- Author CRUD schemas ---
 
 export const authorCreateSchema = z.object({

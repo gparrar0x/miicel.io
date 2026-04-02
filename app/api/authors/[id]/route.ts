@@ -5,38 +5,9 @@
  */
 
 import { NextResponse } from 'next/server'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantOwnership, parseId } from '@/lib/api/utils'
 import { authorUpdateSchema } from '@/lib/schemas/author-landing'
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
-
-function parseId(id: string): number | null {
-  const n = parseInt(id, 10)
-  return Number.isNaN(n) ? null : n
-}
-
-async function assertTenantOwnership(
-  supabase: any,
-  userId: string,
-  userEmail: string | undefined,
-  tenantId: number,
-): Promise<NextResponse | null> {
-  const { data: tenant, error } = await supabase
-    .from('tenants')
-    .select('id, owner_id')
-    .eq('id', tenantId)
-    .maybeSingle()
-
-  if (error || !tenant) {
-    return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
-  }
-
-  const isSuperadminUser = isSuperadmin(userEmail)
-  if (!isSuperadminUser && tenant.owner_id !== userId) {
-    return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
-  }
-
-  return null
-}
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -59,7 +30,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     const admin = createServiceRoleClient()
     const { data: author, error } = await admin
       .from('authors')
-      .select('*')
+      .select('id, tenant_id, name, slug, image_url, created_at')
       .eq('id', authorId)
       .maybeSingle()
 
@@ -109,7 +80,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     const admin = createServiceRoleClient()
     const { data: existing } = await admin
       .from('authors')
-      .select('*')
+      .select('id, tenant_id')
       .eq('id', authorId)
       .maybeSingle()
     if (!existing) {
@@ -169,7 +140,7 @@ export async function DELETE(_request: Request, { params }: { params: Promise<{ 
     const admin = createServiceRoleClient()
     const { data: existing } = await admin
       .from('authors')
-      .select('*')
+      .select('id, tenant_id')
       .eq('id', authorId)
       .maybeSingle()
     if (!existing) {

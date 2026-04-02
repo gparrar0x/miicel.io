@@ -20,7 +20,6 @@ interface PageProps {
 async function getAuthorLanding(tenantSlug: string, authorSlug: string) {
   const supabase = createServiceRoleClient()
 
-  // Resolve tenant
   const numericId = Number(tenantSlug)
   const isNumeric = !Number.isNaN(numericId)
 
@@ -32,7 +31,6 @@ async function getAuthorLanding(tenantSlug: string, authorSlug: string) {
 
   if (!tenant) return null
 
-  // Get author by slug + tenant
   const { data: author } = await supabase
     .from('authors')
     .select('id, name, slug, image_url, tenant_id')
@@ -42,7 +40,6 @@ async function getAuthorLanding(tenantSlug: string, authorSlug: string) {
 
   if (!author) return null
 
-  // Get latest published landing
   const { data: landings } = await supabase
     .from('author_landings')
     .select('content, status')

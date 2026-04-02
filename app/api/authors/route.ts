@@ -32,7 +32,6 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
-    // Use service role to bypass RLS
     const adminClient = createServiceRoleClient()
     const { data, error } = await adminClient
       .from('authors')
@@ -44,6 +43,8 @@ export async function GET(request: Request) {
       )
       .eq('tenant_id', tenantId)
       .order('created_at', { ascending: false })
+      .order('generated_at', { ascending: false, referencedTable: 'author_landings' })
+      .limit(1, { referencedTable: 'author_landings' })
 
     if (error) {
       return NextResponse.json(
@@ -53,10 +54,7 @@ export async function GET(request: Request) {
     }
 
     const authors = ((data ?? []) as any[]).map((row) => {
-      const landings = row.author_landings ?? []
-      const latest = landings.sort(
-        (a: any, b: any) => new Date(b.generated_at).getTime() - new Date(a.generated_at).getTime(),
-      )[0]
+      const latest = (row.author_landings ?? [])[0] ?? null
 
       return {
         id: row.id,
@@ -96,7 +94,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
     }
 
-    // Verify user owns the tenant
     const { data: tenant, error: tenantError } = await supabase
       .from('tenants')
       .select('id, owner_id')
