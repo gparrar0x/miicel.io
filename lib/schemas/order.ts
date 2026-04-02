@@ -298,6 +298,7 @@ export const productCreateSchema = z.object({
   stock: z.number().int().nonnegative('Stock cannot be negative').optional(),
   image_url: z.string().url('Invalid image URL').optional(),
   active: z.boolean().optional(),
+  author_id: z.number().int().positive().nullable().optional(),
 })
 
 export type ProductCreate = z.infer<typeof productCreateSchema>

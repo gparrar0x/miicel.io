@@ -17,6 +17,7 @@ export interface ProductRow {
   metadata: unknown
   created_at?: string
   updated_at?: string
+  author_id?: number | null
   discount_type?: string | null
   discount_value?: number | null
   discount_starts_at?: string | null
@@ -36,6 +37,7 @@ export interface CreateProductInput {
   stock?: number
   image_url?: string
   active?: boolean
+  author_id?: number | null
 }
 
 export interface UpdateProductInput {
@@ -46,6 +48,7 @@ export interface UpdateProductInput {
   stock?: number
   image_url?: string
   active?: boolean
+  author_id?: number | null
 }
 
 export interface IProductRepo {
@@ -131,6 +134,7 @@ export class ProductRepo implements IProductRepo {
         stock: input.stock ?? 0,
         image_url: input.image_url,
         active: input.active ?? true,
+        author_id: input.author_id ?? null,
       })
       .select()
       .single()
