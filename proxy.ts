@@ -35,9 +35,13 @@ export async function proxy(req: NextRequest) {
 
   const isApi = pathname.startsWith('/api')
 
-  // All routes now use [locale] prefix (unified structure)
-  // 1. Run intl middleware first to handle locale redirects/rewrites for ALL routes
-  const intlResponse = !isApi ? intlMiddleware(req) : NextResponse.next()
+  // API routes: pass through immediately — auth handled in each route handler
+  if (isApi) {
+    return NextResponse.next()
+  }
+
+  // 1. Run intl middleware for locale redirects/rewrites
+  const intlResponse = intlMiddleware(req)
 
   // If it's a redirect, return immediately
   if (intlResponse.headers.get('Location')) {
