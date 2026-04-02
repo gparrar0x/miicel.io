@@ -36,6 +36,7 @@
     "navOrders": "Orders",
     "navConsignments": "Consignments",
     "navAgents": "Agents",
+    "navAuthors": "Authors",
     "navSettings": "Settings",
     "monthlyOrders": "This month",
     "monthRevenue": "Monthly revenue",
@@ -180,6 +181,7 @@
       "displayOrderHint": "Lower number = appears first",
       "stock": "Stock",
       "activeLabel": "Active Product",
+      "activeHint": "Active products are visible in the store",
       "badges": "Badges",
       "badge_popular": "Popular",
       "badge_new": "New",
@@ -190,6 +192,9 @@
       "sizeDimensions": "Dimensions",
       "sizeLabelPlaceholder": "e.g., Large",
       "noSizes": "No sizes. Add variants with different prices and stock.",
+      "author": "Author",
+      "authorPlaceholder": "Select author",
+      "noAuthor": "No author",
       "save": "Save Changes",
       "create": "Create Product"
     },
@@ -207,6 +212,26 @@
       "download": "Download PNG",
       "url": "Product URL"
     }
+  },
+  "Authors": {
+    "title": "Authors",
+    "subtitle": "Generate and publish AI-powered landing pages for your artists.",
+    "selectAuthor": "Select an author",
+    "loadingAuthors": "Loading authors...",
+    "authorImage": "Author Image",
+    "uploading": "Uploading...",
+    "prompt": "Prompt (guide the AI)",
+    "promptPlaceholder": "Describe the tone, focus, and details you want highlighted...",
+    "generateLanding": "Generate Landing",
+    "regenerate": "Regenerate",
+    "publish": "Publish",
+    "publishing": "Publishing...",
+    "published": "Published",
+    "generating": "Generating...",
+    "preview": "Preview",
+    "author": "Author",
+    "noAuthor": "No author",
+    "allAuthors": "All authors"
   },
   "Cart": {
     "title": "Your Cart",

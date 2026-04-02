@@ -10,6 +10,7 @@ import {
   Plus,
   Trash2,
   Upload,
+  User,
 } from 'lucide-react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
@@ -34,7 +35,7 @@ import {
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import type { Product } from '@/lib/schemas/product'
+import type { AuthorOption, Product } from '@/lib/schemas/product'
 
 const AVAILABLE_BADGES = ['popular', 'new', 'sale'] as const
 
@@ -54,6 +55,7 @@ interface ProductEditModalProps {
   categories?: string[]
   isLoading?: boolean
   template?: string
+  authors?: AuthorOption[]
 }
 
 export function ProductEditModal({
@@ -64,6 +66,7 @@ export function ProductEditModal({
   categories = [],
   isLoading = false,
   template,
+  authors = [],
 }: ProductEditModalProps) {
   const t = useTranslations('Products.form')
   const tProducts = useTranslations('Products')
@@ -79,6 +82,7 @@ export function ProductEditModal({
     active: true,
     display_order: 0,
     metadata: { badges: [] },
+    author_id: null,
   })
 
   const [imagePreview, setImagePreview] = React.useState<string | null>(null)
@@ -99,6 +103,7 @@ export function ProductEditModal({
         active: product.active,
         display_order: product.display_order,
         metadata: product.metadata || { badges: [] },
+        author_id: product.author_id ?? null,
       })
       setImagePreview(product.image_url || null)
       setSelectedBadges((product.metadata as any)?.badges || [])
@@ -116,6 +121,7 @@ export function ProductEditModal({
         active: true,
         display_order: 0,
         metadata: { badges: [] },
+        author_id: null,
       })
       setImagePreview(null)
       setSelectedBadges([])
@@ -309,6 +315,33 @@ export function ProductEditModal({
                   />
                 )}
               </div>
+              {/* Author Field */}
+              {authors.length > 0 && (
+                <div className="space-y-2">
+                  <Label htmlFor="author" className="text-sm font-medium flex items-center gap-1.5">
+                    <User className="size-3.5" />
+                    {t('author')}
+                  </Label>
+                  <Select
+                    value={formData.author_id ? String(formData.author_id) : 'none'}
+                    onValueChange={(value) =>
+                      handleChange('author_id', value === 'none' ? null : Number(value))
+                    }
+                  >
+                    <SelectTrigger className="w-full" data-testid="product-form-author">
+                      <SelectValue placeholder={t('authorPlaceholder')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">{t('noAuthor')}</SelectItem>
+                      {authors.map((author) => (
+                        <SelectItem key={author.id} value={String(author.id)}>
+                          {author.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
 
             {/* Right Column */}
@@ -506,9 +539,7 @@ export function ProductEditModal({
               <Label htmlFor="active" className="text-sm font-medium cursor-pointer">
                 {t('activeLabel')}
               </Label>
-              <p className="text-xs text-muted-foreground">
-                Los productos activos son visibles en la tienda
-              </p>
+              <p className="text-xs text-muted-foreground">{t('activeHint')}</p>
             </div>
             <Switch
               id="active"

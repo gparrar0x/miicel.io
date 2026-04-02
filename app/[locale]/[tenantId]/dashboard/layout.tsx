@@ -128,7 +128,7 @@ export default async function DashboardLayout({ children, params }: LayoutProps)
     ...(showAuthorLandings
       ? [
           {
-            name: 'Authors',
+            name: t('navAuthors') || 'Autores',
             href: `/${locale}/${tenantId}/dashboard/authors`,
             icon: 'products' as const,
           },

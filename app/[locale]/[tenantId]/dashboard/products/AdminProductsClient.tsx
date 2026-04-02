@@ -6,7 +6,7 @@ import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { ProductsTable } from '@/components/ProductsTable'
 import { ProductEditModal } from '@/components/product-edit-modal'
-import type { Product } from '@/lib/schemas/product'
+import type { AuthorOption, Product } from '@/lib/schemas/product'
 import { createClient } from '@/lib/supabase/client'
 
 interface AdminProductsClientProps {
@@ -14,6 +14,7 @@ interface AdminProductsClientProps {
   tenantId: number
   tenantSlug: string
   template?: string
+  authors?: AuthorOption[]
 }
 
 export function AdminProductsClient({
@@ -21,6 +22,7 @@ export function AdminProductsClient({
   tenantId,
   tenantSlug,
   template,
+  authors = [],
 }: AdminProductsClientProps) {
   const [products, setProducts] = useState<Product[]>(initialProducts)
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -142,6 +144,7 @@ export function AdminProductsClient({
         onDelete={handleDelete}
         tenantId={tenantSlug}
         locale={locale}
+        authors={authors}
       />
 
       <ProductEditModal
@@ -152,6 +155,7 @@ export function AdminProductsClient({
         categories={categories}
         isLoading={isLoading}
         template={template}
+        authors={authors}
       />
     </div>
   )

@@ -36,6 +36,7 @@
     "navOrders": "Pedidos",
     "navConsignments": "Consignaciones",
     "navAgents": "Agentes",
+    "navAuthors": "Autores",
     "navSettings": "Ajustes",
     "monthlyOrders": "Mes actual",
     "monthRevenue": "Ingresos mes",
@@ -180,6 +181,7 @@
       "displayOrderHint": "Menor número = aparece primero",
       "stock": "Stock",
       "activeLabel": "Producto Activo",
+      "activeHint": "Los productos activos son visibles en la tienda",
       "badges": "Etiquetas",
       "badge_popular": "Popular",
       "badge_new": "Nuevo",
@@ -190,6 +192,9 @@
       "sizeDimensions": "Dimensiones",
       "sizeLabelPlaceholder": "ej., Grande",
       "noSizes": "Sin tamaños. Agrega variantes con precios y stock diferentes.",
+      "author": "Autor",
+      "authorPlaceholder": "Seleccionar autor",
+      "noAuthor": "Sin autor",
       "save": "Guardar Cambios",
       "create": "Crear Producto"
     },
@@ -207,6 +212,26 @@
       "download": "Descargar PNG",
       "url": "URL del Producto"
     }
+  },
+  "Authors": {
+    "title": "Autores",
+    "subtitle": "Genera y publica landing pages impulsadas por IA para tus artistas.",
+    "selectAuthor": "Seleccionar autor",
+    "loadingAuthors": "Cargando autores...",
+    "authorImage": "Imagen del autor",
+    "uploading": "Subiendo...",
+    "prompt": "Prompt (guía a la IA)",
+    "promptPlaceholder": "Describe el tono, enfoque y detalles que quieres destacar...",
+    "generateLanding": "Generar Landing",
+    "regenerate": "Regenerar",
+    "publish": "Publicar",
+    "publishing": "Publicando...",
+    "published": "Publicado",
+    "generating": "Generando...",
+    "preview": "Vista previa",
+    "author": "Autor",
+    "noAuthor": "Sin autor",
+    "allAuthors": "Todos los autores"
   },
   "Cart": {
     "title": "Tu Carrito",

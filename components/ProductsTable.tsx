@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { QRProductModal } from '@/components/QRProductModal'
-import type { Product } from '@/lib/schemas/product'
+import type { AuthorOption, Product } from '@/lib/schemas/product'
 
 interface ProductsTableProps {
   products: Product[]
@@ -14,6 +14,7 @@ interface ProductsTableProps {
   onAdd: () => void
   tenantId?: string
   locale?: string
+  authors?: AuthorOption[]
 }
 
 export function ProductsTable({
@@ -23,9 +24,13 @@ export function ProductsTable({
   onAdd,
   tenantId = '',
   locale = 'en',
+  authors = [],
 }: ProductsTableProps) {
   const t = useTranslations('Products')
   const tCommon = useTranslations('Common')
+  const tAuthors = useTranslations('Authors')
+
+  const authorMap = new Map(authors.map((a) => [a.id, a.name]))
 
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL')
@@ -108,6 +113,11 @@ export function ProductsTable({
                 <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {t('category')}
                 </th>
+                {authors.length > 0 && (
+                  <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    {tAuthors('author')}
+                  </th>
+                )}
                 <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {t('price')}
                 </th>
@@ -122,7 +132,10 @@ export function ProductsTable({
             <tbody className="divide-y">
               {filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
+                  <td
+                    colSpan={authors.length > 0 ? 7 : 6}
+                    className="px-4 py-8 text-center text-muted-foreground"
+                  >
                     {t('table.noProducts')}
                   </td>
                 </tr>
@@ -162,6 +175,11 @@ export function ProductsTable({
                         {product.category}
                       </span>
                     </td>
+                    {authors.length > 0 && (
+                      <td className="px-4 py-3 text-sm text-muted-foreground">
+                        {product.author_id ? authorMap.get(product.author_id) || '—' : '—'}
+                      </td>
+                    )}
                     <td className="px-4 py-3 font-medium">${product.price.toLocaleString()}</td>
                     <td className="px-4 py-3 text-center">
                       <span

@@ -5,6 +5,7 @@
  * Flow: select author → upload image → write prompt → generate → preview → publish.
  */
 
+import { useTranslations } from 'next-intl'
 import { useCallback, useEffect, useRef } from 'react'
 import { AuthorLanding } from '@/components/storefront/AuthorLanding'
 import { Badge } from '@/components/ui/badge'
@@ -57,6 +58,7 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
     updateAuthorImage,
   } = useAuthorLandingStore()
 
+  const t = useTranslations('Authors')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Init
@@ -191,12 +193,8 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="font-display text-3xl font-bold uppercase tracking-tight">
-          Author Landings
-        </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Generate and publish AI-powered landing pages for your artists.
-        </p>
+        <h1 className="font-display text-3xl font-bold uppercase tracking-tight">{t('title')}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t('subtitle')}</p>
       </div>
 
       {/* Controls */}
@@ -204,7 +202,7 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
         {/* Author Select */}
         <div className="space-y-2">
           <label className="text-sm font-medium" htmlFor="author-select">
-            Author
+            {t('author')}
           </label>
           <Select
             value={selectedAuthorId ? String(selectedAuthorId) : ''}
@@ -212,7 +210,7 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
           >
             <SelectTrigger data-testid="author-select-dropdown" id="author-select">
               <SelectValue
-                placeholder={isLoadingAuthors ? 'Loading authors...' : 'Select an author'}
+                placeholder={isLoadingAuthors ? t('loadingAuthors') : t('selectAuthor')}
               />
             </SelectTrigger>
             <SelectContent>
@@ -240,7 +238,7 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
         {/* Image Upload */}
         {selectedAuthorId && (
           <div className="space-y-2">
-            <label className="text-sm font-medium">Author Image</label>
+            <label className="text-sm font-medium">{t('authorImage')}</label>
             <div className="flex items-center gap-4">
               {previewAuthorImage && (
                 <img
@@ -258,7 +256,9 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
                 data-testid="author-image-upload"
                 className="text-sm file:mr-4 file:py-2 file:px-4 file:border-2 file:border-black file:bg-white file:text-sm file:font-medium hover:file:bg-neutral-100 file:cursor-pointer disabled:opacity-50"
               />
-              {isUploading && <span className="text-sm text-muted-foreground">Uploading...</span>}
+              {isUploading && (
+                <span className="text-sm text-muted-foreground">{t('uploading')}</span>
+              )}
             </div>
           </div>
         )}
@@ -267,7 +267,7 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
         {selectedAuthorId && (
           <div className="space-y-2">
             <label className="text-sm font-medium" htmlFor="author-prompt">
-              Prompt (guide the AI)
+              {t('prompt')}
             </label>
             <Textarea
               id="author-prompt"
@@ -275,7 +275,7 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
               value={customPrompt}
               onChange={(e) => setCustomPrompt(e.target.value)}
               rows={4}
-              placeholder="Describe the tone, focus, and details you want highlighted..."
+              placeholder={t('promptPlaceholder')}
               className="font-mono text-sm"
             />
           </div>
@@ -289,7 +289,11 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
               onClick={handleGenerate}
               disabled={isGenerating}
             >
-              {isGenerating ? 'Generating...' : previewContent ? 'Regenerate' : 'Generate Landing'}
+              {isGenerating
+                ? t('generating')
+                : previewContent
+                  ? t('regenerate')
+                  : t('generateLanding')}
             </Button>
 
             {previewContent && (
@@ -300,7 +304,7 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
                   onClick={handleGenerate}
                   disabled={isGenerating}
                 >
-                  {isGenerating ? 'Generating...' : 'Regenerate'}
+                  {isGenerating ? t('generating') : t('regenerate')}
                 </Button>
 
                 <Button
@@ -310,10 +314,10 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
                   disabled={isPublishing || landingStatus === 'published'}
                 >
                   {isPublishing
-                    ? 'Publishing...'
+                    ? t('publishing')
                     : landingStatus === 'published'
-                      ? 'Published'
-                      : 'Publish'}
+                      ? t('published')
+                      : t('publish')}
                 </Button>
               </>
             )}
@@ -332,7 +336,9 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
       {previewContent && previewAuthorName && (
         <div data-testid="author-preview-container" className="border-2 border-black mt-8">
           <div className="bg-neutral-100 px-4 py-2 border-b-2 border-black flex items-center justify-between">
-            <span className="text-sm font-mono font-medium uppercase tracking-wider">Preview</span>
+            <span className="text-sm font-mono font-medium uppercase tracking-wider">
+              {t('preview')}
+            </span>
             {landingStatus && (
               <Badge variant={landingStatus === 'published' ? 'default' : 'outline'}>
                 {landingStatus}

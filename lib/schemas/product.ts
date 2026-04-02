@@ -11,6 +11,7 @@ export const productSchema = z.object({
   display_order: z.coerce.number().int().default(0),
   stock: z.coerce.number().int().min(0, 'Stock must be non-negative').nullable().optional(),
   metadata: z.record(z.string(), z.any()).optional(),
+  author_id: z.number().int().nullable().optional(),
   // Product-level discount fields
   discount_type: z.enum(['percentage', 'fixed']).nullable().optional(),
   discount_value: z.coerce.number().min(0).nullable().optional(),
@@ -19,3 +20,8 @@ export const productSchema = z.object({
 })
 
 export type Product = z.infer<typeof productSchema>
+
+export interface AuthorOption {
+  id: number
+  name: string
+}

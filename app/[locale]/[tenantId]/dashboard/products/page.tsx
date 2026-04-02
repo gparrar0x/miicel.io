@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import type { Product } from '@/lib/schemas/product'
+import type { AuthorOption, Product } from '@/lib/schemas/product'
 import { createClient } from '@/lib/supabase/server'
 import { AdminProductsClient } from './AdminProductsClient'
 
@@ -25,23 +25,26 @@ export default async function AdminProductsPage({ params }: PageProps) {
     notFound()
   }
 
-  // 2. Get Products
-  const { data: products, error } = await supabase
-    .from('products')
-    .select('*')
-    .eq('tenant_id', tenant.id)
-    .order('created_at', { ascending: false })
+  // 2. Get Products + Authors in parallel
+  const [productsResult, authorsResult] = await Promise.all([
+    supabase
+      .from('products')
+      .select('*')
+      .eq('tenant_id', tenant.id)
+      .order('created_at', { ascending: false }),
+    supabase.from('authors').select('id, name').eq('tenant_id', tenant.id).order('name'),
+  ])
 
-  if (error) {
-    console.error('Error fetching products:', error)
-    // Handle error appropriately, maybe show empty state or error message
+  if (productsResult.error) {
+    console.error('Error fetching products:', productsResult.error)
   }
 
   // Cast to Product type (ensure schema matches)
-  const formattedProducts: Product[] = (products || []).map((p) => ({
+  const formattedProducts: Product[] = (productsResult.data || []).map((p) => ({
     ...p,
-    // Ensure types match if there are any discrepancies
   })) as unknown as Product[]
+
+  const authors: AuthorOption[] = (authorsResult.data || []) as AuthorOption[]
 
   return (
     <AdminProductsClient
@@ -49,6 +52,7 @@ export default async function AdminProductsPage({ params }: PageProps) {
       tenantId={tenant.id}
       tenantSlug={tenantId}
       template={tenant.template}
+      authors={authors}
     />
   )
 }
