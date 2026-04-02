@@ -1,30 +1,52 @@
 /**
- * Supabase server clients — typed wrappers over @skywalking/core.
+ * Supabase server clients — typed wrappers.
  *
- * createClient()            — Server Components, respects RLS.
- * createServiceRoleClient() — Bypasses RLS, trusted server contexts only.
- * createAdminClient         — Alias for createServiceRoleClient.
+ * createClient()                  — RSC only (uses next/headers cookies()).
+ * createClientFromRequest(req)    — API route handlers (parses cookies from Request).
+ * createServiceRoleClient()       — Bypasses RLS, trusted server contexts only.
  */
 
+import { createServerClient } from '@supabase/ssr'
 import { createAdminClient as _createAdminClient } from '@skywalking/core/supabase/admin'
-import {
-  createClient as _createClient,
-  createClientFromRequest as _createClientFromRequest,
-} from '@skywalking/core/supabase/server'
+import { createClient as _createClient } from '@skywalking/core/supabase/server'
 import type { Database } from '@/types/database.types'
 
 /**
- * RSC only — uses next/headers cookies(). Hangs in API route handlers on Vercel.
+ * RSC only — uses next/headers cookies(). HANGS in API route handlers on Vercel.
  */
 export async function createClient() {
   return _createClient<Database>()
 }
 
 /**
- * API route handlers — parses cookies from Request directly. Safe for Vercel serverless.
+ * API route handlers — parses cookies from Request directly.
+ * Bypasses next/headers AsyncLocalStorage, safe for Vercel serverless.
  */
 export function createClientFromRequest(request: Request) {
-  return _createClientFromRequest<Database>(request)
+  const cookieHeader = request.headers.get('cookie') ?? ''
+  const parsed = cookieHeader
+    .split(';')
+    .filter(Boolean)
+    .map((pair) => {
+      const idx = pair.indexOf('=')
+      if (idx === -1) return { name: pair.trim(), value: '' }
+      return { name: pair.slice(0, idx).trim(), value: pair.slice(idx + 1).trim() }
+    })
+
+  return createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return parsed
+        },
+        setAll() {
+          // No-op in route handlers — session refresh handled by middleware
+        },
+      },
+    },
+  )
 }
 
 export function createServiceRoleClient() {
