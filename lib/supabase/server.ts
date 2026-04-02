@@ -1,20 +1,24 @@
 /**
- * Supabase server clients — typed wrappers.
+ * Supabase server clients.
  *
  * createClient()                  — RSC only (uses next/headers cookies()).
  * createClientFromRequest(req)    — API route handlers (parses cookies from Request).
  * createServiceRoleClient()       — Bypasses RLS, trusted server contexts only.
+ *
+ * IMPORTANT: createClient() is dynamically imported to avoid pulling in
+ * next/headers at module level, which hangs Vercel serverless functions.
  */
 
 import { createServerClient } from '@supabase/ssr'
 import { createAdminClient as _createAdminClient } from '@skywalking/core/supabase/admin'
-import { createClient as _createClient } from '@skywalking/core/supabase/server'
 import type { Database } from '@/types/database.types'
 
 /**
  * RSC only — uses next/headers cookies(). HANGS in API route handlers on Vercel.
+ * Dynamic import ensures the cookies() dependency is only loaded in RSC context.
  */
 export async function createClient() {
+  const { createClient: _createClient } = await import('@skywalking/core/supabase/server')
   return _createClient<Database>()
 }
 
