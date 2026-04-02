@@ -15,7 +15,7 @@
 import { NextResponse } from 'next/server'
 import { isSuperadmin } from '@/lib/auth/constants'
 import { createLocationSchema, listLocationsQuerySchema } from '@/lib/schemas/consignment'
-import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
+import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 
 /**
  * GET /api/dashboard/consignment-locations
@@ -39,7 +39,7 @@ import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
  */
 export async function GET(request: Request) {
   try {
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     // Auth check
     const {
@@ -164,7 +164,7 @@ export async function GET(request: Request) {
  */
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     // Auth check
     const {

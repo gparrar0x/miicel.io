@@ -12,7 +12,7 @@ Thin handlers: validate → authenticate → authorize → delegate → respond.
 ```typescript
 export async function GET(request: Request) {
   try {
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     // delegate to service/repo
@@ -26,7 +26,7 @@ export async function GET(request: Request) {
 ## Auth — Manual, Every Route
 
 No middleware. Each route does its own auth chain:
-1. `await createClient()` → `auth.getUser()`
+1. `createClientFromRequest(request)` → `auth.getUser()`
 2. Ownership check: `tenant.owner_id === user.id`
 3. Superadmin bypass: `isSuperadmin(user.email)` (checks `SUPER_ADMINS` env var)
 
@@ -34,9 +34,12 @@ No middleware. Each route does its own auth chain:
 
 | Client | When | RLS |
 |--------|------|-----|
-| `await createClient()` | Default for all routes | Yes |
+| `createClientFromRequest(request)` | **All API route handlers** (parses cookies from Request) | Yes |
 | `createServiceRoleClient()` | Admin ops, webhooks, cross-tenant lookups | **Bypasses** |
+| `await createClient()` | **RSC only** (Server Components, layouts, pages) | Yes |
 | Raw `createServerClient` | Auth callback/login only (manual cookie mgmt) | Yes |
+
+**CRITICAL:** Never use `await createClient()` in API route handlers — it uses `cookies()` from `next/headers` which hangs in Vercel serverless. Always use `createClientFromRequest(request)` instead.
 
 **Conditional pattern** for superadmin:
 ```typescript

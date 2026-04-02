@@ -7,7 +7,7 @@ import { AppError } from '@skywalking/core/errors'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { isSuperadmin } from '@/lib/auth/constants'
-import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
+import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 
 const updateSchema = z.object({
   name: z.string().min(1).optional(),
@@ -39,7 +39,7 @@ export async function PATCH(
 ) {
   try {
     const { groupId } = await params
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
     const {
       data: { user },
       error: authError,
@@ -82,12 +82,12 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ groupId: string }> },
 ) {
   try {
     const { groupId } = await params
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
     const {
       data: { user },
       error: authError,

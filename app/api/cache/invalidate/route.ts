@@ -6,7 +6,7 @@
  */
 
 import { type NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClientFromRequest } from '@/lib/supabase/server'
 
 // This will be used by middleware to check for invalidation signals
 // Using a simple in-memory flag that resets on server restart
@@ -14,7 +14,7 @@ const invalidationTimestamps = new Map<string, number>()
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     // Verify user is authenticated
     const {

@@ -6,9 +6,9 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClientFromRequest } from '@/lib/supabase/server'
 
-export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
     const orderId = parseInt(id, 10)
@@ -17,7 +17,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Invalid order ID' }, { status: 400 })
     }
 
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     // Fetch order with customer details and tenant config
     const { data: order, error } = await (supabase as any)

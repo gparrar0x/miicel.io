@@ -15,7 +15,7 @@ import { NextResponse } from 'next/server'
 import { isSuperadmin } from '@/lib/auth/constants'
 import { decryptToken, encryptToken } from '@/lib/encryption'
 import { whatsappNumberSchema } from '@/lib/schemas/tenant'
-import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
+import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 
 /**
  * GET /api/settings?tenant_id=123
@@ -46,7 +46,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Valid tenant_id is required' }, { status: 400 })
     }
 
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     // Verify authentication
     const {
@@ -143,7 +143,7 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'Valid tenant_id is required' }, { status: 400 })
     }
 
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     // Verify authentication
     const {

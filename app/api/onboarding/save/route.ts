@@ -18,12 +18,12 @@
 
 import { NextResponse } from 'next/server'
 import { onboardingSaveRequestSchema } from '@/lib/schemas/order'
-import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
+import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 
 export async function PATCH(request: Request) {
   try {
     // Step 1: Authenticate user using cookies
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     // Get user from session
     const {

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 
 const BASE_URL = 'https://micelio.skyw.app'
 const LOCALES = ['es', 'en'] as const
@@ -20,7 +20,7 @@ const LOCALES = ['es', 'en'] as const
  * - Uses tenant.updated_at for smart caching
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const supabase = await createClient()
+  const supabase = createServiceRoleClient()
 
   // Fetch all active tenants, sorted by recent updates
   const { data: tenants } = await supabase

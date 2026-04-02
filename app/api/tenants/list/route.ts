@@ -11,7 +11,7 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceRoleClient } from '@/lib/supabase/server'
 
 interface TenantConfig {
   logo?: string
@@ -25,7 +25,7 @@ interface TenantConfig {
 
 export async function GET() {
   try {
-    const supabase = await createClient()
+    const supabase = createServiceRoleClient()
 
     // Query all active tenants
     const { data: tenants, error } = await supabase

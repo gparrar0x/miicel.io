@@ -24,7 +24,7 @@ import {
   getTopProducts,
 } from '@/lib/analytics/queries'
 import { isSuperadmin } from '@/lib/auth/constants'
-import { createClient } from '@/lib/supabase/server'
+import { createClientFromRequest } from '@/lib/supabase/server'
 
 /**
  * GET /api/analytics/dashboard - Get analytics dashboard data
@@ -74,7 +74,7 @@ export async function GET(request: Request) {
       )
     }
 
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     // Step 2: Verify user is authenticated
     const {

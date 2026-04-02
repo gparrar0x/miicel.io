@@ -9,7 +9,7 @@ import { NextResponse } from 'next/server'
 import { isSuperadmin } from '@/lib/auth/constants'
 import { computeEffectivePrice, isDiscountActive } from '@/lib/pricing'
 import { productCreateSchema } from '@/lib/schemas/order'
-import { createClient } from '@/lib/supabase/server'
+import { createClientFromRequest } from '@/lib/supabase/server'
 import { ProductService } from '@/services/product.service'
 import type { ProductRow } from '@/services/repositories/product.repo'
 import { ProductRepo } from '@/services/repositories/product.repo'
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
     const active = searchParams.get('active')
     const search = searchParams.get('search') ?? undefined
 
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
     const service = new ProductService(new ProductRepo(supabase), new TenantRepo(supabase))
 
     const products = await service.list({
@@ -57,7 +57,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient()
+    const supabase = createClientFromRequest(request)
 
     const {
       data: { user },
