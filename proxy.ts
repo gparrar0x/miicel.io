@@ -40,14 +40,7 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next()
   }
 
-  const isApi = pathname.startsWith('/api')
-
-  // API routes: pass through immediately — auth handled in each route handler
-  if (isApi) {
-    return NextResponse.next()
-  }
-
-  // 1. Run intl middleware for locale redirects/rewrites
+  // intl middleware handles locale redirects/rewrites (API excluded via matcher)
   const intlResponse = intlMiddleware(req)
 
   // If it's a redirect, return immediately
@@ -248,5 +241,5 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)'],
 }
