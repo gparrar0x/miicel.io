@@ -1,9 +1,16 @@
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import createMiddleware from 'next-intl/middleware'
-import { createServiceRoleClient } from '@/lib/supabase/server'
 import { routing } from './i18n/routing'
+
+function createServiceRoleClient() {
+  return createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  )
+}
 
 type TenantData = {
   id: number
