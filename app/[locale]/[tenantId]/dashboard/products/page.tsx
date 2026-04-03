@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import type { AuthorOption, Product } from '@/lib/schemas/product'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import { AdminProductsClient } from './AdminProductsClient'
 
 interface PageProps {
@@ -26,13 +26,15 @@ export default async function AdminProductsPage({ params }: PageProps) {
   }
 
   // 2. Get Products + Authors in parallel
+  // Authors use service role to bypass RLS (same pattern as /api/authors)
+  const adminClient = createServiceRoleClient()
   const [productsResult, authorsResult] = await Promise.all([
     supabase
       .from('products')
       .select('*')
       .eq('tenant_id', tenant.id)
       .order('created_at', { ascending: false }),
-    supabase.from('authors').select('id, name').eq('tenant_id', tenant.id).order('name'),
+    adminClient.from('authors').select('id, name').eq('tenant_id', tenant.id).order('name'),
   ])
 
   if (productsResult.error) {
