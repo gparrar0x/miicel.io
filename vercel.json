@@ -22,5 +22,11 @@
     }
   },
   "ignoreCommand": "bash -c 'git diff --quiet HEAD^ HEAD -- . \":(exclude)website\" \":(exclude).github/workflows/deploy-docs.yml\"'",
-  "public": true
+  "public": true,
+  "crons": [
+    {
+      "path": "/api/cron/health-check",
+      "schedule": "*/5 * * * *"
+    }
+  ]
 }

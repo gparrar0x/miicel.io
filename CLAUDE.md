@@ -146,7 +146,15 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=     # Bypasses RLS for cleanup
 ENCRYPTION_KEY=                 # AES-256-GCM for tokens
 MERCADOPAGO_TEST_ACCESS_TOKEN= # For E2E sandbox tests
+SLACK_BOT_TOKEN=               # Health alerts to #micelio-alerts
+CRON_SECRET=                   # Vercel cron auth (auto-set by Vercel)
 ```
+
+## Health Monitoring
+
+- `/api/health` — DB connectivity check, returns 200/503
+- `/api/cron/health-check` — Vercel cron every 5 min, alerts `#micelio-alerts` (Slack `C0AQNLALT2N`) on failure
+- Incident policy: rollback first, diagnose second (see `../../CLAUDE.md`)
 
 ## Deployment
 
