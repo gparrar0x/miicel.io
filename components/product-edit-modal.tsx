@@ -51,7 +51,7 @@ interface ProductEditModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   product: Product | null
-  onSave: (product: Product, imageFile?: File) => Promise<void>
+  onSave: (product: Product, imageFile?: File, newAuthorName?: string) => Promise<void>
   categories?: string[]
   isLoading?: boolean
   template?: string
@@ -85,6 +85,7 @@ export function ProductEditModal({
     author_id: null,
   })
 
+  const [authorName, setAuthorName] = React.useState('')
   const [imagePreview, setImagePreview] = React.useState<string | null>(null)
   const [imageFile, setImageFile] = React.useState<File | undefined>(undefined)
   const [selectedBadges, setSelectedBadges] = React.useState<string[]>([])
@@ -105,6 +106,7 @@ export function ProductEditModal({
         metadata: product.metadata || { badges: [] },
         author_id: product.author_id ?? null,
       })
+      setAuthorName(authors.find((a) => a.id === product.author_id)?.name ?? '')
       setImagePreview(product.image_url || null)
       setSelectedBadges((product.metadata as any)?.badges || [])
       setSizes((product.metadata as any)?.sizes || [])
@@ -123,6 +125,7 @@ export function ProductEditModal({
         metadata: { badges: [] },
         author_id: null,
       })
+      setAuthorName('')
       setImagePreview(null)
       setSelectedBadges([])
       setSizes([])
@@ -204,13 +207,16 @@ export function ProductEditModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await onSave(
-      {
-        ...formData,
-        id: product?.id,
-      },
-      imageFile,
-    )
+    const trimmed = authorName.trim()
+    const matchedAuthor = trimmed
+      ? authors.find((a) => a.name.toLowerCase() === trimmed.toLowerCase())
+      : null
+    const productData = {
+      ...formData,
+      id: product?.id,
+      author_id: matchedAuthor?.id ?? null,
+    }
+    await onSave(productData, imageFile, matchedAuthor ? undefined : trimmed || undefined)
     onOpenChange(false)
   }
 
@@ -316,32 +322,25 @@ export function ProductEditModal({
                 )}
               </div>
               {/* Author Field */}
-              {authors.length > 0 && (
-                <div className="space-y-2">
-                  <Label htmlFor="author" className="text-sm font-medium flex items-center gap-1.5">
-                    <User className="size-3.5" />
-                    {t('author')}
-                  </Label>
-                  <Select
-                    value={formData.author_id ? String(formData.author_id) : 'none'}
-                    onValueChange={(value) =>
-                      handleChange('author_id', value === 'none' ? null : Number(value))
-                    }
-                  >
-                    <SelectTrigger className="w-full" data-testid="product-form-author">
-                      <SelectValue placeholder={t('authorPlaceholder')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">{t('noAuthor')}</SelectItem>
-                      {authors.map((author) => (
-                        <SelectItem key={author.id} value={String(author.id)}>
-                          {author.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
+              <div className="space-y-2">
+                <Label htmlFor="author" className="text-sm font-medium flex items-center gap-1.5">
+                  <User className="size-3.5" />
+                  {t('author')}
+                </Label>
+                <Input
+                  id="author"
+                  list="author-options"
+                  value={authorName}
+                  onChange={(e) => setAuthorName(e.target.value)}
+                  placeholder={t('authorPlaceholder')}
+                  data-testid="product-form-author"
+                />
+                <datalist id="author-options">
+                  {authors.map((author) => (
+                    <option key={author.id} value={author.name} />
+                  ))}
+                </datalist>
+              </div>
             </div>
 
             {/* Right Column */}

@@ -70,9 +70,26 @@ export function AdminProductsClient({
     }
   }
 
-  const handleSubmit = async (data: Product, imageFile?: File) => {
+  const handleSubmit = async (data: Product, imageFile?: File, newAuthorName?: string) => {
     setIsLoading(true)
     try {
+      // 0. Create author if new name provided
+      if (newAuthorName) {
+        const slug = newAuthorName
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^a-z0-9-]/g, '')
+        const res = await fetch('/api/authors', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tenant_id: tenantId, name: newAuthorName, slug }),
+        })
+        if (res.ok) {
+          const { author } = await res.json()
+          data.author_id = author.id
+        }
+      }
+
       let imageUrl = data.image_url
 
       // 1. Upload Image if provided
