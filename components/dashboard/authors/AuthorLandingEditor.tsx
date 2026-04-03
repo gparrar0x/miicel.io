@@ -215,7 +215,7 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
                 <img
                   src={selectedAuthor.image_url}
                   alt={selectedAuthor.name}
-                  className="w-16 h-16 object-cover border-2 border-black"
+                  className="w-16 h-16 object-cover border-2 border-border"
                 />
               )}
               <input
@@ -225,7 +225,7 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
                 onChange={handleImageUpload}
                 disabled={isUploading}
                 data-testid="author-image-upload"
-                className="text-sm file:mr-4 file:py-2 file:px-4 file:border-2 file:border-black file:bg-white file:text-sm file:font-medium hover:file:bg-neutral-100 file:cursor-pointer disabled:opacity-50"
+                className="text-sm file:mr-4 file:py-2 file:px-4 file:border file:border-border file:bg-background file:text-foreground file:text-sm file:font-medium hover:file:bg-muted file:rounded-md file:cursor-pointer disabled:opacity-50"
               />
               {isUploading && (
                 <span className="text-sm text-muted-foreground">{t('uploading')}</span>
@@ -301,8 +301,11 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
       </div>
 
       {previewContent && selectedAuthor && (
-        <div data-testid="author-preview-container" className="border-2 border-black mt-8">
-          <div className="bg-neutral-100 px-4 py-2 border-b-2 border-black flex items-center justify-between">
+        <div
+          data-testid="author-preview-container"
+          className="border-2 border-border mt-8 rounded-lg overflow-hidden"
+        >
+          <div className="bg-muted px-4 py-2 border-b-2 border-border flex items-center justify-between">
             <span className="text-sm font-mono font-medium uppercase tracking-wider">
               {t('preview')}
             </span>

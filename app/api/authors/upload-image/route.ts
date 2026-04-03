@@ -13,7 +13,7 @@
 
 import { NextResponse } from 'next/server'
 import { isSuperadmin } from '@/lib/auth/constants'
-import { createClientFromRequest } from '@/lib/supabase/server'
+import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
@@ -83,7 +83,9 @@ export async function POST(request: Request) {
     const folder = authorIdStr ? `${tenantId}/${authorIdStr}` : `${tenantId}`
     const filename = `${folder}/${timestamp}-${randomId}.${ext}`
 
-    const { error: uploadError } = await supabase.storage.from(BUCKET).upload(filename, file, {
+    // Use service role for storage (RLS client may lack bucket permissions)
+    const adminClient = createServiceRoleClient()
+    const { error: uploadError } = await adminClient.storage.from(BUCKET).upload(filename, file, {
       contentType: file.type,
       upsert: false,
       cacheControl: '3600',
@@ -94,7 +96,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Failed to upload file.' }, { status: 500 })
     }
 
-    const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(filename)
+    const { data: urlData } = adminClient.storage.from(BUCKET).getPublicUrl(filename)
 
     return NextResponse.json({ url: urlData.publicUrl, path: filename })
   } catch (err: any) {

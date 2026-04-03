@@ -1,5 +1,5 @@
 /**
- * GET /api/products/[productId]/modifiers
+ * GET /api/products/[id]/modifiers
  * Public endpoint — returns modifier groups with nested options for a product.
  */
 
@@ -7,13 +7,10 @@ import { AppError } from '@skywalking/core/errors'
 import { NextResponse } from 'next/server'
 import { createServiceRoleClient } from '@/lib/supabase/server'
 
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ productId: string }> },
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { productId } = await params
-    const id = parseInt(productId, 10)
+    const { id: rawId } = await params
+    const id = parseInt(rawId, 10)
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid product ID' }, { status: 400 })
     }
