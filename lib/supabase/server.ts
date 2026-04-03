@@ -1,26 +1,19 @@
 /**
- * Supabase server clients.
+ * Supabase server clients — API routes + service role.
  *
- * createClient()                  — RSC only (uses next/headers cookies()).
  * createClientFromRequest(req)    — API route handlers (parses cookies from Request).
  * createServiceRoleClient()       — Bypasses RLS, trusted server contexts only.
  *
- * IMPORTANT: createClient() is dynamically imported to avoid pulling in
- * next/headers at module level, which hangs Vercel serverless functions.
+ * For RSC (Server Components), use createClient() from './server-rsc'.
+ *
+ * IMPORTANT: This file must NOT import 'next/headers' or '@skywalking/core/supabase/server'.
+ * Those imports hang Vercel Lambda cold-start because Turbopack bundles them
+ * into every function via transpilePackages.
  */
 
+import { createClient as createSupabaseClient, type SupabaseClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
-import { createAdminClient as _createAdminClient } from '@skywalking/core/supabase/admin'
 import type { Database } from '@/types/database.types'
-
-/**
- * RSC only — uses next/headers cookies(). HANGS in API route handlers on Vercel.
- * Dynamic import ensures the cookies() dependency is only loaded in RSC context.
- */
-export async function createClient() {
-  const { createClient: _createClient } = await import('@skywalking/core/supabase/server')
-  return _createClient<Database>()
-}
 
 /**
  * API route handlers — parses cookies from Request directly.
@@ -53,8 +46,20 @@ export function createClientFromRequest(request: Request) {
   )
 }
 
-export function createServiceRoleClient() {
-  return _createAdminClient<Database>()
+export function createServiceRoleClient(): SupabaseClient<Database> {
+  return createSupabaseClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  )
 }
 
 export const createAdminClient = createServiceRoleClient
+
+/**
+ * RSC only — uses next/headers cookies(). HANGS in API route handlers.
+ * Dynamically imported to prevent next/headers from entering Lambda bundles.
+ */
+export async function createClient() {
+  const { createClient: _create } = await import('./server-rsc')
+  return _create()
+}
