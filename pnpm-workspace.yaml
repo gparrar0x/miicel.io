@@ -1,0 +1,2 @@
+patchedDependencies:
+  '@skywalking/core@1.0.0': patches/@skywalking__core@1.0.0.patch
