@@ -98,10 +98,19 @@ export default async function DashboardLayout({ children, params }: LayoutProps)
       icon: 'analytics',
     },
     {
-      name: t('navProducts') || 'Productos',
+      name: t('navProducts') || 'Obras',
       href: `/${locale}/${tenantId}/dashboard/products`,
       icon: 'products',
     },
+    ...(showAuthorLandings
+      ? [
+          {
+            name: t('navAuthors') || 'Artistas',
+            href: `/${locale}/${tenantId}/dashboard/authors`,
+            icon: 'products' as const,
+          },
+        ]
+      : []),
     {
       name: t('navOrders') || 'Pedidos',
       href: `/${locale}/${tenantId}/dashboard/orders`,
@@ -122,15 +131,6 @@ export default async function DashboardLayout({ children, params }: LayoutProps)
             name: t('navAgents') || 'Agents',
             href: `/${locale}/${tenantId}/dashboard/agents`,
             icon: 'agents' as const,
-          },
-        ]
-      : []),
-    ...(showAuthorLandings
-      ? [
-          {
-            name: t('navAuthors') || 'Autores',
-            href: `/${locale}/${tenantId}/dashboard/authors`,
-            icon: 'products' as const,
           },
         ]
       : []),

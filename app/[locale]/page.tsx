@@ -5,7 +5,7 @@ import { LayoutDashboard, LogOut, Store } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { MicelioLogo } from '@/components/icons/micelio-logo'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -13,10 +13,26 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 interface Tenant {
+  id: number
   slug: string
   name: string
   logo: string | null
   status: string
+  template: string
+}
+
+interface FeatureFlag {
+  id: number
+  key: string
+  description: string | null
+  enabled: boolean
+  rules: {
+    tenants?: number[]
+    templates?: string[]
+    users?: string[]
+    percentage?: number
+    environments?: string[]
+  }
 }
 
 function RootPage() {
@@ -24,12 +40,9 @@ function RootPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isSuperAdmin, setIsSuperAdmin] = useState(false)
   const [tenants, setTenants] = useState<Tenant[]>([])
+  const [flags, setFlags] = useState<FeatureFlag[]>([])
 
-  useEffect(() => {
-    checkAuthAndFetchTenants()
-  }, [checkAuthAndFetchTenants])
-
-  async function checkAuthAndFetchTenants() {
+  const checkAuthAndFetchTenants = useCallback(async () => {
     const supabase = createBrowserClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -40,16 +53,21 @@ function RootPage() {
     } = await supabase.auth.getUser()
 
     if (user) {
-      // Check if superadmin
       const { data: isSuperAdminResult } = await supabase.rpc('is_superadmin')
 
       if (isSuperAdminResult) {
         setIsSuperAdmin(true)
-        // Fetch tenants list
-        const response = await fetch('/api/tenants/list', { credentials: 'include' })
-        if (response.ok) {
-          const tenantsData = await response.json()
+        const [tenantsRes, flagsRes] = await Promise.all([
+          fetch('/api/tenants/list', { credentials: 'include' }),
+          fetch('/api/admin/flags', { credentials: 'include' }),
+        ])
+        if (tenantsRes.ok) {
+          const tenantsData = await tenantsRes.json()
           setTenants(tenantsData)
+        }
+        if (flagsRes.ok) {
+          const flagsData = await flagsRes.json()
+          setFlags(flagsData.flags ?? [])
         }
       } else {
         // Not superadmin, get redirect URL from API (uses service role to avoid RLS recursion)
@@ -77,7 +95,11 @@ function RootPage() {
     }
 
     setIsLoading(false)
-  }
+  }, [router])
+
+  useEffect(() => {
+    checkAuthAndFetchTenants()
+  }, [checkAuthAndFetchTenants])
 
   async function handleLogout() {
     const supabase = createBrowserClient(
@@ -87,7 +109,38 @@ function RootPage() {
     await supabase.auth.signOut()
     setIsSuperAdmin(false)
     setTenants([])
+    setFlags([])
   }
+
+  async function handleToggleFlag(key: string, tenantId: number, enabled: boolean) {
+    try {
+      const res = await fetch('/api/admin/flags/toggle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key, tenant_id: tenantId, enabled }),
+        credentials: 'include',
+      })
+      if (!res.ok) return
+      const { flag: updatedFlag } = await res.json()
+      setFlags((prev) => prev.map((f) => (f.key === key ? { ...f, ...updatedFlag } : f)))
+    } catch (err) {
+      console.error('Toggle flag error:', err)
+    }
+  }
+
+  const tenantsByTemplate = useMemo(
+    () =>
+      tenants.reduce(
+        (acc, tenant) => {
+          const tmpl = tenant.template || 'gallery'
+          if (!acc[tmpl]) acc[tmpl] = []
+          acc[tmpl].push(tenant)
+          return acc
+        },
+        {} as Record<string, Tenant[]>,
+      ),
+    [tenants],
+  )
 
   if (isLoading) {
     return (
@@ -130,56 +183,140 @@ function RootPage() {
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {tenants.map((tenant) => (
-                  <Card
-                    key={tenant.slug}
-                    data-testid={`tenant-card-${tenant.slug}`}
-                    className="border-border transition-shadow hover:shadow-md"
-                  >
-                    <CardContent className="p-6">
-                      <div className="mb-4 flex items-center gap-4">
-                        {tenant.logo ? (
-                          <img
-                            src={tenant.logo}
-                            alt={tenant.name}
-                            className="h-12 w-12 rounded-lg object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-lg font-semibold text-foreground">
-                            {tenant.name.charAt(0).toUpperCase()}
-                          </div>
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <h3 className="truncate font-semibold text-foreground">{tenant.name}</h3>
-                          <p className="text-sm text-muted-foreground">/{tenant.slug}</p>
-                        </div>
-                      </div>
+              <>
+                {Object.entries(tenantsByTemplate).map(([template, templateTenants]) => (
+                  <div key={template} className="mb-10">
+                    <div className="mb-4 flex items-center gap-3">
+                      <h2 className="text-lg font-semibold tracking-tight text-foreground capitalize">
+                        {template}
+                      </h2>
+                      <span className="text-sm text-muted-foreground">
+                        {templateTenants.length} tenant{templateTenants.length !== 1 ? 's' : ''}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                      {templateTenants.map((tenant) => (
+                        <Card
+                          key={tenant.slug}
+                          data-testid={`tenant-card-${tenant.slug}`}
+                          className="border-border transition-shadow hover:shadow-md"
+                        >
+                          <CardContent className="p-6">
+                            <div className="mb-4 flex items-center gap-4">
+                              {tenant.logo ? (
+                                <img
+                                  src={tenant.logo}
+                                  alt={tenant.name}
+                                  className="h-12 w-12 rounded-lg object-cover"
+                                />
+                              ) : (
+                                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-lg font-semibold text-foreground">
+                                  {tenant.name.charAt(0).toUpperCase()}
+                                </div>
+                              )}
+                              <div className="min-w-0 flex-1">
+                                <h3 className="truncate font-semibold text-foreground">
+                                  {tenant.name}
+                                </h3>
+                                <p className="text-sm text-muted-foreground">/{tenant.slug}</p>
+                              </div>
+                            </div>
 
-                      <div className="flex gap-3">
-                        <Button variant="outline" className="flex-1" asChild>
-                          <Link
-                            href={`/es/${tenant.slug}/dashboard`}
-                            data-testid={`tenant-dashboard-link-${tenant.slug}`}
-                          >
-                            <LayoutDashboard className="mr-2 h-4 w-4" />
-                            Dashboard
-                          </Link>
-                        </Button>
-                        <Button className="flex-1" asChild>
-                          <Link
-                            href={`/es/${tenant.slug}`}
-                            data-testid={`tenant-store-link-${tenant.slug}`}
-                          >
-                            <Store className="mr-2 h-4 w-4" />
-                            Tienda
-                          </Link>
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                            <div className="flex gap-3">
+                              <Button variant="outline" className="flex-1" asChild>
+                                <Link
+                                  href={`/es/${tenant.slug}/dashboard`}
+                                  data-testid={`tenant-dashboard-link-${tenant.slug}`}
+                                >
+                                  <LayoutDashboard className="mr-2 h-4 w-4" />
+                                  Dashboard
+                                </Link>
+                              </Button>
+                              <Button className="flex-1" asChild>
+                                <Link
+                                  href={`/es/${tenant.slug}`}
+                                  data-testid={`tenant-store-link-${tenant.slug}`}
+                                >
+                                  <Store className="mr-2 h-4 w-4" />
+                                  Tienda
+                                </Link>
+                              </Button>
+                            </div>
+
+                            {/* Feature Flags */}
+                            {flags.length > 0 && (
+                              <div className="mt-4 border-t border-border pt-3">
+                                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                                  Feature Flags
+                                </p>
+                                <div className="space-y-1.5">
+                                  {flags.map((flag) => {
+                                    const isEnabledForTenant =
+                                      flag.rules?.tenants?.includes(tenant.id) ?? false
+                                    const isEnabledByTemplate =
+                                      flag.rules?.templates?.includes(tenant.template) ?? false
+                                    const isGlobal =
+                                      flag.enabled &&
+                                      !flag.rules?.tenants?.length &&
+                                      !flag.rules?.templates?.length &&
+                                      !flag.rules?.users?.length &&
+                                      flag.rules?.percentage == null
+                                    const isActive =
+                                      isEnabledForTenant || isEnabledByTemplate || isGlobal
+
+                                    return (
+                                      <div
+                                        key={flag.key}
+                                        className="flex items-center justify-between"
+                                      >
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-sm">
+                                            {flag.key.replace(/_/g, ' ')}
+                                          </span>
+                                          {isEnabledByTemplate && (
+                                            <span className="rounded bg-secondary px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                                              template
+                                            </span>
+                                          )}
+                                          {isGlobal && (
+                                            <span className="rounded bg-secondary px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                                              global
+                                            </span>
+                                          )}
+                                        </div>
+                                        <button
+                                          onClick={() =>
+                                            handleToggleFlag(
+                                              flag.key,
+                                              tenant.id,
+                                              !isEnabledForTenant,
+                                            )
+                                          }
+                                          disabled={isEnabledByTemplate || isGlobal}
+                                          className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                                            isActive ? 'bg-foreground' : 'bg-secondary'
+                                          }`}
+                                          data-testid={`flag-toggle-${flag.key}-${tenant.slug}`}
+                                        >
+                                          <span
+                                            className={`pointer-events-none block h-3.5 w-3.5 rounded-full bg-background shadow-lg transition-transform ${
+                                              isActive ? 'translate-x-4' : 'translate-x-0.5'
+                                            }`}
+                                          />
+                                        </button>
+                                      </div>
+                                    )
+                                  })}
+                                </div>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
                 ))}
-              </div>
+              </>
             )}
           </div>
         </main>
