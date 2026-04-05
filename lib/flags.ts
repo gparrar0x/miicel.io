@@ -61,9 +61,19 @@ export interface FlagContext {
 }
 
 /**
+ * Mapping from flag key to NEXT_PUBLIC_FEATURE_* env var override.
+ * When set to "true", the flag is forced on regardless of DB state.
+ * Useful for local dev without a DB row.
+ */
+const ENV_OVERRIDES: Record<string, string> = {
+  author_landings: 'NEXT_PUBLIC_FEATURE_AUTHOR_LANDINGS',
+}
+
+/**
  * Check if a feature flag is enabled
  *
  * Evaluation order:
+ * 0. Env var override (NEXT_PUBLIC_FEATURE_*) forces on when set to "true"
  * 1. Flag must be globally enabled
  * 2. If rules.environments exists, current env must match
  * 3. If rules.tenants exists, tenantId must be in list
@@ -72,6 +82,12 @@ export interface FlagContext {
  * 6. If no targeting rules, flag is enabled for all
  */
 export async function isEnabled(key: string, context: FlagContext = {}): Promise<boolean> {
+  // Env var override — allows local dev without DB row
+  const envVar = ENV_OVERRIDES[key]
+  if (envVar && process.env[envVar] === 'true') {
+    return true
+  }
+
   const flag = await getFlag(key)
 
   if (!flag || !flag.enabled) {

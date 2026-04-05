@@ -123,6 +123,20 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       )
     }
 
+    if (err.status && err.status >= 400 && err.status < 500) {
+      return NextResponse.json(
+        { error: err.message || 'AI service configuration error. Contact support.' },
+        { status: 502 },
+      )
+    }
+
+    if (err.status && err.status >= 500) {
+      return NextResponse.json(
+        { error: 'AI service temporarily unavailable. Please try again.' },
+        { status: 502 },
+      )
+    }
+
     return NextResponse.json({ error: 'Internal server error.' }, { status: 500 })
   }
 }
