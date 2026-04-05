@@ -24,7 +24,7 @@
     "loading": "Cargando panel...",
     "welcomeTitle": "¡Bienvenido a tu tienda!",
     "welcomeDesc": "Tu tienda está activada y lista para recibir pedidos.",
-    "activeProducts": "Productos Activos",
+    "activeProducts": "Obras Activas",
     "completedOrders": "Pedidos del Mes",
     "totalRevenue": "Ingresos del Mes",
     "quickActions": "Acciones Rápidas",
@@ -41,7 +41,7 @@
     "monthlyOrders": "Mes actual",
     "monthRevenue": "Ingresos mes",
     "ordersTrend": "Pedidos por día",
-    "addProduct": "Gestionar productos",
+    "addProduct": "Gestionar obras",
     "recentOrders": "Pedidos recientes",
     "recentOrdersHint": "Últimos movimientos del mes",
     "viewAll": "Ver todo",
@@ -91,7 +91,7 @@
   },
   "Sidebar": {
     "dashboard": "Panel Principal",
-    "products": "Productos",
+    "products": "Obras",
     "orders": "Pedidos",
     "settings": "Configuración",
     "adminPanel": "Panel de Admin",
@@ -140,7 +140,7 @@
       "method": "Método:",
       "paymentId": "ID Pago:",
       "notSpecified": "No especificado",
-      "product": "Producto",
+      "product": "Obra",
       "qty": "Cant",
       "price": "Precio"
     },
@@ -154,14 +154,14 @@
     }
   },
   "Products": {
-    "title": "Productos",
-    "subtitle": "Administra tu catálogo de productos, precios e inventario.",
-    "addProduct": "Agregar Producto",
-    "deleteConfirm": "¿Estás seguro de que deseas eliminar este producto?",
-    "deleteSuccess": "Producto eliminado exitosamente",
-    "createSuccess": "Producto creado",
-    "updateSuccess": "Producto actualizado",
-    "saveError": "Error al guardar el producto",
+    "title": "Obras",
+    "subtitle": "Administra tu catálogo de obras, precios e inventario.",
+    "addProduct": "Agregar Obra",
+    "deleteConfirm": "¿Estás seguro de que deseas eliminar esta obra?",
+    "deleteSuccess": "Obra eliminada exitosamente",
+    "createSuccess": "Obra creada",
+    "updateSuccess": "Obra actualizada",
+    "saveError": "Error al guardar la obra",
     "name": "Nombre",
     "price": "Precio",
     "stock": "Stock",
@@ -169,19 +169,19 @@
     "active": "Activo",
     "inactive": "Inactivo",
     "form": {
-      "new": "Nuevo Producto",
-      "edit": "Editar Producto",
-      "image": "Imagen del Producto",
+      "new": "Nueva Obra",
+      "edit": "Editar Obra",
+      "image": "Imagen de la Obra",
       "upload": "Clic para subir",
-      "namePlaceholder": "Nombre del Producto",
+      "namePlaceholder": "Nombre de la Obra",
       "categoryPlaceholder": "ej., Hamburguesas",
       "description": "Descripción",
-      "descPlaceholder": "Descripción del producto...",
+      "descPlaceholder": "Descripción de la obra...",
       "displayOrder": "Orden de Visualización",
       "displayOrderHint": "Menor número = aparece primero",
       "stock": "Stock",
-      "activeLabel": "Producto Activo",
-      "activeHint": "Los productos activos son visibles en la tienda",
+      "activeLabel": "Obra Activa",
+      "activeHint": "Las obras activas son visibles en la tienda",
       "badges": "Etiquetas",
       "badge_popular": "Popular",
       "badge_new": "Nuevo",
@@ -192,33 +192,34 @@
       "sizeDimensions": "Dimensiones",
       "sizeLabelPlaceholder": "ej., Grande",
       "noSizes": "Sin tamaños. Agrega variantes con precios y stock diferentes.",
-      "author": "Autor",
-      "authorPlaceholder": "Seleccionar autor",
-      "noAuthor": "Sin autor",
+      "author": "Artista",
+      "authorPlaceholder": "Seleccionar artista",
+      "noAuthor": "Sin artista",
       "save": "Guardar Cambios",
-      "create": "Crear Producto"
+      "create": "Crear Obra"
     },
     "table": {
-      "search": "Buscar productos...",
+      "search": "Buscar obras...",
       "allCategories": "Todas las Categorías",
       "allStatus": "Todos los Estados",
-      "noProducts": "No se encontraron productos.",
+      "noProducts": "No se encontraron obras.",
       "noImg": "Sin img"
     },
     "qr": {
-      "title": "Código QR del Producto",
-      "description": "Escanea para ver la página del producto",
+      "title": "Código QR de la Obra",
+      "description": "Escanea para ver la página de la obra",
       "print": "Imprimir",
       "download": "Descargar PNG",
-      "url": "URL del Producto"
-    }
+      "url": "URL de la Obra"
+    },
+    "noWorksAvailable": "No hay obras disponibles"
   },
   "Authors": {
-    "title": "Autores",
+    "title": "Artistas",
     "subtitle": "Genera y publica landing pages impulsadas por IA para tus artistas.",
-    "selectAuthor": "Seleccionar autor",
-    "loadingAuthors": "Cargando autores...",
-    "authorImage": "Imagen del autor",
+    "selectAuthor": "Seleccionar artista",
+    "loadingAuthors": "Cargando artistas...",
+    "authorImage": "Imagen del artista",
     "uploading": "Subiendo...",
     "prompt": "Prompt (guía a la IA)",
     "promptPlaceholder": "Describe el tono, enfoque y detalles que quieres destacar...",
@@ -229,14 +230,14 @@
     "published": "Publicado",
     "generating": "Generando...",
     "preview": "Vista previa",
-    "author": "Autor",
-    "noAuthor": "Sin autor",
-    "allAuthors": "Todos los autores"
+    "author": "Artista",
+    "noAuthor": "Sin artista",
+    "allAuthors": "Todos los artistas"
   },
   "Cart": {
     "title": "Tu Carrito",
     "empty": "Tu carrito está vacío",
-    "addProducts": "Agrega algunos productos para comenzar",
+    "addProducts": "Agrega algunas obras para comenzar",
     "continueShopping": "Continuar comprando",
     "clear": "Vaciar carrito",
     "summary": "Resumen del pedido",
@@ -248,9 +249,25 @@
     "total": "Total",
     "checkout": "Finalizar compra"
   },
+  "Analytics": {
+    "itemsSold": "Obras Vendidas"
+  },
+  "Gastronomy": {
+    "work": "obra",
+    "works": "obras",
+    "noWorksInCategory": "No hay obras en esta categoría",
+    "noWorksAvailable": "No hay obras disponibles"
+  },
+  "Onboarding": {
+    "stepAddWorks": "Agrega obras",
+    "stepLoadCatalog": "Carga tu catálogo inicial",
+    "works": "Obras",
+    "moreWorks": "obras más",
+    "worksLabel": "Obras:"
+  },
   "Product": {
     "quantity": "Cantidad",
-    "outOfStock": "Este producto está agotado actualmente",
+    "outOfStock": "Esta obra está agotada actualmente",
     "addToCart": "Agregar al carrito"
   },
   "Login": {

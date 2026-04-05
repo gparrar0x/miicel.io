@@ -1,6 +1,7 @@
 'use client'
 
 import { CheckCircle, Loader2, Upload } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { use, useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -31,17 +32,18 @@ interface OnboardingData {
   products: Product[]
 }
 
-const STEPS = [
-  { id: 1, title: 'Sube tu logo', description: 'Personaliza tu tienda con tu marca' },
-  { id: 2, title: 'Elige tus colores', description: 'Define la identidad visual' },
-  { id: 3, title: 'Agrega productos', description: 'Carga tu catalogo inicial' },
-  { id: 4, title: 'Vista previa', description: 'Revisa como se vera tu tienda' },
-  { id: 5, title: 'Activar tienda', description: 'Listo para vender' },
-]
-
 export default function OnboardingPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
+  const t = useTranslations('Onboarding')
   const router = useRouter()
+
+  const STEPS = [
+    { id: 1, title: 'Sube tu logo', description: 'Personaliza tu tienda con tu marca' },
+    { id: 2, title: 'Elige tus colores', description: 'Define la identidad visual' },
+    { id: 3, title: t('stepAddWorks'), description: t('stepLoadCatalog') },
+    { id: 4, title: 'Vista previa', description: 'Revisa como se vera tu tienda' },
+    { id: 5, title: 'Activar tienda', description: 'Listo para vender' },
+  ]
   const supabase = createClient()
   const [currentStep, setCurrentStep] = useState(1)
   const [loading, setLoading] = useState(false)
@@ -489,7 +491,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
             data-testid="onboarding-step3-container"
           >
             <h1 className="text-2xl font-bold mb-6" data-testid="onboarding-step3-title">
-              Agrega productos
+              {t('stepAddWorks')}
             </h1>
             <ProductForm
               products={data.products}
@@ -534,7 +536,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
 
                 {/* Products grid */}
                 <div className="p-6 bg-gray-50" data-testid="onboarding-preview-products">
-                  <h3 className="font-bold text-lg mb-4">Productos</h3>
+                  <h3 className="font-bold text-lg mb-4">{t('works')}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {data.products.slice(0, 3).map((product, index) => (
                       <div
@@ -574,7 +576,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
                   </div>
                   {data.products.length > 3 && (
                     <p className="text-sm text-gray-500 mt-4 text-center">
-                      +{data.products.length - 3} productos mas
+                      +{data.products.length - 3} {t('moreWorks')}
                     </p>
                   )}
                 </div>
@@ -631,7 +633,7 @@ export default function OnboardingPage({ params }: { params: Promise<{ slug: str
                     </div>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Productos:</span>
+                    <span className="text-gray-600">{t('worksLabel')}</span>
                     <span className="font-medium" data-testid="onboarding-summary-product-count">
                       {data.products.length}
                     </span>

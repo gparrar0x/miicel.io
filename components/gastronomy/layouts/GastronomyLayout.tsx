@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { WhatsAppButton } from '@/components/storefront/WhatsAppButton'
 import {
@@ -47,6 +48,7 @@ export function GastronomyLayout({
   currency = 'CLP',
   whatsappNumber,
 }: GastronomyLayoutProps) {
+  const t = useTranslations('Gastronomy')
   const router = useRouter()
   const { items, addItem, removeItem, updateQuantity } = useCartStore()
 
@@ -154,7 +156,7 @@ export function GastronomyLayout({
                     </h2>
                     <span className="text-sm text-gray-500 dark:text-gray-400">
                       {categoryProducts.length}{' '}
-                      {categoryProducts.length === 1 ? 'producto' : 'productos'}
+                      {categoryProducts.length === 1 ? t('work') : t('works')}
                     </span>
                   </div>
                 </div>
@@ -169,7 +171,7 @@ export function GastronomyLayout({
                   />
                 ) : (
                   <div className="text-center py-8 text-gray-400 dark:text-gray-500">
-                    <p>No hay productos en esta categoría</p>
+                    <p>{t('noWorksInCategory')}</p>
                   </div>
                 )}
               </AccordionContent>
@@ -180,7 +182,7 @@ export function GastronomyLayout({
         {/* Empty state - all categories */}
         {productsByCategory.every(({ products }) => products.length === 0) && (
           <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-            <p className="text-lg">No hay productos disponibles</p>
+            <p className="text-lg">{t('noWorksAvailable')}</p>
           </div>
         )}
       </main>

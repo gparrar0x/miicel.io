@@ -8,6 +8,7 @@
  */
 
 import { Check, Loader2, Package, Search, X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 
 interface Product {
@@ -41,6 +42,7 @@ export function SelectProductModal({
   onSelect,
   onClose,
 }: SelectProductModalProps) {
+  const t = useTranslations('Products')
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -142,7 +144,7 @@ export function SelectProductModal({
           ) : filteredProducts.length === 0 ? (
             <div className="text-center py-8 text-[var(--color-text-secondary)]">
               <Package className="h-8 w-8 mx-auto mb-2 text-[var(--color-text-muted)]" />
-              <p>No hay productos disponibles</p>
+              <p>{t('noWorksAvailable')}</p>
             </div>
           ) : (
             <div className="space-y-2">

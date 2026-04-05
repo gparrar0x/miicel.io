@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
 import { MicelioLogo } from '@/components/icons/micelio-logo'
 import { Button } from '@/components/ui/button'
@@ -45,22 +46,23 @@ interface SidebarProps {
   collapsedDefault?: boolean
 }
 
-const defaultNavigation: NavItem[] = [
-  { name: 'Dashboard', href: '/dashboard', icon: 'dashboard' },
-  { name: 'Productos', href: '/dashboard/productos', icon: 'products' },
-  { name: 'Pedidos', href: '/dashboard/pedidos', icon: 'orders' },
-  { name: 'Usuarios', href: '/dashboard/usuarios', icon: 'users' },
-  { name: 'Settings', href: '/dashboard/settings', icon: 'settings' },
-]
-
-export function Sidebar({
-  brand = 'Micelio',
-  navItems = defaultNavigation,
-  collapsedDefault = false,
-}: SidebarProps) {
+export function Sidebar({ brand = 'Micelio', navItems, collapsedDefault = false }: SidebarProps) {
+  const t = useTranslations('Sidebar')
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(collapsedDefault)
   const { isOpen, setIsOpen } = useSidebar()
+
+  const resolvedNavItems = useMemo<NavItem[]>(
+    () =>
+      navItems ?? [
+        { name: 'Dashboard', href: '/dashboard', icon: 'dashboard' },
+        { name: t('products'), href: '/dashboard/productos', icon: 'products' },
+        { name: 'Pedidos', href: '/dashboard/pedidos', icon: 'orders' },
+        { name: 'Usuarios', href: '/dashboard/usuarios', icon: 'users' },
+        { name: 'Settings', href: '/dashboard/settings', icon: 'settings' },
+      ],
+    [navItems, t],
+  )
 
   const iconMap = useMemo(
     () => ({
@@ -88,7 +90,7 @@ export function Sidebar({
       {/* Logo */}
       <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-4">
         <Link
-          href={navItems[0]?.href ?? '/dashboard'}
+          href={resolvedNavItems[0]?.href ?? '/dashboard'}
           className="flex items-center gap-3"
           onClick={() => mobile && setIsOpen(false)}
         >
@@ -103,7 +105,7 @@ export function Sidebar({
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1 p-3">
-        {navItems.map((item) => {
+        {resolvedNavItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
           const Icon = getIcon(item.icon)
           return (
