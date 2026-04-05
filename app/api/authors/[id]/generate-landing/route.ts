@@ -110,12 +110,18 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     return NextResponse.json({ landing }, { status: 201 })
   } catch (err: any) {
-    console.error('POST /api/authors/[id]/generate-landing error:', err)
+    console.error('POST /api/authors/[id]/generate-landing error:', err?.message ?? err, err?.stack)
 
-    if (err.message?.includes('Author not found')) {
-      return NextResponse.json({ error: 'Author not found.' }, { status: 404 })
+    // Report to Sentry
+    const Sentry = await import('@sentry/nextjs').catch(() => null)
+    if (Sentry) Sentry.captureException(err)
+
+    // Anthropic SDK errors (have .status)
+    if (err.status && err.status >= 400) {
+      return NextResponse.json({ error: err.message || 'AI service error.' }, { status: 502 })
     }
 
+    // App-level AI errors
     if (err.message?.includes('Claude') || err.message?.includes('structured output')) {
       return NextResponse.json(
         { error: 'AI generation failed. Please try again.' },
@@ -123,20 +129,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       )
     }
 
-    if (err.status && err.status >= 400 && err.status < 500) {
-      return NextResponse.json(
-        { error: err.message || 'AI service configuration error. Contact support.' },
-        { status: 502 },
-      )
-    }
-
-    if (err.status && err.status >= 500) {
-      return NextResponse.json(
-        { error: 'AI service temporarily unavailable. Please try again.' },
-        { status: 502 },
-      )
-    }
-
-    return NextResponse.json({ error: 'Internal server error.' }, { status: 500 })
+    // DB / other errors — include message for debugging
+    const msg = err.message || 'Unknown error'
+    return NextResponse.json({ error: `Internal server error: ${msg}` }, { status: 500 })
   }
 }
