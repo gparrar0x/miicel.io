@@ -10,6 +10,7 @@
 
 'use client'
 
+import { useTranslations } from 'next-intl'
 import type { BadgeType } from '@/lib/themes/gastronomy'
 import type { Product } from '@/types/commerce'
 import { ProductCardGastronomy } from '../molecules/ProductCardGastronomy'
@@ -51,13 +52,15 @@ export function ProductGridGastronomy({
   currency = 'CLP',
   className = '',
 }: ProductGridGastronomyProps) {
+  const t = useTranslations('Gastronomy')
+
   if (products.length === 0) {
     return (
       <div
         data-testid="product-grid-gastronomy-empty"
         className="text-center py-12 text-gray-500 dark:text-gray-400"
       >
-        No hay productos en esta categoría
+        {t('noWorksInCategory')}
       </div>
     )
   }

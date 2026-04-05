@@ -9,6 +9,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { useCartStore } from '@/lib/stores/cartStore'
 import type { CartItem, Product } from '@/types/commerce'
 
@@ -19,6 +20,7 @@ interface ProductGridProps {
 }
 
 export function ProductGrid({ products, tenantId, currency }: ProductGridProps) {
+  const t = useTranslations('Products')
   const addItem = useCartStore((state) => state.addItem)
 
   const handleAddToCart = (e: React.MouseEvent, product: Product) => {
@@ -46,7 +48,7 @@ export function ProductGrid({ products, tenantId, currency }: ProductGridProps) 
   if (products.length === 0) {
     return (
       <div className="text-center py-16" style={{ color: 'var(--color-text-secondary)' }}>
-        <p className="text-lg">No hay productos disponibles</p>
+        <p className="text-lg">{t('noWorksAvailable')}</p>
       </div>
     )
   }
