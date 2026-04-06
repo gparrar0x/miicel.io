@@ -38,7 +38,7 @@ export async function GET(request: Request) {
       .select(
         `
         id, tenant_id, name, slug, image_url, created_at,
-        author_landings(id, status, generated_at)
+        author_landings(id, status, content, generated_at)
       `,
       )
       .eq('tenant_id', tenantId)
@@ -64,7 +64,12 @@ export async function GET(request: Request) {
         image_url: row.image_url,
         created_at: row.created_at,
         latest_landing: latest
-          ? { id: latest.id, status: latest.status, generated_at: latest.generated_at }
+          ? {
+              id: latest.id,
+              status: latest.status,
+              content: latest.content,
+              generated_at: latest.generated_at,
+            }
           : null,
       }
     })
