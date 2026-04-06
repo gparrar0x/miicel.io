@@ -53,3 +53,15 @@ export function computeEffectivePrice(product: ProductDiscountFields): number {
   // Unknown type — fallback to original
   return product.price
 }
+
+// Currency formatting — cached per currency to avoid re-creating on every render
+const formatters = new Map<string, Intl.NumberFormat>()
+
+export function formatCurrency(price: number, currency: string): string {
+  let fmt = formatters.get(currency)
+  if (!fmt) {
+    fmt = new Intl.NumberFormat('es-AR', { style: 'currency', currency })
+    formatters.set(currency, fmt)
+  }
+  return fmt.format(price)
+}

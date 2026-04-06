@@ -10,7 +10,7 @@
  * import { useFeatureFlag } from '@/lib/hooks/useFeatureFlag'
  *
  * export function MyComponent() {
- *   const { enabled, loading } = useFeatureFlag('new_checkout', { tenantId: 1 })
+ *   const { enabled, loading } = useFeatureFlag('consignments', { tenantId: 1 })
  *
  *   if (loading) return <Skeleton />
  *   return enabled ? <NewUI /> : <OldUI />

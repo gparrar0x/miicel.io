@@ -104,11 +104,11 @@ If using custom domain (e.g., `micelio.skyw.app`):
 Add these records:
 ```
 Type: A
-Name: vendio (or @)
+Name: micelio (or @)
 Value: 76.76.21.21
 
 Type: AAAA  
-Name: vendio (or @)
+Name: micelio (or @)
 Value: 2606:4700:4700::1111
 ```
 

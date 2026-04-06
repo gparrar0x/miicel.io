@@ -12,8 +12,8 @@
  * import { isEnabled } from '@/lib/flags'
  *
  * export default async function Page() {
- *   const showNewCheckout = await isEnabled('new_checkout', { tenantId: 1 })
- *   return showNewCheckout ? <NewCheckout /> : <OldCheckout />
+ *   const showConsignments = await isEnabled('consignments', { tenantId: 1 })
+ *   return showConsignments ? <Consignments /> : null
  * }
  * ```
  *
@@ -217,9 +217,6 @@ function simpleHash(str: string): number {
 
 // Convenience export for common flags
 export const Flags = {
-  NEW_CHECKOUT: 'new_checkout',
-  DARK_MODE: 'dark_mode',
-  ANALYTICS_V2: 'analytics_v2',
   CONSIGNMENTS: 'consignments',
   KITCHEN_VIEW: 'kitchen_view',
   AGENTS: 'agents',

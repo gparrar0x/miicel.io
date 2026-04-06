@@ -37,7 +37,7 @@ export function GalleryHeader({ config, tenantId }: GalleryHeaderProps) {
                 className="md:hidden text-black hover:bg-gray-100"
               >
                 <Menu className="h-6 w-6" />
-                <span className="sr-only">Menu</span>
+                <span className="sr-only">Menú</span>
               </Button>
             </SheetTrigger>
             <SheetContent
@@ -50,7 +50,7 @@ export function GalleryHeader({ config, tenantId }: GalleryHeaderProps) {
                   className="text-lg font-medium hover:text-gray-600"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Gallery
+                  Galería
                 </Link>
                 {/* Placeholders for future pages */}
                 <Link
@@ -58,14 +58,14 @@ export function GalleryHeader({ config, tenantId }: GalleryHeaderProps) {
                   className="text-lg font-medium hover:text-gray-600 text-gray-400 cursor-not-allowed"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Collections
+                  Colecciones
                 </Link>
                 <Link
                   href="#"
                   className="text-lg font-medium hover:text-gray-600 text-gray-400 cursor-not-allowed"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  About the Artist
+                  Sobre el Artista
                 </Link>
               </nav>
             </SheetContent>
@@ -83,10 +83,10 @@ export function GalleryHeader({ config, tenantId }: GalleryHeaderProps) {
             href={`/${tenantId}`}
             className="text-sm font-medium hover:text-gray-600 transition-colors"
           >
-            Gallery
+            Galería
           </Link>
-          <span className="text-sm font-medium text-gray-400 cursor-not-allowed">Collections</span>
-          <span className="text-sm font-medium text-gray-400 cursor-not-allowed">About</span>
+          <span className="text-sm font-medium text-gray-400 cursor-not-allowed">Colecciones</span>
+          <span className="text-sm font-medium text-gray-400 cursor-not-allowed">Acerca de</span>
         </nav>
 
         <Button
@@ -101,7 +101,7 @@ export function GalleryHeader({ config, tenantId }: GalleryHeaderProps) {
               {totalItems}
             </span>
           )}
-          <span className="sr-only">Open cart</span>
+          <span className="sr-only">Abrir carrito</span>
         </Button>
       </div>
       <CartSheet open={isCartOpen} onOpenChange={setIsCartOpen} tenantId={tenantId} />

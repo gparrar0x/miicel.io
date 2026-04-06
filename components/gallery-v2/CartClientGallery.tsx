@@ -11,6 +11,7 @@ import { useState } from 'react'
 import { CheckoutModal } from '@/components/CheckoutModal'
 import { Button } from '@/components/ui/button'
 import { Link } from '@/i18n/routing'
+import { formatCurrency } from '@/lib/pricing'
 import { useCartStore } from '@/lib/stores/cartStore'
 import { CartItemGallery } from './CartItemGallery'
 
@@ -38,7 +39,7 @@ export function CartClientGallery({ tenantId }: CartClientGalleryProps) {
           <Button
             className="rounded-full text-white font-medium px-8"
             style={{
-              backgroundColor: 'var(--color-accent-primary)',
+              backgroundColor: 'var(--color-text-primary, #1a1a1a)',
               height: '56px',
               fontSize: 'var(--font-size-h4)',
             }}
@@ -82,7 +83,7 @@ export function CartClientGallery({ tenantId }: CartClientGalleryProps) {
                 Subtotal ({items.length} {items.length === 1 ? 'obra' : 'obras'})
               </span>
               <span className="font-semibold text-black" data-testid="cart-subtotal">
-                {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(totalPrice)}
+                {formatCurrency(totalPrice, currency)}
               </span>
             </div>
 
@@ -95,7 +96,7 @@ export function CartClientGallery({ tenantId }: CartClientGalleryProps) {
           <div className="flex justify-between items-baseline py-6">
             <span className="text-xl font-serif font-bold text-black">Total</span>
             <span className="text-3xl font-serif font-bold text-black" data-testid="cart-total">
-              {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(totalPrice)}
+              {formatCurrency(totalPrice, currency)}
             </span>
           </div>
 
@@ -103,7 +104,7 @@ export function CartClientGallery({ tenantId }: CartClientGalleryProps) {
             onClick={() => setCheckoutOpen(true)}
             className="w-full rounded-full text-white font-medium mb-4"
             style={{
-              backgroundColor: 'var(--color-accent-primary)',
+              backgroundColor: 'var(--color-text-primary, #1a1a1a)',
               height: '56px',
               fontSize: 'var(--font-size-h4)',
             }}

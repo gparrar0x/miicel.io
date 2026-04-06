@@ -8,6 +8,7 @@
 
 import { Trash2 } from 'lucide-react'
 import Image from 'next/image'
+import { formatCurrency } from '@/lib/pricing'
 import { useCartStore } from '@/lib/stores/cartStore'
 import type { CartItem as CartItemType } from '@/types/commerce'
 
@@ -80,10 +81,7 @@ export function CartItemGallery({ item }: CartItemGalleryProps) {
               data-testid="cart-item-original-price"
               className="text-sm line-through text-gray-400"
             >
-              {new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: item.currency,
-              }).format(item.originalPrice)}
+              {formatCurrency(item.originalPrice, item.currency)}
             </p>
           )}
           <p
@@ -95,9 +93,7 @@ export function CartItemGallery({ item }: CartItemGalleryProps) {
                 : `cart-item-${item.productId}-total`
             }
           >
-            {new Intl.NumberFormat('en-US', { style: 'currency', currency: item.currency }).format(
-              item.price,
-            )}
+            {formatCurrency(item.price, item.currency)}
           </p>
         </div>
       </div>

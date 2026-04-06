@@ -67,9 +67,7 @@ MII_{#}_{slug}/
 - [testing/API_TESTING_ORDERS.md](./testing/API_TESTING_ORDERS.md) — API test examples
 
 ### Producto
-- [PRODUCT_OVERVIEW_VENDIO.md](./PRODUCT_OVERVIEW_VENDIO.md) — Product vision
 - [ROADMAP.md](./ROADMAP.md) — Feature roadmap
-- [VENDIO_USER_FLOWS.md](./VENDIO_USER_FLOWS.md) — User journeys
 
 ---
 
