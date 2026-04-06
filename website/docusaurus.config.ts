@@ -107,11 +107,11 @@ const config: Config = {
           items: [
             {
               label: 'Live Application',
-              href: 'https://sw-commerce-vendio.vercel.app',
+              href: 'https://micelio.skyw.app',
             },
             {
               label: 'GitHub Repository',
-              href: 'https://github.com/skywalking/sw_commerce_vendio',
+              href: 'https://github.com/gparrarsw/micelio',
             },
             {
               label: 'Roadmap',

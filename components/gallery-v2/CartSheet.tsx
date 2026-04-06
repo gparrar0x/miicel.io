@@ -7,6 +7,7 @@ import type * as React from 'react'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { formatCurrency } from '@/lib/pricing'
 import { useCartStore } from '@/lib/stores/cartStore'
 
 interface CartSheetProps {
@@ -118,10 +119,7 @@ export function CartSheet({ open, onOpenChange, tenantId }: CartSheetProps) {
                           data-testid="cart-item-original-price"
                           className="text-xs line-through text-gray-400 mt-2"
                         >
-                          {new Intl.NumberFormat('en-US', {
-                            style: 'currency',
-                            currency: item.currency,
-                          }).format(item.originalPrice)}
+                          {formatCurrency(item.originalPrice, item.currency)}
                         </p>
                       )}
                       <p
@@ -133,10 +131,7 @@ export function CartSheet({ open, onOpenChange, tenantId }: CartSheetProps) {
                             : undefined
                         }
                       >
-                        {new Intl.NumberFormat('en-US', {
-                          style: 'currency',
-                          currency: item.currency,
-                        }).format(item.price)}
+                        {formatCurrency(item.price, item.currency)}
                       </p>
                     </div>
                   </div>
@@ -155,10 +150,7 @@ export function CartSheet({ open, onOpenChange, tenantId }: CartSheetProps) {
                   className="font-serif font-bold text-black"
                   style={{ fontSize: 'var(--font-size-h1)' }}
                 >
-                  {new Intl.NumberFormat('en-US', {
-                    style: 'currency',
-                    currency: items[0]?.currency || 'USD',
-                  }).format(totalPrice)}
+                  {formatCurrency(totalPrice, items[0]?.currency || 'USD')}
                 </span>
               </div>
               <p
@@ -171,7 +163,7 @@ export function CartSheet({ open, onOpenChange, tenantId }: CartSheetProps) {
                 <Button
                   className="w-full rounded-full text-white font-medium transition-all hover:opacity-90 shadow-sm"
                   style={{
-                    backgroundColor: 'var(--color-accent-primary)',
+                    backgroundColor: 'var(--color-text-primary, #1a1a1a)',
                     height: '56px',
                     fontSize: 'var(--font-size-h4)',
                   }}

@@ -110,7 +110,7 @@ export default function Home(): ReactNode {
   return (
     <Layout
       title={`${siteConfig.title}`}
-      description="Complete documentation for Vendio - Multi-tenant e-commerce platform with dynamic template system"
+      description="Complete documentation for Micelio - Multi-tenant e-commerce platform with dynamic template system"
     >
       <HomepageHeader />
       <main>
@@ -135,7 +135,7 @@ export default function Home(): ReactNode {
                       </li>
                       <li>
                         <Link to="/guides/user-flows">User Flows</Link> - Understand how users
-                        interact with Vendio
+                        interact with Micelio
                       </li>
                       <li>
                         <Link to="/architecture/roadmap">Product Roadmap</Link> - See what's coming

@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/shadcn-badge'
+import { formatCurrency } from '@/lib/pricing'
 import { useCartStore } from '@/lib/stores/cartStore'
 import { cn } from '@/lib/utils'
 import type { Artwork } from './types'
@@ -79,7 +80,7 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
                 variant="secondary"
                 className="font-normal bg-gray-100 text-black border-gray-200"
               >
-                Limited Edition
+                Edición Limitada
               </Badge>
             )}
           </div>
@@ -97,7 +98,7 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
 
         {/* Size Selection */}
         <div className="mb-24 md:mb-12">
-          <h3 className="text-xl font-medium mb-6">Select Size</h3>
+          <h3 className="text-xl font-medium mb-6">Seleccionar tamaño</h3>
           <div className="grid grid-cols-1 gap-4">
             {artwork.sizes.map((size) => {
               const isOutOfStock = size.stock === 0
@@ -123,10 +124,7 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
                   </div>
                   <div className="flex flex-col items-end gap-1">
                     <span className="font-bold text-2xl text-black">
-                      {new Intl.NumberFormat('en-US', {
-                        style: 'currency',
-                        currency: artwork.currency,
-                      }).format(size.price)}
+                      {formatCurrency(size.price, artwork.currency)}
                     </span>
                     {size.stock !== null && (
                       <span
@@ -135,7 +133,9 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
                           isOutOfStock ? 'text-red-600' : 'text-amber-600',
                         )}
                       >
-                        {isOutOfStock ? 'Sin stock' : `${size.stock} left`}
+                        {isOutOfStock
+                          ? 'Sin stock'
+                          : `${size.stock} disponible${size.stock !== 1 ? 's' : ''}`}
                       </span>
                     )}
                   </div>
@@ -155,13 +155,13 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
           <div className="border-t border-gray-200 pt-12 mt-12">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-serif font-bold text-black">
-                More from {artwork.collection}
+                Más de {artwork.collection}
               </h3>
               <Link
                 href={`/${tenantId}`}
                 className="text-sm font-medium text-black hover:underline flex items-center"
               >
-                View All <ChevronRight className="h-4 w-4 ml-1" />
+                Ver todo <ChevronRight className="h-4 w-4 ml-1" />
               </Link>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -176,7 +176,7 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
                     />
                   </div>
                   <h4 className="font-medium text-sm truncate text-black">{related.title}</h4>
-                  <p className="text-xs text-gray-500">From ${related.price}</p>
+                  <p className="text-xs text-gray-500">Desde ${related.price}</p>
                 </Link>
               ))}
             </div>
@@ -197,11 +197,7 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
                   {artwork.title}
                 </span>
                 <span className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-                  {selectedSize.dimensions} —{' '}
-                  {new Intl.NumberFormat('en-US', {
-                    style: 'currency',
-                    currency: artwork.currency,
-                  }).format(selectedSize.price)}
+                  {selectedSize.dimensions} — {formatCurrency(selectedSize.price, artwork.currency)}
                 </span>
               </div>
             ) : (
@@ -215,7 +211,7 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
               <Button
                 size="lg"
                 className="w-full md:min-w-[200px] h-14 text-lg rounded-full shadow-lg transition-all font-medium text-white"
-                style={{ backgroundColor: 'var(--color-accent-primary)' }}
+                style={{ backgroundColor: 'var(--color-text-primary, #1a1a1a)' }}
               >
                 Ir a Pagar
               </Button>
@@ -233,7 +229,7 @@ export function ArtworkDetail({ artwork, relatedArtworks, tenantId }: ArtworkDet
                 backgroundColor: isAdded
                   ? 'var(--color-success)'
                   : selectedSizeId && selectedSize?.stock !== 0
-                    ? 'var(--color-accent-primary)'
+                    ? 'var(--color-text-primary, #1a1a1a)'
                     : 'var(--color-border-subtle)',
               }}
               disabled={!selectedSizeId || selectedSize?.stock === 0}

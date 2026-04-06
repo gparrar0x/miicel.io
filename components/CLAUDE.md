@@ -86,9 +86,10 @@ import { Card } from '@/components/ui/card'
 
 ## Price Formatting
 
-Centralized locale + currency:
+Centralized via `formatCurrency()` from `@/lib/pricing`:
 ```tsx
-new Intl.NumberFormat('es-CL', { style: 'currency', currency }).format(price)
+import { formatCurrency } from '@/lib/pricing'
+formatCurrency(price, currency) // cached Intl.NumberFormat, es-AR locale
 ```
 
 ## CSS Techniques

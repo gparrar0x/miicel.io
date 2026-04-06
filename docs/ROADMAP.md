@@ -58,11 +58,11 @@ Hemos completado la infraestructura crítica multi-tenant y la experiencia de co
 ---
 
 ## 📅 Fase 2: Descubrimiento y Tracción (Q2 2026)
-**Objetivo:** Que los comercios consigan sus primeros 100 clientes a través de VENDIO.
+**Objetivo:** Que los comercios consigan sus primeros 100 clientes a través de la plataforma.
 
 ### 2.1 Google Business Sync (MVP)
-- **Sincronización Básica:** Horarios y dirección desde VENDIO hacia Google Maps.
-- **Link al Menú:** Asegurar que el botón "Menú" en Maps lleve a la tienda VENDIO.
+- **Sincronización Básica:** Horarios y dirección desde Micelio hacia Google Maps.
+- **Link al Menú:** Asegurar que el botón "Menú" en Maps lleve a la tienda Micelio.
 
 ### 2.2 Analítica Accionable (V1)
 - **Dashboard de Ventas:** Gráficos diarios/semanales.

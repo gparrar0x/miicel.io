@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/shadcn-badge'
+import { formatCurrency } from '@/lib/pricing'
 import { useCartStore } from '@/lib/stores/cartStore'
 import { cn } from '@/lib/utils'
 import type { Artwork } from './types'
@@ -15,8 +16,7 @@ function ArtworkPrice({ artwork }: { artwork: Artwork }) {
   const hasDiscount = artwork.discount_active === true
   const displayPrice = hasDiscount ? (artwork.effective_price ?? artwork.price) : artwork.price
 
-  const fmt = (p: number) =>
-    new Intl.NumberFormat('en-US', { style: 'currency', currency: artwork.currency }).format(p)
+  const fmt = (p: number) => formatCurrency(p, artwork.currency)
 
   if (!hasDiscount) {
     return <span className="font-medium text-sm text-black">{fmt(displayPrice)}</span>
@@ -61,7 +61,7 @@ interface GalleryGridProps {
 }
 
 export function GalleryGrid({ artworks, collections, tenantId }: GalleryGridProps) {
-  const [activeCollection, setActiveCollection] = useState('All Works')
+  const [activeCollection, setActiveCollection] = useState('Todas las Obras')
   const { getTotalItems } = useCartStore()
 
   // Hydration fix: only render cart button after mount
@@ -71,7 +71,7 @@ export function GalleryGrid({ artworks, collections, tenantId }: GalleryGridProp
   const totalItems = mounted ? getTotalItems() : 0
 
   const filteredArtworks =
-    activeCollection === 'All Works'
+    activeCollection === 'Todas las Obras'
       ? artworks
       : artworks.filter((a) => a.collection === activeCollection)
 
@@ -81,15 +81,15 @@ export function GalleryGrid({ artworks, collections, tenantId }: GalleryGridProp
       <div className="sticky top-16 z-30 bg-white/95 backdrop-blur py-4 -mx-4 px-4 border-b border-gray-100 md:static md:bg-transparent md:border-none md:p-0 md:mx-0">
         <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar md:flex-wrap md:justify-center">
           <button
-            onClick={() => setActiveCollection('All Works')}
+            onClick={() => setActiveCollection('Todas las Obras')}
             className={cn(
               'whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-medium transition-all border',
-              activeCollection === 'All Works'
+              activeCollection === 'Todas las Obras'
                 ? 'bg-black text-white border-black'
                 : 'bg-white text-gray-500 border-transparent hover:bg-gray-100 hover:text-black',
             )}
           >
-            All Works
+            Todas las Obras
           </button>
           {collections.map((collection) => (
             <button
@@ -142,7 +142,7 @@ export function GalleryGrid({ artworks, collections, tenantId }: GalleryGridProp
                         variant="secondary"
                         className="bg-white/80 backdrop-blur text-xs text-black border-none shadow-sm"
                       >
-                        Limited
+                        Limitada
                       </Badge>
                     </div>
                   )}
@@ -165,7 +165,7 @@ export function GalleryGrid({ artworks, collections, tenantId }: GalleryGridProp
 
       {filteredArtworks.length === 0 && (
         <div className="text-center py-20">
-          <p className="text-gray-400">No artworks found in this collection.</p>
+          <p className="text-gray-400">No se encontraron obras en esta colección.</p>
         </div>
       )}
 
@@ -180,7 +180,7 @@ export function GalleryGrid({ artworks, collections, tenantId }: GalleryGridProp
               <Button
                 size="lg"
                 className="w-full h-14 text-lg rounded-full text-white shadow-lg font-medium flex items-center justify-center gap-2"
-                style={{ backgroundColor: 'var(--color-accent-primary)' }}
+                style={{ backgroundColor: 'var(--color-text-primary, #1a1a1a)' }}
                 data-testid="cart-checkout-button"
               >
                 <ShoppingBag className="h-5 w-5" />
