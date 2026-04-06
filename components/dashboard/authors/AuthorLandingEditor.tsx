@@ -171,7 +171,7 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-display text-3xl font-bold uppercase tracking-tight">{t('title')}</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">{t('title')}</h1>
         <p className="text-sm text-muted-foreground mt-1">{t('subtitle')}</p>
       </div>
 
