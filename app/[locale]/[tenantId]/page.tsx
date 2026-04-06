@@ -25,7 +25,7 @@ export const revalidate = 60
 
 interface PageProps {
   params: Promise<{ locale: string; tenantId: string }>
-  searchParams: Promise<{ category?: string; search?: string }>
+  searchParams: Promise<{ category?: string; search?: string; artist?: string }>
 }
 
 async function getTenantConfig(tenantId: string): Promise<TenantConfigResponse | null> {
@@ -84,7 +84,7 @@ async function getTenantConfig(tenantId: string): Promise<TenantConfigResponse |
   }
 }
 
-async function getProducts(tenantId: string, category?: string, search?: string) {
+async function getProducts(tenantId: string, category?: string, search?: string, artist?: string) {
   const supabase = await createClient()
 
   const { data: tenant } = await supabase.from('tenants').select('id').eq('slug', tenantId).single()
@@ -93,7 +93,7 @@ async function getProducts(tenantId: string, category?: string, search?: string)
 
   let query = supabase
     .from('products')
-    .select('id, name, description, price, category, image_url, stock, metadata')
+    .select('id, name, description, price, category, image_url, stock, metadata, authors(name)')
     .eq('tenant_id', tenant.id)
     .eq('active', true)
     .order('created_at', { ascending: false })
@@ -107,6 +107,21 @@ async function getProducts(tenantId: string, category?: string, search?: string)
     query = query.ilike('name', `%${sanitized}%`)
   }
 
+  if (artist) {
+    const { data: authorRow } = await supabase
+      .from('authors')
+      .select('id')
+      .eq('tenant_id', tenant.id)
+      .ilike('name', artist)
+      .maybeSingle()
+
+    if (authorRow) {
+      query = query.eq('author_id', authorRow.id)
+    } else {
+      return []
+    }
+  }
+
   const { data, error } = await query
 
   if (error) {
@@ -114,7 +129,7 @@ async function getProducts(tenantId: string, category?: string, search?: string)
     return []
   }
 
-  return (data || []).map((p) => ({
+  return (data || []).map((p: any) => ({
     id: String(p.id),
     name: p.name,
     description: p.description,
@@ -125,7 +140,7 @@ async function getProducts(tenantId: string, category?: string, search?: string)
     stock: p.stock || 0,
     category: p.category,
     image_url: p.image_url,
-    artist: undefined,
+    artist: p.authors?.name ?? undefined,
     type: undefined,
     optionsCount: undefined,
     isNew: false,
@@ -202,11 +217,11 @@ export async function generateMetadata({
 
 export default async function StorefrontPage({ params, searchParams }: PageProps) {
   const { tenantId } = await params
-  const { category } = await searchParams
+  const { category, artist } = await searchParams
 
   const [config, products, categories] = await Promise.all([
     getTenantConfig(tenantId),
-    getProducts(tenantId, category),
+    getProducts(tenantId, category, undefined, artist),
     getCategories(tenantId),
   ])
 
