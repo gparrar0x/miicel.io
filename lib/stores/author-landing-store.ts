@@ -9,6 +9,7 @@ export interface AuthorOption {
   latest_landing: {
     id: number
     status: LandingStatus
+    content: AuthorLandingContent
     generated_at: string
   } | null
 }
@@ -58,10 +59,11 @@ export const useAuthorLandingStore = create<AuthorLandingState>((set, get) => ({
   setAuthors: (authors) => set({ authors }),
   selectAuthor: (authorId) => {
     const author = authorId ? get().authors.find((a) => a.id === authorId) : null
+    const landing = author?.latest_landing ?? null
     set({
       selectedAuthorId: authorId,
-      previewContent: null,
-      landingStatus: author?.latest_landing?.status ?? null,
+      previewContent: landing?.content ?? null,
+      landingStatus: landing?.status ?? null,
       error: null,
     })
   },
