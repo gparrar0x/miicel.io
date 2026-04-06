@@ -169,114 +169,114 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
   const ctaHref = `/${locale}/${tenantSlug}/?artist=${encodeURIComponent(selectedAuthor?.name ?? '')}`
 
   return (
-    <div className="space-y-8">
-      <div>
+    <div>
+      <div className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight text-foreground">{t('title')}</h1>
         <p className="text-sm text-muted-foreground mt-1">{t('subtitle')}</p>
       </div>
 
-      <div className="space-y-6 max-w-2xl">
-        <div className="space-y-2">
-          <label className="text-sm font-medium" htmlFor="author-select">
-            {t('author')}
-          </label>
-          <Select
-            value={selectedAuthorId ? String(selectedAuthorId) : ''}
-            onValueChange={(val) => selectAuthor(val ? Number(val) : null)}
-          >
-            <SelectTrigger data-testid="author-select-dropdown" id="author-select">
-              <SelectValue
-                placeholder={isLoadingAuthors ? t('loadingAuthors') : t('selectAuthor')}
-              />
-            </SelectTrigger>
-            <SelectContent>
-              {authors.map((author) => (
-                <SelectItem key={author.id} value={String(author.id)}>
-                  {author.name}
-                  {author.latest_landing && (
-                    <Badge
-                      variant={author.latest_landing.status === 'published' ? 'default' : 'outline'}
-                      className="text-[10px] px-1.5 py-0 ml-2"
-                    >
-                      {author.latest_landing.status}
-                    </Badge>
-                  )}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {selectedAuthorId && (
+      <div className="flex gap-8">
+        {/* Left column: controls */}
+        <div className="w-full max-w-md space-y-5 shrink-0">
           <div className="space-y-2">
-            <label className="text-sm font-medium">{t('authorImage')}</label>
-            <div className="flex items-center gap-4">
-              {selectedAuthor?.image_url && (
-                <img
-                  src={selectedAuthor.image_url}
-                  alt={selectedAuthor.name}
-                  className="w-16 h-16 object-cover border-2 border-border"
-                />
-              )}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif"
-                onChange={handleImageUpload}
-                disabled={isUploading}
-                data-testid="author-image-upload"
-                className="text-sm file:mr-4 file:py-2 file:px-4 file:border file:border-border file:bg-background file:text-foreground file:text-sm file:font-medium hover:file:bg-muted file:rounded-md file:cursor-pointer disabled:opacity-50"
-              />
-              {isUploading && (
-                <span className="text-sm text-muted-foreground">{t('uploading')}</span>
-              )}
-            </div>
-          </div>
-        )}
-
-        {selectedAuthorId && (
-          <div className="space-y-2">
-            <label className="text-sm font-medium" htmlFor="author-prompt">
-              {t('prompt')}
+            <label className="text-sm font-medium" htmlFor="author-select">
+              {t('author')}
             </label>
-            <Textarea
-              id="author-prompt"
-              data-testid="author-prompt-textarea"
-              value={customPrompt}
-              onChange={(e) => setCustomPrompt(e.target.value)}
-              rows={4}
-              placeholder={t('promptPlaceholder')}
-              className="font-mono text-sm"
-            />
-          </div>
-        )}
-
-        {selectedAuthorId && (
-          <div className="flex items-center gap-3">
-            <Button
-              data-testid="author-generate-btn"
-              onClick={handleGenerate}
-              disabled={isGenerating}
+            <Select
+              value={selectedAuthorId ? String(selectedAuthorId) : ''}
+              onValueChange={(val) => selectAuthor(val ? Number(val) : null)}
             >
-              {isGenerating
-                ? t('generating')
-                : previewContent
-                  ? t('regenerate')
-                  : t('generateLanding')}
-            </Button>
+              <SelectTrigger
+                data-testid="author-select-dropdown"
+                id="author-select"
+                className="w-fit min-w-48"
+              >
+                <SelectValue
+                  placeholder={isLoadingAuthors ? t('loadingAuthors') : t('selectAuthor')}
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {authors.map((author) => (
+                  <SelectItem key={author.id} value={String(author.id)}>
+                    {author.name}
+                    {author.latest_landing && (
+                      <Badge
+                        variant={
+                          author.latest_landing.status === 'published' ? 'default' : 'outline'
+                        }
+                        className="text-[10px] px-1.5 py-0 ml-2"
+                      >
+                        {author.latest_landing.status}
+                      </Badge>
+                    )}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-            {previewContent && (
-              <>
-                <Button
-                  data-testid="author-regenerate-btn"
-                  variant="outline"
-                  onClick={handleGenerate}
-                  disabled={isGenerating}
-                >
-                  {isGenerating ? t('generating') : t('regenerate')}
-                </Button>
+          {selectedAuthorId && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium">{t('authorImage')}</label>
+              <div className="flex items-center gap-4">
+                {selectedAuthor?.image_url && (
+                  <img
+                    src={selectedAuthor.image_url}
+                    alt={selectedAuthor.name}
+                    className="w-12 h-12 object-cover border-2 border-border"
+                  />
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  onChange={handleImageUpload}
+                  disabled={isUploading}
+                  data-testid="author-image-upload"
+                  className="text-sm file:mr-4 file:py-1.5 file:px-3 file:border file:border-border file:bg-background file:text-foreground file:text-xs file:font-medium hover:file:bg-muted file:rounded-md file:cursor-pointer disabled:opacity-50"
+                />
+                {isUploading && (
+                  <span className="text-sm text-muted-foreground">{t('uploading')}</span>
+                )}
+              </div>
+            </div>
+          )}
 
+          {selectedAuthorId && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium" htmlFor="author-prompt">
+                {t('prompt')}
+              </label>
+              <Textarea
+                id="author-prompt"
+                data-testid="author-prompt-textarea"
+                value={customPrompt}
+                onChange={(e) => setCustomPrompt(e.target.value)}
+                rows={4}
+                placeholder={t('promptPlaceholder')}
+                className="font-mono text-xs"
+              />
+            </div>
+          )}
+
+          {selectedAuthorId && (
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                data-testid="author-generate-btn"
+                onClick={handleGenerate}
+                disabled={isGenerating}
+              >
+                {isGenerating
+                  ? t('generating')
+                  : previewContent
+                    ? t('regenerate')
+                    : t('generateLanding')}
+              </Button>
+
+              {previewContent && (
                 <Button
+                  size="sm"
                   data-testid="author-publish-btn"
                   variant={landingStatus === 'published' ? 'secondary' : 'default'}
                   onClick={handlePublish}
@@ -288,41 +288,44 @@ export function AuthorLandingEditor({ tenantId, tenantSlug, locale }: AuthorLand
                       ? t('published')
                       : t('publish')}
                 </Button>
-              </>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          )}
 
-        {error && (
-          <p className="text-sm text-destructive border border-destructive/30 bg-destructive/5 px-3 py-2 rounded">
-            {error}
-          </p>
+          {error && (
+            <p className="text-sm text-destructive border border-destructive/30 bg-destructive/5 px-3 py-2 rounded">
+              {error}
+            </p>
+          )}
+        </div>
+
+        {/* Right column: preview (sticky) */}
+        {previewContent && selectedAuthor && (
+          <div className="flex-1 min-w-0">
+            <div
+              data-testid="author-preview-container"
+              className="sticky top-4 border-2 border-border rounded-lg overflow-hidden"
+            >
+              <div className="bg-muted px-4 py-2 border-b-2 border-border flex items-center justify-between">
+                <span className="text-sm font-mono font-medium uppercase tracking-wider">
+                  {t('preview')}
+                </span>
+                {landingStatus && (
+                  <Badge variant={landingStatus === 'published' ? 'default' : 'outline'}>
+                    {landingStatus}
+                  </Badge>
+                )}
+              </div>
+              <AuthorLanding
+                content={previewContent}
+                authorName={selectedAuthor.name}
+                authorImage={selectedAuthor.image_url}
+                ctaHref={ctaHref}
+              />
+            </div>
+          </div>
         )}
       </div>
-
-      {previewContent && selectedAuthor && (
-        <div
-          data-testid="author-preview-container"
-          className="border-2 border-border mt-8 rounded-lg overflow-hidden"
-        >
-          <div className="bg-muted px-4 py-2 border-b-2 border-border flex items-center justify-between">
-            <span className="text-sm font-mono font-medium uppercase tracking-wider">
-              {t('preview')}
-            </span>
-            {landingStatus && (
-              <Badge variant={landingStatus === 'published' ? 'default' : 'outline'}>
-                {landingStatus}
-              </Badge>
-            )}
-          </div>
-          <AuthorLanding
-            content={previewContent}
-            authorName={selectedAuthor.name}
-            authorImage={selectedAuthor.image_url}
-            ctaHref={ctaHref}
-          />
-        </div>
-      )}
     </div>
   )
 }
