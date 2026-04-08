@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <rect width="512" height="512" fill="#EFEEE9"/>
+  <!-- Mycelium network: interconnected nodes forming circular pattern -->
+  <g transform="translate(256,256)" stroke="#D4AF37" stroke-width="2.5" stroke-linecap="round">
+    <!-- Central node -->
+    <circle cx="0" cy="0" r="8" fill="#D4AF37"/>
+    <!-- Inner ring nodes (6) -->
+    <circle cx="0" cy="-52" r="6" fill="#D4AF37"/>
+    <circle cx="45" cy="-26" r="6" fill="#D4AF37"/>
+    <circle cx="45" cy="26" r="6" fill="#D4AF37"/>
+    <circle cx="0" cy="52" r="6" fill="#D4AF37"/>
+    <circle cx="-45" cy="26" r="6" fill="#D4AF37"/>
+    <circle cx="-45" cy="-26" r="6" fill="#D4AF37"/>
+    <!-- Inner connections to center -->
+    <line x1="0" y1="0" x2="0" y2="-52"/>
+    <line x1="0" y1="0" x2="45" y2="-26"/>
+    <line x1="0" y1="0" x2="45" y2="26"/>
+    <line x1="0" y1="0" x2="0" y2="52"/>
+    <line x1="0" y1="0" x2="-45" y2="26"/>
+    <line x1="0" y1="0" x2="-45" y2="-26"/>
+    <!-- Inner ring connections -->
+    <line x1="0" y1="-52" x2="45" y2="-26"/>
+    <line x1="45" y1="-26" x2="45" y2="26"/>
+    <line x1="45" y1="26" x2="0" y2="52"/>
+    <line x1="0" y1="52" x2="-45" y2="26"/>
+    <line x1="-45" y1="26" x2="-45" y2="-26"/>
+    <line x1="-45" y1="-26" x2="0" y2="-52"/>
+    <!-- Outer ring nodes (12) -->
+    <circle cx="0" cy="-105" r="5" fill="#D4AF37"/>
+    <circle cx="53" cy="-91" r="5" fill="#D4AF37"/>
+    <circle cx="91" cy="-53" r="5" fill="#D4AF37"/>
+    <circle cx="105" cy="0" r="5" fill="#D4AF37"/>
+    <circle cx="91" cy="53" r="5" fill="#D4AF37"/>
+    <circle cx="53" cy="91" r="5" fill="#D4AF37"/>
+    <circle cx="0" cy="105" r="5" fill="#D4AF37"/>
+    <circle cx="-53" cy="91" r="5" fill="#D4AF37"/>
+    <circle cx="-91" cy="53" r="5" fill="#D4AF37"/>
+    <circle cx="-105" cy="0" r="5" fill="#D4AF37"/>
+    <circle cx="-91" cy="-53" r="5" fill="#D4AF37"/>
+    <circle cx="-53" cy="-91" r="5" fill="#D4AF37"/>
+    <!-- Outer connections (branching from inner nodes) -->
+    <line x1="0" y1="-52" x2="0" y2="-105"/>
+    <line x1="0" y1="-52" x2="-53" y2="-91"/>
+    <line x1="45" y1="-26" x2="53" y2="-91"/>
+    <line x1="45" y1="-26" x2="91" y2="-53"/>
+    <line x1="45" y1="26" x2="105" y2="0"/>
+    <line x1="45" y1="26" x2="91" y2="53"/>
+    <line x1="0" y1="52" x2="53" y2="91"/>
+    <line x1="0" y1="52" x2="0" y2="105"/>
+    <line x1="-45" y1="26" x2="-53" y2="91"/>
+    <line x1="-45" y1="26" x2="-91" y2="53"/>
+    <line x1="-45" y1="-26" x2="-105" y2="0"/>
+    <line x1="-45" y1="-26" x2="-91" y2="-53"/>
+    <!-- Tertiary nodes (leaf tips, 4px) -->
+    <circle cx="15" cy="-130" r="4" fill="#D4AF37"/>
+    <circle cx="75" cy="-115" r="4" fill="#D4AF37"/>
+    <circle cx="120" cy="-30" r="4" fill="#D4AF37"/>
+    <circle cx="120" cy="30" r="4" fill="#D4AF37"/>
+    <circle cx="75" cy="115" r="4" fill="#D4AF37"/>
+    <circle cx="15" cy="130" r="4" fill="#D4AF37"/>
+    <circle cx="-75" cy="115" r="4" fill="#D4AF37"/>
+    <circle cx="-120" cy="30" r="4" fill="#D4AF37"/>
+    <circle cx="-120" cy="-30" r="4" fill="#D4AF37"/>
+    <circle cx="-75" cy="-115" r="4" fill="#D4AF37"/>
+    <circle cx="-15" cy="-130" r="4" fill="#D4AF37"/>
+    <circle cx="-15" cy="130" r="4" fill="#D4AF37"/>
+    <!-- Tertiary connections -->
+    <line x1="0" y1="-105" x2="15" y2="-130"/>
+    <line x1="0" y1="-105" x2="-15" y2="-130"/>
+    <line x1="53" y1="-91" x2="75" y2="-115"/>
+    <line x1="91" y1="-53" x2="120" y2="-30"/>
+    <line x1="105" y1="0" x2="120" y2="30"/>
+    <line x1="91" y1="53" x2="75" y2="115"/>
+    <line x1="53" y1="91" x2="15" y2="130"/>
+    <line x1="0" y1="105" x2="-15" y2="130"/>
+    <line x1="-53" y1="91" x2="-75" y2="115"/>
+    <line x1="-91" y1="53" x2="-120" y2="30"/>
+    <line x1="-105" y1="0" x2="-120" y2="-30"/>
+    <line x1="-91" y1="-53" x2="-75" y2="-115"/>
+  </g>
+</svg>

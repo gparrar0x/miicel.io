@@ -1,0 +1,161 @@
+/**
+ * Micelio Marketing Landing Page Tokens
+ * Product-specific overrides for the marketing/landing context.
+ * Base identity: docs/PRODUCT_IDENTITY.md
+ */
+
+.micelio-marketing {
+  /* Color Palette */
+  --micelio-bg: #EFEEE9;
+  --micelio-surface: #FFFFFF;
+  --micelio-text-primary: #0C1A27;
+  --micelio-text-secondary: #5F7382;
+  --micelio-border: #5F7382;
+  --micelio-accent: #D4AF37;
+  --micelio-cta: #D97706;
+  --micelio-cta-hover: #C86206;
+  --micelio-success: #10b981;
+  --micelio-warning: #f59e0b;
+  --micelio-danger: #ef4444;
+
+  /* Typography */
+  --micelio-font-heading: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --micelio-font-body: 'Geist Sans', system-ui, sans-serif;
+
+  /* Spacing (8px grid) */
+  --micelio-space-micro: 4px;
+  --micelio-space-tight: 8px;
+  --micelio-space-base: 16px;
+  --micelio-space-comfortable: 24px;
+  --micelio-space-major: 32px;
+  --micelio-space-section: 48px;
+  --micelio-space-page: 64px;
+
+  /* Animation */
+  --micelio-ease-micro: cubic-bezier(0.4, 0, 0.2, 1);
+  --micelio-ease-entrance: cubic-bezier(0.0, 0, 0.2, 1);
+  --micelio-duration-micro: 150ms;
+  --micelio-duration-transition: 200ms;
+  --micelio-duration-entrance: 300ms;
+
+  /* Shadows */
+  --micelio-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --micelio-shadow-elevated: 0 4px 12px rgba(0, 0, 0, 0.12);
+
+  /* Border Radius */
+  --micelio-radius-button: 6px;
+  --micelio-radius-card: 8px;
+  --micelio-radius-modal: 12px;
+
+  /* Base styles */
+  background-color: var(--micelio-bg);
+  color: var(--micelio-text-primary);
+  font-family: var(--micelio-font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Glitch particle system */
+.glitch {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.glitch--micelio {
+  --glitch-color: rgb(212, 175, 55);
+  --glitch-color-opacity: 0.4;
+  --glitch-line-opacity: 0.25;
+  --glitch-drift-radius: 16px;
+  --glitch-duration: 3000ms;
+  --glitch-easing: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glitch--espora {
+  --glitch-color: rgb(239, 238, 233);
+  --glitch-color-opacity: 0.35;
+  --glitch-line-opacity: 0.20;
+  --glitch-drift-radius: 24px;
+  --glitch-duration: 2000ms;
+  --glitch-easing: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.glitch__particle {
+  fill: var(--glitch-color);
+  opacity: 0;
+  animation:
+    glitch-enter var(--micelio-duration-entrance, 300ms) var(--glitch-easing) forwards,
+    glitch-drift var(--glitch-duration) var(--glitch-easing) infinite 300ms;
+}
+
+.glitch__edge {
+  stroke: var(--glitch-color);
+  opacity: 0;
+  stroke-width: 1;
+  animation:
+    glitch-edge-enter var(--micelio-duration-entrance, 300ms) var(--glitch-easing) forwards 100ms,
+    glitch-fade var(--glitch-duration) var(--glitch-easing) infinite 400ms;
+}
+
+/* Per-particle drift offsets */
+.glitch__particle:nth-child(1) { --drift-x: 8px; --drift-y: 4px; animation-delay: 0ms, 300ms; }
+.glitch__particle:nth-child(2) { --drift-x: -6px; --drift-y: 10px; animation-delay: 25ms, 325ms; }
+.glitch__particle:nth-child(3) { --drift-x: 12px; --drift-y: -8px; animation-delay: 50ms, 350ms; }
+.glitch__particle:nth-child(4) { --drift-x: -10px; --drift-y: 6px; animation-delay: 75ms, 375ms; }
+.glitch__particle:nth-child(5) { --drift-x: 4px; --drift-y: -12px; animation-delay: 100ms, 400ms; }
+.glitch__particle:nth-child(6) { --drift-x: -8px; --drift-y: -4px; animation-delay: 125ms, 425ms; }
+.glitch__particle:nth-child(7) { --drift-x: 14px; --drift-y: 8px; animation-delay: 150ms, 450ms; }
+.glitch__particle:nth-child(8) { --drift-x: -4px; --drift-y: 14px; animation-delay: 175ms, 475ms; }
+.glitch__particle:nth-child(9) { --drift-x: 10px; --drift-y: -6px; animation-delay: 200ms, 500ms; }
+.glitch__particle:nth-child(10) { --drift-x: -12px; --drift-y: 10px; animation-delay: 225ms, 525ms; }
+.glitch__particle:nth-child(11) { --drift-x: 6px; --drift-y: -14px; animation-delay: 250ms, 550ms; }
+.glitch__particle:nth-child(12) { --drift-x: -14px; --drift-y: -8px; animation-delay: 275ms, 575ms; }
+
+/* Edge stagger */
+.glitch__edge:nth-child(n+13):nth-child(-n+20) { animation-delay: calc((var(--edge-index, 0) * 30ms) + 100ms), calc((var(--edge-index, 0) * 30ms) + 400ms); }
+
+@keyframes glitch-enter {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: var(--glitch-color-opacity); transform: scale(1); }
+}
+
+@keyframes glitch-edge-enter {
+  from { opacity: 0; }
+  to { opacity: var(--glitch-line-opacity); }
+}
+
+@keyframes glitch-drift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(var(--drift-x, 8px), var(--drift-y, 8px)); }
+}
+
+@keyframes glitch-fade {
+  0%, 100% { opacity: var(--glitch-line-opacity); }
+  50% { opacity: calc(var(--glitch-line-opacity) * 1.4); }
+}
+
+/* Marketing section entrance animation */
+@keyframes micelio-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.micelio-fade-in {
+  animation: micelio-fade-up 300ms cubic-bezier(0.0, 0, 0.2, 1) forwards;
+}
+
+/* Stagger delays for lists */
+.micelio-stagger-1 { animation-delay: 0ms; }
+.micelio-stagger-2 { animation-delay: 50ms; }
+.micelio-stagger-3 { animation-delay: 100ms; }
+.micelio-stagger-4 { animation-delay: 150ms; }

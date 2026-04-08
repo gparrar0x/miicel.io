@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> micelio.skyw.app — Multi-tenant e-commerce SaaS
+> micelio.skyw.app — AaaS Product-Led Platform (multi-tenant e-commerce + AI agents)
 > Updated: 2025-01-24
 
 ---

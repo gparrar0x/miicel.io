@@ -105,7 +105,8 @@ export async function proxy(req: NextRequest) {
     !secondSegment ||
     secondSegment === 'signup' ||
     secondSegment === 'test-theme' ||
-    secondSegment === 'login'
+    secondSegment === 'login' ||
+    secondSegment === 'landing'
   ) {
     return supabaseResponse
   }
