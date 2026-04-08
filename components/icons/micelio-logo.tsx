@@ -1,22 +1,51 @@
 export function MicelioLogo({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      {/* Red de micelio - nodos conectados */}
-      <circle cx="16" cy="8" r="2.5" fill="currentColor" />
-      <circle cx="8" cy="16" r="2" fill="currentColor" />
-      <circle cx="24" cy="16" r="2" fill="currentColor" />
-      <circle cx="10" cy="24" r="2.5" fill="currentColor" />
-      <circle cx="22" cy="24" r="2.5" fill="currentColor" />
-      <circle cx="16" cy="20" r="1.5" fill="currentColor" />
-
-      {/* Conexiones */}
-      <path
-        d="M16 10.5V18.5M14.5 19L10.5 22.5M17.5 19L21.5 22.5M10 16L14.5 19M22 16L17.5 19M13.5 9L9.5 14.5M18.5 9L22.5 14.5"
+    <svg viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      {/* Red de micelio: nodos interconectados */}
+      <g
+        transform="translate(128,128)"
         stroke="currentColor"
-        strokeWidth="1"
+        strokeWidth="2.5"
         strokeLinecap="round"
-        opacity="0.6"
-      />
+      >
+        {/* Central node */}
+        <circle cx="0" cy="0" r="8" fill="currentColor" />
+        {/* Inner ring (6 nodes) */}
+        <circle cx="0" cy="-52" r="6" fill="currentColor" />
+        <circle cx="45" cy="-26" r="6" fill="currentColor" />
+        <circle cx="45" cy="26" r="6" fill="currentColor" />
+        <circle cx="0" cy="52" r="6" fill="currentColor" />
+        <circle cx="-45" cy="26" r="6" fill="currentColor" />
+        <circle cx="-45" cy="-26" r="6" fill="currentColor" />
+        {/* Inner connections */}
+        <line x1="0" y1="0" x2="0" y2="-52" />
+        <line x1="0" y1="0" x2="45" y2="-26" />
+        <line x1="0" y1="0" x2="45" y2="26" />
+        <line x1="0" y1="0" x2="0" y2="52" />
+        <line x1="0" y1="0" x2="-45" y2="26" />
+        <line x1="0" y1="0" x2="-45" y2="-26" />
+        {/* Inner ring connections */}
+        <line x1="0" y1="-52" x2="45" y2="-26" />
+        <line x1="45" y1="-26" x2="45" y2="26" />
+        <line x1="45" y1="26" x2="0" y2="52" />
+        <line x1="0" y1="52" x2="-45" y2="26" />
+        <line x1="-45" y1="26" x2="-45" y2="-26" />
+        <line x1="-45" y1="-26" x2="0" y2="-52" />
+        {/* Outer nodes */}
+        <circle cx="0" cy="-95" r="4" fill="currentColor" />
+        <circle cx="82" cy="-48" r="4" fill="currentColor" />
+        <circle cx="82" cy="48" r="4" fill="currentColor" />
+        <circle cx="0" cy="95" r="4" fill="currentColor" />
+        <circle cx="-82" cy="48" r="4" fill="currentColor" />
+        <circle cx="-82" cy="-48" r="4" fill="currentColor" />
+        {/* Outer connections */}
+        <line x1="0" y1="-52" x2="0" y2="-95" />
+        <line x1="45" y1="-26" x2="82" y2="-48" />
+        <line x1="45" y1="26" x2="82" y2="48" />
+        <line x1="0" y1="52" x2="0" y2="95" />
+        <line x1="-45" y1="26" x2="-82" y2="48" />
+        <line x1="-45" y1="-26" x2="-82" y2="-48" />
+      </g>
     </svg>
   )
 }
