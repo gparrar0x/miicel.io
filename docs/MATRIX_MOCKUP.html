@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tenant Feature Flags Matrix - Mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --background: #ffffff;
+      --foreground: #000000;
+      --color-paper: #f4f4f0;
+      --color-text-secondary: #666666;
+      --color-border: #e5e5e5;
+      --color-primary: #1a1a1a;
+      --color-success: #10b981;
+      --color-warning: #f59e0b;
+      --color-disabled: #9CA3AF;
+      --color-info: #3b82f6;
+      --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+      --ease-in-out-circ: cubic-bezier(0.785, 0.135, 0.15, 0.86);
+      --timing-fast: 100ms;
+      --timing-normal: 300ms;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+      background: var(--background);
+      color: var(--foreground);
+    }
+
+    .container {
+      padding: 32px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 24px;
+      color: var(--foreground);
+    }
+
+    /* Control Bar */
+    .control-bar {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .template-filter {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      background: var(--sky-white);
+    }
+
+    .template-filter button {
+      padding: 8px 16px;
+      border: none;
+      background: var(--color-paper);
+      color: var(--foreground);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--timing-fast) var(--ease-out-expo);
+      border-right: 1px solid var(--color-border);
+    }
+
+    .template-filter button:last-child {
+      border-right: none;
+    }
+
+    .template-filter button.active {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .template-filter button:hover:not(.active) {
+      background: #f9f8f5;
+    }
+
+    .search-bar {
+      display: flex;
+      gap: 8px;
+      flex: 1;
+      min-width: 300px;
+    }
+
+    input[type="text"],
+    select {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+      color: var(--foreground);
+      background: var(--background);
+    }
+
+    select {
+      flex: 0 0 160px;
+    }
+
+    /* Matrix Table */
+    .matrix-wrapper {
+      position: relative;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--background);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    /* Sticky headers */
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--color-paper);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    th {
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--foreground);
+      border: 1px solid var(--color-border);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    /* First column sticky */
+    th:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 11;
+      background: var(--color-paper);
+    }
+
+    td {
+      padding: 12px;
+      border: 1px solid var(--color-border);
+      text-align: center;
+      height: 56px;
+      vertical-align: middle;
+    }
+
+    /* First column sticky */
+    td:first-child {
+      position: sticky;
+      left: 0;
+      background: var(--background);
+      z-index: 2;
+      text-align: left;
+      font-weight: 600;
+      color: var(--foreground);
+    }
+
+    tbody tr:nth-child(even) td:first-child {
+      background: var(--color-paper);
+    }
+
+    /* Cell states */
+    .flag-cell {
+      position: relative;
+    }
+
+    .flag-cell.enabled {
+      background: var(--background);
+    }
+
+    .flag-cell.enabled:hover {
+      background: var(--color-paper);
+    }
+
+    .flag-cell.disabled {
+      background: var(--background);
+    }
+
+    .flag-cell.inherited,
+    .flag-cell.global {
+      background: rgba(244, 244, 240, 0.6);
+      cursor: not-allowed;
+    }
+
+    /* Toggle switch */
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      background: var(--color-disabled);
+      border-radius: 10px;
+      transition: background var(--timing-fast) var(--ease-out-expo);
+    }
+
+    .toggle-switch.on {
+      background: var(--color-success);
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: white;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: left var(--timing-fast) var(--ease-out-expo);
+    }
+
+    .toggle-switch.on::after {
+      left: 18px;
+    }
+
+    .toggle-indicator {
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      white-space: nowrap;
+    }
+
+    .toggle-indicator.enabled {
+      color: var(--color-success);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 500;
+      margin-left: 4px;
+    }
+
+    .badge.warning {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--color-warning);
+    }
+
+    .badge.secondary {
+      background: rgba(102, 102, 102, 0.15);
+      color: var(--color-text-secondary);
+    }
+
+    /* Tenant header cell */
+    .tenant-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 8px !important;
+    }
+
+    .tenant-logo {
+      width: 28px;
+      height: 28px;
+      background: var(--color-text-secondary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .tenant-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--foreground);
+    }
+
+    /* Flag row header */
+    .flag-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: var(--foreground);
+    }
+
+    /* Bulk actions bar */
+    .bulk-actions {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      background: var(--color-paper);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 50;
+      animation: slideUp var(--timing-normal) var(--ease-in-out-circ);
+    }
+
+    .bulk-actions-count {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+    }
+
+    .btn {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--timing-fast) var(--ease-out-expo);
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #0f0f0f;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--foreground);
+      border: 1px solid var(--color-border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-paper);
+    }
+
+    .btn-link {
+      background: transparent;
+      color: var(--color-text-secondary);
+      padding: 0;
+    }
+
+    .btn-link:hover {
+      color: var(--foreground);
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    /* Sheet panel */
+    .sheet-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.2);
+      z-index: 40;
+      display: none;
+    }
+
+    .sheet-overlay.open {
+      display: block;
+    }
+
+    .sheet-panel {
+      position: fixed;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 384px;
+      background: var(--background);
+      border-left: 1px solid var(--color-border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 41;
+      transform: translateX(100%);
+      transition: transform var(--timing-normal) var(--ease-in-out-circ);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sheet-panel.open {
+      transform: translateX(0);
+    }
+
+    .sheet-header {
+      background: var(--color-paper);
+      border-bottom: 1px solid var(--color-border);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+    }
+
+    .sheet-header-logo {
+      width: 32px;
+      height: 32px;
+      background: var(--color-text-secondary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .sheet-header-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--foreground);
+    }
+
+    .sheet-close-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: var(--foreground);
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color var(--timing-fast) var(--ease-out-expo);
+    }
+
+    .sheet-close-btn:hover {
+      color: var(--color-primary);
+    }
+
+    .sheet-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .sheet-section {
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 16px;
+    }
+
+    .sheet-section:last-of-type {
+      border-bottom: none;
+    }
+
+    .sheet-section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--foreground);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .metadata-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .metadata-label {
+      color: var(--color-text-secondary);
+      font-weight: 500;
+    }
+
+    .metadata-value {
+      color: var(--foreground);
+      font-weight: 400;
+    }
+
+    .flag-item {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .flag-item:last-child {
+      border-bottom: none;
+    }
+
+    .flag-item-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .flag-item-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--foreground);
+    }
+
+    .flag-item-scope {
+      font-size: 10px;
+      padding: 2px 4px;
+      background: rgba(102, 102, 102, 0.15);
+      color: var(--color-text-secondary);
+      border-radius: 3px;
+    }
+
+    .flag-item-description {
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .audit-item {
+      padding: 8px 0;
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .audit-item:last-child {
+      border-bottom: none;
+    }
+
+    .sheet-footer {
+      border-top: 1px solid var(--color-border);
+      padding: 16px;
+      background: var(--background);
+    }
+
+    .sheet-footer button {
+      width: 100%;
+    }
+
+    /* Checkbox */
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: var(--color-primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Feature Flags Across Tenants</h1>
+
+    <!-- Control Bar -->
+    <div class="control-bar">
+      <div class="template-filter">
+        <button class="active">Gallery</button>
+        <button>Gastronomy</button>
+        <button>All Templates</button>
+      </div>
+      <div class="search-bar">
+        <input type="text" placeholder="Search by flag name..." />
+        <select>
+          <option>All Scopes</option>
+          <option>Tenant-Specific</option>
+          <option>Template-Level</option>
+          <option>Global</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Matrix Table -->
+    <div class="matrix-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 180px;">
+              <input type="checkbox" />
+              Feature Flag
+            </th>
+            <th style="width: 120px;">
+              <div class="tenant-header">
+                <div class="tenant-logo">AR</div>
+                <div class="tenant-name">Artmonkeys</div>
+              </div>
+            </th>
+            <th style="width: 120px;">
+              <div class="tenant-header">
+                <div class="tenant-logo">MG</div>
+                <div class="tenant-name">Mango Bajito</div>
+              </div>
+            </th>
+            <th style="width: 120px;">
+              <div class="tenant-header">
+                <div class="tenant-logo">SC</div>
+                <div class="tenant-name">Sazón Criollo</div>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Row 1: content_pipeline -->
+          <tr>
+            <td>
+              <div class="flag-name">
+                <input type="checkbox" />
+                <span>content_pipeline</span>
+                <span class="badge warning">Template</span>
+              </div>
+            </td>
+            <td class="flag-cell enabled">
+              <div class="toggle">
+                <div class="toggle-switch on"></div>
+                <span class="toggle-indicator enabled">✓</span>
+              </div>
+            </td>
+            <td class="flag-cell inherited">
+              <span class="badge secondary">Inherits</span>
+            </td>
+            <td class="flag-cell disabled">
+              <div class="toggle">
+                <div class="toggle-switch"></div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 2: agents -->
+          <tr>
+            <td>
+              <div class="flag-name">
+                <input type="checkbox" />
+                <span>agents</span>
+                <span class="badge secondary">Tenant</span>
+              </div>
+            </td>
+            <td class="flag-cell enabled">
+              <div class="toggle">
+                <div class="toggle-switch on"></div>
+                <span class="toggle-indicator enabled">✓</span>
+              </div>
+            </td>
+            <td class="flag-cell enabled">
+              <div class="toggle">
+                <div class="toggle-switch on"></div>
+                <span class="toggle-indicator enabled">✓</span>
+              </div>
+            </td>
+            <td class="flag-cell disabled">
+              <div class="toggle">
+                <div class="toggle-switch"></div>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 3: dark_mode -->
+          <tr>
+            <td>
+              <div class="flag-name">
+                <input type="checkbox" />
+                <span>dark_mode</span>
+                <span class="badge secondary">Tenant</span>
+              </div>
+            </td>
+            <td class="flag-cell disabled">
+              <div class="toggle">
+                <div class="toggle-switch"></div>
+              </div>
+            </td>
+            <td class="flag-cell enabled">
+              <div class="toggle">
+                <div class="toggle-switch on"></div>
+                <span class="toggle-indicator enabled">✓</span>
+              </div>
+            </td>
+            <td class="flag-cell global">
+              <span class="badge secondary">Global</span>
+            </td>
+          </tr>
+
+          <!-- Row 4: analytics_v2 -->
+          <tr>
+            <td>
+              <div class="flag-name">
+                <input type="checkbox" />
+                <span>analytics_v2</span>
+                <span class="badge secondary">Tenant</span>
+              </div>
+            </td>
+            <td class="flag-cell enabled">
+              <div class="toggle">
+                <div class="toggle-switch on"></div>
+                <span class="toggle-indicator enabled">✓</span>
+              </div>
+            </td>
+            <td class="flag-cell disabled">
+              <div class="toggle">
+                <div class="toggle-switch"></div>
+              </div>
+            </td>
+            <td class="flag-cell enabled">
+              <div class="toggle">
+                <div class="toggle-switch on"></div>
+                <span class="toggle-indicator enabled">✓</span>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 5: kitchen_view -->
+          <tr>
+            <td>
+              <div class="flag-name">
+                <input type="checkbox" />
+                <span>kitchen_view</span>
+                <span class="badge secondary">Tenant</span>
+              </div>
+            </td>
+            <td class="flag-cell disabled">
+              <div class="toggle">
+                <div class="toggle-switch"></div>
+              </div>
+            </td>
+            <td class="flag-cell enabled">
+              <div class="toggle">
+                <div class="toggle-switch on"></div>
+                <span class="toggle-indicator enabled">✓</span>
+              </div>
+            </td>
+            <td class="flag-cell enabled">
+              <div class="toggle">
+                <div class="toggle-switch on"></div>
+                <span class="toggle-indicator enabled">✓</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bulk Actions Bar (visible when rows selected) -->
+    <div class="bulk-actions">
+      <span class="bulk-actions-count">2 rows selected</span>
+      <button class="btn btn-primary">Enable for selected</button>
+      <button class="btn btn-secondary">Disable for selected</button>
+      <button class="btn btn-link">Clear</button>
+    </div>
+
+    <!-- Sheet Overlay (hidden by default) -->
+    <div class="sheet-overlay open"></div>
+
+    <!-- Sheet Panel (right slide-over) -->
+    <div class="sheet-panel open">
+      <div class="sheet-header">
+        <div class="sheet-header-logo">MG</div>
+        <div class="sheet-header-title">Mango Bajito</div>
+        <button class="sheet-close-btn">✕</button>
+      </div>
+
+      <div class="sheet-content">
+        <!-- Metadata -->
+        <div class="sheet-section">
+          <div class="sheet-section-title">Tenant Info</div>
+          <div class="metadata-item">
+            <span class="metadata-label">Domain</span>
+            <span class="metadata-value">mangobajito.skyw.app</span>
+          </div>
+          <div class="metadata-item">
+            <span class="metadata-label">Created</span>
+            <span class="metadata-value">2024-08-15</span>
+          </div>
+          <div class="metadata-item">
+            <span class="metadata-label">Plan</span>
+            <span class="metadata-value">Premium</span>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="sheet-section">
+          <button class="btn btn-primary" style="width: 100%; margin-bottom: 8px;">Dashboard</button>
+          <button class="btn btn-secondary" style="width: 100%;">Tienda</button>
+        </div>
+
+        <!-- Flags -->
+        <div class="sheet-section">
+          <div class="sheet-section-title">Feature Flags</div>
+          <div class="flag-item">
+            <div class="flag-item-header">
+              <span class="flag-item-name">content_pipeline</span>
+              <span class="flag-item-scope">Template</span>
+            </div>
+            <div class="flag-item-description">Inherits from Gallery template</div>
+          </div>
+          <div class="flag-item">
+            <div class="flag-item-header">
+              <span class="flag-item-name">agents</span>
+              <span class="flag-item-scope">Tenant</span>
+            </div>
+            <div class="flag-item-description">Enabled for this tenant</div>
+            <div class="toggle">
+              <div class="toggle-switch on"></div>
+              <span class="toggle-indicator enabled">✓</span>
+            </div>
+          </div>
+          <div class="flag-item">
+            <div class="flag-item-header">
+              <span class="flag-item-name">dark_mode</span>
+              <span class="flag-item-scope">Tenant</span>
+            </div>
+            <div class="flag-item-description">Disabled for this tenant</div>
+            <div class="toggle">
+              <div class="toggle-switch"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audit Log -->
+        <div class="sheet-section">
+          <div class="sheet-section-title">Recent Changes</div>
+          <div class="audit-item">2026-04-11 · agents: ON by admin@skyw.app</div>
+          <div class="audit-item">2026-04-09 · content_pipeline: ON (inherited)</div>
+          <div class="audit-item">2026-04-05 · kitchen_view: OFF by staff@mangobajito</div>
+        </div>
+      </div>
+
+      <div class="sheet-footer">
+        <button class="btn btn-secondary">Done</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

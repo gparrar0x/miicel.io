@@ -23,32 +23,32 @@ Current card-per-tenant layout forces superadmins to scroll horizontally across 
 
 ## Visual Specs
 
-### Palette (from PRODUCT_IDENTITY)
+### Palette (from Micelio PRODUCT_IDENTITY)
 
 | Token | Hex | Usage |
 |---|---|---|
-| `--text-primary` | `#0C1A27` (sky-black) | Flag names, tenant names, toggle labels |
-| `--text-secondary` | `#5F7382` (sky-blue-gray) | Scope badges, timestamps, metadata |
-| `--bg-primary` | `#FFFFFF` | Matrix cells, content area |
-| `--bg-secondary` | `#EFEEE9` (sky-off-white) | Row stripes, header background, filters |
-| `--border` | `#E5E5E5` | Cell dividers, table grid |
-| `--accent` | `#D4AF37` (sky-gold) | Toggle indicator (enabled), focus ring, CTA |
-| `--accent-secondary` | `#E8833A` (sky-orange) | Hover state on toggles, template sections |
-| `--success` | `#10B981` | Enabled state (filled), status badge |
-| `--disabled` | `#9CA3AF` | Disabled toggles, locked cells (inherited) |
-| `--warning` | `#F59E0B` | Inherited/template-level flag indicator |
+| `--foreground` | `#000000` | Flag names, tenant names, toggle labels |
+| `--color-text-secondary` | `#666666` | Scope badges, timestamps, metadata |
+| `--background` | `#ffffff` | Matrix cells, content area |
+| `--color-paper` | `#f4f4f0` | Row stripes, header background, filters |
+| `--color-border` | `#e5e5e5` | Cell dividers, table grid |
+| `--color-primary` | `#1a1a1a` | Primary actions (toggles ON), focus ring, CTA buttons |
+| `--color-success` | `#10b981` | Enabled state (filled toggle), status badge |
+| `--color-disabled` | `#9CA3AF` | Disabled toggles, locked cells (inherited) |
+| `--color-warning` | `#f59e0b` | Inherited/template-level flag indicator |
 
 ### Typography
 
 | Role | Font | Weight | Size | Line Height |
 |---|---|---|---|---|
-| Page Title | Plus Jakarta Sans | 700 | 28px | 1.3 |
-| Section Header | Plus Jakarta Sans | 600 | 22px | 1.4 |
-| Column Header (tenant name) | Geist Sans | 600 | 14px | 1.5 |
-| Row Header (flag name) | Geist Sans | 600 | 14px | 1.5 |
-| Cell Content (toggle label) | Geist Sans | 500 | 12px | 1.4 |
-| Metadata (scope badge) | Geist Sans | 400 | 11px | 1.4 |
-| Filter labels | Geist Sans | 500 | 13px | 1.5 |
+| Page Title | Cinzel, serif | 700 | 28px | 1.3 |
+| Section Header | Cinzel, serif | 600 | 22px | 1.4 |
+| Column Header (tenant name) | Inter, sans-serif | 600 | 14px | 1.5 |
+| Row Header (flag name) | Inter, sans-serif | 600 | 14px | 1.5 |
+| Cell Content (toggle label) | Inter, sans-serif | 500 | 12px | 1.4 |
+| Metadata (scope badge) | Inter, sans-serif | 400 | 11px | 1.4 |
+| Filter labels | Inter, sans-serif | 500 | 13px | 1.5 |
+| Code/Technical | JetBrains Mono, monospace | 400 | 12px | 1.4 |
 
 ### Spacing (8px Grid)
 
@@ -78,11 +78,12 @@ Current card-per-tenant layout forces superadmins to scroll horizontally across 
 
 ### Animations
 
-- **Toggle transition:** 150ms ease-out (shadow + color)
-- **Slide-over entrance:** 200ms cubic-bezier(0.4, 0, 0.2, 1)
-- **Hover highlight (row):** 150ms ease-out on background
-- **Tab/segment switch:** 200ms cubic-bezier(0.4, 0, 0.2, 1)
+- **Toggle transition:** 100ms (timing-fast) with ease-out-expo (color + position)
+- **Slide-over entrance:** 300ms ease-in-out-circ (transform + opacity)
+- **Hover highlight (row):** 100ms (timing-fast) ease-out-expo on background
+- **Tab/segment switch:** 300ms ease-in-out-circ
 - **Stagger (bulk operations):** 50ms per item
+- **Ease functions:** `--ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1)`, `--ease-in-out-circ: cubic-bezier(0.785, 0.135, 0.15, 0.86)`
 
 ---
 
@@ -149,48 +150,48 @@ TenantMatrixView
 All cells in the matrix have one of five states:
 
 #### 1. **Enabled (Tenant-Specific)**
-- **Background:** `--bg-primary` (white)
-- **Border:** 1px `--border` (light gray)
-- **Toggle:** On (filled, `--success` or `--accent`)
-- **Indicator:** Small checkmark or filled circle (gold or green)
+- **Background:** `--background` (white)
+- **Border:** 1px `--color-border` (light gray)
+- **Toggle:** On (filled, `--color-success` #10b981)
+- **Indicator:** Small checkmark or filled circle (green #10b981)
 - **Cursor:** pointer
 - **Hover:** Light background shift (`--bg-secondary` at 50% opacity)
 - **data-testid:** `flag-toggle-cell--{flagKey}-{tenantId}--enabled`
 
 #### 2. **Disabled (Tenant-Specific)**
-- **Background:** `--bg-primary`
-- **Border:** 1px `--border`
-- **Toggle:** Off (unfilled)
+- **Background:** `--background`
+- **Border:** 1px `--color-border`
+- **Toggle:** Off (unfilled, gray)
 - **Indicator:** None
 - **Cursor:** pointer
 - **Hover:** Light background shift
 - **data-testid:** `flag-toggle-cell--{flagKey}-{tenantId}--disabled`
 
 #### 3. **Inherited (Template-Level)**
-- **Background:** `--bg-secondary` (off-white, 60% opacity)
-- **Border:** 1px `--border`
+- **Background:** `--color-paper` (off-white, 60% opacity)
+- **Border:** 1px `--color-border`
 - **Toggle:** Disabled (grayed out)
-- **Indicator:** Badge "Inherits from {templateName}" (inline, `--warning` color, 11px)
+- **Indicator:** Badge "Inherits from {templateName}" (inline, `--color-warning` #f59e0b, 11px)
 - **Cursor:** not-allowed
 - **Hover:** No change (not interactive)
 - **Tooltip:** "This flag is enabled at the template level. Disable the template flag to toggle here."
 - **data-testid:** `flag-toggle-cell--{flagKey}-{tenantId}--inherited`
 
 #### 4. **Locked (Global-Level)**
-- **Background:** `--bg-secondary` (off-white, 60% opacity)
-- **Border:** 1px `--border`
+- **Background:** `--color-paper` (off-white, 60% opacity)
+- **Border:** 1px `--color-border`
 - **Toggle:** Disabled (grayed out)
-- **Indicator:** Badge "Global" (inline, `--text-secondary`, 11px)
+- **Indicator:** Badge "Global" (inline, `--color-text-secondary` #666666, 11px)
 - **Cursor:** not-allowed
 - **Hover:** No change
 - **Tooltip:** "This flag is enabled globally. Cannot be toggled per tenant."
 - **data-testid:** `flag-toggle-cell--{flagKey}-{tenantId}--global`
 
 #### 5. **Loading**
-- **Background:** `--bg-primary`
-- **Border:** 1px `--border`
+- **Background:** `--background`
+- **Border:** 1px `--color-border`
 - **Toggle:** Disabled during request
-- **Indicator:** Spinning loader icon (16px, `--accent`)
+- **Indicator:** Spinning loader icon (16px, `--color-primary` #1a1a1a)
 - **Cursor:** wait
 - **Animation:** Smooth spin 1s linear infinite
 - **data-testid:** `flag-toggle-cell--{flagKey}-{tenantId}--loading`
@@ -202,12 +203,12 @@ All cells in the matrix have one of five states:
 [FlagName] [ScopeBadge]
 ```
 
-- **FlagName:** 14px bold, `--text-primary`
+- **FlagName:** 14px bold, `--foreground` (#000000)
 - **ScopeBadge:** Inline, 11px, 4px padding, 6px border-radius
   - **Scope Options:**
-    - `Tenant-specific` → `--text-secondary` background, dark text
-    - `Template-level` → `--warning` background (light), dark text
-    - `Global` → `--accent` background (light gold), dark text
+    - `Tenant-specific` → `--color-text-secondary` (#666666) background, dark text
+    - `Template-level` → `--color-warning` (#f59e0b) background (light), dark text
+    - `Global` → `--color-primary` (#1a1a1a) background (light), dark text
 - **Hover:** Tooltip with flag description (title attr or Popover)
 - **Checkbox:** Left edge, margin 8px right
 - **data-testid:** `flag-row-header--{flagKey}`
@@ -220,9 +221,9 @@ All cells in the matrix have one of five states:
 [Dashboard] [Tienda]
 ```
 
-- **Logo:** 28px square, border-radius full, background `--bg-secondary`
-- **TenantName:** 14px bold, `--text-primary`, center-aligned below logo
-- **QuickLinks:** Two small link buttons (12px, `--accent` text, no background)
+- **Logo:** 28px square, border-radius full, background `--color-paper` (#f4f4f0)
+- **TenantName:** 14px bold, `--foreground` (#000000), center-aligned below logo
+- **QuickLinks:** Two small link buttons (12px, `--color-primary` (#1a1a1a) text, no background)
   - Hover: underline
   - Icons: 14px (Dashboard icon, Shop icon)
 - **Cursor:** pointer (sheet opens on click, not link follow)
@@ -242,15 +243,17 @@ All cells in the matrix have one of five states:
 - **SearchInput:** Full width, 40px height, 12px left padding
   - Placeholder: "Search by flag name..."
   - Icon: Search (left) + Clear (right, visible when input has text)
-  - Border: 1px `--border`
+  - Border: 1px `--color-border`
   - Radius: 6px
+  - Background: `--background`
   - **data-testid:** `flag-search-input`
 
 - **ScopeFilterSelect:** 160px width, 40px height
   - Options: [All Scopes] [Tenant-Specific] [Template-Level] [Global]
   - Default: "All Scopes"
-  - Border: 1px `--border`
+  - Border: 1px `--color-border`
   - Radius: 6px
+  - Background: `--background`
   - **data-testid:** `scope-filter-select`
 
 ### TemplateFilterSegment
@@ -262,11 +265,11 @@ All cells in the matrix have one of five states:
 ```
 
 - **Each segment:** 120px width, 36px height, center text
-- **Active segment:** Background `--accent`, text white
-- **Inactive segment:** Background `--bg-secondary`, text `--text-primary`
-- **Border:** 1px `--border` around group
+- **Active segment:** Background `--color-primary` (#1a1a1a), text white
+- **Inactive segment:** Background `--color-paper`, text `--foreground`
+- **Border:** 1px `--color-border` around group
 - **Radius:** 6px per segment, no gap (merged)
-- **Transition:** 150ms ease-out
+- **Transition:** 100ms ease-out-expo
 - **data-testid:** `template-filter--{templateKey}`
 
 ---
@@ -283,17 +286,17 @@ All cells in the matrix have one of five states:
 **Position:** Fixed bottom-right, 16px from edges, z-index 40
 
 **Styling:**
-- **Background:** `--bg-secondary` with border 1px `--border`
+- **Background:** `--color-paper` with border 1px `--color-border`
 - **Border-radius:** 8px
 - **Shadow:** `0 4px 12px rgba(0,0,0,0.15)`
 - **Padding:** 16px
 - **Height:** 56px
 
 **Elements:**
-- **CountLabel:** "2 rows selected" → `--text-secondary`, 12px
-- **EnableBtn:** "Enable for selected" → Primary CTA, `--accent` background, white text, 6px radius
-- **DisableBtn:** "Disable for selected" → Secondary, `--text-primary` text, `--border` border
-- **ClearBtn:** "Clear selection" → Link style, `--text-secondary` text
+- **CountLabel:** "2 rows selected" → `--color-text-secondary` (#666666), 12px
+- **EnableBtn:** "Enable for selected" → Primary CTA, `--color-primary` (#1a1a1a) background, white text, 6px radius
+- **DisableBtn:** "Disable for selected" → Secondary, `--foreground` (#000000) text, `--color-border` border
+- **ClearBtn:** "Clear selection" → Link style, `--color-text-secondary` (#666666) text
 - **All buttons:** 12px padding, 14px font
 
 **Animations:**
@@ -349,37 +352,37 @@ All cells in the matrix have one of five states:
 ```
 
 **Styling:**
-- **Background:** `--bg-primary`
-- **Border-left:** 1px `--border`
+- **Background:** `--background`
+- **Border-left:** 1px `--color-border`
 - **Shadow:** `0 4px 12px rgba(0,0,0,0.15)`
-- **Animation:** Slide in from right, 200ms cubic-bezier(0.4, 0, 0.2, 1)
+- **Animation:** Slide in from right, 300ms ease-in-out-circ
 
 **Sections:**
 
 #### SheetHeader
 - **Logo:** 32px square, center within 56px header area
 - **TenantName:** 18px bold, center-aligned
-- **CloseBtn:** ✕ icon, 24px, top-right corner, hover `--accent`
-- **Background:** `--bg-secondary`
+- **CloseBtn:** ✕ icon, 24px, top-right corner, hover `--color-primary`
+- **Background:** `--color-paper`
 - **Padding:** 16px
-- **Border-bottom:** 1px `--border`
+- **Border-bottom:** 1px `--color-border`
 - **data-testid:** `tenant-sheet-header`
 
 #### Metadata Block
 - **List format:** "Label: Value"
 - **Padding:** 16px
-- **Border-bottom:** 1px `--border`
+- **Border-bottom:** 1px `--color-border`
 - **Fields:** Domain, Created (ISO date), Plan
-- **Font:** 13px, `--text-secondary`
+- **Font:** 13px, `--color-text-secondary`
 - **data-testid:** `tenant-sheet-metadata`
 
 #### Quick Links
 - Two buttons: "Dashboard" + "Tienda"
 - **Size:** Full width each, 40px height
-- **Style:** Primary CTA style
+- **Style:** Primary CTA style (background `--color-primary`, text white)
 - **Icon + text:** 14px center-aligned
 - **Padding:** 16px (container)
-- **Border-bottom:** 1px `--border`
+- **Border-bottom:** 1px `--color-border`
 - **data-testid:** `tenant-sheet-quick-links`
 
 #### Flag List (Per Tenant)
@@ -392,7 +395,7 @@ All cells in the matrix have one of five states:
           Scope: tenant-specific | inherited | global
   ```
 - **Padding:** 16px (container), 12px (item)
-- **Separator:** 1px `--border` between items
+- **Separator:** 1px `--color-border` between items
 - **Toggle:** Full width, 36px height
 - **data-testid:** `tenant-sheet-flags`, `flag-list-item--{flagKey}`
 
@@ -403,15 +406,15 @@ All cells in the matrix have one of five states:
   ```
   2026-04-11 · agents: ON    [Enabled by: admin@example.com]
   ```
-- **Font:** 12px, `--text-secondary`
+- **Font:** 12px, `--color-text-secondary`
 - **Padding:** 16px (container), 12px (item)
-- **Border-bottom:** 1px `--border`
+- **Border-bottom:** 1px `--color-border`
 - **data-testid:** `tenant-sheet-audit-log`
 
 #### SheetFooter
-- **Button:** "Done" (closes sheet)
+- **Button:** "Done" (closes sheet, secondary style)
 - **Padding:** 16px
-- **Border-top:** 1px `--border`
+- **Border-top:** 1px `--color-border`
 - **data-testid:** `tenant-sheet-close-btn`
 
 ---
@@ -512,7 +515,7 @@ All cells in the matrix have one of five states:
 ## Accessibility
 
 - **Keyboard nav:** Tab through all interactive elements (toggles, buttons, links)
-- **Focus ring:** 2px `--sky-gold` with 2px offset, visible on all interactive elements
+- **Focus ring:** 2px `--color-primary` (#1a1a1a) with 2px offset, visible on all interactive elements
 - **ARIA labels:** All toggles, buttons, and sheet have descriptive aria-label
 - **Color contrast:** All text meets WCAG AA minimum (4.5:1 for body, 3:1 for large)
 - **Screen reader:** Sheet announced as dialog. Flag name + scope read aloud on focus.
