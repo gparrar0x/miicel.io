@@ -96,12 +96,12 @@ export default async function DashboardLayout({ children, params }: LayoutProps)
 
   const navItems: NavItem[] = [
     {
-      name: t('navDashboard') || 'Dashboard',
+      name: t('navSales') || 'Ventas',
       href: `/${locale}/${tenantId}/dashboard`,
-      icon: 'analytics',
+      icon: 'orders',
     },
     {
-      name: t('navProducts') || 'Obras',
+      name: t('navProducts') || 'Productos',
       href: `/${locale}/${tenantId}/dashboard/products`,
       icon: 'products',
     },
