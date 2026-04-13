@@ -38,31 +38,21 @@ interface TenantMatrixProps {
 }
 
 export function TenantMatrix({ tenants, flags, onToggleFlag }: TenantMatrixProps) {
-  // Controls
   const [templateFilter, setTemplateFilter] = useState<TemplateFilter>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [scopeFilter, setScopeFilter] = useState<ScopeFilter>('all')
-
-  // Selection
-  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set())
-
-  // Sheet
+  const [selectedTenants, setSelectedTenants] = useState<Set<number>>(new Set())
   const [sheetTenant, setSheetTenant] = useState<Tenant | null>(null)
-
-  // Loading states per cell: `${flagKey}-${tenantId}`
   const [loadingCells, setLoadingCells] = useState<Set<string>>(new Set())
 
-  // Derive unique templates
   const templates = useMemo(() => [...new Set(tenants.map((t) => t.template))].sort(), [tenants])
 
-  // Filtered tenants
   const filteredTenants = useMemo(
     () =>
       templateFilter === 'all' ? tenants : tenants.filter((t) => t.template === templateFilter),
     [tenants, templateFilter],
   )
 
-  // Filtered flags
   const filteredFlags = useMemo(() => {
     let result = flags
 
@@ -95,24 +85,20 @@ export function TenantMatrix({ tenants, flags, onToggleFlag }: TenantMatrixProps
     return result
   }, [flags, searchQuery, scopeFilter])
 
-  // Handlers
-  function toggleRowSelect(flagKey: string) {
-    setSelectedRows((prev) => {
+  function toggleTenantSelect(tenantId: number) {
+    setSelectedTenants((prev) => {
       const next = new Set(prev)
-      if (next.has(flagKey)) {
-        next.delete(flagKey)
-      } else {
-        next.add(flagKey)
-      }
+      if (next.has(tenantId)) next.delete(tenantId)
+      else next.add(tenantId)
       return next
     })
   }
 
   function toggleSelectAll() {
-    if (selectedRows.size === filteredFlags.length) {
-      setSelectedRows(new Set())
+    if (selectedTenants.size === filteredTenants.length) {
+      setSelectedTenants(new Set())
     } else {
-      setSelectedRows(new Set(filteredFlags.map((f) => f.key)))
+      setSelectedTenants(new Set(filteredTenants.map((t) => t.id)))
     }
   }
 
@@ -134,18 +120,34 @@ export function TenantMatrix({ tenants, flags, onToggleFlag }: TenantMatrixProps
   }
 
   async function bulkToggle(enabled: boolean) {
-    const promises = Array.from(selectedRows).flatMap((flagKey) =>
-      filteredTenants.map((tenant) => {
-        const state = getCellStateFromFlag(flags.find((f) => f.key === flagKey)!, tenant)
+    const promises = Array.from(selectedTenants).flatMap((tenantId) => {
+      const tenant = tenants.find((t) => t.id === tenantId)
+      if (!tenant) return []
+      return filteredFlags.map((flag) => {
+        const state = getCellStateFromFlag(flag, tenant)
         if (state === 'inherited' || state === 'global') return Promise.resolve()
-        return handleToggle(flagKey, tenant.id, enabled ? 'disabled' : 'enabled')
-      }),
-    )
+        return handleToggle(flag.key, tenantId, enabled ? 'disabled' : 'enabled')
+      })
+    })
     await Promise.allSettled(promises)
-    setSelectedRows(new Set())
+    setSelectedTenants(new Set())
   }
 
-  const allRowsSelected = filteredFlags.length > 0 && selectedRows.size === filteredFlags.length
+  const allSelected = filteredTenants.length > 0 && selectedTenants.size === filteredTenants.length
+
+  // Group tenants by template for section headers
+  const tenantsByTemplate = useMemo(() => {
+    const groups: { template: string; tenants: Tenant[] }[] = []
+    const seen = new Set<string>()
+    for (const t of filteredTenants) {
+      if (!seen.has(t.template)) {
+        seen.add(t.template)
+        groups.push({ template: t.template, tenants: [] })
+      }
+      groups.find((g) => g.template === t.template)!.tenants.push(t)
+    }
+    return groups
+  }, [filteredTenants])
 
   return (
     <div className="flex flex-col gap-0">
@@ -159,7 +161,6 @@ export function TenantMatrix({ tenants, flags, onToggleFlag }: TenantMatrixProps
         onScopeChange={setScopeFilter}
       />
 
-      {/* Empty states */}
       {filteredTenants.length === 0 && (
         <div className="flex items-center justify-center rounded-md border border-border py-16">
           <p className="text-sm text-muted-foreground">No tenants for this template.</p>
@@ -172,168 +173,174 @@ export function TenantMatrix({ tenants, flags, onToggleFlag }: TenantMatrixProps
         </div>
       )}
 
-      {/* Matrix */}
       {filteredTenants.length > 0 && filteredFlags.length > 0 && (
         <div className="overflow-x-auto rounded-md border border-border">
-          <table
-            className="border-collapse text-sm"
-            style={{ tableLayout: 'fixed', width: 'max-content', minWidth: '100%' }}
-          >
-            {/* Sticky header */}
+          <table className="w-full border-collapse text-sm">
+            {/* Header: Tenant info + flag columns */}
             <thead>
               <tr>
-                {/* Corner: sticky top+left */}
                 <th
-                  className="sticky left-0 top-0 z-[11] border-b border-r border-border bg-secondary px-4 py-3 text-left align-middle"
-                  style={{ minWidth: '220px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}
+                  className="sticky left-0 top-0 z-[11] border-b border-r border-border bg-secondary px-3 py-3 text-left align-middle"
+                  style={{ minWidth: '260px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}
                 >
                   <div className="flex items-center gap-2">
                     <input
                       type="checkbox"
                       data-testid="select-all-checkbox"
-                      checked={allRowsSelected}
+                      checked={allSelected}
                       onChange={toggleSelectAll}
-                      aria-label="Select all flags"
+                      aria-label="Select all tenants"
                       className="h-4 w-4 rounded border-border accent-foreground cursor-pointer"
                     />
                     <span className="font-medium text-foreground text-xs uppercase tracking-wider">
-                      Feature Flag
+                      Tenant
                     </span>
                   </div>
                 </th>
-
-                {/* Tenant column headers */}
-                {filteredTenants.map((tenant) => (
+                {filteredFlags.map((flag) => (
                   <th
-                    key={tenant.id}
-                    data-testid={`tenant-column-header--${tenant.slug}`}
-                    onClick={() => setSheetTenant(tenant)}
-                    className="sticky top-0 z-[10] border-b border-r border-border bg-secondary px-3 py-3 text-center align-middle cursor-pointer hover:bg-secondary/70 transition-colors"
-                    style={{ minWidth: '120px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}
+                    key={flag.key}
+                    data-testid={`flag-column-header--${flag.key}`}
+                    className="sticky top-0 z-[10] border-b border-r border-border bg-secondary px-3 py-3 text-center align-middle"
+                    style={{
+                      minWidth: '100px',
+                      maxWidth: '130px',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                    }}
+                    title={flag.description || flag.key}
                   >
-                    <div className="flex flex-col items-center gap-1.5">
-                      {tenant.logo ? (
-                        <img
-                          src={tenant.logo}
-                          alt={tenant.name}
-                          className="h-7 w-7 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-border text-xs font-semibold text-foreground">
-                          {tenant.name.charAt(0).toUpperCase()}
-                        </div>
-                      )}
-                      <span className="text-xs font-semibold text-foreground leading-tight text-center line-clamp-2 max-w-[100px]">
-                        {tenant.name}
-                      </span>
-                      <div className="flex items-center gap-1">
-                        <Link
-                          href={`/es/${tenant.slug}/dashboard`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="text-muted-foreground hover:text-foreground transition-colors"
-                          aria-label={`${tenant.name} dashboard`}
-                          data-testid={`tenant-dashboard-link-${tenant.slug}`}
-                        >
-                          <LayoutDashboard className="h-3 w-3" />
-                        </Link>
-                        <Link
-                          href={`/es/${tenant.slug}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="text-muted-foreground hover:text-foreground transition-colors"
-                          aria-label={`${tenant.name} store`}
-                          data-testid={`tenant-store-link-${tenant.slug}`}
-                        >
-                          <Store className="h-3 w-3" />
-                        </Link>
-                      </div>
-                    </div>
+                    <span className="text-xs font-semibold text-foreground leading-tight">
+                      {flag.key.replace(/_/g, ' ')}
+                    </span>
                   </th>
                 ))}
               </tr>
             </thead>
 
-            {/* Rows */}
             <tbody>
-              {filteredFlags.map((flag, rowIdx) => {
-                const isSelected = selectedRows.has(flag.key)
-                const isEven = rowIdx % 2 === 1
+              {tenantsByTemplate.map((group) => (
+                <>
+                  {/* Template section header */}
+                  {templateFilter === 'all' && tenantsByTemplate.length > 1 && (
+                    <tr key={`section-${group.template}`}>
+                      <td
+                        colSpan={filteredFlags.length + 1}
+                        className="bg-secondary/50 px-4 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border"
+                      >
+                        {group.template}
+                        <span className="ml-2 font-normal">{group.tenants.length}</span>
+                      </td>
+                    </tr>
+                  )}
 
-                return (
-                  <tr
-                    key={flag.key}
-                    data-testid={`flag-row--${flag.key}`}
-                    className={isEven ? 'bg-secondary/30' : 'bg-background'}
-                  >
-                    {/* Row header: sticky left */}
-                    <td
-                      data-testid={`flag-row-header--${flag.key}`}
-                      className="sticky left-0 z-[2] border-b border-r border-border px-4 py-2 align-middle"
-                      style={{
-                        background: isEven ? 'hsl(var(--secondary) / 0.5)' : 'var(--background)',
-                      }}
-                    >
-                      <div className="flex items-start gap-2">
-                        <input
-                          type="checkbox"
-                          data-testid={`flag-row-select--${flag.key}`}
-                          checked={isSelected}
-                          onChange={() => toggleRowSelect(flag.key)}
-                          aria-label={`Select flag ${flag.key}`}
-                          className="mt-0.5 h-4 w-4 shrink-0 rounded border-border accent-foreground cursor-pointer"
-                        />
-                        <div className="min-w-0">
-                          <p
-                            className="font-medium text-foreground text-sm leading-tight truncate"
-                            title={flag.key}
-                          >
-                            {flag.key}
-                          </p>
-                          {flag.description && (
-                            <p
-                              className="text-xs text-muted-foreground mt-0.5 line-clamp-1"
-                              title={flag.description}
-                            >
-                              {flag.description}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </td>
+                  {group.tenants.map((tenant, rowIdx) => {
+                    const isSelected = selectedTenants.has(tenant.id)
+                    const isEven = rowIdx % 2 === 1
 
-                    {/* Toggle cells */}
-                    {filteredTenants.map((tenant) => {
-                      const cellKey = `${flag.key}-${tenant.id}`
-                      const isLoading = loadingCells.has(cellKey)
-                      const baseState = getCellStateFromFlag(flag, tenant)
-                      const state: CellState = isLoading ? 'loading' : baseState
+                    return (
+                      <tr
+                        key={tenant.id}
+                        data-testid={`tenant-row--${tenant.slug}`}
+                        className={isEven ? 'bg-secondary/30' : 'bg-background'}
+                      >
+                        {/* Tenant info: sticky left */}
+                        <td
+                          data-testid={`tenant-row-header--${tenant.slug}`}
+                          className="sticky left-0 z-[2] border-b border-r border-border px-3 py-2 align-middle"
+                          style={{
+                            background: isEven
+                              ? 'hsl(var(--secondary) / 0.5)'
+                              : 'var(--background)',
+                          }}
+                        >
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="checkbox"
+                              data-testid={`tenant-row-select--${tenant.slug}`}
+                              checked={isSelected}
+                              onChange={() => toggleTenantSelect(tenant.id)}
+                              aria-label={`Select ${tenant.name}`}
+                              className="h-4 w-4 shrink-0 rounded border-border accent-foreground cursor-pointer"
+                            />
+                            {tenant.logo ? (
+                              <img
+                                src={tenant.logo}
+                                alt={tenant.name}
+                                className="h-8 w-8 rounded-full object-cover shrink-0"
+                              />
+                            ) : (
+                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-border text-xs font-semibold text-foreground">
+                                {tenant.name.charAt(0).toUpperCase()}
+                              </div>
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <button
+                                type="button"
+                                onClick={() => setSheetTenant(tenant)}
+                                className="font-medium text-foreground text-sm leading-tight truncate hover:underline text-left"
+                                title={tenant.name}
+                              >
+                                {tenant.name}
+                              </button>
+                              <p className="text-xs text-muted-foreground">/{tenant.slug}</p>
+                            </div>
+                            <div className="flex items-center gap-1 shrink-0">
+                              <Link
+                                href={`/es/${tenant.slug}/dashboard`}
+                                className="text-muted-foreground hover:text-foreground transition-colors"
+                                aria-label={`${tenant.name} dashboard`}
+                                data-testid={`tenant-dashboard-link-${tenant.slug}`}
+                              >
+                                <LayoutDashboard className="h-3.5 w-3.5" />
+                              </Link>
+                              <Link
+                                href={`/es/${tenant.slug}`}
+                                className="text-muted-foreground hover:text-foreground transition-colors"
+                                aria-label={`${tenant.name} store`}
+                                data-testid={`tenant-store-link-${tenant.slug}`}
+                              >
+                                <Store className="h-3.5 w-3.5" />
+                              </Link>
+                            </div>
+                          </div>
+                        </td>
 
-                      return (
-                        <FlagToggleCell
-                          key={cellKey}
-                          flag={flag}
-                          tenant={tenant}
-                          state={state}
-                          onToggle={() => handleToggle(flag.key, tenant.id, baseState)}
-                        />
-                      )
-                    })}
-                  </tr>
-                )
-              })}
+                        {/* Flag toggle cells */}
+                        {filteredFlags.map((flag) => {
+                          const cellKey = `${flag.key}-${tenant.id}`
+                          const isLoading = loadingCells.has(cellKey)
+                          const baseState = getCellStateFromFlag(flag, tenant)
+                          const state: CellState = isLoading ? 'loading' : baseState
+
+                          return (
+                            <FlagToggleCell
+                              key={cellKey}
+                              flag={flag}
+                              tenant={tenant}
+                              state={state}
+                              onToggle={() => handleToggle(flag.key, tenant.id, baseState)}
+                            />
+                          )
+                        })}
+                      </tr>
+                    )
+                  })}
+                </>
+              ))}
             </tbody>
           </table>
         </div>
       )}
 
       {/* Bulk actions bar */}
-      {selectedRows.size > 0 && (
+      {selectedTenants.size > 0 && (
         <div
           data-testid="bulk-actions-bar"
           className="fixed bottom-4 right-4 z-40 flex items-center gap-3 rounded-lg border border-border bg-secondary px-4 py-3 shadow-[0_4px_12px_rgba(0,0,0,0.15)] transition-all duration-300"
           style={{ animation: 'slideUp 200ms cubic-bezier(0.785,0.135,0.15,0.86)' }}
         >
           <span className="text-xs text-muted-foreground whitespace-nowrap">
-            {selectedRows.size} row{selectedRows.size !== 1 ? 's' : ''} selected
+            {selectedTenants.size} tenant{selectedTenants.size !== 1 ? 's' : ''} selected
           </span>
           <Button
             data-testid="bulk-enable-btn"
@@ -342,7 +349,7 @@ export function TenantMatrix({ tenants, flags, onToggleFlag }: TenantMatrixProps
             onClick={() => bulkToggle(true)}
             className="h-8 text-xs"
           >
-            Enable All
+            Enable All Flags
           </Button>
           <Button
             data-testid="bulk-disable-btn"
@@ -351,12 +358,12 @@ export function TenantMatrix({ tenants, flags, onToggleFlag }: TenantMatrixProps
             onClick={() => bulkToggle(false)}
             className="h-8 text-xs"
           >
-            Disable All
+            Disable All Flags
           </Button>
           <button
             type="button"
             data-testid="bulk-clear-btn"
-            onClick={() => setSelectedRows(new Set())}
+            onClick={() => setSelectedTenants(new Set())}
             className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             Clear
@@ -364,7 +371,6 @@ export function TenantMatrix({ tenants, flags, onToggleFlag }: TenantMatrixProps
         </div>
       )}
 
-      {/* Tenant detail sheet */}
       <TenantDetailSheet
         isOpen={sheetTenant !== null}
         tenant={sheetTenant}
