@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Tenant Feature Flags Matrix Redesign (Design Specs)** [2026-04-12]
+  - Design specification: `docs/DESIGN_SPECS_TENANT_MATRIX.md` (342 lines, complete visual + interaction spec)
+  - Component handoff contract: `docs/COMPONENT_HANDOFF_MATRIX.md` (290 lines, Pixel implementation guide)
+  - Interactive HTML mockup: `docs/MATRIX_MOCKUP.html` (5 flags × 3 tenants, all cell states)
+  - Design summary: `docs/AURORA_DESIGN_SUMMARY.md` (overview + handoff checklist)
+  - Problem: Card-based layout forced N separate scroll operations to toggle flags across N tenants
+  - Solution: Data matrix table (rows=flags, columns=tenants) with sticky headers, semantic cell states, bulk operations, right slide-over sheet
+  - KPI target: 70% faster task completion time for N≥3 tenants
+  - Components: TenantMatrixView, TemplateFilterSegment, FlagSearchBar, MatrixTable, TenantColumnHeader, FlagRowHeader, FlagToggleCell (5 states), BulkActionsBar, TenantDetailSheet
+  - Design tokens locked: Micelio neo-brutalist (monochrome + gold), Plus Jakarta Sans (headers), Geist Sans (body), 8px grid, 150-200ms animations
+  - Data-testid contract: 20+ test IDs for Centinela (all defined in handoff)
+  - Status: Design complete, ready for Pixel implementation (1-2 weeks)
+
 - **Google Sign-In for existing users** [2026-03-30] (SKY-232)
   - OAuth callback route (`app/api/auth/callback/route.ts`)
   - GoogleSignInButton component with Google branding
