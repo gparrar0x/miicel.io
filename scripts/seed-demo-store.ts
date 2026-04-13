@@ -200,7 +200,7 @@ const STORES: Record<string, DemoStore> = {
         description: 'Limonada natural con leche de coco',
         price: 6000,
         category: 'Bebidas',
-        image_url: 'https://images.unsplash.com/photo-1523677011781-c91d1bbe2f9d?w=800',
+        image_url: 'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=800',
         display_order: 20,
         metadata: { badges: ['popular'] },
       },

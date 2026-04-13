@@ -199,11 +199,17 @@ export async function generateMetadata({
       description: config.subtitle || 'Tienda online en Micelio',
       type: 'website',
       url: baseUrl,
-      images: config.logoUrl
-        ? [{ url: config.logoUrl, width: 200, height: 200 }]
-        : config.bannerUrl
-          ? [{ url: config.bannerUrl, width: 1200, height: 630 }]
+      images: config.bannerUrl
+        ? [{ url: config.bannerUrl, width: 1200, height: 630 }]
+        : config.logoUrl
+          ? [{ url: config.logoUrl, width: 200, height: 200 }]
           : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: config.businessName,
+      description: config.subtitle || 'Tienda online en Micelio',
+      images: config.bannerUrl ? [config.bannerUrl] : config.logoUrl ? [config.logoUrl] : [],
     },
     alternates: {
       canonical: baseUrl,
