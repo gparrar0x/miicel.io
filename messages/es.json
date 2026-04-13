@@ -253,10 +253,10 @@
     "itemsSold": "Obras Vendidas"
   },
   "Gastronomy": {
-    "work": "obra",
-    "works": "obras",
-    "noWorksInCategory": "No hay obras en esta categoría",
-    "noWorksAvailable": "No hay obras disponibles"
+    "work": "producto",
+    "works": "productos",
+    "noWorksInCategory": "No hay productos en esta categoría",
+    "noWorksAvailable": "No hay productos disponibles"
   },
   "Onboarding": {
     "stepAddWorks": "Agrega obras",

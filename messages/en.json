@@ -253,10 +253,10 @@
     "itemsSold": "Works Sold"
   },
   "Gastronomy": {
-    "work": "work",
-    "works": "works",
-    "noWorksInCategory": "No works in this category",
-    "noWorksAvailable": "No works available"
+    "work": "product",
+    "works": "products",
+    "noWorksInCategory": "No products in this category",
+    "noWorksAvailable": "No products available"
   },
   "Onboarding": {
     "stepAddWorks": "Add works",
