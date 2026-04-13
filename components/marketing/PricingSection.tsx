@@ -222,7 +222,7 @@ export function PricingSection() {
                   fontWeight: 500,
                   fontSize: 14,
                   color: plan.highlighted ? '#FFFFFF' : '#0C1A27',
-                  backgroundColor: plan.highlighted ? '#D97706' : 'transparent',
+                  backgroundColor: plan.highlighted ? 'var(--micelio-cta)' : 'transparent',
                   border: plan.highlighted ? 'none' : '1px solid rgba(95, 115, 130, 0.3)',
                   padding: '12px 24px',
                   borderRadius: 6,
@@ -231,7 +231,7 @@ export function PricingSection() {
                 }}
                 onMouseEnter={(e) => {
                   if (plan.highlighted) {
-                    e.currentTarget.style.backgroundColor = '#C86206'
+                    e.currentTarget.style.backgroundColor = 'var(--micelio-cta-hover)'
                     e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.12)'
                   } else {
                     e.currentTarget.style.backgroundColor = '#EFEEE9'
@@ -239,7 +239,7 @@ export function PricingSection() {
                 }}
                 onMouseLeave={(e) => {
                   if (plan.highlighted) {
-                    e.currentTarget.style.backgroundColor = '#D97706'
+                    e.currentTarget.style.backgroundColor = 'var(--micelio-cta)'
                     e.currentTarget.style.boxShadow = 'none'
                   } else {
                     e.currentTarget.style.backgroundColor = 'transparent'

@@ -86,11 +86,16 @@ export function CheckoutModal({ open, onClose }: { open: boolean; onClose: () =>
       })
 
       if (!checkoutResponse.ok) {
-        const error = await checkoutResponse.json()
-        console.error('Checkout preference creation failed:', error)
-        const errorMsg = error.details
-          ? `${error.error}: ${error.details} ${error.code ? `(${error.code})` : ''}`
-          : error.error || 'Failed to create checkout preference'
+        let errorMsg = 'Failed to create checkout preference'
+        try {
+          const error = await checkoutResponse.json()
+          console.error('Checkout preference creation failed:', error)
+          errorMsg = error.details
+            ? `${error.error}: ${error.details} ${error.code ? `(${error.code})` : ''}`
+            : error.error || errorMsg
+        } catch {
+          console.error('Checkout failed with status:', checkoutResponse.status)
+        }
         throw new Error(errorMsg)
       }
 

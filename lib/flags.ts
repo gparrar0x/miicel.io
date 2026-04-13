@@ -221,4 +221,6 @@ export const Flags = {
   KITCHEN_VIEW: 'kitchen_view',
   AGENTS: 'agents',
   AUTHOR_LANDINGS: 'author_landings',
+  CONTENT_PIPELINE: 'content_pipeline',
+  SOCIAL_MEDIA: 'social_media',
 } as const

@@ -17,15 +17,7 @@ export function GastronomyFooter({
   tenantLocation,
   tenantPhone,
   tenantInstagram,
-  businessHours = [
-    { day: 'Lunes', hours: '20:00-00:30' },
-    { day: 'Martes', hours: '20:00-00:30' },
-    { day: 'Miércoles', hours: '20:00-00:30' },
-    { day: 'Jueves', hours: '20:00-00:30' },
-    { day: 'Viernes', hours: '20:00-01:30', isToday: true },
-    { day: 'Sábado', hours: '11:00-00:30' },
-    { day: 'Domingo', hours: '11:00-00:30' },
-  ],
+  businessHours,
 }: GastronomyFooterProps) {
   return (
     <footer
@@ -40,31 +32,33 @@ export function GastronomyFooter({
       <div className="container mx-auto max-w-4xl">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Horarios de Atención */}
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <Clock className="w-5 h-5 opacity-80" />
-              <h3 className="text-xl font-bold">Horarios de Atención</h3>
+          {businessHours && businessHours.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <Clock className="w-5 h-5 opacity-80" />
+                <h3 className="text-xl font-bold">Horarios de Atención</h3>
+              </div>
+              <div className="space-y-2">
+                {businessHours.map((schedule) => (
+                  <div
+                    key={schedule.day}
+                    className="flex justify-between items-center px-3 py-2 rounded-lg transition-all text-sm"
+                    style={{
+                      background: schedule.isToday
+                        ? 'rgba(255, 255, 255, 0.25)'
+                        : 'rgba(255, 255, 255, 0.1)',
+                      ...(schedule.isToday && {
+                        border: '2px solid rgba(255, 255, 255, 0.4)',
+                      }),
+                    }}
+                  >
+                    <span className="font-semibold">{schedule.day}</span>
+                    <span className="opacity-90">{schedule.hours}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="space-y-2">
-              {businessHours.map((schedule) => (
-                <div
-                  key={schedule.day}
-                  className="flex justify-between items-center px-3 py-2 rounded-lg transition-all text-sm"
-                  style={{
-                    background: schedule.isToday
-                      ? 'rgba(255, 255, 255, 0.25)'
-                      : 'rgba(255, 255, 255, 0.1)',
-                    ...(schedule.isToday && {
-                      border: '2px solid rgba(255, 255, 255, 0.4)',
-                    }),
-                  }}
-                >
-                  <span className="font-semibold">{schedule.day}</span>
-                  <span className="opacity-90">{schedule.hours}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          )}
 
           {/* Contacto */}
           <div>

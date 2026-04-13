@@ -59,18 +59,18 @@ export function FooterCTA() {
               fontWeight: 500,
               fontSize: 16,
               color: '#FFFFFF',
-              backgroundColor: '#D97706',
+              backgroundColor: 'var(--micelio-cta)',
               padding: '16px 32px',
               borderRadius: 6,
               textDecoration: 'none',
               transition: 'background-color 150ms ease-out, box-shadow 150ms ease-out',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#C86206'
+              e.currentTarget.style.backgroundColor = 'var(--micelio-cta-hover)'
               e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.12)'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#D97706'
+              e.currentTarget.style.backgroundColor = 'var(--micelio-cta)'
               e.currentTarget.style.boxShadow = 'none'
             }}
           >

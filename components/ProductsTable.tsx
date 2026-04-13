@@ -1,11 +1,18 @@
 'use client'
 
 import { Edit, Plus, QrCode, Search, Trash2 } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { QRProductModal } from '@/components/QRProductModal'
+import { useFeatureFlag } from '@/lib/hooks/useFeatureFlag'
 import type { AuthorOption, Product } from '@/lib/schemas/product'
+
+const GenerateContentButton = dynamic(
+  () => import('@/components/content/GenerateContentButton').then((m) => m.GenerateContentButton),
+  { ssr: false },
+)
 
 interface ProductsTableProps {
   products: Product[]
@@ -13,6 +20,7 @@ interface ProductsTableProps {
   onDelete: (product: Product) => void
   onAdd: () => void
   tenantId?: string
+  tenantNumericId?: number
   locale?: string
   authors?: AuthorOption[]
 }
@@ -23,12 +31,16 @@ export function ProductsTable({
   onDelete,
   onAdd,
   tenantId = '',
+  tenantNumericId,
   locale = 'en',
   authors = [],
 }: ProductsTableProps) {
   const t = useTranslations('Products')
   const tCommon = useTranslations('Common')
   const tAuthors = useTranslations('Authors')
+  const { enabled: showContentPipeline } = useFeatureFlag('content_pipeline', {
+    tenantId: tenantNumericId,
+  })
 
   const authorMap = new Map(authors.map((a) => [a.id, a.name]))
 
@@ -202,6 +214,12 @@ export function ProductsTable({
                         >
                           <QrCode className="h-4 w-4" />
                         </button>
+                        {showContentPipeline && (
+                          <GenerateContentButton
+                            productId={product.id}
+                            tenantId={tenantNumericId!}
+                          />
+                        )}
                         <button
                           onClick={() => onEdit(product)}
                           data-testid="product-edit-button"

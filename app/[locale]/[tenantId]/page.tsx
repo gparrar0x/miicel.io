@@ -48,9 +48,9 @@ async function getTenantConfig(tenantId: string): Promise<TenantConfigResponse |
     // Map DB config to schema expected format
     const mappedConfig = {
       id: tenantId,
-      businessName: config.business_name || config.businessName || 'Store',
-      subtitle: config.subtitle || null,
-      location: config.location || null,
+      businessName: config.business?.name || config.business_name || config.businessName || 'Store',
+      subtitle: config.business?.subtitle || config.subtitle || null,
+      location: config.business?.location || config.location || null,
       bannerUrl: config.banner || config.bannerUrl || null,
       logoUrl: config.logo || config.logoUrl || null,
       logoTextUrl: config.logoText || config.logoTextUrl || null,

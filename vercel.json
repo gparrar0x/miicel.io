@@ -27,6 +27,14 @@
     {
       "path": "/api/cron/health-check",
       "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/cron/social-publish",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/instagram-insights",
+      "schedule": "0 */6 * * *"
     }
   ]
 }

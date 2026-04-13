@@ -160,6 +160,7 @@ export function AdminProductsClient({
         onEdit={handleEdit}
         onDelete={handleDelete}
         tenantId={tenantSlug}
+        tenantNumericId={tenantId}
         locale={locale}
         authors={authors}
       />

@@ -9,7 +9,7 @@
 
 `NNN_descriptive_name.sql` — sequential 3-digit number, snake_case description.
 
-Currently 48 migrations (001–048).
+Currently 51 migrations (001–051).
 
 ## Writing Migrations
 

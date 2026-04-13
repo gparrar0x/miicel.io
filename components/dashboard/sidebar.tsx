@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
+  Instagram,
   LayoutDashboard,
   MapPin,
   Package,
@@ -37,6 +38,7 @@ export type NavItem = {
     | 'consignments'
     | 'analytics'
     | 'agents'
+    | 'social'
     | LucideIcon
 }
 
@@ -74,6 +76,7 @@ export function Sidebar({ brand = 'Micelio', navItems, collapsedDefault = false 
       consignments: MapPin,
       analytics: BarChart3,
       agents: Bot,
+      social: Instagram,
     }),
     [],
   )

@@ -85,11 +85,14 @@ export default async function DashboardLayout({ children, params }: LayoutProps)
 
   // Check feature flags based on tenant template
   const flagContext = { tenantId: tenant.id, tenantTemplate: tenant.template }
-  const [showConsignments, showAgents, showAuthorLandings] = await Promise.all([
-    isEnabled(Flags.CONSIGNMENTS, flagContext),
-    isEnabled(Flags.AGENTS, flagContext),
-    isEnabled(Flags.AUTHOR_LANDINGS, flagContext),
-  ])
+  const [showConsignments, showAgents, showAuthorLandings, showContentPipeline, showSocialMedia] =
+    await Promise.all([
+      isEnabled(Flags.CONSIGNMENTS, flagContext),
+      isEnabled(Flags.AGENTS, flagContext),
+      isEnabled(Flags.AUTHOR_LANDINGS, flagContext),
+      isEnabled(Flags.CONTENT_PIPELINE, flagContext),
+      isEnabled(Flags.SOCIAL_MEDIA, flagContext),
+    ])
 
   const navItems: NavItem[] = [
     {
@@ -131,6 +134,15 @@ export default async function DashboardLayout({ children, params }: LayoutProps)
             name: t('navAgents') || 'Agents',
             href: `/${locale}/${tenantId}/dashboard/agents`,
             icon: 'agents' as const,
+          },
+        ]
+      : []),
+    ...(showSocialMedia
+      ? [
+          {
+            name: 'Social Media',
+            href: `/${locale}/${tenantId}/dashboard/social`,
+            icon: 'social' as const,
           },
         ]
       : []),

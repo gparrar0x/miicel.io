@@ -44,7 +44,7 @@ export function GastronomyHeader({
     todayLine = `Hoy ${todayLabel}: Cerrado`
   }
 
-  const heroSubtitle = tenantSubtitle || 'Deliciosa comida Venezolana'
+  const heroSubtitle = tenantSubtitle || ''
 
   return (
     <header className="relative h-64 md:h-80 overflow-hidden">

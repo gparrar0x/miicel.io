@@ -2,6 +2,7 @@
 
 import { Bell, Menu, Moon, Search, Sun } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,12 +14,43 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
+import { createClient } from '@/lib/supabase/client'
 import { useSidebar } from './sidebar-context'
+
+function getInitials(email?: string, name?: string): string {
+  if (name) {
+    const parts = name.trim().split(/\s+/)
+    return parts
+      .map((p) => p[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase()
+  }
+  if (email) return email.slice(0, 2).toUpperCase()
+  return '?'
+}
 
 export function Header() {
   const [isDark, setIsDark] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [userInitials, setUserInitials] = useState('...')
+  const [userEmail, setUserEmail] = useState<string | null>(null)
   const { toggle } = useSidebar()
+  const router = useRouter()
+  const supabase = createClient()
+
+  // Fetch current user
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        const name = user.user_metadata?.full_name || user.user_metadata?.name
+        setUserInitials(getInitials(user.email, name))
+        setUserEmail(user.email ?? null)
+      } else {
+        setUserInitials('?')
+      }
+    })
+  }, [])
 
   // Initialize theme from localStorage or OS preference
   useEffect(() => {
@@ -99,24 +131,32 @@ export function Header() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                 <Avatar className="h-9 w-9">
-                  <AvatarImage src="/diverse-avatars.png" alt="Usuario" />
-                  <AvatarFallback className="bg-primary text-primary-foreground">AD</AvatarFallback>
+                  <AvatarFallback className="bg-primary text-primary-foreground">
+                    {userInitials}
+                  </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>Mi cuenta</DropdownMenuLabel>
+              <DropdownMenuLabel>{userEmail ?? 'Mi cuenta'}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Perfil</DropdownMenuItem>
               <DropdownMenuItem>Configuración</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Cerrar sesión</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={async () => {
+                  await supabase.auth.signOut()
+                  router.push('/login')
+                }}
+              >
+                Cerrar sesión
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
           <Button variant="ghost" className="relative h-9 w-9 rounded-full">
             <Avatar className="h-9 w-9">
-              <AvatarFallback className="bg-primary text-primary-foreground">AD</AvatarFallback>
+              <AvatarFallback className="bg-primary text-primary-foreground">...</AvatarFallback>
             </Avatar>
           </Button>
         )}

@@ -62,11 +62,6 @@ export function SettingsClient({
   const [saturday, setSaturday] = useState({ open: '09:00', close: '14:00' })
   const [sunday, setSunday] = useState({ open: '', close: '' })
 
-  // Fetch settings on mount
-  useEffect(() => {
-    fetchSettings()
-  }, [fetchSettings])
-
   const fetchSettings = async () => {
     try {
       const res = await fetch(`/api/settings?tenant_id=${tenantId}`)
@@ -112,6 +107,11 @@ export function SettingsClient({
       toast.error(t('saveError'))
     }
   }
+
+  // Fetch settings on mount
+  useEffect(() => {
+    fetchSettings()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleLogoUpload = async () => {
     if (!logoFile) return logoUrl

@@ -41,11 +41,10 @@ const checkoutRequestSchema = z.object({
 })
 
 export async function POST(request: Request) {
-  const ip = getClientIp(request)
-  const { success, limit, remaining, reset } = await ratelimitStrict.limit(ip)
-  if (!success) return rateLimitExceededResponse(limit, remaining, reset)
-
   try {
+    const ip = getClientIp(request)
+    const { success, limit, remaining, reset } = await ratelimitStrict.limit(ip)
+    if (!success) return rateLimitExceededResponse(limit, remaining, reset)
     const body = await request.json()
     const parsed = checkoutRequestSchema.safeParse(body)
 

@@ -74,18 +74,18 @@ export function HeroSection() {
               fontWeight: 500,
               fontSize: 16,
               color: '#FFFFFF',
-              backgroundColor: '#D97706',
+              backgroundColor: 'var(--micelio-cta)',
               padding: '16px 32px',
               borderRadius: 6,
               textDecoration: 'none',
               transition: 'background-color 150ms ease-out, box-shadow 150ms ease-out',
             }}
             onMouseEnter={(e) => {
-              ;(e.target as HTMLElement).style.backgroundColor = '#C86206'
+              ;(e.target as HTMLElement).style.backgroundColor = 'var(--micelio-cta-hover)'
               ;(e.target as HTMLElement).style.boxShadow = '0 4px 12px rgba(0,0,0,0.12)'
             }}
             onMouseLeave={(e) => {
-              ;(e.target as HTMLElement).style.backgroundColor = '#D97706'
+              ;(e.target as HTMLElement).style.backgroundColor = 'var(--micelio-cta)'
               ;(e.target as HTMLElement).style.boxShadow = 'none'
             }}
           >

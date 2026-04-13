@@ -214,8 +214,29 @@ export function GastronomyLayout({
       <GastronomyFooter
         tenantName={tenantName}
         tenantLocation={tenantLocation}
-        tenantPhone="+54 294 503-2187"
-        tenantInstagram="@mangobajitofoodtruck"
+        tenantPhone={whatsappNumber ?? undefined}
+        businessHours={
+          hours
+            ? (() => {
+                const dayNames: Record<string, string> = {
+                  monday: 'Lunes',
+                  tuesday: 'Martes',
+                  wednesday: 'Miércoles',
+                  thursday: 'Jueves',
+                  friday: 'Viernes',
+                  saturday: 'Sábado',
+                  sunday: 'Domingo',
+                }
+                const now = new Date()
+                const todayKey = Object.keys(dayNames)[now.getDay() === 0 ? 6 : now.getDay() - 1]
+                return Object.entries(dayNames).map(([key, label]) => ({
+                  day: label,
+                  hours: hours[key] ? `${hours[key].open}-${hours[key].close}` : 'Cerrado',
+                  isToday: key === todayKey,
+                }))
+              })()
+            : undefined
+        }
       />
 
       {/* WhatsApp Floating Button */}
