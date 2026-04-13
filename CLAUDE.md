@@ -169,10 +169,28 @@ locators/*.locators.ts → Selector definitions (single source of truth)
 
 ## Styling
 
-- Tailwind CSS v4 with design tokens in `styles/tokens.css`
-- CSS variables for theming (dark mode via `.dark` class)
-- shadcn/ui components in `components/ui/`
-- Neo-brutalist aesthetic: monochrome base + gold accents
+**CRITICAL FOR DESIGN AGENTS (Aurora, Pixel):** Micelio has TWO token layers. Read the correct one for your context.
+
+### App tokens (admin, dashboard, storefront)
+- **Source:** `app/globals.css` + `styles/tokens.css`
+- **Colors:** Monochrome — `--foreground: #000000`, `--background: #ffffff`, `--color-primary: #1a1a1a`, `--secondary: #f4f4f0` (paper), `--border: #e5e5e5`
+- **Fonts:** `--font-display: Cinzel` (serif), `--font-body: Inter`, `--font-mono: JetBrains Mono`
+- **Shadows:** `--shadow-brutal: 4px 4px 0px 0px rgba(0,0,0,1)`, `--shadow-float: 0 20px 40px -10px rgba(0,0,0,0.15)`
+- **Animations:** `--ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1)`, `--timing-fast: 100ms`, `--timing-normal: 300ms`
+- **Dark mode:** `.dark` class toggles all tokens
+- **Tenant theming:** ThemeProvider overrides `--color-primary` and `--color-accent` per tenant
+- **shadcn/ui** components use `bg-background`, `text-foreground`, `border-border` etc.
+
+### Marketing tokens (landing page only, scoped to `.micelio-marketing`)
+- **Source:** `styles/micelio-marketing.css`
+- **Colors:** Skywalking brand — `--micelio-bg: #EFEEE9`, `--micelio-text-primary: #0C1A27`, `--micelio-accent: #D4AF37` (gold)
+- **Fonts:** Plus Jakarta Sans (headings), Geist Sans (body)
+- **DO NOT use these for admin/dashboard/storefront pages**
+
+### Rules
+- Admin pages (like `/es` superadmin) → App tokens
+- Public marketing landing → Marketing tokens (`.micelio-marketing` class)
+- When in doubt, check which CSS class wraps the component
 
 ## Payments
 

@@ -3,9 +3,10 @@
 @import "../styles/tokens.css";
 @import "../styles/micelio-marketing.css";
 
-/* 
-  NEO-BRUTALIST EDITORIAL THEME 
-  Bold, High-Contrast, Immersive.
+/*
+  Micelio App Theme
+  Monochrome editorial system with tenant theming.
+  See CLAUDE.md > Styling for token documentation.
 */
 
 :root {
