@@ -2,8 +2,9 @@
 
 import { LayoutDashboard, Store } from 'lucide-react'
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { FLAG_CATEGORY_ORDER, type FlagCategory, getFlagCategory } from '@/lib/flag-categories'
 import { type CellState, FlagToggleCell, getCellStateFromFlag } from './FlagToggleCell'
 import { MatrixControls, type ScopeFilter, type TemplateFilter } from './MatrixControls'
 import { TenantDetailSheet } from './TenantDetailSheet'
@@ -85,6 +86,36 @@ export function TenantMatrix({ tenants, flags, onToggleFlag }: TenantMatrixProps
     return result
   }, [flags, searchQuery, scopeFilter])
 
+  // Group filtered flags by category, preserving FLAG_CATEGORY_ORDER.
+  const groupedFlags = useMemo(() => {
+    const groups: { category: FlagCategory; flags: FeatureFlag[] }[] = []
+    const unassigned = new Set(filteredFlags)
+    for (const category of FLAG_CATEGORY_ORDER) {
+      const flagsInCategory = filteredFlags.filter((f) => getFlagCategory(f.key) === category)
+      if (flagsInCategory.length > 0) {
+        groups.push({ category, flags: flagsInCategory })
+        for (const f of flagsInCategory) unassigned.delete(f)
+      }
+    }
+    // Defensive: any flag not matched by the order (shouldn't happen since 'Other' is in the order)
+    if (unassigned.size > 0) {
+      groups.push({ category: 'Other', flags: Array.from(unassigned) })
+    }
+    return groups
+  }, [filteredFlags])
+
+  // Flat ordered list of flags — used to render cells in the same order as the header.
+  const orderedFlags = useMemo(() => groupedFlags.flatMap((g) => g.flags), [groupedFlags])
+
+  // Set of flag keys that are the FIRST of their category (used to draw a left divider).
+  const categoryStartKeys = useMemo(() => {
+    const s = new Set<string>()
+    for (const g of groupedFlags) {
+      if (g.flags[0]) s.add(g.flags[0].key)
+    }
+    return s
+  }, [groupedFlags])
+
   function toggleTenantSelect(tenantId: number) {
     setSelectedTenants((prev) => {
       const next = new Set(prev)
@@ -123,7 +154,7 @@ export function TenantMatrix({ tenants, flags, onToggleFlag }: TenantMatrixProps
     const promises = Array.from(selectedTenants).flatMap((tenantId) => {
       const tenant = tenants.find((t) => t.id === tenantId)
       if (!tenant) return []
-      return filteredFlags.map((flag) => {
+      return orderedFlags.map((flag) => {
         const state = getCellStateFromFlag(flag, tenant)
         if (state === 'inherited' || state === 'global') return Promise.resolve()
         return handleToggle(flag.key, tenantId, enabled ? 'disabled' : 'enabled')
@@ -176,10 +207,12 @@ export function TenantMatrix({ tenants, flags, onToggleFlag }: TenantMatrixProps
       {filteredTenants.length > 0 && filteredFlags.length > 0 && (
         <div className="overflow-x-auto rounded-md border border-border">
           <table className="w-full border-collapse text-sm">
-            {/* Header: Tenant info + flag columns */}
+            {/* Header: 2 rows — category groups + flag names */}
             <thead>
+              {/* Row 1: Category group headers (colSpan across flags in each category) */}
               <tr>
                 <th
+                  rowSpan={2}
                   className="sticky left-0 top-0 z-[11] border-b border-r border-border bg-secondary px-3 py-3 text-left align-middle"
                   style={{ minWidth: '260px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}
                 >
@@ -197,34 +230,54 @@ export function TenantMatrix({ tenants, flags, onToggleFlag }: TenantMatrixProps
                     </span>
                   </div>
                 </th>
-                {filteredFlags.map((flag) => (
+                {groupedFlags.map((group) => (
                   <th
-                    key={flag.key}
-                    data-testid={`flag-column-header--${flag.key}`}
-                    className="sticky top-0 z-[10] border-b border-r border-border bg-secondary px-3 py-3 text-center align-middle"
-                    style={{
-                      minWidth: '100px',
-                      maxWidth: '130px',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                    }}
-                    title={flag.description || flag.key}
+                    key={`cat-${group.category}`}
+                    colSpan={group.flags.length}
+                    data-testid={`flag-category-header--${group.category}`}
+                    className="sticky top-0 z-[10] border-b border-r-2 border-b-border border-r-border bg-secondary/80 px-3 py-2 text-center align-middle"
+                    style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}
                   >
-                    <span className="text-xs font-semibold text-foreground leading-tight">
-                      {flag.key.replace(/_/g, ' ')}
+                    <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                      {group.category}
                     </span>
                   </th>
                 ))}
+              </tr>
+              {/* Row 2: Individual flag name headers */}
+              <tr>
+                {orderedFlags.map((flag) => {
+                  const startsCategory = categoryStartKeys.has(flag.key)
+                  return (
+                    <th
+                      key={flag.key}
+                      data-testid={`flag-column-header--${flag.key}`}
+                      className={`sticky z-[10] border-b border-r border-border bg-secondary px-3 py-3 text-center align-middle ${startsCategory ? 'border-l-2 border-l-border' : ''}`}
+                      style={{
+                        minWidth: '100px',
+                        maxWidth: '130px',
+                        top: '41px',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                      }}
+                      title={flag.description || flag.key}
+                    >
+                      <span className="text-xs font-semibold text-foreground leading-tight">
+                        {flag.key.replace(/_/g, ' ')}
+                      </span>
+                    </th>
+                  )
+                })}
               </tr>
             </thead>
 
             <tbody>
               {tenantsByTemplate.map((group) => (
-                <>
+                <Fragment key={`tpl-group-${group.template}`}>
                   {/* Template section header */}
                   {templateFilter === 'all' && tenantsByTemplate.length > 1 && (
-                    <tr key={`section-${group.template}`}>
+                    <tr>
                       <td
-                        colSpan={filteredFlags.length + 1}
+                        colSpan={orderedFlags.length + 1}
                         className="bg-secondary/50 px-4 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-b border-border"
                       >
                         {group.template}
@@ -305,12 +358,13 @@ export function TenantMatrix({ tenants, flags, onToggleFlag }: TenantMatrixProps
                           </div>
                         </td>
 
-                        {/* Flag toggle cells */}
-                        {filteredFlags.map((flag) => {
+                        {/* Flag toggle cells — iterated in category order */}
+                        {orderedFlags.map((flag) => {
                           const cellKey = `${flag.key}-${tenant.id}`
                           const isLoading = loadingCells.has(cellKey)
                           const baseState = getCellStateFromFlag(flag, tenant)
                           const state: CellState = isLoading ? 'loading' : baseState
+                          const startsCategory = categoryStartKeys.has(flag.key)
 
                           return (
                             <FlagToggleCell
@@ -319,13 +373,14 @@ export function TenantMatrix({ tenants, flags, onToggleFlag }: TenantMatrixProps
                               tenant={tenant}
                               state={state}
                               onToggle={() => handleToggle(flag.key, tenant.id, baseState)}
+                              startsCategory={startsCategory}
                             />
                           )
                         })}
                       </tr>
                     )
                   })}
-                </>
+                </Fragment>
               ))}
             </tbody>
           </table>

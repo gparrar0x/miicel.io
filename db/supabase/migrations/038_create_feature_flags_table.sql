@@ -79,7 +79,7 @@ CREATE POLICY "Superadmins can delete feature flags"
 
 INSERT INTO feature_flags (key, description, enabled, rules) VALUES
   ('consignments', 'Consignment management for galleries - track artwork locations and sales', true, '{"templates": ["gallery"]}'),
-  ('kitchen_view', 'Kitchen display view for restaurants - real-time order tracking', true, '{"templates": ["restaurant", "gastronomy"]}'),
+  ('kitchen_view', 'Kitchen display view for gastronomy tenants - real-time order tracking', true, '{"templates": ["gastronomy"]}'),
   ('analytics_v2', 'New analytics dashboard with advanced metrics', true, '{}'),
   ('dark_mode', 'Dark mode theme support', true, '{}'),
   ('new_checkout', 'New checkout flow with improved UX', false, '{"percentage": 0}')

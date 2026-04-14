@@ -90,7 +90,7 @@ export async function isEnabled(key: string, context: FlagContext = {}): Promise
 
   const flag = await getFlag(key)
 
-  if (!flag || !flag.enabled) {
+  if (!flag?.enabled) {
     return false
   }
 
@@ -102,11 +102,13 @@ export async function isEnabled(key: string, context: FlagContext = {}): Promise
     return false
   }
 
-  // If no targeting rules, enabled for all
+  // If no targeting rules, enabled for all.
+  // Note: presence of the key (even as empty array) means "allowlist mode, currently empty"
+  // — NOT "no targeting". Only `undefined` means "no rule defined → global".
   const hasTargeting =
-    rules.tenants?.length ||
-    rules.templates?.length ||
-    rules.users?.length ||
+    rules.tenants !== undefined ||
+    rules.templates !== undefined ||
+    rules.users !== undefined ||
     rules.percentage != null
 
   if (!hasTargeting) {
@@ -223,4 +225,26 @@ export const Flags = {
   AUTHOR_LANDINGS: 'author_landings',
   CONTENT_PIPELINE: 'content_pipeline',
   SOCIAL_MEDIA: 'social_media',
+  NEQUI: 'nequi_enabled',
+  MERCADOPAGO: 'mercadopago_enabled',
 } as const
+
+// Re-export client-safe category helpers so server-side code can still import
+// everything from `@/lib/flags`. Client code should import from `@/lib/flag-categories`
+// directly to avoid pulling server deps into the client bundle.
+export { FLAG_CATEGORY_ORDER, type FlagCategory, getFlagCategory } from './flag-categories'
+
+/**
+ * Check if Nequi push payments are enabled for a specific tenant.
+ */
+export async function isNequiEnabled(tenantId: number): Promise<boolean> {
+  return isEnabled(Flags.NEQUI, { tenantId })
+}
+
+/**
+ * Check if MercadoPago is enabled for a specific tenant.
+ * Enabled globally by default; tenant-level opt-out supported via allowlist/disable rules.
+ */
+export async function isMercadoPagoEnabled(tenantId: number): Promise<boolean> {
+  return isEnabled(Flags.MERCADOPAGO, { tenantId })
+}
