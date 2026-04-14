@@ -19,7 +19,9 @@
         "useHtmlLang": "warn",
         "useAriaPropsSupportedByRole": "warn",
         "noStaticElementInteractions": "warn",
-        "useSemanticElements": "warn"
+        "useSemanticElements": "warn",
+        "useValidAnchor": "warn",
+        "useMediaCaption": "warn"
       },
       "security": { "noDangerouslySetInnerHtml": "warn" },
       "style": { "noNonNullAssertion": "warn" },
