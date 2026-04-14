@@ -5,9 +5,11 @@ import Image from 'next/image'
 import { useLocale, useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { NequiSettingsForm } from '@/components/dashboard/settings/NequiSettingsForm'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useFeatureFlag } from '@/lib/hooks/useFeatureFlag'
 import { usePathname, useRouter } from '@/i18n/routing'
 
 interface SettingsClientProps {
@@ -32,6 +34,16 @@ export function SettingsClient({
   const [activeTab, setActiveTab] = useState<'general' | 'payment' | 'contact'>('general')
   const [loading, setLoading] = useState(false)
   const [settings, setSettings] = useState<any>(null)
+
+  // Gate payment method sections by feature flag for this tenant
+  const { enabled: mpFlagEnabled, loading: mpFlagLoading } = useFeatureFlag('mercadopago_enabled', {
+    tenantId,
+  })
+  const { enabled: nequiFlagEnabled, loading: nequiFlagLoading } = useFeatureFlag('nequi_enabled', {
+    tenantId,
+  })
+  const paymentFlagsLoading = mpFlagLoading || nequiFlagLoading
+  const noPaymentMethodsAvailable = !paymentFlagsLoading && !mpFlagEnabled && !nequiFlagEnabled
 
   // General tab state
   const [businessName, setBusinessName] = useState(tenantName)
@@ -516,38 +528,82 @@ export function SettingsClient({
 
           <TabsContent value="payment" className="mt-0">
             <CardContent className="pt-6">
-              <div className="space-y-6" data-testid="payment-tab-content">
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    {t('mpToken')}
-                  </label>
-                  <p className="text-sm text-muted-foreground mb-3">{t('mpTokenDesc')}</p>
-                  <div className="relative">
-                    <input
-                      type={showMpToken ? 'text' : 'password'}
-                      value={mpAccessToken}
-                      onChange={(e) => setMpAccessToken(e.target.value)}
-                      placeholder="APP_USR-..."
-                      className="w-full rounded-md border border-input bg-background px-3 py-2 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                      data-testid="input-mp-token"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowMpToken(!showMpToken)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground"
-                    >
-                      {showMpToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
+              <div className="space-y-8" data-testid="payment-tab-content">
+                {paymentFlagsLoading ? (
+                  <div
+                    className="flex items-center justify-center py-8 text-sm text-muted-foreground"
+                    data-testid="payment-flags-loading"
+                  >
+                    Cargando métodos de pago disponibles...
                   </div>
-                </div>
-              </div>
+                ) : noPaymentMethodsAvailable ? (
+                  <div
+                    className="rounded-md border border-border bg-muted/30 p-6 text-center"
+                    data-testid="payment-no-methods"
+                  >
+                    <p className="text-sm font-medium text-foreground">
+                      No hay métodos de pago habilitados para esta tienda
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Contacta al administrador de la plataforma para habilitar MercadoPago o Nequi.
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    {/* MercadoPago section — gated by mercadopago_enabled flag */}
+                    {mpFlagEnabled && (
+                      <div className="space-y-3" data-testid="mp-settings-section">
+                        <div>
+                          <h3 className="text-base font-semibold text-foreground">MercadoPago</h3>
+                          <p className="text-sm text-muted-foreground">{t('mpTokenDesc')}</p>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-foreground mb-2">
+                            {t('mpToken')}
+                          </label>
+                          <div className="relative">
+                            <input
+                              type={showMpToken ? 'text' : 'password'}
+                              value={mpAccessToken}
+                              onChange={(e) => setMpAccessToken(e.target.value)}
+                              placeholder="APP_USR-..."
+                              className="w-full rounded-md border border-input bg-background px-3 py-2 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                              data-testid="input-mp-token"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowMpToken(!showMpToken)}
+                              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-muted-foreground"
+                            >
+                              {showMpToken ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                        <div className="flex justify-end">
+                          <Button
+                            onClick={handleSave}
+                            disabled={loading}
+                            data-testid="btn-save-settings"
+                          >
+                            <Save className="h-4 w-4 mr-2" />
+                            {loading ? t('saving') : t('save')}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
 
-              {/* Save Button */}
-              <div className="mt-8 flex justify-end">
-                <Button onClick={handleSave} disabled={loading} data-testid="btn-save-settings">
-                  <Save className="h-4 w-4 mr-2" />
-                  {loading ? t('saving') : t('save')}
-                </Button>
+                    {mpFlagEnabled && nequiFlagEnabled && (
+                      <div className="border-t border-border" />
+                    )}
+
+                    {/* Nequi section — gated by nequi_enabled flag */}
+                    {nequiFlagEnabled && <NequiSettingsForm tenantId={tenantId} />}
+                  </>
+                )}
               </div>
             </CardContent>
           </TabsContent>

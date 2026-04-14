@@ -2,12 +2,41 @@
  * Zustand Cart Store with LocalStorage Persistence
  *
  * Manages shopping cart state across tenant storefronts.
- * Persists to localStorage with tenant-scoped keys.
+ * Persists to localStorage with tenant-scoped keys derived from the URL,
+ * so each tenant has its own independent cart.
  */
 
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { createJSONStorage, persist } from 'zustand/middleware'
 import type { CartStore } from '@/types/commerce'
+
+const STORAGE_PREFIX = 'sw-cart'
+const LEGACY_STORAGE_KEY = 'sw-cart-storage'
+
+// One-time cleanup of the legacy global cart key (pre tenant-scoping).
+if (typeof window !== 'undefined') {
+  try {
+    window.localStorage.removeItem(LEGACY_STORAGE_KEY)
+  } catch {
+    // ignore (SSR safety / private mode)
+  }
+}
+
+function getTenantSlug(): string {
+  if (typeof window === 'undefined') return 'ssr'
+  // URL pattern: /{locale}/{tenantSlug}/...
+  const segments = window.location.pathname.split('/').filter(Boolean)
+  return segments[1] ?? 'default'
+}
+
+const tenantScopedStorage = createJSONStorage(() => {
+  const makeKey = (name: string) => `${name}:${getTenantSlug()}`
+  return {
+    getItem: (name) => localStorage.getItem(makeKey(name)),
+    setItem: (name, value) => localStorage.setItem(makeKey(name), value),
+    removeItem: (name) => localStorage.removeItem(makeKey(name)),
+  }
+})
 
 export const useCartStore = create<CartStore>()(
   persist(
@@ -106,8 +135,8 @@ export const useCartStore = create<CartStore>()(
       },
     }),
     {
-      name: 'sw-cart-storage', // localStorage key
-      // Only persist items array
+      name: STORAGE_PREFIX, // Final localStorage key = `${STORAGE_PREFIX}:${tenantSlug}`
+      storage: tenantScopedStorage,
       partialize: (state) => ({ items: state.items }),
     },
   ),

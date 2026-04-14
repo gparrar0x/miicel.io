@@ -42,7 +42,7 @@ function HomepageFeatures() {
               <h3>Templates</h3>
               <p>
                 Ready-made storefront templates optimized for different business types: Gallery,
-                Detail, Minimal, and Restaurant.
+                Detail, Minimal, and Gastronomy.
               </p>
               <Link to="/architecture/templates">Learn more →</Link>
             </div>

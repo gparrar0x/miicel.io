@@ -181,7 +181,7 @@ export default async function ProductPage({ params }: PageProps) {
   // Set currency from tenant config
   product.currency = config.currency
 
-  // Restaurant template: Ignore stock (assume infinite)
+  // Gastronomy template: Ignore stock (assume infinite)
   if (config.template === 'gastronomy') {
     product.stock = 999
   }

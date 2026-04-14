@@ -285,7 +285,6 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
     )
   }
 
-  // Legacy support: also accept 'restaurant' for backwards compatibility
   if (config.template === 'gallery') {
     // Transform products to Artwork format for new GalleryGrid
     const artworks = products.map((p) => {
