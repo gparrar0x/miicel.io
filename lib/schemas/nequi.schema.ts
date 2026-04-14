@@ -18,6 +18,7 @@ export const nequiCredentialsSchema = z.object({
   api_key: z.string().min(1, 'Requerido'),
   app_secret: z.string().min(1, 'Requerido'),
   phone_number: z.string().regex(nequiPhoneRegex, 'Debe iniciar en 3 y tener 10 dígitos'),
+  commerce_code: z.string().min(1, 'Requerido'),
 })
 
 export const nequiPhoneSchema = z

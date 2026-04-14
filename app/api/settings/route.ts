@@ -91,12 +91,19 @@ export async function GET(request: Request) {
       }
     }
 
-    // Nequi — expose configured flag + plain phone (never decrypt sensitive fields)
+    // Nequi — expose configured flag + plain phone + commerce_code (never decrypt sensitive fields)
     const nequiConfig = tenant.secure_config?.nequi as
-      | { client_id: string; api_key: string; app_secret: string; phone_number: string }
+      | {
+          client_id: string
+          api_key: string
+          app_secret: string
+          phone_number: string
+          commerce_code?: string
+        }
       | undefined
     const nequiConfigured = Boolean(nequiConfig)
     const nequiPhoneNumber = nequiConfig?.phone_number ?? null
+    const nequiCommerceCode = nequiConfig?.commerce_code ?? null
 
     // Return settings
     return NextResponse.json({
@@ -114,6 +121,7 @@ export async function GET(request: Request) {
       whatsapp_number: tenant.whatsapp_number || null,
       nequi_configured: nequiConfigured,
       nequi_phone_number: nequiPhoneNumber,
+      nequi_commerce_code: nequiCommerceCode,
     })
   } catch (error) {
     console.error('Unexpected error in GET /api/settings:', error)
@@ -237,6 +245,7 @@ export async function PATCH(request: Request) {
         api_key: string
         app_secret: string
         phone_number: string
+        commerce_code?: string
       }
 
       if (!nc.client_id || !nc.api_key || !nc.app_secret || !nc.phone_number) {
@@ -249,12 +258,25 @@ export async function PATCH(request: Request) {
         )
       }
 
+      // commerce_code: required for per-tenant webhook verification
+      if (nc.commerce_code !== undefined && nc.commerce_code.trim() === '') {
+        return NextResponse.json(
+          { error: 'Nequi credentials: commerce_code no puede estar vacío' },
+          { status: 400 },
+        )
+      }
+
       try {
-        const encryptedNequi = {
+        const encryptedNequi: Record<string, string> = {
           client_id: encryptToken(nc.client_id),
           api_key: encryptToken(nc.api_key),
           app_secret: encryptToken(nc.app_secret),
           phone_number: nc.phone_number, // plain — public commerce phone
+        }
+
+        // commerce_code is plain (public merchant ID) — not encrypted
+        if (nc.commerce_code !== undefined) {
+          encryptedNequi.commerce_code = nc.commerce_code
         }
 
         // Fetch current secure_config to merge (don't overwrite mp_access_token key)

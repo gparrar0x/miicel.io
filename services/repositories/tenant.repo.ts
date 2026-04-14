@@ -18,6 +18,7 @@ export interface NequiSecureConfig {
   api_key: string
   app_secret: string
   phone_number: string
+  commerce_code?: string
 }
 
 export interface TenantWithNequi {
@@ -37,6 +38,7 @@ export interface ITenantRepo {
   findByIdWithNequi(
     id: number,
   ): Promise<(TenantRow & TenantWithNequi & { owner_id: string }) | null>
+  findByNequiCommerceCode(code: string): Promise<(TenantRow & TenantWithNequi) | null>
 }
 
 export class TenantRepo implements ITenantRepo {
@@ -88,6 +90,30 @@ export class TenantRepo implements ITenantRepo {
       .maybeSingle()
 
     if (error) throw new Error(`Failed to fetch tenant: ${error.message}`)
+    if (!data) return null
+
+    return {
+      id: data.id as number,
+      template: data.template as string | undefined,
+      mp_access_token: (data.mp_access_token as string | null) ?? null,
+      secure_config: (data.secure_config as TenantWithNequi['secure_config']) ?? null,
+      currency: (data.config as { currency?: string } | null)?.currency ?? undefined,
+    }
+  }
+
+  /**
+   * Fetch tenant by Nequi commerce code — for per-tenant webhook signature verification.
+   * Filters on JSONB: secure_config->nequi->>commerce_code = code.
+   */
+  async findByNequiCommerceCode(code: string): Promise<(TenantRow & TenantWithNequi) | null> {
+    // biome-ignore lint/suspicious/noExplicitAny: Supabase generated types don't cover secure_config JSONB
+    const { data, error } = await (this.supabase as any)
+      .from('tenants')
+      .select('id, template, mp_access_token, secure_config, config')
+      .filter('secure_config->nequi->>commerce_code', 'eq', code)
+      .maybeSingle()
+
+    if (error) throw new Error(`Failed to fetch tenant by commerce code: ${error.message}`)
     if (!data) return null
 
     return {

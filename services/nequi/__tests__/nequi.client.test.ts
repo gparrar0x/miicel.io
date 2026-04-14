@@ -11,6 +11,7 @@ const CREDS = {
   apiKey: 'test-api-key',
   appSecret: 'test-app-secret',
   phoneNumber: '3001234567',
+  commerceCode: '12345678',
 }
 
 describe('NequiClient — mock mode (option flag)', () => {

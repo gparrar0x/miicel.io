@@ -212,6 +212,8 @@ test.describe('Nequi checkout — buyer flow', () => {
   test('8. webhook_invalid_signature_returns_401', async ({ request }) => {
     const baseUrl = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3000'
 
+    // Use per-tenant signing: invalidSignature=true uses a wrong secret regardless
+    // of which tenant owns the commerceCode in the fixture.
     const response = await postMockWebhook(
       request,
       baseUrl,

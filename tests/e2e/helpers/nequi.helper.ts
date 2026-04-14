@@ -122,12 +122,13 @@ export async function postMockWebhook(
   request: APIRequestContext,
   baseUrl: string,
   payload: NequiWebhookPayload,
-  options: { invalidSignature?: boolean; secret?: string } = {},
+  options: { invalidSignature?: boolean; secret?: string; appSecret?: string } = {},
 ): Promise<APIResponse> {
   const rawBody = JSON.stringify(payload)
+  // appSecret = per-tenant secret; fallback to legacy secret option for compat
   const secret = options.invalidSignature
     ? 'definitely-not-the-real-secret'
-    : (options.secret ?? process.env.NEQUI_WEBHOOK_SECRET ?? 'test-webhook-secret')
+    : (options.appSecret ?? options.secret ?? 'test-webhook-secret')
 
   const digestHeader = `SHA-256=${crypto
     .createHash('sha256')

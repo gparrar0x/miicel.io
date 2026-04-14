@@ -19,6 +19,7 @@ export interface NequiCredentials {
   apiKey: string
   appSecret: string
   phoneNumber: string
+  commerceCode: string
 }
 
 export interface NequiPaymentStatus {
