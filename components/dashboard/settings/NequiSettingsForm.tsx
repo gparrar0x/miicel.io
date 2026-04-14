@@ -2,21 +2,22 @@
  * NequiSettingsForm
  *
  * Admin form to configure Nequi Conecta credentials per tenant.
- * - 4 fields: client_id, api_key, app_secret, phone_number
- * - Reveal toggles for sensitive fields
+ * - Webhook URL section (read-only + copy button) at top
+ * - 5 fields: client_id, commerce_code, api_key, app_secret, phone_number
+ * - Reveal toggles for sensitive fields (commerce_code is NOT masked)
  * - Currency gating: warning + disabled save if tenant.currency !== 'COP'
  * - Status badge: Activo / Sin configurar
  *
  * Saves via PATCH /api/settings with body { nequi_credentials: {...} }.
  * Backend (services/nequi/...) encrypts credentials before persist.
  *
- * Issue: SKY-273
+ * Issue: SKY-273, SKY-279
  */
 
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AlertTriangle, Eye, EyeOff, Loader2, Save } from 'lucide-react'
+import { AlertTriangle, Check, Copy, Eye, EyeOff, Loader2, Save } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -34,9 +35,12 @@ export interface NequiSettingsFormProps {
   tenantId: number
 }
 
+const NEQUI_WEBHOOK_URL = 'https://micelio.skyw.app/api/webhooks/nequi'
+
 interface SettingsResponse {
   nequi_configured?: boolean
   nequi_phone_number?: string | null
+  nequi_commerce_code?: string | null
   config?: { currency?: string }
 }
 
@@ -48,6 +52,7 @@ export function NequiSettingsForm({ tenantId }: NequiSettingsFormProps) {
   const [showApiKey, setShowApiKey] = useState(false)
   const [showAppSecret, setShowAppSecret] = useState(false)
   const [showClientId, setShowClientId] = useState(false)
+  const [webhookCopied, setWebhookCopied] = useState(false)
 
   const {
     register,
@@ -63,6 +68,7 @@ export function NequiSettingsForm({ tenantId }: NequiSettingsFormProps) {
       api_key: '',
       app_secret: '',
       phone_number: '',
+      commerce_code: '',
     },
   })
 
@@ -78,6 +84,9 @@ export function NequiSettingsForm({ tenantId }: NequiSettingsFormProps) {
       if (data.nequi_phone_number) {
         setValue('phone_number', data.nequi_phone_number)
       }
+      if (data.nequi_commerce_code) {
+        setValue('commerce_code', data.nequi_commerce_code)
+      }
     } catch (err) {
       console.error('[NequiSettingsForm] fetch error:', err)
     } finally {
@@ -91,6 +100,16 @@ export function NequiSettingsForm({ tenantId }: NequiSettingsFormProps) {
 
   const isCop = currency === 'COP'
 
+  const copyWebhookUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(NEQUI_WEBHOOK_URL)
+      setWebhookCopied(true)
+      setTimeout(() => setWebhookCopied(false), 2000)
+    } catch {
+      toast.error('No se pudo copiar. Copia manualmente.')
+    }
+  }
+
   const onSubmit = async (data: NequiCredentialsInput) => {
     setLoading(true)
     try {
@@ -103,6 +122,7 @@ export function NequiSettingsForm({ tenantId }: NequiSettingsFormProps) {
             api_key: data.api_key.trim(),
             app_secret: data.app_secret.trim(),
             phone_number: data.phone_number.trim(),
+            commerce_code: data.commerce_code.trim(),
           },
         }),
       })
@@ -226,6 +246,80 @@ export function NequiSettingsForm({ tenantId }: NequiSettingsFormProps) {
           </div>
         )}
 
+        {/* Webhook URL (read-only) */}
+        <div
+          className="mb-6"
+          style={{
+            background: 'var(--secondary, #f4f4f0)',
+            border: '1px solid var(--border, #e5e5e5)',
+            padding: '1rem',
+            borderRadius: 'var(--radius, 0.5rem)',
+          }}
+        >
+          <label style={labelStyle} htmlFor="nequi-webhook-url-input">
+            Webhook URL para Nequi Conecta
+          </label>
+          <div className="flex items-center gap-2">
+            <input
+              id="nequi-webhook-url-input"
+              type="text"
+              readOnly
+              value={NEQUI_WEBHOOK_URL}
+              data-testid="nequi-webhook-url"
+              aria-label="Webhook URL para Nequi Conecta"
+              style={{
+                ...inputStyle(false, true),
+                paddingRight: '0.75rem',
+                flex: 1,
+                background: 'var(--background, #fff)',
+                cursor: 'text',
+                userSelect: 'all',
+              }}
+            />
+            <button
+              type="button"
+              onClick={copyWebhookUrl}
+              aria-label={webhookCopied ? 'URL copiada' : 'Copiar webhook URL'}
+              data-testid="nequi-webhook-url-copy"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.375rem',
+                height: '40px',
+                padding: '0 0.875rem',
+                background: webhookCopied ? 'rgba(16, 185, 129, 0.12)' : 'var(--background, #fff)',
+                border: `1px solid ${webhookCopied ? 'rgba(16, 185, 129, 0.4)' : 'var(--border, #e5e5e5)'}`,
+                borderRadius: 'var(--radius, 0.5rem)',
+                color: webhookCopied ? '#059669' : 'var(--color-text-secondary, #666)',
+                fontFamily: 'var(--font-body, Inter)',
+                fontSize: '0.8125rem',
+                fontWeight: 500,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'all var(--timing-fast, 100ms)',
+                flexShrink: 0,
+              }}
+            >
+              {webhookCopied ? (
+                <>
+                  <Check size={14} />
+                  Copiado
+                </>
+              ) : (
+                <>
+                  <Copy size={14} />
+                  Copiar
+                </>
+              )}
+            </button>
+          </div>
+          <p style={helperStyle}>
+            Pega esta URL en tu portal Nequi Conecta → sección de configuración de webhooks. Nequi
+            la usará para notificar los pagos recibidos.
+          </p>
+        </div>
+
         <form
           data-testid="nequi-settings-form"
           onSubmit={handleSubmit(onSubmit)}
@@ -265,6 +359,33 @@ export function NequiSettingsForm({ tenantId }: NequiSettingsFormProps) {
               </button>
             </div>
             {errors.client_id && <p style={errorStyle}>{errors.client_id.message}</p>}
+          </div>
+
+          {/* Commerce Code */}
+          <div>
+            <label htmlFor="nequi-commerce-code" style={labelStyle}>
+              Código de Comercio
+            </label>
+            <input
+              id="nequi-commerce-code"
+              type="text"
+              placeholder="Ej: 29603"
+              data-testid="nequi-settings-commerce-code-input"
+              aria-invalid={errors.commerce_code ? 'true' : 'false'}
+              style={{
+                ...inputStyle(Boolean(errors.commerce_code), false),
+                paddingRight: '0.75rem',
+              }}
+              {...register('commerce_code')}
+            />
+            {errors.commerce_code ? (
+              <p style={errorStyle}>{errors.commerce_code.message}</p>
+            ) : (
+              <p style={helperStyle}>
+                Código asignado por Nequi a tu comercio. Lo encuentras en tu portal de Nequi
+                Conecta.
+              </p>
+            )}
           </div>
 
           {/* API Key */}
