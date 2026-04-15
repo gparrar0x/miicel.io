@@ -1,24 +1,12 @@
 /**
- * NequiSettingsForm
- *
- * Admin form to configure Nequi Conecta credentials per tenant.
- * - Webhook URL section (read-only + copy button) at top
- * - 5 fields: client_id, commerce_code, api_key, app_secret, phone_number
- * - Reveal toggles for sensitive fields (commerce_code is NOT masked)
- * - Currency gating: warning + disabled save if tenant.currency !== 'COP'
- * - Status badge: Activo / Sin configurar
- *
- * Saves via PATCH /api/settings with body { nequi_credentials: {...} }.
- * Backend (services/nequi/...) encrypts credentials before persist.
- *
- * Issue: SKY-273, SKY-279
+ * NequiSettingsForm — per-tenant Nequi Conecta credentials (COP-gated).
  */
 
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertTriangle, Check, Copy, Eye, EyeOff, Loader2, Save } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
@@ -35,7 +23,8 @@ export interface NequiSettingsFormProps {
   tenantId: number
 }
 
-const NEQUI_WEBHOOK_URL = 'https://micelio.skyw.app/api/webhooks/nequi'
+const _baseUrl = (process.env.NEXT_PUBLIC_BASE_URL ?? 'https://micelio.skyw.app').replace(/\/$/, '')
+const NEQUI_WEBHOOK_URL = `${_baseUrl}/api/webhooks/nequi`
 
 interface SettingsResponse {
   nequi_configured?: boolean
@@ -53,11 +42,13 @@ export function NequiSettingsForm({ tenantId }: NequiSettingsFormProps) {
   const [showAppSecret, setShowAppSecret] = useState(false)
   const [showClientId, setShowClientId] = useState(false)
   const [webhookCopied, setWebhookCopied] = useState(false)
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const {
     register,
     handleSubmit,
     setValue,
+    reset,
     watch,
     formState: { errors, isValid },
   } = useForm<NequiCredentialsInput>({
@@ -81,30 +72,38 @@ export function NequiSettingsForm({ tenantId }: NequiSettingsFormProps) {
       const data: SettingsResponse = await res.json()
       setConfigured(Boolean(data.nequi_configured))
       setCurrency(data.config?.currency ?? null)
-      if (data.nequi_phone_number) {
-        setValue('phone_number', data.nequi_phone_number)
-      }
-      if (data.nequi_commerce_code) {
-        setValue('commerce_code', data.nequi_commerce_code)
-      }
+      reset({
+        client_id: '',
+        api_key: '',
+        app_secret: '',
+        phone_number: data.nequi_phone_number ?? '',
+        commerce_code: data.nequi_commerce_code ?? '',
+      })
     } catch (err) {
       console.error('[NequiSettingsForm] fetch error:', err)
     } finally {
       setFetching(false)
     }
-  }, [tenantId, setValue])
+  }, [tenantId, reset])
 
   useEffect(() => {
     fetchSettings()
   }, [fetchSettings])
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current)
+    }
+  }, [])
 
   const isCop = currency === 'COP'
 
   const copyWebhookUrl = async () => {
     try {
       await navigator.clipboard.writeText(NEQUI_WEBHOOK_URL)
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current)
       setWebhookCopied(true)
-      setTimeout(() => setWebhookCopied(false), 2000)
+      copyTimeoutRef.current = setTimeout(() => setWebhookCopied(false), 2000)
     } catch {
       toast.error('No se pudo copiar. Copia manualmente.')
     }
@@ -246,7 +245,6 @@ export function NequiSettingsForm({ tenantId }: NequiSettingsFormProps) {
           </div>
         )}
 
-        {/* Webhook URL (read-only) */}
         <div
           className="mb-6"
           style={{
@@ -325,7 +323,6 @@ export function NequiSettingsForm({ tenantId }: NequiSettingsFormProps) {
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-4"
         >
-          {/* Client ID */}
           <div>
             <label htmlFor="nequi-client-id" style={labelStyle}>
               Client ID
@@ -361,7 +358,6 @@ export function NequiSettingsForm({ tenantId }: NequiSettingsFormProps) {
             {errors.client_id && <p style={errorStyle}>{errors.client_id.message}</p>}
           </div>
 
-          {/* Commerce Code */}
           <div>
             <label htmlFor="nequi-commerce-code" style={labelStyle}>
               Código de Comercio
@@ -388,7 +384,6 @@ export function NequiSettingsForm({ tenantId }: NequiSettingsFormProps) {
             )}
           </div>
 
-          {/* API Key */}
           <div>
             <label htmlFor="nequi-api-key" style={labelStyle}>
               API Key
@@ -424,7 +419,6 @@ export function NequiSettingsForm({ tenantId }: NequiSettingsFormProps) {
             {errors.api_key && <p style={errorStyle}>{errors.api_key.message}</p>}
           </div>
 
-          {/* App Secret */}
           <div>
             <label htmlFor="nequi-app-secret" style={labelStyle}>
               App Secret
@@ -460,7 +454,6 @@ export function NequiSettingsForm({ tenantId }: NequiSettingsFormProps) {
             {errors.app_secret && <p style={errorStyle}>{errors.app_secret.message}</p>}
           </div>
 
-          {/* Phone */}
           <div>
             <label htmlFor="nequi-phone" style={labelStyle}>
               Teléfono comercio
