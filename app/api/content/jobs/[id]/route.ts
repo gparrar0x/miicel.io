@@ -5,7 +5,7 @@
 
 import { AppError } from '@skywalking/core/errors'
 import { NextResponse } from 'next/server'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
 import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 import { ContentGenerationService } from '@/services/content-generation.service'
 import { ContentGenerationRepo } from '@/services/repositories/content-generation.repo'
@@ -24,8 +24,7 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
       return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
-    const isSA = isSuperadmin(user.email)
-    const readClient = isSA ? createServiceRoleClient() : supabase
+    const readClient = createServiceRoleClient()
     const service = new ContentGenerationService(new ContentGenerationRepo(readClient))
     const job = await service.getJobStatus(id)
 
@@ -33,16 +32,9 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
       return NextResponse.json({ error: 'Job not found.' }, { status: 404 })
     }
 
-    if (!isSA) {
-      const { data: tenant } = await supabase
-        .from('tenants')
-        .select('owner_id')
-        .eq('id', job.tenant_id)
-        .maybeSingle()
-
-      if (!tenant || tenant.owner_id !== user.id) {
-        return NextResponse.json({ error: 'Forbidden.' }, { status: 403 })
-      }
+    const access = await assertTenantAccess(supabase, user, job.tenant_id, { minRole: 'staff' })
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
     return NextResponse.json({ job })
@@ -72,8 +64,7 @@ export async function DELETE(request: Request, props: { params: Promise<{ id: st
       return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
-    const isSA = isSuperadmin(user.email)
-    const writeClient = isSA ? createServiceRoleClient() : supabase
+    const writeClient = createServiceRoleClient()
     const service = new ContentGenerationService(new ContentGenerationRepo(writeClient))
     const job = await service.getJobStatus(id)
 
@@ -81,16 +72,11 @@ export async function DELETE(request: Request, props: { params: Promise<{ id: st
       return NextResponse.json({ error: 'Job not found.' }, { status: 404 })
     }
 
-    if (!isSA) {
-      const { data: tenant } = await supabase
-        .from('tenants')
-        .select('owner_id')
-        .eq('id', job.tenant_id)
-        .maybeSingle()
-
-      if (!tenant || tenant.owner_id !== user.id) {
-        return NextResponse.json({ error: 'Forbidden.' }, { status: 403 })
-      }
+    const accessDel = await assertTenantAccess(supabase, user, job.tenant_id, {
+      minRole: 'tenant_admin',
+    })
+    if (!accessDel.ok) {
+      return NextResponse.json({ error: accessDel.error }, { status: accessDel.status })
     }
 
     if (!['pending', 'processing'].includes(job.status)) {

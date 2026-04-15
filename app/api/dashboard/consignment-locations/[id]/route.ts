@@ -10,7 +10,7 @@
  */
 
 import { NextResponse } from 'next/server'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
 import { updateLocationSchema } from '@/lib/schemas/consignment'
 import { createClientFromRequest } from '@/lib/supabase/server'
 
@@ -54,20 +54,10 @@ export async function GET(request: Request, { params }: RouteParams) {
 
     const tenantId = parseInt(tenantIdStr, 10)
 
-    // Verify tenant ownership
-    const { data: tenant, error: tenantError } = await supabase
-      .from('tenants')
-      .select('id, owner_id')
-      .eq('id', tenantId)
-      .maybeSingle()
-
-    if (tenantError || !tenant) {
-      return NextResponse.json({ error: 'Tenant not found' }, { status: 404 })
-    }
-
-    const isSuperAdmin = isSuperadmin(user.email)
-    if (!isSuperAdmin && tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden. Not tenant owner.' }, { status: 403 })
+    // Verify tenant access
+    const access = await assertTenantAccess(supabase, user, tenantId, { minRole: 'staff' })
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
     // Fetch location
@@ -140,20 +130,12 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       )
     }
 
-    // Verify tenant ownership
-    const { data: tenant, error: tenantError } = await supabase
-      .from('tenants')
-      .select('id, owner_id')
-      .eq('id', tenantId)
-      .maybeSingle()
-
-    if (tenantError || !tenant) {
-      return NextResponse.json({ error: 'Tenant not found' }, { status: 404 })
-    }
-
-    const isSuperAdmin = isSuperadmin(user.email)
-    if (!isSuperAdmin && tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden. Not tenant owner.' }, { status: 403 })
+    // Verify tenant access
+    const patchAccess = await assertTenantAccess(supabase, user, tenantId, {
+      minRole: 'tenant_admin',
+    })
+    if (!patchAccess.ok) {
+      return NextResponse.json({ error: patchAccess.error }, { status: patchAccess.status })
     }
 
     // Update location
@@ -219,20 +201,12 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 
     const tenantId = parseInt(tenantIdStr, 10)
 
-    // Verify tenant ownership
-    const { data: tenant, error: tenantError } = await supabase
-      .from('tenants')
-      .select('id, owner_id')
-      .eq('id', tenantId)
-      .maybeSingle()
-
-    if (tenantError || !tenant) {
-      return NextResponse.json({ error: 'Tenant not found' }, { status: 404 })
-    }
-
-    const isSuperAdmin = isSuperadmin(user.email)
-    if (!isSuperAdmin && tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden. Not tenant owner.' }, { status: 403 })
+    // Verify tenant access
+    const delAccess = await assertTenantAccess(supabase, user, tenantId, {
+      minRole: 'tenant_admin',
+    })
+    if (!delAccess.ok) {
+      return NextResponse.json({ error: delAccess.error }, { status: delAccess.status })
     }
 
     // Delete location (cascade deletes consignments)

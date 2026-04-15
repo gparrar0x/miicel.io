@@ -16,7 +16,7 @@
  */
 
 import { NextResponse } from 'next/server'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
 import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 
 /**
@@ -67,24 +67,15 @@ export async function GET(request: Request) {
 
     const tenantId = parseInt(tenantIdStr, 10)
 
-    // Verify tenant ownership
-    const { data: tenant, error: tenantError } = await supabase
-      .from('tenants')
-      .select('id, owner_id')
-      .eq('id', tenantId)
-      .maybeSingle()
-
-    if (tenantError || !tenant) {
-      return NextResponse.json({ error: 'Tenant not found' }, { status: 404 })
-    }
-
-    const isSuperAdmin = isSuperadmin(user.email)
-    if (!isSuperAdmin && tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden. Not tenant owner.' }, { status: 403 })
+    // Verify tenant access
+    const access = await assertTenantAccess(supabase, user, tenantId, { minRole: 'staff' })
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
     // Use service role client for superadmin to bypass RLS
     // Cast to any because consignment tables not in generated types yet
+    const isSuperAdmin = access.role === 'superadmin'
     const dbClient = (isSuperAdmin ? createServiceRoleClient() : supabase) as any
 
     // Date ranges

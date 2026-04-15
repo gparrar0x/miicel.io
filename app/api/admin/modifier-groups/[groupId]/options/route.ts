@@ -6,7 +6,7 @@
 import { AppError } from '@skywalking/core/errors'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
 import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 
 const createSchema = z.object({
@@ -29,10 +29,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ gro
 
     const serviceClient = createServiceRoleClient()
 
-    // Validate group ownership
+    // Validate group ownership via tenant access
     const { data: group } = await serviceClient
       .from('modifier_groups')
-      .select('id, tenant_id, tenants!inner(owner_id)')
+      .select('id, tenant_id')
       .eq('id', groupId)
       .maybeSingle()
 
@@ -40,9 +40,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ gro
       return NextResponse.json({ error: 'Modifier group not found' }, { status: 404 })
     }
 
-    const tenant = (group as any).tenants
-    if (!isSuperadmin(user.email) && tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    const access = await assertTenantAccess(supabase, user, group.tenant_id, {
+      minRole: 'tenant_admin',
+    })
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
     const body = await request.json()

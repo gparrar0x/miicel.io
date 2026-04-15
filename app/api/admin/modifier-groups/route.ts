@@ -6,7 +6,7 @@
 import { AppError } from '@skywalking/core/errors'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
 import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 
 const createSchema = z.object({
@@ -34,21 +34,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
     }
 
-    // Validate product ownership
+    // Validate product ownership via tenant access
     const serviceClient = createServiceRoleClient()
     const { data: product } = await serviceClient
       .from('products')
-      .select('id, tenant_id, tenants!inner(owner_id)')
+      .select('id, tenant_id')
       .eq('id', parsed.data.product_id)
       .maybeSingle()
 
-    if (!product) {
+    if (!product || product.tenant_id === null) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     }
 
-    const tenant = (product as any).tenants
-    if (!isSuperadmin(user.email) && tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    const access = await assertTenantAccess(supabase, user, product.tenant_id, {
+      minRole: 'tenant_admin',
+    })
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
     if (parsed.data.min_selections > parsed.data.max_selections) {

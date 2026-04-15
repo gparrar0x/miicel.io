@@ -13,7 +13,7 @@
  */
 
 import { NextResponse } from 'next/server'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
 import { orderStatusUpdateSchema } from '@/lib/schemas/order'
 import { createClientFromRequest } from '@/lib/supabase/server'
 
@@ -69,10 +69,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
     const { status: newStatus } = validationResult.data
 
-    // Step 4: Fetch order with tenant ownership check
-    const { data: order, error: fetchError } = await (supabase as any)
+    // Step 4: Pre-resolve tenant_id from order (decision 4: no overload on helper)
+    const { data: orderRef, error: fetchError } = await supabase
       .from('orders')
-      .select('*, tenants!inner(owner_id)')
+      .select('id, tenant_id, status')
       .eq('id', orderId)
       .maybeSingle()
 
@@ -84,19 +84,23 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       )
     }
 
-    if (!order) {
+    if (!orderRef || orderRef.tenant_id === null) {
       return NextResponse.json({ error: 'Order not found.' }, { status: 404 })
     }
 
-    // Step 5: Verify tenant ownership or superadmin access
-    const userEmail = user.email?.toLowerCase().trim()
-    const isSuperadminUser = isSuperadmin(userEmail)
+    // Step 5: Verify tenant access
+    const access = await assertTenantAccess(supabase, user, orderRef.tenant_id, {
+      minRole: 'tenant_admin',
+    })
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
+    }
 
-    if (!isSuperadminUser && order.tenants.owner_id !== user.id) {
-      return NextResponse.json(
-        { error: `Forbidden. You do not own this order. User: ${userEmail}` },
-        { status: 403 },
-      )
+    // Re-fetch full order for status transition validation
+    const { data: order } = await supabase.from('orders').select('*').eq('id', orderId).single()
+
+    if (!order) {
+      return NextResponse.json({ error: 'Order not found.' }, { status: 404 })
     }
 
     // Step 6: Validate status transition

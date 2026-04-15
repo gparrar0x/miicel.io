@@ -8,6 +8,8 @@
 
 import { AppError } from '@skywalking/core/errors'
 import { NextResponse } from 'next/server'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
+import type { AssertTenantAccessOptions } from '@/lib/auth/tenant-access'
 import { editPostSchema } from '@/lib/schemas/social'
 import { createClientFromRequest } from '@/lib/supabase/server'
 import { SocialService } from '@/services/social.service'
@@ -16,14 +18,11 @@ import { InstagramService } from '@/services/instagram.service'
 
 type Params = { params: Promise<{ id: string }> }
 
-async function resolveContext(request: Request, params: Params) {
+async function resolveContext(request: Request, params: Params, opts?: AssertTenantAccessOptions) {
   const supabase = createClientFromRequest(request)
   const {
     data: { user },
-    error: authError,
   } = await supabase.auth.getUser()
-
-  if (authError || !user) return { error: 'Unauthorized', status: 401 as const }
 
   const { searchParams } = new URL(request.url)
   const tenantId = Number(searchParams.get('tenant_id'))
@@ -31,15 +30,9 @@ async function resolveContext(request: Request, params: Params) {
     return { error: 'tenant_id query param required', status: 400 as const }
   }
 
-  // Verify tenant ownership
-  const { data: tenant, error: tenantError } = await supabase
-    .from('tenants')
-    .select('id, owner_id')
-    .eq('id', tenantId)
-    .maybeSingle()
-
-  if (tenantError || !tenant) return { error: 'Tenant not found', status: 404 as const }
-  if (tenant.owner_id !== user.id) return { error: 'Forbidden', status: 403 as const }
+  // Verify tenant access
+  const access = await assertTenantAccess(supabase, user, tenantId, opts)
+  if (!access.ok) return { error: access.error, status: access.status }
 
   const { id } = await params.params
   const service = new SocialService(new SocialRepo(supabase), new InstagramService())
@@ -49,7 +42,7 @@ async function resolveContext(request: Request, params: Params) {
 
 export async function GET(request: Request, params: Params) {
   try {
-    const ctx = await resolveContext(request, params)
+    const ctx = await resolveContext(request, params, { minRole: 'staff' })
     if ('error' in ctx) {
       return NextResponse.json({ error: ctx.error }, { status: ctx.status })
     }
@@ -67,7 +60,7 @@ export async function GET(request: Request, params: Params) {
 
 export async function DELETE(request: Request, params: Params) {
   try {
-    const ctx = await resolveContext(request, params)
+    const ctx = await resolveContext(request, params, { minRole: 'tenant_admin' })
     if ('error' in ctx) {
       return NextResponse.json({ error: ctx.error }, { status: ctx.status })
     }
@@ -85,7 +78,7 @@ export async function DELETE(request: Request, params: Params) {
 
 export async function PATCH(request: Request, params: Params) {
   try {
-    const ctx = await resolveContext(request, params)
+    const ctx = await resolveContext(request, params, { minRole: 'tenant_admin' })
     if ('error' in ctx) {
       return NextResponse.json({ error: ctx.error }, { status: ctx.status })
     }

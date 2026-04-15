@@ -6,7 +6,7 @@
 import { AppError } from '@skywalking/core/errors'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
 import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 
 const updateSchema = z.object({
@@ -17,20 +17,26 @@ const updateSchema = z.object({
   active: z.boolean().optional(),
 })
 
-async function getGroupWithAuth(groupId: string, userId: string, userEmail?: string) {
+async function getGroupWithAuth(
+  groupId: string,
+  supabase: ReturnType<typeof createClientFromRequest>,
+  user: import('@supabase/supabase-js').User,
+) {
   const serviceClient = createServiceRoleClient()
   const { data: group } = await serviceClient
     .from('modifier_groups')
-    .select('id, tenant_id, tenants!inner(owner_id)')
+    .select('id, tenant_id')
     .eq('id', groupId)
     .maybeSingle()
 
   if (!group) return null
 
-  const tenant = (group as any).tenants
-  if (!isSuperadmin(userEmail) && tenant.owner_id !== userId) return null
+  const access = await assertTenantAccess(supabase, user, group.tenant_id, {
+    minRole: 'tenant_admin',
+  })
+  if (!access.ok) return { group: null, serviceClient, accessError: access }
 
-  return { group, serviceClient }
+  return { group, serviceClient, accessError: null }
 }
 
 export async function PATCH(
@@ -48,8 +54,17 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const result = await getGroupWithAuth(groupId, user.id, user.email ?? undefined)
+    const result = await getGroupWithAuth(groupId, supabase, user)
     if (!result) {
+      return NextResponse.json({ error: 'Not found or forbidden' }, { status: 404 })
+    }
+    if (result.accessError) {
+      return NextResponse.json(
+        { error: result.accessError.error },
+        { status: result.accessError.status },
+      )
+    }
+    if (!result.group) {
       return NextResponse.json({ error: 'Not found or forbidden' }, { status: 404 })
     }
 
@@ -96,8 +111,17 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const result = await getGroupWithAuth(groupId, user.id, user.email ?? undefined)
+    const result = await getGroupWithAuth(groupId, supabase, user)
     if (!result) {
+      return NextResponse.json({ error: 'Not found or forbidden' }, { status: 404 })
+    }
+    if (result.accessError) {
+      return NextResponse.json(
+        { error: result.accessError.error },
+        { status: result.accessError.status },
+      )
+    }
+    if (!result.group) {
       return NextResponse.json({ error: 'Not found or forbidden' }, { status: 404 })
     }
 

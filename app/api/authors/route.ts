@@ -4,7 +4,7 @@
  */
 
 import { NextResponse } from 'next/server'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
 import { authorCreateSchema } from '@/lib/schemas/author-landing'
 import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 
@@ -25,11 +25,11 @@ export async function GET(request: Request) {
     const supabase = createClientFromRequest(request)
     const {
       data: { user },
-      error: authError,
     } = await supabase.auth.getUser()
 
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
+    const access = await assertTenantAccess(supabase, user, tenantId, { minRole: 'staff' })
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
     const adminClient = createServiceRoleClient()
@@ -99,19 +99,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
     }
 
-    const { data: tenant, error: tenantError } = await supabase
-      .from('tenants')
-      .select('id, owner_id')
-      .eq('id', parsed.data.tenant_id)
-      .maybeSingle()
-
-    if (tenantError || !tenant) {
-      return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
-    }
-
-    const isSuperadminUser = isSuperadmin(user.email)
-    if (!isSuperadminUser && tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
+    const postAccess = await assertTenantAccess(supabase, user, parsed.data.tenant_id, {
+      minRole: 'tenant_admin',
+    })
+    if (!postAccess.ok) {
+      return NextResponse.json({ error: postAccess.error }, { status: postAccess.status })
     }
 
     const adminClient = createServiceRoleClient()
