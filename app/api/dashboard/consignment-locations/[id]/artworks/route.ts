@@ -9,7 +9,7 @@
  */
 
 import { NextResponse } from 'next/server'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
 import { createAssignmentSchema } from '@/lib/schemas/consignment'
 import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 
@@ -66,24 +66,15 @@ export async function GET(request: Request, { params }: RouteParams) {
 
     const tenantId = parseInt(tenantIdStr, 10)
 
-    // Verify tenant ownership
-    const { data: tenant, error: tenantError } = await supabase
-      .from('tenants')
-      .select('id, owner_id')
-      .eq('id', tenantId)
-      .maybeSingle()
-
-    if (tenantError || !tenant) {
-      return NextResponse.json({ error: 'Tenant not found' }, { status: 404 })
-    }
-
-    const isSuperAdmin = isSuperadmin(user.email)
-    if (!isSuperAdmin && tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden. Not tenant owner.' }, { status: 403 })
+    // Verify tenant access
+    const getAccess = await assertTenantAccess(supabase, user, tenantId, { minRole: 'staff' })
+    if (!getAccess.ok) {
+      return NextResponse.json({ error: getAccess.error }, { status: getAccess.status })
     }
 
     // Use service role client for superadmin to bypass RLS
-    const dbClient = isSuperAdmin ? createServiceRoleClient() : supabase
+    const isSuperAdminGet = getAccess.role === 'superadmin'
+    const dbClient = isSuperAdminGet ? createServiceRoleClient() : supabase
 
     // Fetch assignments with product details
     const { data: assignments, error } = await (dbClient as any)
@@ -178,24 +169,17 @@ export async function POST(request: Request, { params }: RouteParams) {
 
     const { work_id, status, notes } = validation.data
 
-    // Verify tenant ownership
-    const { data: tenant, error: tenantError } = await supabase
-      .from('tenants')
-      .select('id, owner_id')
-      .eq('id', tenantId)
-      .maybeSingle()
-
-    if (tenantError || !tenant) {
-      return NextResponse.json({ error: 'Tenant not found' }, { status: 404 })
-    }
-
-    const isSuperAdmin = isSuperadmin(user.email)
-    if (!isSuperAdmin && tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden. Not tenant owner.' }, { status: 403 })
+    // Verify tenant access
+    const postAccess = await assertTenantAccess(supabase, user, tenantId, {
+      minRole: 'tenant_admin',
+    })
+    if (!postAccess.ok) {
+      return NextResponse.json({ error: postAccess.error }, { status: postAccess.status })
     }
 
     // Use service role client for superadmin to bypass RLS
-    const dbClient = isSuperAdmin ? createServiceRoleClient() : supabase
+    const isSuperAdminPost = postAccess.role === 'superadmin'
+    const dbClient = isSuperAdminPost ? createServiceRoleClient() : supabase
 
     // Verify location exists and belongs to tenant
     const { data: location, error: locationError } = await (dbClient as any)

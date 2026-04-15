@@ -5,6 +5,7 @@
 
 import { AppError } from '@skywalking/core/errors'
 import { NextResponse } from 'next/server'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
 import { insightsSummaryQuerySchema } from '@/lib/schemas/social'
 import { createClientFromRequest } from '@/lib/supabase/server'
 import { SocialService } from '@/services/social.service'
@@ -33,19 +34,10 @@ export async function GET(request: Request) {
 
     const { tenant_id, period_days } = parsed.data
 
-    // Verify tenant ownership
-    const { data: tenant, error: tenantError } = await supabase
-      .from('tenants')
-      .select('id, owner_id')
-      .eq('id', tenant_id)
-      .maybeSingle()
-
-    if (tenantError || !tenant) {
-      return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
-    }
-
-    if (tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
+    // Verify tenant access
+    const access = await assertTenantAccess(supabase, user, tenant_id, { minRole: 'staff' })
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
     const service = new SocialService(new SocialRepo(supabase), new InstagramService())

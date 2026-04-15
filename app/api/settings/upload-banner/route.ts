@@ -19,7 +19,7 @@
  */
 
 import { NextResponse } from 'next/server'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
 import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
@@ -58,21 +58,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
-    // Fetch tenant for ownership check
+    // Verify tenant access
+    const access = await assertTenantAccess(supabase, user, parseInt(tenantId, 10), {
+      minRole: 'tenant_admin',
+    })
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
+    }
+
+    const isSuperAdmin = access.role === 'superadmin'
+
+    // Fetch full tenant data for slug + config
     const { data: tenant, error: tenantError } = await supabase
       .from('tenants')
-      .select('id, slug, owner_id, config')
+      .select('id, slug, config')
       .eq('id', parseInt(tenantId, 10))
       .maybeSingle()
 
     if (tenantError || !tenant) {
       return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
-    }
-
-    // Verify ownership (allow superadmin)
-    const isSuperAdmin = isSuperadmin(user.email)
-    if (!isSuperAdmin && tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
     }
 
     // Parse form data

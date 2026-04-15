@@ -5,7 +5,7 @@
 
 import { AppError } from '@skywalking/core/errors'
 import { NextResponse } from 'next/server'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
 import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 import { ContentGenerationService } from '@/services/content-generation.service'
 import { ContentGenerationRepo } from '@/services/repositories/content-generation.repo'
@@ -35,17 +35,12 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
     }
 
-    const { data: tenant } = await supabase
-      .from('tenants')
-      .select('owner_id')
-      .eq('id', tenantId)
-      .maybeSingle()
-
-    const isSA = isSuperadmin(user.email)
-    if (!tenant || (!isSA && tenant.owner_id !== user.id)) {
-      return NextResponse.json({ error: 'Forbidden.' }, { status: 403 })
+    const access = await assertTenantAccess(supabase, user, tenantId, { minRole: 'staff' })
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
+    const isSA = access.role === 'superadmin'
     const readClient = isSA ? createServiceRoleClient() : supabase
     const service = new ContentGenerationService(new ContentGenerationRepo(readClient))
     const { usage, limits, plan } = await service.getUsage(tenantId)

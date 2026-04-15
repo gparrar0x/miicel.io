@@ -5,7 +5,7 @@
 
 import { AppError } from '@skywalking/core/errors'
 import { NextResponse } from 'next/server'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
 import { generateRequestSchema } from '@/lib/schemas/content-generation'
 import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 import { ContentGenerationService } from '@/services/content-generation.service'
@@ -31,19 +31,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
     }
 
-    // Verify tenant ownership
-    const { data: tenant, error: tenantError } = await supabase
-      .from('tenants')
-      .select('id, owner_id')
-      .eq('id', parsed.data.tenant_id)
-      .maybeSingle()
-
-    if (tenantError || !tenant) {
-      return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
-    }
-
-    if (!isSuperadmin(user.email) && tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
+    // Verify tenant access
+    const access = await assertTenantAccess(supabase, user, parsed.data.tenant_id, {
+      minRole: 'tenant_admin',
+    })
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
     // RLS only allows service_role to INSERT — use service client for writes

@@ -12,7 +12,7 @@
  */
 
 import { NextResponse } from 'next/server'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
 import { decryptToken, encryptToken } from '@/lib/encryption'
 import { whatsappNumberSchema } from '@/lib/schemas/tenant'
 import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
@@ -48,17 +48,19 @@ export async function GET(request: Request) {
 
     const supabase = createClientFromRequest(request)
 
-    // Verify authentication
+    // Verify authentication and authorization
     const {
       data: { user },
-      error: authError,
     } = await supabase.auth.getUser()
 
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
+    const access = await assertTenantAccess(supabase, user, parseInt(tenantId, 10), {
+      minRole: 'tenant_admin',
+    })
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
-    // Fetch tenant with ownership check
+    // Fetch full tenant data for response
     const { data: tenant, error: tenantError } = await (supabase as any)
       .from('tenants')
       .select('*')
@@ -74,11 +76,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
     }
 
-    // Verify ownership (allow superadmin)
-    const isSuperAdmin = isSuperadmin(user.email)
-    if (!isSuperAdmin && tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
-    }
+    const isSuperAdmin = access.role === 'superadmin'
 
     // Decrypt MP token if exists
     let mpAccessToken = null
@@ -162,32 +160,19 @@ export async function PATCH(request: Request) {
 
     const supabase = createClientFromRequest(request)
 
-    // Verify authentication
+    // Verify authentication and authorization (PATCH requires owner)
     const {
       data: { user },
-      error: authError,
     } = await supabase.auth.getUser()
 
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
+    const access = await assertTenantAccess(supabase, user, parseInt(tenantId, 10), {
+      minRole: 'owner',
+    })
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
-    // Fetch tenant for ownership check
-    const { data: tenant, error: tenantError } = await supabase
-      .from('tenants')
-      .select('id, owner_id')
-      .eq('id', parseInt(tenantId, 10))
-      .maybeSingle()
-
-    if (tenantError || !tenant) {
-      return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
-    }
-
-    // Verify ownership (allow superadmin)
-    const isSuperAdmin = isSuperadmin(user.email)
-    if (!isSuperAdmin && tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
-    }
+    const isSuperAdmin = access.role === 'superadmin'
 
     // Parse request body
     const body = await request.json()

@@ -6,7 +6,7 @@
 
 import { AppError } from '@skywalking/core/errors'
 import { NextResponse } from 'next/server'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
 import { computeEffectivePrice, isDiscountActive } from '@/lib/pricing'
 import { productCreateSchema } from '@/lib/schemas/order'
 import { createClientFromRequest } from '@/lib/supabase/server'
@@ -76,19 +76,11 @@ export async function POST(request: Request) {
     }
 
     // POST create uses auth client (RLS enforced); serviceRole not needed
-    const { data: tenant, error: tenantError } = await supabase
-      .from('tenants')
-      .select('id, owner_id')
-      .eq('id', parsed.data.tenant_id)
-      .maybeSingle()
-
-    if (tenantError || !tenant) {
-      return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
-    }
-
-    const isSuperadminUser = isSuperadmin(user.email)
-    if (!isSuperadminUser && tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
+    const access = await assertTenantAccess(supabase, user, parsed.data.tenant_id, {
+      minRole: 'tenant_admin',
+    })
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
     const service = new ProductService(new ProductRepo(supabase), new TenantRepo(supabase))

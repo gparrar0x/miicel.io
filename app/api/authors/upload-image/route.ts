@@ -12,7 +12,7 @@
  */
 
 import { NextResponse } from 'next/server'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
 import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
@@ -61,20 +61,10 @@ export async function POST(request: Request) {
       )
     }
 
-    // Verify tenant ownership
-    const { data: tenant, error: tenantError } = await supabase
-      .from('tenants')
-      .select('id, owner_id')
-      .eq('id', tenantId)
-      .maybeSingle()
-
-    if (tenantError || !tenant) {
-      return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
-    }
-
-    const isSuperadminUser = isSuperadmin(user.email)
-    if (!isSuperadminUser && tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
+    // Verify tenant access
+    const access = await assertTenantAccess(supabase, user, tenantId, { minRole: 'tenant_admin' })
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
     const ext = file.name.split('.').pop() ?? 'jpg'

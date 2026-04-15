@@ -23,7 +23,7 @@ import {
   getTopCategories,
   getTopProducts,
 } from '@/lib/analytics/queries'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
 import { createClientFromRequest } from '@/lib/supabase/server'
 
 /**
@@ -76,36 +76,16 @@ export async function GET(request: Request) {
 
     const supabase = createClientFromRequest(request)
 
-    // Step 2: Verify user is authenticated
+    // Step 2: Verify user is authenticated and authorized
     const {
       data: { user },
-      error: authError,
     } = await supabase.auth.getUser()
 
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
+    const access = await assertTenantAccess(supabase, user, tenantIdParam, { minRole: 'staff' })
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
-
-    // Step 3: Resolve tenant - accept both numeric ID and slug
-    const numericId = parseInt(tenantIdParam, 10)
-    const { data: tenant, error: tenantError } = await supabase
-      .from('tenants')
-      .select('id, owner_id')
-      .eq(
-        Number.isNaN(numericId) ? 'slug' : 'id',
-        Number.isNaN(numericId) ? tenantIdParam : numericId,
-      )
-      .maybeSingle()
-
-    if (tenantError || !tenant) {
-      return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
-    }
-
-    const isSuperadminUser = isSuperadmin(user.email)
-
-    if (!isSuperadminUser && tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
-    }
+    const tenant = { id: access.tenantId }
 
     // Step 4: Fetch analytics data in parallel
     // Adjust dateTo to include entire end date (add +1 day for < comparison)

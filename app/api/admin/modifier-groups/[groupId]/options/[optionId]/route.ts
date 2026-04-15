@@ -6,7 +6,7 @@
 import { AppError } from '@skywalking/core/errors'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
 import { createClientFromRequest, createServiceRoleClient } from '@/lib/supabase/server'
 
 const updateSchema = z.object({
@@ -21,23 +21,25 @@ type RouteParams = { params: Promise<{ groupId: string; optionId: string }> }
 async function getOptionWithAuth(
   groupId: string,
   optionId: string,
-  userId: string,
-  userEmail?: string,
+  supabase: ReturnType<typeof createClientFromRequest>,
+  user: import('@supabase/supabase-js').User,
 ) {
   const serviceClient = createServiceRoleClient()
   const { data: option } = await serviceClient
     .from('modifier_options')
-    .select('id, tenant_id, modifier_group_id, modifier_groups!inner(tenants!inner(owner_id))')
+    .select('id, tenant_id, modifier_group_id')
     .eq('id', optionId)
     .eq('modifier_group_id', groupId)
     .maybeSingle()
 
   if (!option) return null
 
-  const tenant = (option as any).modifier_groups.tenants
-  if (!isSuperadmin(userEmail) && tenant.owner_id !== userId) return null
+  const access = await assertTenantAccess(supabase, user, option.tenant_id, {
+    minRole: 'tenant_admin',
+  })
+  if (!access.ok) return { option: null, serviceClient, accessError: access }
 
-  return { option, serviceClient }
+  return { option, serviceClient, accessError: null }
 }
 
 export async function PATCH(request: Request, { params }: RouteParams) {
@@ -52,8 +54,17 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const result = await getOptionWithAuth(groupId, optionId, user.id, user.email ?? undefined)
+    const result = await getOptionWithAuth(groupId, optionId, supabase, user)
     if (!result) {
+      return NextResponse.json({ error: 'Not found or forbidden' }, { status: 404 })
+    }
+    if (result.accessError) {
+      return NextResponse.json(
+        { error: result.accessError.error },
+        { status: result.accessError.status },
+      )
+    }
+    if (!result.option) {
       return NextResponse.json({ error: 'Not found or forbidden' }, { status: 404 })
     }
 
@@ -97,8 +108,17 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const result = await getOptionWithAuth(groupId, optionId, user.id, user.email ?? undefined)
+    const result = await getOptionWithAuth(groupId, optionId, supabase, user)
     if (!result) {
+      return NextResponse.json({ error: 'Not found or forbidden' }, { status: 404 })
+    }
+    if (result.accessError) {
+      return NextResponse.json(
+        { error: result.accessError.error },
+        { status: result.accessError.status },
+      )
+    }
+    if (!result.option) {
       return NextResponse.json({ error: 'Not found or forbidden' }, { status: 404 })
     }
 

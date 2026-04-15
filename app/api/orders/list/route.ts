@@ -14,7 +14,7 @@
  */
 
 import { NextResponse } from 'next/server'
-import { isSuperadmin } from '@/lib/auth/constants'
+import { assertTenantAccess } from '@/lib/auth/tenant-access'
 import { orderListQuerySchema } from '@/lib/schemas/order'
 import { createClientFromRequest } from '@/lib/supabase/server'
 
@@ -65,31 +65,14 @@ export async function GET(request: Request) {
 
     const supabase = createClientFromRequest(request)
 
-    // Step 2: Verify user is authenticated
+    // Step 2: Verify user is authenticated and authorized
     const {
       data: { user },
-      error: authError,
     } = await supabase.auth.getUser()
 
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 })
-    }
-
-    // Step 3: Verify user owns the tenant
-    const { data: tenant, error: tenantError } = await supabase
-      .from('tenants')
-      .select('id, owner_id')
-      .eq('id', tenant_id)
-      .maybeSingle()
-
-    if (tenantError || !tenant) {
-      return NextResponse.json({ error: 'Tenant not found.' }, { status: 404 })
-    }
-
-    const isSuperadminUser = isSuperadmin(user.email)
-
-    if (!isSuperadminUser && tenant.owner_id !== user.id) {
-      return NextResponse.json({ error: 'Forbidden. You do not own this tenant.' }, { status: 403 })
+    const access = await assertTenantAccess(supabase, user, tenant_id, { minRole: 'staff' })
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
     // Step 4: Build query with JOIN to customers
