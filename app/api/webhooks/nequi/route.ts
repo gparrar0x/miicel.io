@@ -149,7 +149,6 @@ export async function POST(request: Request) {
       updated_at: new Date().toISOString(),
     })
     .eq('id', orderId)
-    .eq('nequi_transaction_id', transactionId)
     .eq('tenant_id', tenant.id)
 
   if (updateError) {
