@@ -91,7 +91,7 @@ export async function GET(request: Request) {
       }
     }
 
-    // Nequi — expose configured flag + plain phone + commerce_code (never decrypt sensitive fields)
+    // Never decrypt sensitive fields (client_id, api_key, app_secret) — expose only non-secret fields
     const nequiConfig = tenant.secure_config?.nequi as
       | {
           client_id: string
@@ -258,10 +258,10 @@ export async function PATCH(request: Request) {
         )
       }
 
-      // commerce_code: required for per-tenant webhook verification
-      if (nc.commerce_code !== undefined && nc.commerce_code.trim() === '') {
+      // commerce_code is required — used for per-tenant webhook lookup
+      if (!nc.commerce_code || nc.commerce_code.trim() === '') {
         return NextResponse.json(
-          { error: 'Nequi credentials: commerce_code no puede estar vacío' },
+          { error: 'Nequi credentials: commerce_code es requerido' },
           { status: 400 },
         )
       }

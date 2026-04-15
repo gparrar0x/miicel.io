@@ -131,7 +131,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     apiKey,
     appSecret,
     phoneNumber: nequiCreds.phone_number,
-    commerceCode: nequiCreds.commerce_code ?? '',
   })
 
   let nequiStatus: Awaited<ReturnType<NequiClient['getPaymentStatus']>>

@@ -211,7 +211,6 @@ export class CheckoutService {
         apiKey,
         appSecret,
         phoneNumber: nequiCreds.phone_number,
-        commerceCode: nequiCreds.commerce_code ?? '',
       })
 
       try {

@@ -2,72 +2,16 @@
  * Webhook signature verification — unit tests (SKY-279: per-tenant model).
  *
  * Tests cover:
- *  - Core HMAC-SHA384 / Digest algorithm correctness (unchanged)
- *  - Per-tenant scenarios: correct tenant, unknown commerceCode, tampered body,
- *    cross-tenant secret mismatch
- *
- * The HMAC-SHA384 verification logic lives in app/api/webhooks/nequi/route.ts.
- * This file exercises the same algorithm via local helpers to keep tests pure
- * (no HTTP/DB required).
+ *  - Core HMAC-SHA384 / Digest algorithm correctness
+ *  - Per-tenant scenarios: correct tenant, tampered body, cross-tenant secret mismatch
  */
 
 import * as crypto from 'node:crypto'
 import { describe, expect, it } from 'vitest'
+import { verifyNequiWebhook } from '../webhook-signature'
 
 // ---------------------------------------------------------------------------
-// Local mirror of the verification logic from app/api/webhooks/nequi/route.ts
-// ---------------------------------------------------------------------------
-
-function computeDigestHeader(rawBody: string): string {
-  return `SHA-256=${crypto.createHash('sha256').update(rawBody, 'utf8').digest('base64')}`
-}
-
-function computeSignature(stringToSign: string, secret: string): string {
-  return crypto.createHmac('sha384', secret).update(stringToSign, 'utf8').digest('base64url')
-}
-
-function buildStringToSign(contentType: string, digestHeader: string): string {
-  return `content-type: ${contentType}\ndigest: ${digestHeader}`
-}
-
-interface VerifyParams {
-  rawBody: string
-  contentType: string
-  digestHeader: string
-  signature: string
-  secret: string
-}
-
-interface VerifyResult {
-  digestOk: boolean
-  signatureOk: boolean
-}
-
-function verifyWebhookSignature(params: VerifyParams): VerifyResult {
-  // 1. Recompute digest from body, constant-time compare.
-  const expectedDigest = computeDigestHeader(params.rawBody)
-  let digestOk = false
-  try {
-    digestOk = crypto.timingSafeEqual(Buffer.from(params.digestHeader), Buffer.from(expectedDigest))
-  } catch {
-    digestOk = false
-  }
-
-  // 2. Recompute HMAC-SHA384, constant-time compare.
-  const stringToSign = buildStringToSign(params.contentType, params.digestHeader)
-  const expectedSig = computeSignature(stringToSign, params.secret)
-  let signatureOk = false
-  try {
-    signatureOk = crypto.timingSafeEqual(Buffer.from(params.signature), Buffer.from(expectedSig))
-  } catch {
-    signatureOk = false
-  }
-
-  return { digestOk, signatureOk }
-}
-
-// ---------------------------------------------------------------------------
-// Helpers for per-tenant test scenarios
+// Test fixtures
 // ---------------------------------------------------------------------------
 
 interface TenantFixture {
@@ -77,6 +21,16 @@ interface TenantFixture {
 
 const TENANT_A: TenantFixture = { commerceCode: '11111111', appSecret: 'secret-tenant-a' }
 const TENANT_B: TenantFixture = { commerceCode: '22222222', appSecret: 'secret-tenant-b' }
+
+const SECRET = 'super-secret-webhook-key'
+const VALID_BODY = JSON.stringify({
+  commerceCode: TENANT_A.commerceCode,
+  messageId: '42',
+  transactionId: 'tx-abc-123',
+  paymentStatus: 'SUCCESS',
+  value: '50000',
+  phoneNumber: '3001234567',
+})
 
 function buildPayload(commerceCode: string, messageId = '42'): string {
   return JSON.stringify({
@@ -91,107 +45,120 @@ function buildPayload(commerceCode: string, messageId = '42'): string {
   })
 }
 
-function buildValidParams(
-  rawBody: string,
-  secret: string,
-  overrides: Partial<VerifyParams> = {},
-): VerifyParams {
+function computeDigestHeader(rawBody: string): string {
+  return `SHA-256=${crypto.createHash('sha256').update(rawBody, 'utf8').digest('base64')}`
+}
+
+function computeSignature(stringToSign: string, secret: string): string {
+  return crypto.createHmac('sha384', secret).update(stringToSign, 'utf8').digest('base64url')
+}
+
+function buildSignatureHeader(sig: string, keyId = 'nequi-key'): string {
+  return `keyId="${keyId}", algorithm="hmac-sha384", signature="${sig}"`
+}
+
+interface ValidParams {
+  rawBody: string
+  appSecret: string
+  contentType?: string
+}
+
+function buildValidCallParams(params: ValidParams): Parameters<typeof verifyNequiWebhook>[0] {
+  const { rawBody, appSecret, contentType = 'application/json' } = params
   const digestHeader = computeDigestHeader(rawBody)
-  const contentType = 'application/json'
-  const stringToSign = buildStringToSign(contentType, digestHeader)
-  const signature = computeSignature(stringToSign, secret)
+  const stringToSign = `content-type: ${contentType}\ndigest: ${digestHeader}`
+  const sig = computeSignature(stringToSign, appSecret)
   return {
     rawBody,
-    contentType,
     digestHeader,
-    signature,
-    secret,
-    ...overrides,
+    signatureHeader: buildSignatureHeader(sig),
+    appSecret,
+    contentType,
   }
 }
 
 // ---------------------------------------------------------------------------
-// Legacy algorithm tests (unchanged)
+// Core algorithm tests
 // ---------------------------------------------------------------------------
-
-const SECRET = 'super-secret-webhook-key'
-const VALID_BODY = JSON.stringify({
-  messageId: '42',
-  transactionId: 'tx-abc-123',
-  paymentStatus: 'SUCCESS',
-  value: '50000',
-  phoneNumber: '3001234567',
-})
-
-function buildLegacyParams(overrides: Partial<VerifyParams> = {}): VerifyParams {
-  return buildValidParams(VALID_BODY, SECRET, overrides)
-}
 
 describe('webhook signature verification', () => {
   it('accepts a valid digest + signature with correct secret', () => {
-    const result = verifyWebhookSignature(buildLegacyParams())
-    expect(result.digestOk).toBe(true)
-    expect(result.signatureOk).toBe(true)
+    const result = verifyNequiWebhook(
+      buildValidCallParams({ rawBody: VALID_BODY, appSecret: SECRET }),
+    )
+    expect(result.ok).toBe(true)
   })
 
   it('rejects when secret is wrong', () => {
-    const result = verifyWebhookSignature(buildLegacyParams({ secret: 'wrong-secret' }))
-    expect(result.digestOk).toBe(true)
-    expect(result.signatureOk).toBe(false)
+    const params = buildValidCallParams({ rawBody: VALID_BODY, appSecret: SECRET })
+    const result = verifyNequiWebhook({ ...params, appSecret: 'wrong-secret' })
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.reason).toBe('bad-signature')
   })
 
-  it('rejects when body is tampered (digest mismatch cascades)', () => {
+  it('rejects when body is tampered (digest mismatch)', () => {
+    const params = buildValidCallParams({ rawBody: VALID_BODY, appSecret: SECRET })
     const tampered = VALID_BODY.replace('SUCCESS', 'DENIED')
-    const params = buildLegacyParams()
-    const result = verifyWebhookSignature({ ...params, rawBody: tampered })
-    expect(result.digestOk).toBe(false)
+    const result = verifyNequiWebhook({ ...params, rawBody: tampered })
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.reason).toBe('bad-digest')
   })
 
   it('rejects when signature has been tampered (single byte change)', () => {
-    const params = buildLegacyParams()
-    const tamperedSig =
-      params.signature.slice(0, -1) + (params.signature.slice(-1) === 'A' ? 'B' : 'A')
-    const result = verifyWebhookSignature({ ...params, signature: tamperedSig })
-    expect(result.signatureOk).toBe(false)
+    const params = buildValidCallParams({ rawBody: VALID_BODY, appSecret: SECRET })
+    // Mangle last char of signature inside the header
+    const tamperedHeader = params.signatureHeader.replace(/"$/, (s) => (s === '"' ? 'X"' : '"'))
+    const result = verifyNequiWebhook({ ...params, signatureHeader: tamperedHeader + 'X' })
+    expect(result.ok).toBe(false)
   })
 
-  it('rejects when signature length differs (timingSafeEqual would throw)', () => {
-    const params = buildLegacyParams()
-    const result = verifyWebhookSignature({ ...params, signature: 'short' })
-    expect(result.signatureOk).toBe(false)
+  it('rejects when signature field is missing from header', () => {
+    const params = buildValidCallParams({ rawBody: VALID_BODY, appSecret: SECRET })
+    const result = verifyNequiWebhook({
+      ...params,
+      signatureHeader: 'keyId="key", algorithm="hmac-sha384"',
+    })
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.reason).toBe('malformed-signature')
   })
 
   it('rejects when content-type is altered (string-to-sign changes)', () => {
-    const params = buildLegacyParams()
-    const result = verifyWebhookSignature({ ...params, contentType: 'text/plain' })
-    expect(result.digestOk).toBe(true)
-    expect(result.signatureOk).toBe(false)
+    const params = buildValidCallParams({ rawBody: VALID_BODY, appSecret: SECRET })
+    const result = verifyNequiWebhook({ ...params, contentType: 'text/plain' })
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.reason).toBe('bad-signature')
   })
 
   it('rejects when digest header is forged with wrong base64', () => {
-    const params = buildLegacyParams()
-    const result = verifyWebhookSignature({
+    const params = buildValidCallParams({ rawBody: VALID_BODY, appSecret: SECRET })
+    const result = verifyNequiWebhook({
       ...params,
       digestHeader: 'SHA-256=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
     })
-    expect(result.digestOk).toBe(false)
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.reason).toBe('bad-digest')
   })
 
   it('uses base64url (no +/= chars) — Nequi spec compliance', () => {
-    const params = buildLegacyParams()
-    expect(params.signature).not.toContain('+')
-    expect(params.signature).not.toContain('/')
-    expect(params.signature).not.toContain('=')
+    const params = buildValidCallParams({ rawBody: VALID_BODY, appSecret: SECRET })
+    // Extract sig from signatureHeader
+    const match = params.signatureHeader.match(/signature="([^"]+)"/)
+    const sig = match?.[1] ?? ''
+    expect(sig).not.toContain('+')
+    expect(sig).not.toContain('/')
+    expect(sig).not.toContain('=')
   })
 
-  it('uses HMAC-SHA384 (96 hex chars / 64 base64url chars)', () => {
-    const params = buildLegacyParams()
-    expect(params.signature).toHaveLength(64)
+  it('uses HMAC-SHA384 (64 base64url chars)', () => {
+    const digestHeader = computeDigestHeader(VALID_BODY)
+    const stringToSign = `content-type: application/json\ndigest: ${digestHeader}`
+    const sig = computeSignature(stringToSign, SECRET)
+    expect(sig).toHaveLength(64)
   })
 
   it('digest header format: "SHA-256={base64(sha256(body))}"', () => {
-    const params = buildLegacyParams()
-    expect(params.digestHeader).toMatch(/^SHA-256=[A-Za-z0-9+/]+=*$/)
+    const digestHeader = computeDigestHeader(VALID_BODY)
+    expect(digestHeader).toMatch(/^SHA-256=[A-Za-z0-9+/]+=*$/)
   })
 })
 
@@ -200,83 +167,63 @@ describe('webhook signature verification', () => {
 // ---------------------------------------------------------------------------
 
 describe('per-tenant webhook signature verification', () => {
-  it('valid signature for tenant A → accept (200)', () => {
-    // Simulate: tenant A sends webhook signed with its own app_secret
+  it('valid signature for tenant A → accept', () => {
     const body = buildPayload(TENANT_A.commerceCode)
-    const result = verifyWebhookSignature(buildValidParams(body, TENANT_A.appSecret))
-    expect(result.digestOk).toBe(true)
-    expect(result.signatureOk).toBe(true)
+    const result = verifyNequiWebhook(
+      buildValidCallParams({ rawBody: body, appSecret: TENANT_A.appSecret }),
+    )
+    expect(result.ok).toBe(true)
   })
 
-  it('commerceCode not in DB → 404 (tenant lookup returns null)', () => {
-    // We model the lookup result; the route returns 404 when tenant is null.
-    // Here we just confirm that a body with an unknown commerceCode produces
-    // a valid signature that would pass crypto — the 404 is a route concern.
-    const unknownCode = '99999999'
-    const body = buildPayload(unknownCode)
-    // Sign with any secret — won't matter, lookup fails first
-    const result = verifyWebhookSignature(buildValidParams(body, 'any-secret'))
-    // Crypto is valid; the route would 404 before reaching crypto check
-    expect(result.digestOk).toBe(true)
-    expect(result.signatureOk).toBe(true)
-    // Confirm commerceCode is not tenant A or B
-    expect(unknownCode).not.toBe(TENANT_A.commerceCode)
-    expect(unknownCode).not.toBe(TENANT_B.commerceCode)
-  })
-
-  it('tampered body with valid commerceCode → 401 (digest fails)', () => {
+  it('tampered body with valid commerceCode → bad-digest', () => {
     const body = buildPayload(TENANT_A.commerceCode)
-    const params = buildValidParams(body, TENANT_A.appSecret)
-    // Tamper body after signing
+    const params = buildValidCallParams({ rawBody: body, appSecret: TENANT_A.appSecret })
     const tamperedBody = body.replace('SUCCESS', 'DENIED')
-    const result = verifyWebhookSignature({ ...params, rawBody: tamperedBody })
-    expect(result.digestOk).toBe(false)
+    const result = verifyNequiWebhook({ ...params, rawBody: tamperedBody })
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.reason).toBe('bad-digest')
   })
 
-  it('body signed with tenant B secret but claiming tenant A commerceCode → 401', () => {
-    // The route decrypts tenant A's app_secret; the sig was made with tenant B's
+  it('body signed with tenant B secret but claiming tenant A commerceCode → bad-signature', () => {
     const body = buildPayload(TENANT_A.commerceCode)
-    // Sign with tenant B's secret — mismatch when verified against tenant A's secret
+    // Build headers with tenant B's secret, but verify with tenant A's
     const digestHeader = computeDigestHeader(body)
-    const contentType = 'application/json'
-    const stringToSign = buildStringToSign(contentType, digestHeader)
-    const signatureWithTenantB = computeSignature(stringToSign, TENANT_B.appSecret)
+    const stringToSign = `content-type: application/json\ndigest: ${digestHeader}`
+    const sigWithTenantB = computeSignature(stringToSign, TENANT_B.appSecret)
 
-    const result = verifyWebhookSignature({
+    const result = verifyNequiWebhook({
       rawBody: body,
-      contentType,
       digestHeader,
-      signature: signatureWithTenantB,
-      secret: TENANT_A.appSecret, // route uses tenant A's secret for verification
+      signatureHeader: buildSignatureHeader(sigWithTenantB),
+      appSecret: TENANT_A.appSecret,
     })
 
-    expect(result.digestOk).toBe(true)
-    expect(result.signatureOk).toBe(false)
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.reason).toBe('bad-signature')
   })
 
   it('tenant B webhook is independently valid with its own secret', () => {
     const body = buildPayload(TENANT_B.commerceCode)
-    const result = verifyWebhookSignature(buildValidParams(body, TENANT_B.appSecret))
-    expect(result.digestOk).toBe(true)
-    expect(result.signatureOk).toBe(true)
+    const result = verifyNequiWebhook(
+      buildValidCallParams({ rawBody: body, appSecret: TENANT_B.appSecret }),
+    )
+    expect(result.ok).toBe(true)
   })
 
   it('tenant A secret does not validate tenant B signature', () => {
     const body = buildPayload(TENANT_B.commerceCode)
-    // Sign as tenant B but verify as tenant A
     const digestHeader = computeDigestHeader(body)
-    const contentType = 'application/json'
-    const stringToSign = buildStringToSign(contentType, digestHeader)
+    const stringToSign = `content-type: application/json\ndigest: ${digestHeader}`
     const sig = computeSignature(stringToSign, TENANT_B.appSecret)
 
-    const result = verifyWebhookSignature({
+    const result = verifyNequiWebhook({
       rawBody: body,
-      contentType,
       digestHeader,
-      signature: sig,
-      secret: TENANT_A.appSecret,
+      signatureHeader: buildSignatureHeader(sig),
+      appSecret: TENANT_A.appSecret,
     })
 
-    expect(result.signatureOk).toBe(false)
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.reason).toBe('bad-signature')
   })
 })

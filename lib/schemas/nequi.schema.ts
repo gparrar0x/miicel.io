@@ -27,6 +27,19 @@ export const nequiPhoneSchema = z
 
 export type NequiCredentialsInput = z.infer<typeof nequiCredentialsSchema>
 
+export const nequiWebhookPayloadSchema = z.object({
+  commerceCode: z.string().min(1),
+  value: z.string().optional(),
+  phoneNumber: z.string().optional(),
+  messageId: z.string().optional(),
+  transactionId: z.string().optional(),
+  region: z.string().optional(),
+  receivedAt: z.string().optional(),
+  paymentStatus: z.enum(['SUCCESS', 'CANCELED', 'DENIED']).optional(),
+})
+
+export type NequiWebhookPayload = z.infer<typeof nequiWebhookPayloadSchema>
+
 /**
  * Format a stripped Colombian mobile number to display mask.
  * Example: "3001234567" → "300 123 4567"

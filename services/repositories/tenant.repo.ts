@@ -30,6 +30,17 @@ export interface TenantWithNequi {
   currency?: string
 }
 
+/** Minimal shape returned by findByNequiCommerceCode — only what the webhook needs. */
+export interface TenantWebhookRow {
+  id: number
+  secureConfig: {
+    nequi: {
+      app_secret: string
+      commerce_code: string
+    }
+  }
+}
+
 export interface ITenantRepo {
   findById(id: number): Promise<(TenantRow & { owner_id: string }) | null>
   findBySlug(slug: string): Promise<TenantRow | null>
@@ -38,7 +49,7 @@ export interface ITenantRepo {
   findByIdWithNequi(
     id: number,
   ): Promise<(TenantRow & TenantWithNequi & { owner_id: string }) | null>
-  findByNequiCommerceCode(code: string): Promise<(TenantRow & TenantWithNequi) | null>
+  findByNequiCommerceCode(code: string): Promise<TenantWebhookRow | null>
 }
 
 export class TenantRepo implements ITenantRepo {
@@ -103,25 +114,26 @@ export class TenantRepo implements ITenantRepo {
 
   /**
    * Fetch tenant by Nequi commerce code — for per-tenant webhook signature verification.
-   * Filters on JSONB: secure_config->nequi->>commerce_code = code.
    */
-  async findByNequiCommerceCode(code: string): Promise<(TenantRow & TenantWithNequi) | null> {
+  async findByNequiCommerceCode(code: string): Promise<TenantWebhookRow | null> {
     // biome-ignore lint/suspicious/noExplicitAny: Supabase generated types don't cover secure_config JSONB
     const { data, error } = await (this.supabase as any)
       .from('tenants')
-      .select('id, template, mp_access_token, secure_config, config')
+      .select('id, secure_config')
       .filter('secure_config->nequi->>commerce_code', 'eq', code)
       .maybeSingle()
 
     if (error) throw new Error(`Failed to fetch tenant by commerce code: ${error.message}`)
     if (!data) return null
 
+    const nequi = (data.secure_config as Record<string, unknown> | null)?.nequi as
+      | { app_secret: string; commerce_code: string }
+      | undefined
+    if (!nequi?.app_secret || !nequi?.commerce_code) return null
+
     return {
       id: data.id as number,
-      template: data.template as string | undefined,
-      mp_access_token: (data.mp_access_token as string | null) ?? null,
-      secure_config: (data.secure_config as TenantWithNequi['secure_config']) ?? null,
-      currency: (data.config as { currency?: string } | null)?.currency ?? undefined,
+      secureConfig: { nequi: { app_secret: nequi.app_secret, commerce_code: nequi.commerce_code } },
     }
   }
 
