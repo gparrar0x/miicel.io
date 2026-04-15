@@ -34,5 +34,11 @@ export default async function AnalyticsPage({ params }: PageProps) {
     notFound()
   }
 
-  return <AnalyticsDashboard tenantId={tenant.id.toString()} locale={locale} />
+  return (
+    <AnalyticsDashboard
+      tenantId={tenant.id.toString()}
+      locale={locale}
+      template={tenant.template}
+    />
+  )
 }

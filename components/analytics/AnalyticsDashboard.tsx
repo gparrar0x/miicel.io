@@ -46,9 +46,10 @@ interface DashboardMetrics {
 interface AnalyticsDashboardProps {
   tenantId: string
   locale: string
+  template?: string | null
 }
 
-export function AnalyticsDashboard({ tenantId, locale }: AnalyticsDashboardProps) {
+export function AnalyticsDashboard({ tenantId, locale, template }: AnalyticsDashboardProps) {
   const [dateRange, setDateRange] = useState<{ from: string; to: string }>({
     from: new Date().toISOString().split('T')[0],
     to: new Date().toISOString().split('T')[0],
@@ -127,7 +128,7 @@ export function AnalyticsDashboard({ tenantId, locale }: AnalyticsDashboardProps
         <DateRangePicker value={dateRange} onChange={handleDateChange} />
       </div>
 
-      <SummaryCards data={metrics.summary} loading={loading} />
+      <SummaryCards data={metrics.summary} loading={loading} template={template} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <TopProducts data={metrics.top_products} onExport={() => handleExport('products')} />

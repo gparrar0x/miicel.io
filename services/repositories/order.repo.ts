@@ -50,6 +50,7 @@ export interface IOrderRepo {
     orderId: number,
   ): Promise<{ id: number; status: string; tenants: { owner_id: string } } | null>
   updateStatus(orderId: number, status: string): Promise<unknown>
+  updateCheckoutId(orderId: number, checkoutId: string): Promise<void>
   list(params: {
     tenant_id: number
     status?: string
@@ -107,6 +108,15 @@ export class OrderRepo implements IOrderRepo {
 
     if (error) throw new Error(`Failed to update order status: ${error.message}`)
     return data
+  }
+
+  async updateCheckoutId(orderId: number, checkoutId: string): Promise<void> {
+    const { error } = await this.supabase
+      .from('orders')
+      .update({ checkout_id: checkoutId, updated_at: new Date().toISOString() })
+      .eq('id', orderId)
+
+    if (error) throw new Error(`Failed to update order checkout_id: ${error.message}`)
   }
 
   async list(params: {

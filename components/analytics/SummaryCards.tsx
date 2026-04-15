@@ -1,7 +1,6 @@
 'use client'
 
 import { DollarSign, Package, ShoppingCart, TrendingUp } from 'lucide-react'
-import { useTranslations } from 'next-intl'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
@@ -13,10 +12,15 @@ interface SummaryCardsProps {
     items_sold: number
   }
   loading?: boolean
+  template?: string | null
 }
 
-export function SummaryCards({ data, loading }: SummaryCardsProps) {
-  const t = useTranslations('Analytics')
+const ITEMS_SOLD_LABEL: Record<string, string> = {
+  gallery: 'Obras Vendidas',
+}
+const DEFAULT_ITEMS_SOLD_LABEL = 'Productos Vendidos'
+
+export function SummaryCards({ data, loading, template }: SummaryCardsProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-AR', {
       style: 'currency',
@@ -46,7 +50,7 @@ export function SummaryCards({ data, loading }: SummaryCardsProps) {
       testId: 'average-ticket',
     },
     {
-      title: t('itemsSold'),
+      title: (template && ITEMS_SOLD_LABEL[template]) || DEFAULT_ITEMS_SOLD_LABEL,
       value: data.items_sold.toString(),
       icon: Package,
       testId: 'items-sold',

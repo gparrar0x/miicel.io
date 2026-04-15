@@ -37,11 +37,12 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
     const slug = validationResult.data
     const supabase = createClientFromRequest(request)
 
-    // Query tenants table (template field)
+    // Query tenants table (template field + secure_config for payment method availability)
     // Note: tenants_public view doesn't include template column
+    // We read secure_config to derive booleans (never expose decrypted values)
     const { data: tenant, error } = await supabase
       .from('tenants')
-      .select('id, slug, name, config, template, active')
+      .select('id, slug, name, config, template, active, secure_config, mp_access_token')
       .eq('slug', slug)
       .eq('active', true)
       .maybeSingle()
@@ -57,6 +58,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
 
     // Parse config JSONB (type assertion safe due to view constraints)
     const config = (tenant.config as any) || {}
+    const secureConfig = ((tenant as any).secure_config as Record<string, unknown>) || {}
+
+    // Payment method availability — booleans derived from credential presence.
+    // Never expose encrypted or decrypted values here; this is a public endpoint.
+    const paymentMethods = {
+      mercadopago: Boolean((tenant as any).mp_access_token),
+      nequi: Boolean(secureConfig.nequi),
+    }
 
     // Build response DTO with safe fallbacks matching Product Page design system
     const validTemplates = ['gallery', 'detail', 'minimal', 'gastronomy'] as const
@@ -65,6 +74,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
 
     const response = {
       id: tenant.slug,
+      numericId: tenant.id,
+      paymentMethods,
       businessName: config.business_name || config.business?.name || tenant.name,
       subtitle: config.subtitle || config.business?.subtitle || null,
       location: config.location || config.business?.location || null,
@@ -88,8 +99,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
     return NextResponse.json(response, {
       status: 200,
       headers: {
-        // Cache for 5 minutes, allow stale content for 10 minutes while revalidating
-        'Cache-Control': 'public, max-age=300, stale-while-revalidate=600',
+        // Short cache — payment method availability can change when tenant updates settings
+        'Cache-Control': 'public, max-age=30, stale-while-revalidate=60',
       },
     })
   } catch (error) {

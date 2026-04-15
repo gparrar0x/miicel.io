@@ -14,31 +14,45 @@ import { OrderRepo } from '@/services/repositories/order.repo'
 import { ProductRepo } from '@/services/repositories/product.repo'
 import { TenantRepo } from '@/services/repositories/tenant.repo'
 
-const checkoutRequestSchema = z.object({
-  customer: z.object({
-    name: z.string().min(2),
-    phone: z.string().regex(/^\d{10}$/),
-    email: z.string().email(),
-    notes: z.string().optional(),
-  }),
-  paymentMethod: z.enum(['cash', 'mercadopago']),
-  items: z.array(
-    z.object({
-      productId: z.number(),
-      name: z.string(),
-      price: z.number(),
-      quantity: z.number(),
-      currency: z.string(),
-      image: z.string().optional(),
-      sizeId: z.string().optional(),
-      color: z.object({ id: z.number(), name: z.string() }).optional(),
+const checkoutRequestSchema = z
+  .object({
+    customer: z.object({
+      name: z.string().min(2),
+      phone: z.string().regex(/^\d{10}$/),
+      email: z.string().email(),
+      notes: z.string().optional(),
     }),
-  ),
-  total: z.number(),
-  currency: z.string(),
-  tenantId: z.string(),
-  returnUrl: z.string().optional(),
-})
+    paymentMethod: z.enum(['cash', 'mercadopago', 'nequi']),
+    items: z.array(
+      z.object({
+        productId: z.number(),
+        name: z.string(),
+        price: z.number(),
+        quantity: z.number(),
+        currency: z.string(),
+        image: z.string().optional(),
+        sizeId: z.string().optional(),
+        color: z.object({ id: z.number(), name: z.string() }).optional(),
+      }),
+    ),
+    total: z.number(),
+    currency: z.string(),
+    tenantId: z.string(),
+    returnUrl: z.string().optional(),
+    nequiPhoneNumber: z
+      .string()
+      .regex(/^3\d{9}$/, 'Debe iniciar en 3 y tener 10 dígitos')
+      .optional(),
+  })
+  .refine(
+    (data) =>
+      data.paymentMethod !== 'nequi' ||
+      (data.nequiPhoneNumber !== undefined && data.nequiPhoneNumber !== ''),
+    {
+      message: 'nequiPhoneNumber requerido para pagos Nequi',
+      path: ['nequiPhoneNumber'],
+    },
+  )
 
 export async function POST(request: Request) {
   try {
@@ -52,7 +66,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
     }
 
-    const { customer, paymentMethod, items, total, currency, tenantId, returnUrl } = parsed.data
+    const {
+      customer,
+      paymentMethod,
+      items,
+      total,
+      currency,
+      tenantId,
+      returnUrl,
+      nequiPhoneNumber,
+    } = parsed.data
 
     const supabase = createServiceRoleClient()
     const service = new CheckoutService(
@@ -70,6 +93,7 @@ export async function POST(request: Request) {
       currency,
       tenantSlug: tenantId,
       returnUrl,
+      nequiPhoneNumber,
     })
 
     return NextResponse.json(result)

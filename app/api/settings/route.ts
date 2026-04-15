@@ -91,6 +91,20 @@ export async function GET(request: Request) {
       }
     }
 
+    // Never decrypt sensitive fields (client_id, api_key, app_secret) — expose only non-secret fields
+    const nequiConfig = tenant.secure_config?.nequi as
+      | {
+          client_id: string
+          api_key: string
+          app_secret: string
+          phone_number: string
+          commerce_code?: string
+        }
+      | undefined
+    const nequiConfigured = Boolean(nequiConfig)
+    const nequiPhoneNumber = nequiConfig?.phone_number ?? null
+    const nequiCommerceCode = nequiConfig?.commerce_code ?? null
+
     // Return settings
     return NextResponse.json({
       id: tenant.id,
@@ -105,6 +119,9 @@ export async function GET(request: Request) {
       plan: tenant.plan,
       active: tenant.active,
       whatsapp_number: tenant.whatsapp_number || null,
+      nequi_configured: nequiConfigured,
+      nequi_phone_number: nequiPhoneNumber,
+      nequi_commerce_code: nequiCommerceCode,
     })
   } catch (error) {
     console.error('Unexpected error in GET /api/settings:', error)
@@ -218,6 +235,68 @@ export async function PATCH(request: Request) {
             { status: 500 },
           )
         }
+      }
+    }
+
+    // Encrypt Nequi credentials if provided
+    if (body.nequi_credentials !== undefined) {
+      const nc = body.nequi_credentials as {
+        client_id: string
+        api_key: string
+        app_secret: string
+        phone_number: string
+        commerce_code?: string
+      }
+
+      if (!nc.client_id || !nc.api_key || !nc.app_secret || !nc.phone_number) {
+        return NextResponse.json(
+          {
+            error:
+              'Nequi credentials: client_id, api_key, app_secret y phone_number son requeridos',
+          },
+          { status: 400 },
+        )
+      }
+
+      // commerce_code is required — used for per-tenant webhook lookup
+      if (!nc.commerce_code || nc.commerce_code.trim() === '') {
+        return NextResponse.json(
+          { error: 'Nequi credentials: commerce_code es requerido' },
+          { status: 400 },
+        )
+      }
+
+      try {
+        const encryptedNequi: Record<string, string> = {
+          client_id: encryptToken(nc.client_id),
+          api_key: encryptToken(nc.api_key),
+          app_secret: encryptToken(nc.app_secret),
+          phone_number: nc.phone_number, // plain — public commerce phone
+        }
+
+        // commerce_code is plain (public merchant ID) — not encrypted
+        if (nc.commerce_code !== undefined) {
+          encryptedNequi.commerce_code = nc.commerce_code
+        }
+
+        // Fetch current secure_config to merge (don't overwrite mp_access_token key)
+        const { data: currentTenant } = await (isSuperAdmin ? createServiceRoleClient() : supabase)
+          .from('tenants')
+          .select('secure_config')
+          .eq('id', parseInt(tenantId, 10))
+          .single()
+
+        const currentSecureConfig = (currentTenant as any)?.secure_config ?? {}
+        updates.secure_config = {
+          ...currentSecureConfig,
+          nequi: encryptedNequi,
+        }
+      } catch (error) {
+        console.error('Failed to encrypt Nequi credentials:', error)
+        return NextResponse.json(
+          { error: 'Error al cifrar credenciales Nequi. Verificar ENCRYPTION_KEY.' },
+          { status: 500 },
+        )
       }
     }
 

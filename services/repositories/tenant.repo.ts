@@ -13,10 +13,43 @@ export interface TenantWithToken {
   mp_access_token: string | null
 }
 
+export interface NequiSecureConfig {
+  client_id: string
+  api_key: string
+  app_secret: string
+  phone_number: string
+  commerce_code?: string
+}
+
+export interface TenantWithNequi {
+  mp_access_token: string | null
+  secure_config: {
+    mp_access_token?: string
+    nequi?: NequiSecureConfig
+  } | null
+  currency?: string
+}
+
+/** Minimal shape returned by findByNequiCommerceCode — only what the webhook needs. */
+export interface TenantWebhookRow {
+  id: number
+  secureConfig: {
+    nequi: {
+      app_secret: string
+      commerce_code: string
+    }
+  }
+}
+
 export interface ITenantRepo {
   findById(id: number): Promise<(TenantRow & { owner_id: string }) | null>
   findBySlug(slug: string): Promise<TenantRow | null>
   findBySlugWithToken(slug: string): Promise<(TenantRow & TenantWithToken) | null>
+  findBySlugWithNequi(slug: string): Promise<(TenantRow & TenantWithNequi) | null>
+  findByIdWithNequi(
+    id: number,
+  ): Promise<(TenantRow & TenantWithNequi & { owner_id: string }) | null>
+  findByNequiCommerceCode(code: string): Promise<TenantWebhookRow | null>
 }
 
 export class TenantRepo implements ITenantRepo {
@@ -53,5 +86,80 @@ export class TenantRepo implements ITenantRepo {
 
     if (error) throw new Error(`Failed to fetch tenant token: ${error.message}`)
     return data ?? null
+  }
+
+  /**
+   * Fetch tenant with mp_access_token, secure_config (for Nequi creds), and currency.
+   * Single query — reused for both MP and Nequi checkout flows.
+   */
+  async findBySlugWithNequi(slug: string): Promise<(TenantRow & TenantWithNequi) | null> {
+    // biome-ignore lint/suspicious/noExplicitAny: Supabase generated types don't cover secure_config/config JSONB
+    const { data, error } = await (this.supabase as any)
+      .from('tenants')
+      .select('id, template, mp_access_token, secure_config, config')
+      .eq('slug', slug)
+      .maybeSingle()
+
+    if (error) throw new Error(`Failed to fetch tenant: ${error.message}`)
+    if (!data) return null
+
+    return {
+      id: data.id as number,
+      template: data.template as string | undefined,
+      mp_access_token: (data.mp_access_token as string | null) ?? null,
+      secure_config: (data.secure_config as TenantWithNequi['secure_config']) ?? null,
+      currency: (data.config as { currency?: string } | null)?.currency ?? undefined,
+    }
+  }
+
+  /**
+   * Fetch tenant by Nequi commerce code — for per-tenant webhook signature verification.
+   */
+  async findByNequiCommerceCode(code: string): Promise<TenantWebhookRow | null> {
+    // biome-ignore lint/suspicious/noExplicitAny: Supabase generated types don't cover secure_config JSONB
+    const { data, error } = await (this.supabase as any)
+      .from('tenants')
+      .select('id, secure_config')
+      .filter('secure_config->nequi->>commerce_code', 'eq', code)
+      .maybeSingle()
+
+    if (error) throw new Error(`Failed to fetch tenant by commerce code: ${error.message}`)
+    if (!data) return null
+
+    const nequi = (data.secure_config as Record<string, unknown> | null)?.nequi as
+      | { app_secret: string; commerce_code: string }
+      | undefined
+    if (!nequi?.app_secret || !nequi?.commerce_code) return null
+
+    return {
+      id: data.id as number,
+      secureConfig: { nequi: { app_secret: nequi.app_secret, commerce_code: nequi.commerce_code } },
+    }
+  }
+
+  /**
+   * Fetch tenant by ID with owner_id + Nequi fields — for polling endpoint auth.
+   */
+  async findByIdWithNequi(
+    id: number,
+  ): Promise<(TenantRow & TenantWithNequi & { owner_id: string }) | null> {
+    // biome-ignore lint/suspicious/noExplicitAny: Supabase generated types don't cover secure_config/config JSONB
+    const { data, error } = await (this.supabase as any)
+      .from('tenants')
+      .select('id, template, owner_id, mp_access_token, secure_config, config')
+      .eq('id', id)
+      .maybeSingle()
+
+    if (error) throw new Error(`Failed to fetch tenant: ${error.message}`)
+    if (!data) return null
+
+    return {
+      id: data.id as number,
+      template: data.template as string | undefined,
+      owner_id: data.owner_id as string,
+      mp_access_token: (data.mp_access_token as string | null) ?? null,
+      secure_config: (data.secure_config as TenantWithNequi['secure_config']) ?? null,
+      currency: (data.config as { currency?: string } | null)?.currency ?? undefined,
+    }
   }
 }

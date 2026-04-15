@@ -31,16 +31,19 @@ interface FlagToggleCellProps {
   tenant: Tenant
   state: CellState
   onToggle: () => void
+  startsCategory?: boolean
 }
 
 function getCellStateFromFlag(flag: FeatureFlag, tenant: Tenant): CellState {
   const isEnabledForTenant = flag.rules?.tenants?.includes(tenant.id) ?? false
   const isEnabledByTemplate = flag.rules?.templates?.includes(tenant.template) ?? false
+  // Global = no targeting keys at all. Presence of `tenants: []` means allowlist mode,
+  // currently empty, NOT global.
   const isGlobal =
     flag.enabled &&
-    !flag.rules?.tenants?.length &&
-    !flag.rules?.templates?.length &&
-    !flag.rules?.users?.length &&
+    flag.rules?.tenants === undefined &&
+    flag.rules?.templates === undefined &&
+    flag.rules?.users === undefined &&
     flag.rules?.percentage == null
 
   if (isGlobal) return 'global'
@@ -51,9 +54,19 @@ function getCellStateFromFlag(flag: FeatureFlag, tenant: Tenant): CellState {
 
 export { getCellStateFromFlag }
 
-export function FlagToggleCell({ flag, tenant, state, onToggle }: FlagToggleCellProps) {
+export function FlagToggleCell({
+  flag,
+  tenant,
+  state,
+  onToggle,
+  startsCategory = false,
+}: FlagToggleCellProps) {
   const isInteractive = state !== 'inherited' && state !== 'global' && state !== 'loading'
-  const isChecked = state === 'enabled'
+  // ON if the flag is active for this tenant via ANY mechanism:
+  //   'enabled'   — tenant explicitly in allowlist
+  //   'inherited' — match by template rule
+  //   'global'    — flag has no targeting rules
+  const isChecked = state === 'enabled' || state === 'inherited' || state === 'global'
 
   const tooltipMap: Partial<Record<CellState, string>> = {
     inherited: `Flag enabled at template level. Disable the template flag to toggle here.`,
@@ -65,11 +78,13 @@ export function FlagToggleCell({ flag, tenant, state, onToggle }: FlagToggleCell
   const cursor =
     state === 'loading' ? 'cursor-wait' : !isInteractive ? 'cursor-not-allowed' : 'cursor-pointer'
 
+  const leftBorder = startsCategory ? 'border-l-2 border-l-border' : ''
+
   return (
     <td
       data-testid={`flag-toggle-cell--${flag.key}-${tenant.slug}--${state}`}
       title={tooltipMap[state]}
-      className={`border-b border-r border-border px-3 py-2 text-center align-middle transition-colors duration-100 ${cellBg} ${cursor} ${isInteractive ? 'hover:bg-secondary/50' : ''}`}
+      className={`border-b border-r border-border px-3 py-2 text-center align-middle transition-colors duration-100 ${cellBg} ${cursor} ${leftBorder} ${isInteractive ? 'hover:bg-secondary/50' : ''}`}
       style={{ minWidth: '120px' }}
     >
       {state === 'loading' ? (

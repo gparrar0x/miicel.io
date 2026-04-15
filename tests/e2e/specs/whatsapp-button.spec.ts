@@ -15,7 +15,7 @@
  * 3. Click button → verify wa.me URL opens
  * 4. Visit storefront without number → button NOT visible
  *
- * Template Coverage: Gallery, Detail, Minimal, Restaurant
+ * Template Coverage: Gallery, Detail, Minimal, Gastronomy
  */
 
 import { expect, test } from '@playwright/test'
@@ -246,7 +246,7 @@ test.describe('WhatsApp Button - Storefront Display (Minimal Template)', () => {
   })
 })
 
-test.describe('WhatsApp Button - Storefront Display (Restaurant Template)', () => {
+test.describe('WhatsApp Button - Storefront Display (Gastronomy Template)', () => {
   let settingsPage: TenantSettingsPage
   let storefrontPage: StorefrontWhatsAppPage
 

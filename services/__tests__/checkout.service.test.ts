@@ -11,6 +11,8 @@ const mockTenantRepo = (): ITenantRepo => ({
   findById: vi.fn(),
   findBySlug: vi.fn(),
   findBySlugWithToken: vi.fn(),
+  findBySlugWithNequi: vi.fn(),
+  findByIdWithNequi: vi.fn(),
 })
 
 const mockCustomerRepo = (): ICustomerRepo => ({
@@ -81,7 +83,12 @@ describe('CheckoutService', () => {
 
   describe('cash payment — happy path', () => {
     it('creates order and returns orderId for cash payment', async () => {
-      vi.mocked(tenantRepo.findBySlugWithToken).mockResolvedValue({ id: 42, mp_access_token: null })
+      vi.mocked(tenantRepo.findBySlugWithNequi).mockResolvedValue({
+        id: 42,
+        mp_access_token: null,
+        secure_config: null,
+        currency: 'ARS',
+      })
       vi.mocked(productRepo.findByIds).mockResolvedValue([dbProduct])
       vi.mocked(customerRepo.findByEmail).mockResolvedValue(null)
       vi.mocked(customerRepo.create).mockResolvedValue({ id: 7 })
@@ -90,7 +97,7 @@ describe('CheckoutService', () => {
       const result = await service.execute(baseInput)
 
       expect(result).toEqual({ success: true, orderId: 99 })
-      expect(tenantRepo.findBySlugWithToken).toHaveBeenCalledWith('test-store')
+      expect(tenantRepo.findBySlugWithNequi).toHaveBeenCalledWith('test-store')
       expect(customerRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({ tenant_id: 42, email: 'juan@test.com' }),
       )
@@ -101,7 +108,12 @@ describe('CheckoutService', () => {
     })
 
     it('uses DB price, ignores client-sent price', async () => {
-      vi.mocked(tenantRepo.findBySlugWithToken).mockResolvedValue({ id: 42, mp_access_token: null })
+      vi.mocked(tenantRepo.findBySlugWithNequi).mockResolvedValue({
+        id: 42,
+        mp_access_token: null,
+        secure_config: null,
+        currency: 'ARS',
+      })
       vi.mocked(productRepo.findByIds).mockResolvedValue([{ ...dbProduct, price: 50 }])
       vi.mocked(customerRepo.findByEmail).mockResolvedValue(null)
       vi.mocked(customerRepo.create).mockResolvedValue({ id: 7 })
@@ -120,7 +132,12 @@ describe('CheckoutService', () => {
         discount_type: 'percentage',
         discount_value: 20,
       }
-      vi.mocked(tenantRepo.findBySlugWithToken).mockResolvedValue({ id: 42, mp_access_token: null })
+      vi.mocked(tenantRepo.findBySlugWithNequi).mockResolvedValue({
+        id: 42,
+        mp_access_token: null,
+        secure_config: null,
+        currency: 'ARS',
+      })
       vi.mocked(productRepo.findByIds).mockResolvedValue([discountedProduct])
       vi.mocked(customerRepo.findByEmail).mockResolvedValue(null)
       vi.mocked(customerRepo.create).mockResolvedValue({ id: 7 })
@@ -133,7 +150,12 @@ describe('CheckoutService', () => {
     })
 
     it('updates existing customer instead of creating new one', async () => {
-      vi.mocked(tenantRepo.findBySlugWithToken).mockResolvedValue({ id: 42, mp_access_token: null })
+      vi.mocked(tenantRepo.findBySlugWithNequi).mockResolvedValue({
+        id: 42,
+        mp_access_token: null,
+        secure_config: null,
+        currency: 'ARS',
+      })
       vi.mocked(productRepo.findByIds).mockResolvedValue([dbProduct])
       vi.mocked(customerRepo.findByEmail).mockResolvedValue({ id: 5 })
       vi.mocked(customerRepo.update).mockResolvedValue(undefined)
@@ -158,14 +180,24 @@ describe('CheckoutService', () => {
     })
 
     it('throws NotFoundError when product not found in DB', async () => {
-      vi.mocked(tenantRepo.findBySlugWithToken).mockResolvedValue({ id: 42, mp_access_token: null })
+      vi.mocked(tenantRepo.findBySlugWithNequi).mockResolvedValue({
+        id: 42,
+        mp_access_token: null,
+        secure_config: null,
+        currency: 'ARS',
+      })
       vi.mocked(productRepo.findByIds).mockResolvedValue([]) // product missing
 
       await expect(service.execute(baseInput)).rejects.toThrow('Product 1 not found')
     })
 
     it('throws when customer creation fails', async () => {
-      vi.mocked(tenantRepo.findBySlugWithToken).mockResolvedValue({ id: 42, mp_access_token: null })
+      vi.mocked(tenantRepo.findBySlugWithNequi).mockResolvedValue({
+        id: 42,
+        mp_access_token: null,
+        secure_config: null,
+        currency: 'ARS',
+      })
       vi.mocked(productRepo.findByIds).mockResolvedValue([dbProduct])
       vi.mocked(customerRepo.findByEmail).mockResolvedValue(null)
       vi.mocked(customerRepo.create).mockRejectedValue(
@@ -176,7 +208,12 @@ describe('CheckoutService', () => {
     })
 
     it('throws when order creation fails', async () => {
-      vi.mocked(tenantRepo.findBySlugWithToken).mockResolvedValue({ id: 42, mp_access_token: null })
+      vi.mocked(tenantRepo.findBySlugWithNequi).mockResolvedValue({
+        id: 42,
+        mp_access_token: null,
+        secure_config: null,
+        currency: 'ARS',
+      })
       vi.mocked(productRepo.findByIds).mockResolvedValue([dbProduct])
       vi.mocked(customerRepo.findByEmail).mockResolvedValue(null)
       vi.mocked(customerRepo.create).mockResolvedValue({ id: 7 })
@@ -186,7 +223,12 @@ describe('CheckoutService', () => {
     })
 
     it('throws ValidationError when MP not configured for mercadopago payment', async () => {
-      vi.mocked(tenantRepo.findBySlugWithToken).mockResolvedValue({ id: 42, mp_access_token: null })
+      vi.mocked(tenantRepo.findBySlugWithNequi).mockResolvedValue({
+        id: 42,
+        mp_access_token: null,
+        secure_config: null,
+        currency: 'ARS',
+      })
       vi.mocked(productRepo.findByIds).mockResolvedValue([dbProduct])
       vi.mocked(customerRepo.findByEmail).mockResolvedValue(null)
       vi.mocked(customerRepo.create).mockResolvedValue({ id: 7 })
