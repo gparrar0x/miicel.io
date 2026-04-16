@@ -198,6 +198,83 @@ export type Database = {
           },
         ]
       }
+      author_landings: {
+        Row: {
+          author_id: number
+          content: Json
+          generated_at: string
+          id: number
+          published_at: string | null
+          status: string
+        }
+        Insert: {
+          author_id: number
+          content: Json
+          generated_at?: string
+          id?: number
+          published_at?: string | null
+          status?: string
+        }
+        Update: {
+          author_id?: number
+          content?: Json
+          generated_at?: string
+          id?: number
+          published_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "author_landings_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      authors: {
+        Row: {
+          created_at: string
+          id: number
+          image_url: string | null
+          name: string
+          slug: string
+          tenant_id: number
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          image_url?: string | null
+          name: string
+          slug: string
+          tenant_id: number
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          image_url?: string | null
+          name?: string
+          slug?: string
+          tenant_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "authors_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "authors_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       checkpoint_blobs: {
         Row: {
           blob: string | null
@@ -372,6 +449,80 @@ export type Database = {
           },
         ]
       }
+      content_generations: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          error: string | null
+          id: string
+          options: Json
+          product_id: number
+          prompt: string
+          provider: string
+          started_at: string | null
+          status: string
+          tenant_id: number
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          options?: Json
+          product_id: number
+          prompt: string
+          provider: string
+          started_at?: string | null
+          status?: string
+          tenant_id: number
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          options?: Json
+          product_id?: number
+          prompt?: string
+          provider?: string
+          started_at?: string | null
+          status?: string
+          tenant_id?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_generations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_generations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "top_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_generations_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_generations_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customers: {
         Row: {
           created_at: string | null
@@ -515,6 +666,298 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      generated_assets: {
+        Row: {
+          asset_type: string
+          created_at: string
+          duration_ms: number | null
+          generation_id: string
+          id: string
+          metadata: Json
+          mime_type: string
+          public_url: string | null
+          size_bytes: number | null
+          storage_path: string
+        }
+        Insert: {
+          asset_type: string
+          created_at?: string
+          duration_ms?: number | null
+          generation_id: string
+          id?: string
+          metadata?: Json
+          mime_type?: string
+          public_url?: string | null
+          size_bytes?: number | null
+          storage_path: string
+        }
+        Update: {
+          asset_type?: string
+          created_at?: string
+          duration_ms?: number | null
+          generation_id?: string
+          id?: string
+          metadata?: Json
+          mime_type?: string
+          public_url?: string | null
+          size_bytes?: number | null
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generated_assets_generation_id_fkey"
+            columns: ["generation_id"]
+            isOneToOne: false
+            referencedRelation: "content_generations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      generation_usage: {
+        Row: {
+          created_at: string
+          id: string
+          images_used: number
+          period_start: string
+          tenant_id: number
+          updated_at: string
+          videos_used: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          images_used?: number
+          period_start: string
+          tenant_id: number
+          updated_at?: string
+          videos_used?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          images_used?: number
+          period_start?: string
+          tenant_id?: number
+          updated_at?: string
+          videos_used?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generation_usage_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "generation_usage_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ig_post_insights: {
+        Row: {
+          comments: number
+          created_at: string
+          fetched_at: string
+          id: string
+          ig_post_id: string
+          impressions: number
+          likes: number
+          reach: number
+          saves: number
+          shares: number
+          tenant_id: number
+          video_views: number
+        }
+        Insert: {
+          comments?: number
+          created_at?: string
+          fetched_at?: string
+          id?: string
+          ig_post_id: string
+          impressions?: number
+          likes?: number
+          reach?: number
+          saves?: number
+          shares?: number
+          tenant_id: number
+          video_views?: number
+        }
+        Update: {
+          comments?: number
+          created_at?: string
+          fetched_at?: string
+          id?: string
+          ig_post_id?: string
+          impressions?: number
+          likes?: number
+          reach?: number
+          saves?: number
+          shares?: number
+          tenant_id?: number
+          video_views?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ig_post_insights_ig_post_id_fkey"
+            columns: ["ig_post_id"]
+            isOneToOne: false
+            referencedRelation: "ig_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ig_post_insights_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ig_post_insights_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ig_posts: {
+        Row: {
+          caption: string | null
+          created_at: string
+          error: string | null
+          generation_id: string | null
+          id: string
+          ig_media_id: string | null
+          ig_permalink: string | null
+          media_type: string
+          media_urls: Json
+          metadata: Json
+          publish_attempts: number
+          published_at: string | null
+          scheduled_at: string | null
+          status: string
+          tenant_id: number
+          updated_at: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          error?: string | null
+          generation_id?: string | null
+          id?: string
+          ig_media_id?: string | null
+          ig_permalink?: string | null
+          media_type: string
+          media_urls?: Json
+          metadata?: Json
+          publish_attempts?: number
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: string
+          tenant_id: number
+          updated_at?: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          error?: string | null
+          generation_id?: string | null
+          id?: string
+          ig_media_id?: string | null
+          ig_permalink?: string | null
+          media_type?: string
+          media_urls?: Json
+          metadata?: Json
+          publish_attempts?: number
+          published_at?: string | null
+          scheduled_at?: string | null
+          status?: string
+          tenant_id?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ig_posts_generation_id_fkey"
+            columns: ["generation_id"]
+            isOneToOne: false
+            referencedRelation: "content_generations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ig_posts_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ig_posts_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ig_webhook_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          field: string
+          id: string
+          ig_media_id: string | null
+          object_type: string
+          payload: Json
+          processed: boolean
+          received_at: string
+          tenant_id: number | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          field: string
+          id?: string
+          ig_media_id?: string | null
+          object_type: string
+          payload?: Json
+          processed?: boolean
+          received_at?: string
+          tenant_id?: number | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          field?: string
+          id?: string
+          ig_media_id?: string | null
+          object_type?: string
+          payload?: Json
+          processed?: boolean
+          received_at?: string
+          tenant_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ig_webhook_events_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ig_webhook_events_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants_public"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       modifier_groups: {
         Row: {
@@ -945,12 +1388,15 @@ export type Database = {
       products: {
         Row: {
           active: boolean | null
+          author_id: number | null
           category: string | null
           created_at: string | null
           description: string | null
+          dietary_tags: string[]
           display_order: number | null
           id: number
           image_url: string | null
+          is_featured: boolean
           metadata: Json | null
           name: string
           price: number
@@ -960,12 +1406,15 @@ export type Database = {
         }
         Insert: {
           active?: boolean | null
+          author_id?: number | null
           category?: string | null
           created_at?: string | null
           description?: string | null
+          dietary_tags?: string[]
           display_order?: number | null
           id?: number
           image_url?: string | null
+          is_featured?: boolean
           metadata?: Json | null
           name: string
           price: number
@@ -975,12 +1424,15 @@ export type Database = {
         }
         Update: {
           active?: boolean | null
+          author_id?: number | null
           category?: string | null
           created_at?: string | null
           description?: string | null
+          dietary_tags?: string[]
           display_order?: number | null
           id?: number
           image_url?: string | null
+          is_featured?: boolean
           metadata?: Json | null
           name?: string
           price?: number
@@ -989,6 +1441,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "products_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "products_tenant_id_fkey"
             columns: ["tenant_id"]
