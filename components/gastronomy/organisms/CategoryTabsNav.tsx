@@ -25,7 +25,7 @@ export function CategoryTabsNav({
   return (
     <nav
       className={cn(
-        'sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-orange-100 shadow-sm',
+        'sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm',
         className,
       )}
     >

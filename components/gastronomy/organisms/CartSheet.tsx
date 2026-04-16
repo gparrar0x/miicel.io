@@ -279,7 +279,7 @@ export function CartSheet({
     <Sheet open={open} onOpenChange={handleSheetChange}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-lg bg-white"
+        className="w-full sm:max-w-lg bg-background"
         data-testid={checkoutStep === 'checkout' ? 'checkout-modal-overlay' : undefined}
       >
         {/* Nequi pending takeover — replaces the whole sheet body with the pending state UI */}
@@ -300,7 +300,7 @@ export function CartSheet({
           <>
             {/* Loading Overlay (hidden during nequi pending) */}
             {isSubmitting && (
-              <div className="absolute inset-0 bg-white/90 flex items-center justify-center z-50 rounded-lg">
+              <div className="absolute inset-0 bg-background/90 flex items-center justify-center z-50 rounded-lg">
                 <div className="flex flex-col items-center gap-3">
                   <Loader2
                     className="h-10 w-10 animate-spin"
@@ -397,7 +397,7 @@ export function CartSheet({
                               className="h-8 w-8"
                               onMouseEnter={(e) => {
                                 e.currentTarget.style.background =
-                                  'color-mix(in srgb, var(--color-primary) 10%, white)'
+                                  'color-mix(in srgb, var(--color-primary) 15%, transparent)'
                                 e.currentTarget.style.color = 'var(--color-primary)'
                               }}
                               onMouseLeave={(e) => {
@@ -426,7 +426,7 @@ export function CartSheet({
                               className="h-8 w-8"
                               onMouseEnter={(e) => {
                                 e.currentTarget.style.background =
-                                  'color-mix(in srgb, var(--color-primary) 10%, white)'
+                                  'color-mix(in srgb, var(--color-primary) 15%, transparent)'
                                 e.currentTarget.style.color = 'var(--color-primary)'
                               }}
                               onMouseLeave={(e) => {
@@ -659,10 +659,10 @@ export function CartSheet({
                   </div>
 
                   <div
-                    className="rounded-xl p-4 dark:bg-gray-800 dark:border-gray-700"
+                    className="rounded-xl p-4 dark:bg-gray-800 dark:border dark:border-gray-700"
                     style={{
-                      background: 'color-mix(in srgb, var(--color-primary) 8%, white)',
-                      border: '1px solid color-mix(in srgb, var(--color-primary) 20%, white)',
+                      background: 'color-mix(in srgb, var(--color-primary) 8%, var(--background))',
+                      border: '1px solid color-mix(in srgb, var(--color-primary) 20%, transparent)',
                     }}
                   >
                     <h3 className="font-semibold text-gray-900 dark:text-white mb-3">

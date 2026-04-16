@@ -103,10 +103,10 @@ export function GastronomyLayout({
   return (
     <div
       data-testid="gastronomy-layout"
-      className="min-h-screen bg-gradient-to-b from-white/50 to-white"
+      className="min-h-screen bg-gradient-to-b from-background/50 to-background"
       style={{
         backgroundImage:
-          'linear-gradient(to bottom, color-mix(in srgb, var(--color-primary) 5%, white), white)',
+          'linear-gradient(to bottom, color-mix(in srgb, var(--color-primary) 5%, var(--background)), var(--background))',
       }}
     >
       {/* Header */}
@@ -132,19 +132,20 @@ export function GastronomyLayout({
             <AccordionItem
               key={category.id}
               value={category.id}
-              className="bg-white rounded-2xl border-2 shadow-sm overflow-hidden"
-              style={{ borderColor: 'color-mix(in srgb, var(--color-primary) 15%, white)' }}
+              className="bg-background rounded-2xl border-2 shadow-sm overflow-hidden dark:shadow-none"
+              style={{ borderColor: 'color-mix(in srgb, var(--color-primary) 25%, transparent)' }}
             >
               <AccordionTrigger
                 className="px-6 py-4 hover:no-underline transition-colors"
                 style={
                   {
-                    ['--hover-bg' as string]: 'color-mix(in srgb, var(--color-primary) 8%, white)',
+                    ['--hover-bg' as string]:
+                      'color-mix(in srgb, var(--color-primary) 10%, transparent)',
                   } as React.CSSProperties
                 }
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.background =
-                    'color-mix(in srgb, var(--color-primary) 8%, white)')
+                    'color-mix(in srgb, var(--color-primary) 10%, transparent)')
                 }
                 onMouseLeave={(e) => (e.currentTarget.style.background = '')}
               >
