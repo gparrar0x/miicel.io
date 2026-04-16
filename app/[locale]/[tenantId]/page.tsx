@@ -11,7 +11,6 @@ import { CartBadge } from '@/components/commerce/CartBadge'
 import { ProductGrid as ProductGridLegacy } from '@/components/commerce/ProductGrid'
 import { TenantHeader } from '@/components/commerce/TenantHeader'
 import { ThemeProvider } from '@/components/commerce/ThemeProvider'
-import { DashboardAccessButton } from '@/components/DashboardAccessButton'
 import { GalleryGrid } from '@/components/gallery-v2/GalleryGrid'
 import { GalleryHeader } from '@/components/gallery-v2/GalleryHeader'
 import { GastronomyLayout } from '@/components/gastronomy/layouts/GastronomyLayout'
@@ -279,8 +278,7 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
           categories={categoriesWithIcons}
           currency={config.currency}
           whatsappNumber={config.whatsappNumber || null}
-        />
-        <DashboardAccessButton tenantId={tenantId} />
+        />{' '}
       </ThemeProvider>
     )
   }
@@ -341,8 +339,7 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
             <GalleryGrid artworks={artworks} collections={categories} tenantId={tenantId} />
           </div>
         </main>
-        <WhatsAppButton phoneNumber={config.whatsappNumber || null} />
-        <DashboardAccessButton tenantId={tenantId} />
+        <WhatsAppButton phoneNumber={config.whatsappNumber || null} />{' '}
       </ThemeProvider>
     )
   }
@@ -352,7 +349,6 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
     <ThemeProvider config={config}>
       <main className="min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)]">
         <TenantHeader config={config} />
-
         {/* Hero / Categories Section */}
         <div className="max-w-[var(--container-width)] mx-auto px-4 py-8 mb-8 border-b border-black/10">
           <div className="flex flex-wrap gap-6 items-baseline">
@@ -380,7 +376,6 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
             </div>
           </div>
         </div>
-
         {/* Products Grid */}
         <div className="animate-reveal">
           {(config.template as string) === 'gallery' ? (
@@ -389,7 +384,6 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
             <ProductGridLegacy products={products} tenantId={tenantId} currency={config.currency} />
           )}
         </div>
-
         {/* Floating Cart Button - Brutalist Style */}
         <Link
           href={`/${tenantId}/cart`}
@@ -406,9 +400,7 @@ export default async function StorefrontPage({ params, searchParams }: PageProps
           </svg>
           <CartBadge />
         </Link>
-
-        <WhatsAppButton phoneNumber={config.whatsappNumber || null} />
-        <DashboardAccessButton tenantId={tenantId} />
+        <WhatsAppButton phoneNumber={config.whatsappNumber || null} />{' '}
       </main>
     </ThemeProvider>
   )
