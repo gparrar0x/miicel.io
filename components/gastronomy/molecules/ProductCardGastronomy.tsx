@@ -91,7 +91,7 @@ export function ProductCardGastronomy({
     <>
       <Card
         className="overflow-hidden group hover:shadow-xl transition-all duration-300 cursor-pointer"
-        style={{ borderColor: 'color-mix(in srgb, var(--color-primary) 15%, white)' }}
+        style={{ borderColor: 'color-mix(in srgb, var(--color-primary) 20%, transparent)' }}
         onClick={onClick}
       >
         <div className="relative h-48 overflow-hidden">

@@ -128,7 +128,7 @@ export function ProductModifierSheet({
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-lg bg-white flex flex-col p-0"
+        className="w-full sm:max-w-lg bg-background flex flex-col p-0"
         data-testid="product-modifier-sheet"
       >
         <SheetHeader className="p-6 pb-4 border-b border-gray-100">
@@ -175,7 +175,7 @@ export function ProductModifierSheet({
         </div>
 
         {/* Footer: qty + subtotal + CTA */}
-        <div className="border-t border-gray-200 p-6 space-y-4 bg-white">
+        <div className="border-t border-gray-200 dark:border-gray-700 p-6 space-y-4 bg-background">
           {/* Quantity selector */}
           <div className="flex items-center justify-between">
             <span className="font-semibold text-gray-700">Cantidad</span>
