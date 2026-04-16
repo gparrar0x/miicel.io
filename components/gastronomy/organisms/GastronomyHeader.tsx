@@ -65,7 +65,9 @@ export function GastronomyHeader({
       </div>
 
       <div className="relative h-full container mx-auto px-4 flex flex-col justify-end pb-8">
-        <div className="inline-flex flex-col gap-3 bg-black/55 backdrop-blur-sm rounded-2xl px-4 py-3 max-w-xl">
+        <div
+          className={`inline-flex flex-col gap-3 rounded-2xl px-4 py-3 max-w-xl ${tenantBanner ? 'bg-white/15' : 'bg-[#FDFBF8]'}`}
+        >
           <div className="flex items-end gap-4">
             {tenantLogo && (
               <img
@@ -75,13 +77,15 @@ export function GastronomyHeader({
               />
             )}
             <div className="flex-1">
-              <h1 className="text-4xl md:text-5xl font-bold text-white text-balance drop-shadow-md">
+              <h1
+                className={`text-4xl md:text-5xl font-bold text-balance drop-shadow-md ${tenantBanner ? 'text-white' : 'text-[#1C1917]'}`}
+              >
                 {tenantName}
               </h1>
             </div>
           </div>
 
-          <div className="text-white space-y-1">
+          <div className={`space-y-1 ${tenantBanner ? 'text-white' : 'text-[#44403C]'}`}>
             <p className="text-lg md:text-xl opacity-95 drop-shadow-md">{heroSubtitle}</p>
             {tenantLocation && (
               <div className="flex items-center gap-2 text-sm md:text-base opacity-95 drop-shadow-md">

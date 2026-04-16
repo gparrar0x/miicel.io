@@ -92,7 +92,9 @@ async function getProducts(tenantId: string, category?: string, search?: string,
 
   let query = supabase
     .from('products')
-    .select('id, name, description, price, category, image_url, stock, metadata, authors(name)')
+    .select(
+      'id, name, description, price, category, image_url, stock, metadata, is_featured, dietary_tags, authors(name)',
+    )
     .eq('tenant_id', tenant.id)
     .eq('active', true)
     .order('created_at', { ascending: false })
@@ -144,7 +146,8 @@ async function getProducts(tenantId: string, category?: string, search?: string,
     optionsCount: undefined,
     isNew: false,
     isLimited: false,
-    isFeatured: false,
+    isFeatured: p.is_featured ?? false,
+    dietaryTags: p.dietary_tags ?? [],
   }))
 }
 

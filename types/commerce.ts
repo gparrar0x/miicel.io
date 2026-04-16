@@ -45,6 +45,7 @@ export interface Product {
   isNew?: boolean
   isLimited?: boolean
   isFeatured?: boolean
+  dietaryTags?: string[]
   metadata?: any
   // Discount fields (from API withDiscountFields)
   original_price?: number

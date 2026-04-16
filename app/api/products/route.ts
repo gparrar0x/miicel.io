@@ -21,6 +21,8 @@ function withDiscountFields(product: ProductRow) {
     original_price: product.price,
     discount_active: isDiscountActive(product),
     effective_price: computeEffectivePrice(product),
+    isFeatured: product.is_featured,
+    dietaryTags: product.dietary_tags,
   }
 }
 

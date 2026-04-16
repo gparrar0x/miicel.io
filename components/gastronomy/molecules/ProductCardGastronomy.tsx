@@ -1,12 +1,10 @@
 'use client'
 
-import { Plus } from 'lucide-react'
 import { useState } from 'react'
 import { DiscountBadge } from '@/components/gastronomy/atoms/DiscountBadge'
 import { ProductModifierSheet } from '@/components/gastronomy/organisms/ProductModifierSheet'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import type { BadgeType } from '@/lib/themes/gastronomy'
+import { BADGE_CONFIG, BADGE_PRIORITY } from '@/lib/themes/gastronomy'
 import { cn } from '@/lib/utils'
 import type { ModifierGroup, Product, SelectedModifier } from '@/types/commerce'
 
@@ -23,18 +21,7 @@ interface ProductCardGastronomyProps {
   modifierGroups?: ModifierGroup[]
   onClick?: () => void
   currency?: string
-}
-
-const badgeStyles: Record<string, string> = {
-  'Más Vendido': 'bg-gradient-to-r from-orange-500 to-red-500 text-white',
-  Picante: 'bg-red-600 text-white',
-  Vegano: 'bg-green-600 text-white',
-  Nuevo: 'bg-blue-600 text-white',
-  // Mapped from existing badge types
-  popular: 'bg-gradient-to-r from-orange-500 to-red-500 text-white',
-  'spicy-hot': 'bg-red-600 text-white',
-  vegan: 'bg-green-600 text-white',
-  nuevo: 'bg-blue-600 text-white',
+  categoryEmoji?: string
 }
 
 export function ProductCardGastronomy({
@@ -45,13 +32,14 @@ export function ProductCardGastronomy({
   modifierGroups,
   onClick,
   currency = 'CLP',
+  categoryEmoji = '🍽️',
 }: ProductCardGastronomyProps) {
   const [isAdding, setIsAdding] = useState(false)
   const [sheetOpen, setSheetOpen] = useState(false)
 
   const hasModifiers = modifierGroups && modifierGroups.length > 0
 
-  const handleAddToCart = async (e: React.MouseEvent) => {
+  const handleAddClick = async (e: React.MouseEvent) => {
     e.stopPropagation()
     if (hasModifiers) {
       setSheetOpen(true)
@@ -75,7 +63,7 @@ export function ProductCardGastronomy({
     }
   }
 
-  const imageUrl = product.images[0] || '/placeholder.svg'
+  const imageUrl = product.images?.[0] ?? null
   const hasDiscount = product.discount_active === true
   const displayPrice = hasDiscount ? (product.effective_price ?? product.price) : product.price
   const formattedPrice = new Intl.NumberFormat('es-CL', {
@@ -87,95 +75,119 @@ export function ProductCardGastronomy({
     currency,
   }).format(product.price)
 
+  // Select up to 2 badges in BADGE_PRIORITY order
+  const sortedBadges = BADGE_PRIORITY.filter((b) => badges.includes(b)).slice(0, 2)
+
   return (
     <>
-      <Card
-        className="overflow-hidden group hover:shadow-xl transition-all duration-300 cursor-pointer"
-        style={{ borderColor: 'color-mix(in srgb, var(--color-primary) 20%, transparent)' }}
+      <div
+        data-testid="product-card"
+        className="flex flex-row items-center gap-3 p-3 bg-white rounded-xl border border-stone-200 cursor-pointer hover:shadow-md transition-shadow duration-200"
         onClick={onClick}
       >
-        <div className="relative h-48 overflow-hidden">
-          <img
-            src={imageUrl}
-            alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-          />
-          {badges && badges.length > 0 && (
-            <div className="absolute top-3 left-3 flex flex-wrap gap-2">
-              {badges.map((badge) => (
-                <span
-                  key={badge}
-                  className={cn(
-                    'px-3 py-1 rounded-full text-xs font-bold shadow-lg',
-                    badgeStyles[badge] || 'bg-gray-800 text-white',
-                  )}
-                >
-                  {badge}
-                </span>
-              ))}
+        {/* LEFT: info */}
+        <div className="flex-1 min-w-0 flex flex-col gap-1">
+          {/* Badges */}
+          {sortedBadges.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {sortedBadges.map((badge) => {
+                const cfg = BADGE_CONFIG[badge]
+                return (
+                  <span
+                    key={badge}
+                    className="px-1.5 py-0.5 rounded-full text-[10px] font-bold leading-none"
+                    style={{ backgroundColor: cfg.bg, color: cfg.text }}
+                  >
+                    {cfg.icon} {cfg.label}
+                  </span>
+                )
+              })}
             </div>
           )}
-        </div>
 
-        <div className="p-5">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 text-balance">
+          {/* Name */}
+          <p className="font-semibold text-sm text-[#1C1917] line-clamp-2 leading-snug">
             {product.name}
-          </h3>
-          {product.description && (
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2 text-pretty">
+          </p>
+
+          {/* Description */}
+          {product.description && product.description.trim().length > 0 && (
+            <p className="text-xs text-stone-500 line-clamp-1 leading-snug">
               {product.description}
             </p>
           )}
 
-          <div className="flex items-center justify-between mt-auto">
-            <div className="flex flex-col gap-0.5">
-              {hasDiscount && (
-                <span
-                  data-testid="product-card-original-price"
-                  className="text-sm line-through text-gray-400"
-                >
-                  {formattedOriginalPrice}
-                </span>
-              )}
-              <div className="flex items-center gap-2">
-                <span
-                  data-testid={hasDiscount ? 'product-card-discounted-price' : undefined}
-                  className="text-2xl font-bold"
-                  style={{ color: 'var(--color-primary)' }}
-                >
-                  {formattedPrice}
-                </span>
-                {hasDiscount && product.discount_type && product.discount_value != null && (
-                  <DiscountBadge
-                    discountType={product.discount_type}
-                    discountValue={product.discount_value}
-                    currency={currency}
-                  />
-                )}
-              </div>
-            </div>
-            <Button
-              onClick={handleAddToCart}
-              className={cn(
-                'text-white font-semibold shadow-lg transition-all duration-300',
-                isAdding && 'scale-90',
-              )}
-              style={{
-                background: `linear-gradient(to right, var(--color-primary), color-mix(in srgb, var(--color-primary) 85%, black))`,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = `linear-gradient(to right, color-mix(in srgb, var(--color-primary) 85%, black), color-mix(in srgb, var(--color-primary) 70%, black))`
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = `linear-gradient(to right, var(--color-primary), color-mix(in srgb, var(--color-primary) 85%, black))`
-              }}
+          {/* Price row */}
+          <div className="flex items-center gap-2 mt-0.5">
+            {hasDiscount && (
+              <span
+                data-testid="product-card-original-price"
+                className="text-xs line-through text-stone-400"
+              >
+                {formattedOriginalPrice}
+              </span>
+            )}
+            <span
+              data-testid={hasDiscount ? 'product-card-discounted-price' : undefined}
+              className="font-bold text-sm"
+              style={{ color: 'var(--color-primary)' }}
             >
-              <Plus className={cn('w-5 h-5 mr-1 transition-transform', isAdding && 'rotate-90')} />
-              Agregar
-            </Button>
+              {formattedPrice}
+            </span>
+            {hasDiscount && product.discount_type && product.discount_value != null && (
+              <DiscountBadge
+                discountType={product.discount_type}
+                discountValue={product.discount_value}
+                currency={currency}
+              />
+            )}
           </div>
         </div>
-      </Card>
+
+        {/* RIGHT: image + action */}
+        <div className="flex-shrink-0 flex flex-col items-center gap-2">
+          {/* Image */}
+          {imageUrl ? (
+            <img
+              src={imageUrl}
+              alt={product.name}
+              className="w-[72px] h-[72px] rounded-lg object-cover"
+            />
+          ) : (
+            <div className="w-[72px] h-[72px] rounded-lg bg-stone-100 flex items-center justify-center text-2xl">
+              {categoryEmoji}
+            </div>
+          )}
+
+          {/* Action */}
+          {hasModifiers ? (
+            <button
+              type="button"
+              data-testid={`product-${product.id}-choose-options`}
+              onClick={handleAddClick}
+              className="text-xs font-medium whitespace-nowrap"
+              style={{ color: 'var(--color-primary)' }}
+            >
+              Elegir opciones
+            </button>
+          ) : (
+            <button
+              type="button"
+              data-testid={`product-${product.id}-add-to-cart`}
+              onClick={handleAddClick}
+              disabled={isAdding}
+              className={cn(
+                'w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-lg transition-all duration-200',
+                isAdding ? 'scale-90 opacity-70' : 'hover:scale-110 active:scale-90',
+              )}
+              style={{ backgroundColor: 'var(--color-primary)' }}
+              aria-label="Agregar al carrito"
+            >
+              +
+            </button>
+          )}
+        </div>
+      </div>
 
       {hasModifiers && (
         <ProductModifierSheet

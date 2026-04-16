@@ -19,6 +19,7 @@ interface QuickAddButtonProps {
   onClick: () => void | Promise<void>
   className?: string
   disabled?: boolean
+  hasModifiers?: boolean
 }
 
 export function QuickAddButton({
@@ -26,6 +27,7 @@ export function QuickAddButton({
   onClick,
   className = '',
   disabled = false,
+  hasModifiers = false,
 }: QuickAddButtonProps) {
   const [loading, setLoading] = useState(false)
   const [added, setAdded] = useState(false)
@@ -49,6 +51,20 @@ export function QuickAddButton({
     } finally {
       setLoading(false)
     }
+  }
+
+  if (hasModifiers) {
+    return (
+      <button
+        type="button"
+        data-testid={`quick-add-${productId}`}
+        onClick={onClick}
+        className={`text-xs font-medium ${className}`}
+        style={{ color: 'var(--color-primary)' }}
+      >
+        Elegir opciones
+      </button>
+    )
   }
 
   return (
