@@ -22,6 +22,8 @@ export interface ProductRow {
   discount_value?: number | null
   discount_starts_at?: string | null
   discount_ends_at?: string | null
+  is_featured?: boolean
+  dietary_tags?: string[]
 }
 
 export interface ProductWithTenant extends ProductRow {

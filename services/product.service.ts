@@ -34,6 +34,8 @@ export interface GetProductResult {
   original_price: number
   discount_active: boolean
   effective_price: number
+  isFeatured: boolean
+  dietaryTags: string[]
 }
 
 export interface AuthContext {
@@ -68,6 +70,8 @@ export class ProductService {
       original_price: product.price,
       discount_active: isDiscountActive(product),
       effective_price: computeEffectivePrice(product),
+      isFeatured: product.is_featured ?? false,
+      dietaryTags: product.dietary_tags ?? [],
     }
   }
 

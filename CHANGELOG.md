@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Gastronomy template redesign — Fase 1** [2026-04-15]
+  - Products: `is_featured BOOLEAN DEFAULT false` + `dietary_tags TEXT[] DEFAULT '{}'` (migration 053)
+  - Cards: compact horizontal layout (~90px, 72x72 thumb) replacing tall grid cards
+  - Nav: sticky `CategoryTabsNav` with IntersectionObserver scroll sync + "Todo" tab; accordion removed
+  - Categories: collapsible sections via chevron toggle (all expanded by default)
+  - Badges: short labels (MAS VENDIDO, VEG, SIN TACC, PICANTE/PICANTE+), max 2 per card, `BADGE_PRIORITY` order
+  - CTAs: "Elegir opciones" when product has modifiers, "+" circular button when no modifiers
+  - Header: light overlay (`bg-white/15` with banner, `bg-[#FDFBF8]` without) replacing dark `bg-black/55`
+  - `dietaryTags` exposed in `ProductRow`, `Product`, `GetProductResult`, API responses
+  - `categoryEmoji` prop wired through `ProductGridGastronomy` → `ProductCardGastronomy` for image placeholders
+
+### Added
+
 - **Tenant Feature Flags Matrix Redesign (Design Specs)** [2026-04-12]
   - Design specification: `docs/DESIGN_SPECS_TENANT_MATRIX.md` (342 lines, complete visual + interaction spec)
   - Component handoff contract: `docs/COMPONENT_HANDOFF_MATRIX.md` (290 lines, Pixel implementation guide)

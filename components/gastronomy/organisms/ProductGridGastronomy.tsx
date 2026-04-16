@@ -21,6 +21,7 @@ interface ProductGridGastronomyProps {
   onProductClick?: (product: Product) => void
   currency?: string
   className?: string
+  categoryEmoji?: string
 }
 
 /**
@@ -51,6 +52,7 @@ export function ProductGridGastronomy({
   onProductClick,
   currency = 'CLP',
   className = '',
+  categoryEmoji = '🍽️',
 }: ProductGridGastronomyProps) {
   const t = useTranslations('Gastronomy')
 
@@ -67,7 +69,7 @@ export function ProductGridGastronomy({
 
   return (
     <div data-testid="product-grid-gastronomy" className={`py-1 ${className}`}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+      <div className="flex flex-col gap-2">
         {products.map((product) => (
           <ProductCardGastronomy
             key={product.id}
@@ -76,6 +78,7 @@ export function ProductGridGastronomy({
             onAddToCart={onAddToCart}
             onClick={onProductClick ? () => onProductClick(product) : undefined}
             currency={currency}
+            categoryEmoji={categoryEmoji}
           />
         ))}
       </div>

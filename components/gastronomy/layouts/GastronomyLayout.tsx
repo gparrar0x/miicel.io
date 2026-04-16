@@ -2,18 +2,14 @@
 
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { ChevronDown } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import { WhatsAppButton } from '@/components/storefront/WhatsAppButton'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
 import { useCartStore } from '@/lib/stores/cartStore'
 import type { Product } from '@/types/commerce'
 import { CartSheet } from '../organisms/CartSheet'
 import type { Category } from '../organisms/CategoryTabsNav'
+import { CategoryTabsNav } from '../organisms/CategoryTabsNav'
 import { FloatingCartButton } from '../organisms/FloatingCartButton'
 import { GastronomyFooter } from '../organisms/GastronomyFooter'
 import { GastronomyHeader } from '../organisms/GastronomyHeader'
@@ -59,10 +55,72 @@ export function GastronomyLayout({
   )
 
   const [isCartOpen, setIsCartOpen] = useState(false)
-  // All categories expanded by default
-  const [expandedCategories, setExpandedCategories] = useState<string[]>(
-    categories.map((c) => c.id),
-  )
+  const [activeCategory, setActiveCategory] = useState('todo')
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set())
+
+  const toggleCategory = (slug: string) => {
+    setCollapsedCategories((prev) => {
+      const next = new Set(prev)
+      if (next.has(slug)) {
+        next.delete(slug)
+      } else {
+        next.add(slug)
+      }
+      return next
+    })
+  }
+
+  // "Todo" tab as first entry
+  const allCategories: Category[] = [
+    { id: 'todo', name: 'Todo', slug: 'todo', icon: '🍽️' },
+    ...categories,
+  ]
+
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({})
+
+  // IntersectionObserver: update activeCategory as sections scroll into view
+  useEffect(() => {
+    const observers: IntersectionObserver[] = []
+
+    allCategories.forEach((cat) => {
+      if (cat.id === 'todo') return
+      const slug = cat.slug ?? cat.id
+      const el = sectionRefs.current[slug]
+      if (!el) return
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              setActiveCategory(cat.id)
+            }
+          }
+        },
+        { threshold: 0.3, rootMargin: '-80px 0px -60% 0px' },
+      )
+      observer.observe(el)
+      observers.push(observer)
+    })
+
+    return () => {
+      observers.forEach((o) => o.disconnect())
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categories])
+
+  const handleCategoryClick = (categoryId: string) => {
+    setActiveCategory(categoryId)
+    if (categoryId === 'todo') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+    const cat = categories.find((c) => c.id === categoryId)
+    const slug = cat?.slug ?? categoryId
+    const el = document.getElementById(`category-${slug}`)
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
 
   const handleAddToCart = async (productId: string) => {
     const product = products.find((p) => p.id === productId)
@@ -90,7 +148,6 @@ export function GastronomyLayout({
   }
 
   const handleProductClick = (product: Product) => {
-    // Optional: could open product detail modal
     router.push(`/${tenantSlug}/p/${product.id}`)
   }
 
@@ -121,75 +178,73 @@ export function GastronomyLayout({
         hours={hours}
       />
 
-      <main className="px-2 pt-6">
-        {/* Collapsible Categories Accordion */}
-        <Accordion
-          type="multiple"
-          value={expandedCategories}
-          onValueChange={setExpandedCategories}
-          className="space-y-4"
-        >
-          {productsByCategory.map(({ category, products: categoryProducts }) => (
-            <AccordionItem
+      {/* Sticky Category Tabs */}
+      <CategoryTabsNav
+        categories={allCategories}
+        activeCategory={activeCategory}
+        onCategoryClick={handleCategoryClick}
+      />
+
+      <main className="px-2 pt-6 space-y-8">
+        {productsByCategory.map(({ category, products: categoryProducts }) => {
+          const slug = category.slug ?? category.id
+          return (
+            <section
               key={category.id}
-              value={category.id}
-              className="bg-background rounded-2xl border-2 shadow-sm overflow-hidden dark:shadow-none"
-              style={{ borderColor: 'color-mix(in srgb, var(--color-primary) 25%, transparent)' }}
+              id={`category-${slug}`}
+              ref={(el) => {
+                sectionRefs.current[slug] = el
+              }}
             >
-              <AccordionTrigger
-                className="px-6 py-4 hover:no-underline transition-colors"
-                style={
-                  {
-                    ['--hover-bg' as string]:
-                      'color-mix(in srgb, var(--color-primary) 10%, transparent)',
-                  } as React.CSSProperties
-                }
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.background =
-                    'color-mix(in srgb, var(--color-primary) 10%, transparent)')
-                }
-                onMouseLeave={(e) => (e.currentTarget.style.background = '')}
+              <button
+                type="button"
+                onClick={() => toggleCategory(slug)}
+                className="flex items-center gap-3 px-2 mb-3 w-full text-left"
+                aria-expanded={!collapsedCategories.has(slug)}
+                data-testid={`category-header-${slug}`}
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{category.icon}</span>
-                  <div className="flex flex-col items-start">
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                      {category.name}
-                    </h2>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      {categoryProducts.length}{' '}
-                      {categoryProducts.length === 1 ? t('work') : t('works')}
-                    </span>
-                  </div>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="px-2">
-                {categoryProducts.length > 0 ? (
+                <span className="text-2xl">{category.icon}</span>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white flex-1">
+                  {category.name}
+                </h2>
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  {categoryProducts.length} {categoryProducts.length === 1 ? t('work') : t('works')}
+                </span>
+                <ChevronDown
+                  className="w-5 h-5 text-gray-400 transition-transform duration-200 flex-shrink-0"
+                  style={{
+                    transform: collapsedCategories.has(slug) ? 'rotate(-90deg)' : 'rotate(0deg)',
+                  }}
+                />
+              </button>
+
+              {!collapsedCategories.has(slug) &&
+                (categoryProducts.length > 0 ? (
                   <ProductGridGastronomy
                     products={categoryProducts}
                     onAddToCart={handleAddToCart}
                     onProductClick={handleProductClick}
                     currency={currency}
+                    categoryEmoji={category.icon}
                   />
                 ) : (
                   <div className="text-center py-8 text-gray-400 dark:text-gray-500">
                     <p>{t('noWorksInCategory')}</p>
                   </div>
-                )}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+                ))}
+            </section>
+          )
+        })}
 
         {/* Empty state - all categories */}
-        {productsByCategory.every(({ products }) => products.length === 0) && (
+        {productsByCategory.every(({ products: ps }) => ps.length === 0) && (
           <div className="text-center py-12 text-gray-500 dark:text-gray-400">
             <p className="text-lg">{t('noWorksAvailable')}</p>
           </div>
         )}
       </main>
 
-      {/* Updated Floating Cart */}
+      {/* Floating Cart */}
       <FloatingCartButton
         itemCount={totalItems}
         totalAmount={totalPrice}
@@ -197,15 +252,13 @@ export function GastronomyLayout({
         onViewCart={() => setIsCartOpen(true)}
       />
 
-      {/* New Cart Sheet */}
+      {/* Cart Sheet */}
       <CartSheet
         open={isCartOpen}
         onOpenChange={setIsCartOpen}
         items={items}
         totalPrice={totalPrice}
         onUpdateQuantity={(pid, qty) => {
-          // CartStore expects updateQuantity(productId, colorId, qty)
-          // Assuming no color variant for gastronomy for now
           updateQuantity(pid, undefined, qty)
         }}
         onRemoveItem={(pid) => removeItem(pid, undefined)}

@@ -54,25 +54,25 @@ export const BADGE_CONFIG: Record<BadgeType, BadgeStyle> = {
     bg: '#FFEDD5', // Orange-100
     text: '#9A3412', // Orange-800
     icon: '⭐',
-    label: 'Popular',
+    label: 'MAS VENDIDO',
   },
   'spicy-mild': {
     bg: '#FEF9C3', // Yellow-50
     text: '#713F12', // Yellow-800
     icon: '🌶️',
-    label: 'Picante',
+    label: 'PICANTE',
   },
   'spicy-hot': {
     bg: '#FEE2E2', // Red-100
     text: '#7F1D1D', // Red-900
     icon: '🌶️🌶️',
-    label: 'Muy Picante',
+    label: 'PICANTE+',
   },
   veggie: {
     bg: '#DCFCE7', // Green-100
     text: '#14532D', // Green-900
     icon: '🥗',
-    label: 'Vegetariano',
+    label: 'VEG',
   },
   vegan: {
     bg: '#BBF7D0', // Green-200
@@ -84,9 +84,20 @@ export const BADGE_CONFIG: Record<BadgeType, BadgeStyle> = {
     bg: '#E0E7FF', // Indigo-100
     text: '#312E81', // Indigo-900
     icon: '🚫',
-    label: 'Sin Gluten',
+    label: 'SIN TACC',
   },
 }
+
+export const BADGE_PRIORITY: BadgeType[] = [
+  'promo',
+  'popular',
+  'nuevo',
+  'spicy-hot',
+  'spicy-mild',
+  'veggie',
+  'vegan',
+  'gluten-free',
+]
 
 /**
  * Generate CSS variables for gastronomy theme

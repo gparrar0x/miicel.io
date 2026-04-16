@@ -174,7 +174,7 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: "--model claude-sonnet-4-6 --max-turns 10"
+          claude_args: "--model claude-sonnet-4-6 --max-turns 3"
           prompt: |
             Review this PR as a strict senior engineer. For every file changed:
 
