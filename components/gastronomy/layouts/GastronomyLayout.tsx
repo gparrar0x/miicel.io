@@ -103,8 +103,9 @@ export function GastronomyLayout({
   return (
     <div
       data-testid="gastronomy-layout"
-      className="min-h-screen bg-gradient-to-b from-background/50 to-background"
+      className="light min-h-screen bg-gradient-to-b from-background/50 to-background"
       style={{
+        colorScheme: 'light',
         backgroundImage:
           'linear-gradient(to bottom, color-mix(in srgb, var(--color-primary) 5%, var(--background)), var(--background))',
       }}
