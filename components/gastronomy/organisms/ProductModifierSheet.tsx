@@ -128,7 +128,7 @@ export function ProductModifierSheet({
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-lg bg-background flex flex-col p-0"
+        className="w-full sm:max-w-lg bg-background text-foreground flex flex-col p-0"
         data-testid="product-modifier-sheet"
       >
         <SheetHeader className="p-6 pb-4 border-b border-gray-100">

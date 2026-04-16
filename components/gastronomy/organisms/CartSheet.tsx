@@ -279,7 +279,7 @@ export function CartSheet({
     <Sheet open={open} onOpenChange={handleSheetChange}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-lg bg-background"
+        className="w-full sm:max-w-lg bg-background text-foreground"
         data-testid={checkoutStep === 'checkout' ? 'checkout-modal-overlay' : undefined}
       >
         {/* Nequi pending takeover — replaces the whole sheet body with the pending state UI */}
